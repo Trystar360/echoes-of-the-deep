@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": "echoes:resonant_slag",
+  "result": {
+    "id": "echoes:dull_ingot"
+  },
+  "experience": 0.3,
+  "cookingtime": 200
+}

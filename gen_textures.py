@@ -624,7 +624,7 @@ def gui():
         rect(ix - 1, iy - 1, ix + 16, iy + 16, MID)
         rect(ix - 1, iy - 1, ix + 16, iy - 1, SDARK); rect(ix - 1, iy - 1, ix - 1, iy + 16, SDARK)
         rect(ix - 1, iy + 16, ix + 16, iy + 16, LITE); rect(ix + 16, iy - 1, ix + 16, iy + 16, LITE)
-    slot(56, 35); slot(116, 35)
+    slot(56, 35); slot(116, 35); slot(116, 57)   # input, output, byproduct
     for r in range(3):
         for col in range(9): slot(8 + col * 18, 84 + r * 18)
     for col in range(9): slot(8 + col * 18, 142)

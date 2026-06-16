@@ -25,15 +25,22 @@ import net.minecraft.recipe.book.RecipeBookCategory;
 public class CrushingRecipe extends SingleStackRecipe {
     private final int energy;
     private final int processingTime;
+    private final ItemStack secondary;       // optional byproduct (EMPTY if none)
+    private final float secondaryChance;      // 0..1 roll per craft
 
-    public CrushingRecipe(Ingredient input, ItemStack result, int energy, int processingTime) {
+    public CrushingRecipe(Ingredient input, ItemStack result, int energy, int processingTime,
+                          ItemStack secondary, float secondaryChance) {
         super("", input, result);
         this.energy = energy;
         this.processingTime = processingTime;
+        this.secondary = secondary;
+        this.secondaryChance = secondaryChance;
     }
 
     public int energy() { return energy; }
     public int processingTime() { return processingTime; }
+    public ItemStack secondary() { return secondary; }
+    public float secondaryChance() { return secondaryChance; }
 
     /** Widen the base's protected result() so the block entity & serializer can read it. */
     @Override public ItemStack result() { return super.result(); }
@@ -47,7 +54,9 @@ public class CrushingRecipe extends SingleStackRecipe {
                 Ingredient.CODEC.fieldOf("ingredient").forGetter(CrushingRecipe::ingredient),
                 ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(CrushingRecipe::result),
                 Codec.INT.optionalFieldOf("energy", 200).forGetter(CrushingRecipe::energy),
-                Codec.INT.optionalFieldOf("processingTime", 120).forGetter(CrushingRecipe::processingTime)
+                Codec.INT.optionalFieldOf("processingTime", 120).forGetter(CrushingRecipe::processingTime),
+                ItemStack.VALIDATED_CODEC.optionalFieldOf("secondary", ItemStack.EMPTY).forGetter(CrushingRecipe::secondary),
+                Codec.FLOAT.optionalFieldOf("secondaryChance", 0.0f).forGetter(CrushingRecipe::secondaryChance)
         ).apply(builder, CrushingRecipe::new));
 
         public static final PacketCodec<RegistryByteBuf, CrushingRecipe> PACKET_CODEC =
@@ -56,6 +65,8 @@ public class CrushingRecipe extends SingleStackRecipe {
                         ItemStack.PACKET_CODEC, CrushingRecipe::result,
                         PacketCodecs.INTEGER, CrushingRecipe::energy,
                         PacketCodecs.INTEGER, CrushingRecipe::processingTime,
+                        ItemStack.OPTIONAL_PACKET_CODEC, CrushingRecipe::secondary,
+                        PacketCodecs.FLOAT, CrushingRecipe::secondaryChance,
                         CrushingRecipe::new);
 
         @Override public MapCodec<CrushingRecipe> codec() { return CODEC; }

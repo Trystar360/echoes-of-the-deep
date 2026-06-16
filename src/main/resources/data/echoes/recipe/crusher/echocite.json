@@ -1,7 +1,14 @@
 {
   "type": "echoes:crushing",
   "ingredient": "echoes:raw_echocite",
-  "result": { "id": "echoes:echocite_dust", "count": 2 },
+  "result": {
+    "id": "echoes:echocite_dust",
+    "count": 2
+  },
   "energy": 200,
-  "processingTime": 120
+  "processingTime": 120,
+  "secondary": {
+    "id": "echoes:resonant_slag"
+  },
+  "secondaryChance": 0.15
 }
