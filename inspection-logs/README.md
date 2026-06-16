@@ -7,16 +7,14 @@ static, offline-first app — no build step, no server, no account. Open
 
 ## Design
 
-The whole interface is built on the **golden ratio (φ ≈ 1.618)**:
+A bright, outdoorsy interface tuned for fast use in the field:
 
-- **Type scale** steps by √φ (1.272) for a balanced heading hierarchy.
-- **Spacing** uses powers of φ (…0.382, 0.618, 1, 1.618, 2.618, 4.236 rem).
-- **Layout** — the hero splits 1.618 : 1, cards use golden proportions.
-- A hand-drawn **logarithmic golden spiral** (radius grows by φ every quarter
-  turn) anchors the home screen.
-
-Theme: an "alpine dusk over deep water" palette with a gold accent that nods to
-the ratio itself.
+- A consistent **proportional scale** drives the type sizes, spacing, and
+  layout columns so everything lines up and feels balanced.
+- **High-contrast** controls — clear Pass / Fail / N/A buttons and a live
+  progress bar — so a glance tells you where you are.
+- A bright "alpine daylight over clear water" palette with a warm accent.
+- A flowing spiral mark on the home screen for a touch of adventure character.
 
 ## Features
 

@@ -108,7 +108,7 @@ function renderDashboard(view) {
         el("p", { class: "eyebrow" }, "Adventure Programming"),
         el("h1", { class: "hero-title" }, "Daily Inspection Logs"),
         el("p", { class: "hero-sub" },
-          "Run every pre-use, set-up and closing check from one place. Tap through your gear, sign off, and keep a clean record for every group — built on the golden ratio, top to bottom."),
+          "Run every pre-use, set-up and closing check from one place. Tap through your gear, sign off, and keep a clean record for every group — before the first rider clips in."),
         el("div", { class: "hero-actions" },
           el("button", { class: "btn btn-primary", onclick: () => (location.hash = "/new") }, "Start a log"),
           el("button", { class: "btn btn-ghost", onclick: () => (location.hash = "/history") },
