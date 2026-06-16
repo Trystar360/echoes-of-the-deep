@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "echoes:echocite_dust",
+    "minecraft:glowstone_dust"
+  ],
+  "result": {
+    "id": "echoes:echo_dust",
+    "count": 1
+  }
+}

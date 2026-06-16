@@ -647,6 +647,50 @@ def gui():
     write_png(f"{OUT}/gui/crusher.png", W, H, px)
 gui()
 
+# ================================================================ MOD ICON (128x128)
+def icon():
+    N = 128; cx = cy = 63.5
+    px = [(0, 0, 0, 0)] * (N * N)
+    def setp(x, y, c):
+        if 0 <= x < N and 0 <= y < N: px[y * N + x] = (c[0], c[1], c[2], 255)
+    def overp(x, y, c):
+        if not (0 <= x < N and 0 <= y < N): return
+        r, g, b, a = c
+        if a == 0: return
+        br, bg, bb, _ = px[y * N + x]; f = a / 255
+        px[y * N + x] = (int(r * f + br * (1 - f)), int(g * f + bg * (1 - f)), int(b * f + bb * (1 - f)), 255)
+    for y in range(N):                       # deep radial base
+        for x in range(N):
+            d = math.hypot(x - cx, y - cy) / (N * 0.5)
+            setp(x, y, lerp((10, 28, 30), (4, 8, 10), min(1, d)))
+    for y in range(N):                       # resonance ripples
+        for x in range(N):
+            d = math.hypot(x - cx, y - cy)
+            if d > N * 0.46: continue
+            t = max(0.0, 1 - d / (N * 0.46))
+            if int(round(d / 5)) % 2 == 0:
+                col = lerp(TEAL[1], TEAL[4], t)
+                overp(x, y, (col[0], col[1], col[2], int(185 * (0.3 + 0.7 * t))))
+    for y in range(N):                       # bronze ring
+        for x in range(N):
+            d = math.hypot(x - cx, y - cy)
+            if N * 0.40 < d <= N * 0.42: overp(x, y, (0, 0, 0, 120))
+            if N * 0.42 < d < N * 0.48:
+                setp(x, y, shade(BRONZE[3], 1.12 if (x - cx) + (y - cy) < 0 else 0.78))
+    for y in range(N):                       # bright core + bloom
+        for x in range(N):
+            d = math.hypot(x - cx, y - cy)
+            if d < 10: setp(x, y, lerp(TEAL[3], (235, 255, 250), 1 - d / 10))
+            elif d < 22: overp(x, y, (TEAL[3][0], TEAL[3][1], TEAL[3][2], int(120 * (1 - (d - 10) / 12))))
+    for k in range(8):                       # rune ticks around the ring
+        ang = math.radians(k * 45)
+        rx, ry = cx + math.cos(ang) * N * 0.45, cy + math.sin(ang) * N * 0.45
+        for dx in range(-2, 3):
+            for dy in range(-2, 3):
+                overp(int(rx) + dx, int(ry) + dy, (TEAL[4][0], TEAL[4][1], TEAL[4][2], 150))
+    write_png("src/main/resources/assets/echoes/icon.png", N, N, px)
+icon()
+
 print("textures generated:")
 for d in ("block", "item", "gui"):
     p = os.path.join(OUT, d)
