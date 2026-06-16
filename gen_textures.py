@@ -276,6 +276,36 @@ def crusher():
     write_png(f"{OUT}/block/crusher.png", 16, 16, c.px)
 crusher()
 
+# ================================================================ RESONANT RELAY (wireless broadcaster)
+def relay():
+    c = C()
+    frame(c, IRON, t=2)
+    # dark inset face
+    c.rect(3, 3, 12, 12, (22, 26, 30))
+    cx, cy = 7.5, 7.5
+    # concentric broadcast arcs radiating from a bright core (suggests wireless)
+    for y in range(3, 13):
+        for x in range(3, 13):
+            d = math.hypot(x - cx, y - cy)
+            ring = int(round(d))
+            if d <= 5.0 and ring % 2 == 0:
+                t = max(0.0, 1 - d / 5.0)
+                col = lerp(TEAL[1], TEAL[4], t)
+                # brighten the upper-left for the top-left light source
+                if (x - cx) + (y - cy) < -1:
+                    col = lerp(col, TEAL[4], 0.35)
+                c.over(x, y, (col[0], col[1], col[2], 235))
+    # bright emitter core
+    c.rect(7, 7, 8, 8, TEAL[4])
+    c.set(7, 7, (235, 255, 250)); c.set(8, 8, TEAL[3])
+    # four broadcast pips at the cardinal edges
+    for (px, py) in [(7, 1), (8, 14), (1, 8), (14, 7)]:
+        c.set(px, py, TEAL[4]); c.over(px, py + 1, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 160))
+    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        rivet(c, rx, ry, IRON)
+    write_png(f"{OUT}/block/resonant_relay.png", 16, 16, c.px)
+relay()
+
 # ================================================================ ITEMS
 def ingot(name, ramp):
     c = C()

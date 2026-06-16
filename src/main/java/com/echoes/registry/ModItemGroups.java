@@ -28,6 +28,7 @@ public final class ModItemGroups {
                     entries.add(ModBlocks.RESONATOR);
                     entries.add(ModBlocks.TUNING_CONDUIT);
                     entries.add(ModBlocks.CRUSHER);
+                    entries.add(ModBlocks.RESONANT_RELAY);
                     entries.add(ModItems.RAW_ECHOCITE);
                     entries.add(ModItems.DRUMSTONE_SHARD);
                     entries.add(ModItems.SILENTITE_CRYSTAL);

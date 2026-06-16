@@ -19,6 +19,13 @@ A complete, end-to-end energy + processing loop:
 - **Blocks** — Echocite ore (+deepslate), Drumstone ore, Silentite ore, **Resonator**
   (provider+storage, comparator-readable), **Tuning Conduit** (carrier), **Crusher**
   (consumer, ore-doubling).
+- **Resonant Relay** — a cheap, powerful **wireless transport** block. Tune two or
+  more to the same channel (one per dye colour) and they resonate, beaming **items,
+  fluids, and RU** between the blocks they face — no conduit required. Right-click to
+  cycle mode (Receive/Send/Disabled), sneak-click or use a dye to set the channel.
+  Items/fluids ride the Transfer API (vanilla chests & tanks work); RU bridges the
+  `ResonanceNode` grid. See [`docs/wireless_transport.md`](docs/wireless_transport.md)
+  for the full design and the roadmap of companion utilities.
 - **Crusher machine** — full block entity with a synced screen, a custom `crushing`
   recipe type (`CrushingRecipe`), and **Transfer API item I/O so vanilla hoppers work**.
 - **Worldgen** — JSON configured/placed feature for Echocite + a `BiomeModifications`

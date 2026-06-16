@@ -3,6 +3,7 @@ package com.echoes.registry;
 import com.echoes.EchoesMod;
 import com.echoes.block.entity.ConduitBlockEntity;
 import com.echoes.block.entity.CrusherBlockEntity;
+import com.echoes.block.entity.ResonantRelayBlockEntity;
 import com.echoes.block.entity.ResonatorBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.Block;
@@ -21,6 +22,8 @@ public final class ModBlockEntities {
             register("tuning_conduit", ConduitBlockEntity::new, ModBlocks.TUNING_CONDUIT);
     public static final BlockEntityType<CrusherBlockEntity> CRUSHER =
             register("crusher", CrusherBlockEntity::new, ModBlocks.CRUSHER);
+    public static final BlockEntityType<ResonantRelayBlockEntity> RESONANT_RELAY =
+            register("resonant_relay", ResonantRelayBlockEntity::new, ModBlocks.RESONANT_RELAY);
 
     private static <T extends BlockEntity> BlockEntityType<T> register(
             String name, FabricBlockEntityTypeBuilder.Factory<T> factory, Block... blocks) {

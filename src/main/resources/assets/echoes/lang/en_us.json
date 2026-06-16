@@ -8,6 +8,13 @@
   "block.echoes.resonator": "Resonator",
   "block.echoes.tuning_conduit": "Tuning Conduit",
   "block.echoes.crusher": "Crusher",
+  "block.echoes.resonant_relay": "Resonant Relay",
+
+  "message.echoes.relay.mode": "Relay mode: %s",
+  "message.echoes.relay.mode.receive": "Receive",
+  "message.echoes.relay.mode.send": "Send",
+  "message.echoes.relay.mode.disabled": "Disabled",
+  "message.echoes.relay.channel": "Tuned to channel: %s",
 
   "item.echoes.raw_echocite": "Raw Echocite",
   "item.echoes.drumstone_shard": "Drumstone Shard",

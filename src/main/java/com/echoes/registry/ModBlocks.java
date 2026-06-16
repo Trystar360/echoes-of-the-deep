@@ -3,6 +3,7 @@ package com.echoes.registry;
 import com.echoes.EchoesMod;
 import com.echoes.block.ConduitBlock;
 import com.echoes.block.CrusherBlock;
+import com.echoes.block.ResonantRelayBlock;
 import com.echoes.block.ResonatorBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -38,6 +39,8 @@ public final class ModBlocks {
             ConduitBlock::new, AbstractBlock.Settings.create().strength(1.5f).nonOpaque());
     public static final Block CRUSHER = register("crusher",
             CrusherBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool());
+    public static final Block RESONANT_RELAY = register("resonant_relay",
+            ResonantRelayBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
 
     public static Block register(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Identifier id = Identifier.of(EchoesMod.MOD_ID, name);
