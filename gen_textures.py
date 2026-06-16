@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""Procedural 16x16 pixel-art textures for Echoes of the Deep (no PIL).
+"""Procedural 16x16 pixel-art for Echoes of the Deep — cohesive "deep resonance"
+overhaul (no PIL).
 
-Design language:
-  - Resonance theme colour = cyan-teal, glowing. Drumstone = warm amber.
-    Silentite = amethyst purple. Metals are teal-tinted steel vs. plain grey.
-  - Light source top-left: highlights on top/left edges, shadow bottom/right.
-  - Ores: faceted gem clusters embedded in stone/deepslate with a soft glow.
-  - Machines: heavy metal frames, rivets, glowing emitter cores.
-  - Items: clean silhouettes on transparent backgrounds, beveled shading.
+Shared mystique (every sprite speaks the same language):
+  * Deep-dark base — near-black blue-teal deepslate, faint sculk veins.
+  * Patinated BRONZE bezels with verdigris in the crevices and rune-etched corners.
+  * TEAL resonance light with a soft bloom halo; the recurring motif is concentric
+    sound-wave RIPPLES emanating from a glowing core.
+  * Accent energies: AMETHYST for the dimensional gear, AMBER for the percussive
+    gear — used sparingly so teal stays the through-line.
+  * Top-left light source, beveled edges, a gentle dark vignette so it all reads
+    as something ancient pulled up "from the deep".
 """
 import struct, zlib, os, math
 
@@ -40,7 +43,7 @@ class C:
         if 0 <= x < self.w and 0 <= y < self.h:
             return self.px[y * self.w + x]
         return (0, 0, 0, 0)
-    def over(self, x, y, c):  # alpha-blend c onto existing
+    def over(self, x, y, c):
         if not (0 <= x < self.w and 0 <= y < self.h): return
         if len(c) == 3: c = (c[0], c[1], c[2], 255)
         r, g, b, a = c
@@ -48,14 +51,13 @@ class C:
         br, bg, bb, ba = self.get(x, y)
         af = a / 255.0
         nr = int(r * af + br * (1 - af)); ng = int(g * af + bg * (1 - af)); nb = int(b * af + bb * (1 - af))
-        na = max(a, ba)
-        self.set(x, y, (nr, ng, nb, na))
+        self.set(x, y, (nr, ng, nb, max(a, ba)))
     def rect(self, x0, y0, x1, y1, c):
         for y in range(y0, y1 + 1):
             for x in range(x0, x1 + 1):
                 self.set(x, y, c)
 
-# ---------------------------------------------------------------- prng / noise
+# ---------------------------------------------------------------- prng / noise / math
 def rng(seed):
     s = seed & 0x7fffffff
     def nxt():
@@ -71,589 +73,514 @@ def hash_noise(x, y, seed):
 
 def shade(c, f):
     return tuple(max(0, min(255, int(v * f))) for v in c[:3])
-
 def lerp(a, b, t):
     return tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(3))
+def lum(c):
+    return 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]
 
-# ---------------------------------------------------------------- palettes (dark -> light ramps)
-STONE     = [(78,78,84),(102,102,108),(124,124,130),(140,140,146),(158,158,164)]
-DEEPSLATE = [(38,38,44),(52,52,60),(68,68,78),(84,84,94),(100,100,112)]
-TEAL      = [(7,38,40),(13,74,72),(28,134,128),(58,214,200),(150,255,244)]
-AMBER     = [(58,34,14),(112,68,26),(170,104,40),(214,150,64),(248,210,128)]
-PURPLE    = [(36,22,56),(70,44,104),(116,76,164),(168,118,222),(216,184,250)]
-STEEL     = [(36,54,56),(64,92,94),(104,142,142),(150,196,192),(208,240,236)]
-GREY      = [(52,54,58),(82,84,90),(116,118,124),(150,152,158),(198,200,206)]
-IRON      = [(58,58,64),(92,92,98),(126,126,132),(160,160,166),(206,206,212)]
+# ---------------------------------------------------------------- palettes (dark -> light)
+DEEP   = [(7, 13, 15), (14, 24, 26), (22, 36, 38), (33, 52, 54), (48, 70, 72)]
+DEEPER = [(4, 8, 10), (9, 16, 18), (15, 26, 28), (23, 38, 40), (34, 52, 55)]
+TEAL   = [(6, 34, 36), (16, 82, 78), (32, 150, 140), (86, 226, 212), (200, 255, 248)]
+AMETH  = [(24, 14, 42), (54, 36, 88), (102, 70, 150), (160, 120, 214), (224, 198, 252)]
+AMBER  = [(40, 24, 10), (92, 56, 24), (156, 98, 40), (214, 152, 66), (252, 216, 152)]
+BRONZE = [(22, 19, 17), (48, 41, 33), (84, 71, 55), (128, 110, 84), (190, 172, 138)]
+GREY   = [(18, 20, 24), (38, 42, 48), (68, 72, 80), (104, 108, 116), (152, 156, 164)]
+BONE   = [(58, 56, 52), (94, 90, 82), (132, 128, 116), (170, 166, 152), (216, 212, 198)]
+VERDI  = (40, 96, 88)
+FACE   = (12, 19, 21)  # dark inset face behind machine motifs
 
 OUT = "src/main/resources/assets/echoes/textures"
 for d in ("block", "item", "gui"):
     os.makedirs(os.path.join(OUT, d), exist_ok=True)
 
-# ---------------------------------------------------------------- shared builders
-def stone_bg(c, ramp, seed, cracks=True):
-    for y in range(16):
-        for x in range(16):
-            n = hash_noise(x, y, seed)
-            n2 = hash_noise(x // 2, y // 2, seed + 7) * 0.5
-            v = n * 0.7 + n2
-            idx = 1 if v < 0.30 else 2 if v < 0.62 else 3 if v < 0.86 else 4
-            c.set(x, y, ramp[idx])
-    if cracks:
-        nx = rng(seed + 99)
-        for _ in range(2):
-            x = 2 + nx() % 12; y = 1 + nx() % 6
-            for _ in range(4 + nx() % 4):
-                c.set(x, y, ramp[0])
-                x += (nx() % 3) - 1; y += 1
-    # subtle top-left ambient light
-    for y in range(16):
-        for x in range(16):
-            if x + y < 6:
-                c.over(x, y, (255, 255, 255, 26))
+# ---------------------------------------------------------------- shared toolkit
+def vignette(c, strength=46):
+    cx, cy = 7.5, 7.5
+    for y in range(c.h):
+        for x in range(c.w):
+            if c.get(x, y)[3] == 0: continue
+            d = math.hypot(x - cx, y - cy) / 10.6
+            if d > 0.5:
+                c.over(x, y, (0, 0, 0, int(min(strength, (d - 0.5) * strength * 2.2))))
 
-def gem(c, cx, cy, ramp, r=2, glow=True):
-    """A faceted crystal: bright top-left facet, dark bottom-right, sparkle."""
-    if glow:
-        for dy in range(-r - 1, r + 2):
-            for dx in range(-r - 1, r + 2):
-                d = abs(dx) + abs(dy)
-                if d == r + 1:
-                    c.over(cx + dx, cy + dy, (ramp[3][0], ramp[3][1], ramp[3][2], 60))
+def ambient(c, alpha=26):
+    for y in range(c.h):
+        for x in range(c.w):
+            if c.get(x, y)[3] and x + y < 7:
+                c.over(x, y, (255, 255, 255, alpha))
+
+def sculk_bg(c, seed, base=DEEP, accent=TEAL, veins=True):
+    for y in range(16):
+        for x in range(16):
+            n = hash_noise(x, y, seed) * 0.7 + hash_noise(x // 2, y // 2, seed + 7) * 0.3
+            idx = 0 if n < 0.22 else 1 if n < 0.5 else 2 if n < 0.8 else 3
+            c.set(x, y, base[idx])
+    nx = rng(seed + 51)
+    if veins:
+        for _ in range(7):  # glowing sculk flecks
+            x, y = nx() % 16, nx() % 16
+            c.over(x, y, (accent[2][0], accent[2][1], accent[2][2], 120))
+            if nx() % 3 == 0:
+                c.set(x, y, accent[3])
+        for _ in range(3):  # verdigris in low crevices
+            x, y = 1 + nx() % 14, 1 + nx() % 14
+            c.over(x, y, (VERDI[0], VERDI[1], VERDI[2], 150))
+    ambient(c)
+
+def bloom(c, accent, alpha=72, reach=2, thresh=175):
+    a3 = accent[3]
+    bright = [(x, y) for y in range(c.h) for x in range(c.w)
+              if c.get(x, y)[3] > 0 and lum(c.get(x, y)) > thresh]
+    for (x, y) in bright:
+        for dy in range(-reach, reach + 1):
+            for dx in range(-reach, reach + 1):
+                dist = abs(dx) + abs(dy)
+                if dist == 0 or dist > reach: continue
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < c.w and 0 <= ny < c.h:
+                    cur = c.get(nx, ny)
+                    if cur[3] < 50 or lum(cur) < 80:
+                        c.over(nx, ny, (a3[0], a3[1], a3[2], max(0, int(alpha / dist))))
+
+def ripples(c, cx, cy, accent, rmax=6.0, x0=0, y0=0, x1=15, y1=15, alpha=235, phase=0):
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            if c.get(x, y)[3] == 0: continue
+            d = math.hypot(x - cx, y - cy)
+            if d > rmax: continue
+            ring = int(round(d)) + phase
+            t = max(0.0, 1 - d / rmax)
+            if ring % 2 == 0:
+                col = lerp(accent[1], accent[4], t)
+                if (x - cx) + (y - cy) < -1: col = lerp(col, accent[4], 0.4)
+                c.over(x, y, (col[0], col[1], col[2], int(alpha * (0.35 + 0.65 * t))))
+            else:
+                col = lerp((10, 14, 16), accent[2], t * 0.5)
+                c.over(x, y, (col[0], col[1], col[2], int(120 * t)))
+
+def core(c, cx, cy, accent, r=1):
     for dy in range(-r, r + 1):
         for dx in range(-r, r + 1):
-            if abs(dx) + abs(dy) <= r:
-                if dx + dy < 0:        # upper-left facet (lit)
-                    col = ramp[3]
-                elif dx + dy > 0:      # lower-right facet (shadow)
-                    col = ramp[1]
-                else:
-                    col = ramp[2]
-                c.set(cx + dx, cy + dy, col)
-    c.set(cx, cy - r, ramp[4])         # top highlight
-    c.set(cx - 1, cy - 1, ramp[4])     # sparkle
-    # outline a couple shadow edges for definition
-    c.over(cx + r, cy, (ramp[0][0], ramp[0][1], ramp[0][2], 180))
-    c.over(cx, cy + r, (ramp[0][0], ramp[0][1], ramp[0][2], 180))
+            if dx * dx + dy * dy <= r * r + 1:
+                c.set(int(cx) + dx, int(cy) + dy, accent[4])
+    c.set(int(cx), int(cy), (235, 255, 250))
 
-def rivet(c, x, y, ramp):
-    c.set(x, y, ramp[3]); c.set(x, y, ramp[4])
-    c.over(x + 1, y + 1, (0, 0, 0, 90))
+def bezel(c, metal=BRONZE, accent=TEAL, t=2, runes=True):
+    dark, mid, lite = metal[0], metal[2], metal[3]
+    c.rect(0, 0, 15, 15, mid)
+    for i in range(t):
+        for x in range(16):
+            c.set(x, i, lerp(lite, mid, i / t)); c.set(x, 15 - i, lerp(dark, mid, i / t))
+        for y in range(16):
+            c.set(i, y, lerp(lite, mid, i / t)); c.set(15 - i, y, lerp(dark, mid, i / t))
+    c.set(0, 0, metal[4]); c.set(15, 15, dark)
+    # verdigris weathering along the frame
+    nx = rng(909)
+    for _ in range(6):
+        e = nx() % 4
+        x = nx() % 16; y = nx() % 16
+        if e == 0: y = 0
+        elif e == 1: y = 15
+        elif e == 2: x = 0
+        else: x = 15
+        c.over(x, y, (VERDI[0], VERDI[1], VERDI[2], 120))
+    if runes:  # tiny etched accent rune at each corner
+        for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+            c.over(rx, ry, (accent[3][0], accent[3][1], accent[3][2], 200))
+            c.over(rx + 1, ry + 1, (0, 0, 0, 90))
 
-def solids(c, thresh=170):
+def glyph(c, accent, pts, hi=None):
+    """Etched accent rune: dark under-shadow then lit accent then highlights."""
+    for (x, y) in pts:
+        c.over(x, y + 1, (0, 0, 0, 110))
+    for (x, y) in pts:
+        c.set(x, y, accent[3])
+    for (x, y) in (hi or []):
+        c.set(x, y, accent[4])
+
+def face_inset(c, color=FACE):
+    c.rect(3, 3, 12, 12, color)
+
+def solids(c, thresh=160):
     return [(x, y) for y in range(c.h) for x in range(c.w) if c.get(x, y)[3] >= thresh]
-
-def outline(c, color=(0, 0, 0), alpha=160, thresh=170):
-    """Dark 1px outline around the solid silhouette. Snapshot-based so it can't
-    cascade across the canvas (the classic read-while-write flood-fill bug)."""
+def outline(c, color=(0, 0, 0), alpha=170, thresh=160):
     for (x, y) in solids(c, thresh):
         for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
             nx, ny = x + dx, y + dy
             if 0 <= nx < c.w and 0 <= ny < c.h and c.get(nx, ny)[3] < 10:
                 c.over(nx, ny, (color[0], color[1], color[2], alpha))
 
-def glow(c, ramp, alpha=55, thresh=200):
-    """Soft coloured halo one pixel out from the brightest pixels."""
-    snap = [(x, y) for (x, y) in solids(c, thresh)]
-    for (x, y) in snap:
-        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, 1)):
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < c.w and 0 <= ny < c.h and c.get(nx, ny)[3] < 10:
-                c.over(nx, ny, (ramp[3][0], ramp[3][1], ramp[3][2], alpha))
-
-def frame(c, ramp, t=2):
-    dark, mid, lite = ramp[0], ramp[2], ramp[3]
-    c.rect(0, 0, 15, 15, mid)
-    # bevel: light top/left, dark bottom/right
-    for i in range(t):
-        for x in range(16):
-            c.set(x, i, lerp(lite, mid, i / t)); c.set(x, 15 - i, lerp(dark, mid, i / t))
-        for y in range(16):
-            c.set(i, y, lerp(lite, mid, i / t)); c.set(15 - i, y, lerp(dark, mid, i / t))
-    c.set(0, 0, lite); c.set(15, 15, dark)
+def gem(c, cx, cy, ramp, r=2):
+    for dy in range(-r - 1, r + 2):
+        for dx in range(-r - 1, r + 2):
+            if abs(dx) + abs(dy) == r + 1:
+                c.over(cx + dx, cy + dy, (ramp[3][0], ramp[3][1], ramp[3][2], 70))
+    for dy in range(-r, r + 1):
+        for dx in range(-r, r + 1):
+            if abs(dx) + abs(dy) <= r:
+                col = ramp[3] if dx + dy < 0 else ramp[1] if dx + dy > 0 else ramp[2]
+                c.set(cx + dx, cy + dy, col)
+    c.set(cx, cy - r, ramp[4]); c.set(cx - 1, cy - 1, ramp[4])
+    c.over(cx + r, cy, (ramp[0][0], ramp[0][1], ramp[0][2], 180))
 
 # ================================================================ ORES
-def ore(name, base, gemramp, seed, npts=3):
+def ore(name, base, accent, seed, npts=3):
     c = C()
-    stone_bg(c, base, seed)
-    pts = [(4, 5), (11, 9), (7, 12), (12, 3), (3, 11)]
+    sculk_bg(c, seed, base=base, accent=accent)
+    pts = [(5, 6), (11, 10), (7, 12), (12, 4), (3, 11)]
     nx = rng(seed + 31)
+    big = pts[0]
     for i in range(npts):
         px, py = pts[i]
-        px = max(2, min(13, px + (nx() % 3 - 1)))
-        py = max(2, min(13, py + (nx() % 3 - 1)))
-        gem(c, px, py, gemramp, r=2 if i == 0 else (nx() % 2 + 1))
-    # a few loose specks
-    for _ in range(5):
-        x = nx() % 16; y = nx() % 16
-        if c.get(x, y)[:3] in (base[1], base[2], base[3]):
-            c.over(x, y, (gemramp[3][0], gemramp[3][1], gemramp[3][2], 130))
+        px = max(2, min(13, px + (nx() % 3 - 1))); py = max(2, min(13, py + (nx() % 3 - 1)))
+        gem(c, px, py, accent, r=2 if i == 0 else (nx() % 2 + 1))
+    ripples(c, big[0], big[1], accent, rmax=5.5, alpha=70, phase=1)  # faint resonance hum
+    bloom(c, accent, alpha=55, reach=2, thresh=170)
+    vignette(c, 40)
     write_png(f"{OUT}/block/{name}.png", 16, 16, c.px)
 
-ore("echocite_ore", STONE, TEAL, 101, 3)
-ore("deepslate_echocite_ore", DEEPSLATE, TEAL, 102, 3)
-ore("drumstone_ore", DEEPSLATE, AMBER, 103, 3)
-ore("silentite_ore", DEEPSLATE, PURPLE, 104, 2)
+ore("echocite_ore", DEEP, TEAL, 101, 3)
+ore("deepslate_echocite_ore", DEEPER, TEAL, 102, 3)
+ore("drumstone_ore", DEEPER, AMBER, 103, 3)
+ore("silentite_ore", DEEPER, AMETH, 104, 2)
 
-# ================================================================ RESONATOR (drum/emitter)
+# ================================================================ MACHINES / DEVICES
+def emitter_face(c, accent, rmax=5.4, phase=0, bg=FACE):
+    """The archetypal resonance face: dark inset, concentric ripples, glowing core."""
+    face_inset(c, bg)
+    ripples(c, 7.5, 7.5, accent, rmax=rmax, x0=3, y0=3, x1=12, y1=12, phase=phase)
+    core(c, 7, 7, accent, r=1)
+
 def resonator():
-    c = C()
-    frame(c, IRON, t=2)
-    # dark inset membrane
-    c.rect(3, 3, 12, 12, (24, 26, 30))
-    cx, cy = 7.5, 7.5
-    for y in range(3, 13):
-        for x in range(3, 13):
-            d = math.hypot(x - cx, y - cy)
-            if d <= 5.2:
-                ring = int(d) % 2
-                t = max(0.0, 1 - d / 5.2)
-                if ring == 0:
-                    col = lerp(TEAL[1], TEAL[4], t)
-                else:
-                    col = lerp((18, 22, 26), TEAL[2], t * 0.6)
-                # top-left gets a brighter sheen
-                if x - cx + y - cy < -2: col = lerp(col, TEAL[4], 0.35)
-                c.set(x, y, col)
-    c.set(7, 7, TEAL[4]); c.set(8, 7, TEAL[4]); c.set(7, 8, TEAL[3])
-    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
-        rivet(c, rx, ry, IRON)
+    c = C(); bezel(c, BRONZE, TEAL)
+    emitter_face(c, TEAL, rmax=5.6)
+    bloom(c, TEAL, alpha=80); vignette(c, 30)
     write_png(f"{OUT}/block/resonator.png", 16, 16, c.px)
 resonator()
 
-# ================================================================ TUNING CONDUIT (energy node)
-def conduit():
-    c = C()
-    # dark metal plate
-    for y in range(16):
-        for x in range(16):
-            n = hash_noise(x, y, 55)
-            c.set(x, y, IRON[1] if n < 0.5 else IRON[2])
-    frame(c, IRON, t=1)
-    # connection stubs to each edge
-    c.rect(6, 0, 9, 5, IRON[2]); c.rect(6, 10, 9, 15, IRON[2])
-    c.rect(0, 6, 5, 9, IRON[2]); c.rect(10, 6, 15, 9, IRON[2])
-    # glowing teal cross + core
-    c.rect(7, 1, 8, 14, TEAL[2]); c.rect(1, 7, 14, 8, TEAL[2])
-    c.rect(7, 1, 8, 14, None)
-    for x in range(1, 15): c.over(x, 7, TEAL[3]); c.over(x, 8, TEAL[2])
-    for y in range(1, 15): c.over(7, y, TEAL[3]); c.over(8, y, TEAL[2])
-    # bright core
-    c.rect(6, 6, 9, 9, TEAL[3])
-    c.set(7, 7, TEAL[4]); c.set(8, 8, TEAL[2]); c.set(7, 8, TEAL[4]); c.set(8, 7, TEAL[3])
-    write_png(f"{OUT}/block/tuning_conduit.png", 16, 16, c.px)
-conduit()
-
-# ================================================================ CRUSHER (grinder face)
-def crusher():
-    c = C()
-    frame(c, IRON, t=2)
-    # inner chamber
-    c.rect(2, 2, 13, 13, (40, 42, 48))
-    # hopper mouth (top, dark trapezoid)
-    for y in range(2, 5):
-        x0 = 3 + (y - 2); x1 = 12 - (y - 2)
-        c.rect(x0, y, x1, y, (22, 24, 28))
-    # two rows of interlocking crushing teeth
-    teeth = GREY
-    for x in range(3, 13):
-        # upper teeth point down
-        h = 2 if x % 2 == 0 else 3
-        for k in range(h):
-            c.set(x, 6 + k, teeth[3 if k == 0 else 2])
-        c.set(x, 6, teeth[4])
-        # lower teeth point up (offset)
-        h2 = 3 if x % 2 == 0 else 2
-        for k in range(h2):
-            c.set(x, 11 - k, teeth[2 if k == 0 else 1])
-    # teal glow seeping from the grinding gap
-    for x in range(3, 13):
-        c.over(x, 9, (TEAL[3][0], TEAL[3][1], TEAL[3][2], 150))
-        c.over(x, 8, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 90))
-        c.over(x, 10, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 70))
-    # corner rivets + warning notches
-    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
-        rivet(c, rx, ry, IRON)
-    write_png(f"{OUT}/block/crusher.png", 16, 16, c.px)
-crusher()
-
-# ================================================================ RESONANT RELAY (wireless broadcaster)
-def relay():
-    c = C()
-    frame(c, IRON, t=2)
-    # dark inset face
-    c.rect(3, 3, 12, 12, (22, 26, 30))
-    cx, cy = 7.5, 7.5
-    # concentric broadcast arcs radiating from a bright core (suggests wireless)
-    for y in range(3, 13):
-        for x in range(3, 13):
-            d = math.hypot(x - cx, y - cy)
-            ring = int(round(d))
-            if d <= 5.0 and ring % 2 == 0:
-                t = max(0.0, 1 - d / 5.0)
-                col = lerp(TEAL[1], TEAL[4], t)
-                # brighten the upper-left for the top-left light source
-                if (x - cx) + (y - cy) < -1:
-                    col = lerp(col, TEAL[4], 0.35)
-                c.over(x, y, (col[0], col[1], col[2], 235))
-    # bright emitter core
-    c.rect(7, 7, 8, 8, TEAL[4])
-    c.set(7, 7, (235, 255, 250)); c.set(8, 8, TEAL[3])
-    # four broadcast pips at the cardinal edges
-    for (px, py) in [(7, 1), (8, 14), (1, 8), (14, 7)]:
-        c.set(px, py, TEAL[4]); c.over(px, py + 1, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 160))
-    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
-        rivet(c, rx, ry, IRON)
+def resonant_relay():
+    c = C(); bezel(c, BRONZE, TEAL)
+    emitter_face(c, TEAL, rmax=5.4)
+    for (x, y) in [(7, 3), (8, 12), (3, 8), (12, 7)]:  # four broadcast pips
+        c.set(x, y, TEAL[4])
+    bloom(c, TEAL, alpha=78); vignette(c, 30)
     write_png(f"{OUT}/block/resonant_relay.png", 16, 16, c.px)
-relay()
+resonant_relay()
 
-# ---------------- wireless transport family ----------------
-def _corners(c):
-    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
-        rivet(c, rx, ry, IRON)
+def resonant_amplifier():
+    c = C(); bezel(c, BRONZE, AMBER)
+    emitter_face(c, TEAL, rmax=5.4)            # teal core (resonance through-line)
+    glyph(c, AMBER, [(4, 7), (5, 6), (4, 8), (10, 7), (11, 6), (10, 8)],
+          hi=[(5, 6), (11, 6)])                # amber boost chevrons
+    bloom(c, TEAL, alpha=70); bloom(c, AMBER, alpha=40, reach=1); vignette(c, 30)
+    write_png(f"{OUT}/block/resonant_amplifier.png", 16, 16, c.px)
+resonant_amplifier()
 
-def _arcs(c, ramp, cx=7.5, cy=7.5, r=5.0, alpha=235):
-    for y in range(3, 13):
-        for x in range(3, 13):
-            d = math.hypot(x - cx, y - cy)
-            if d <= r and int(round(d)) % 2 == 0:
-                t = max(0.0, 1 - d / r)
-                col = lerp(ramp[1], ramp[4], t)
-                if (x - cx) + (y - cy) < -1:
-                    col = lerp(col, ramp[4], 0.35)
-                c.over(x, y, (col[0], col[1], col[2], alpha))
+def echo_repeater():
+    c = C(); bezel(c, BRONZE, AMETH)
+    face_inset(c)
+    ripples(c, 7.5, 7.5, AMETH, rmax=5.4, x0=3, y0=3, x1=12, y1=12)  # dimensional swirl
+    core(c, 7, 7, TEAL, r=1)                   # teal heart inside amethyst rings
+    bloom(c, AMETH, alpha=70); bloom(c, TEAL, alpha=45, reach=1); vignette(c, 30)
+    write_png(f"{OUT}/block/echo_repeater.png", 16, 16, c.px)
+echo_repeater()
 
-def emitter(name, ramp, bg):
-    c = C()
-    frame(c, IRON, t=2)
-    c.rect(3, 3, 12, 12, bg)
-    _arcs(c, ramp)
-    c.rect(7, 7, 8, 8, ramp[4])
-    c.set(7, 7, (235, 255, 250))
-    for (px, py) in [(7, 1), (8, 14), (1, 8), (14, 7)]:
-        c.set(px, py, ramp[4])
-    _corners(c)
-    write_png(f"{OUT}/block/{name}.png", 16, 16, c.px)
-
-emitter("resonant_amplifier", AMBER, (28, 22, 12))
-emitter("echo_repeater", PURPLE, (24, 18, 34))
+def tuning_conduit():
+    c = C(); bezel(c, BRONZE, TEAL, t=1)
+    face_inset(c, (14, 22, 24))
+    # rune channel carrying resonance edge-to-edge
+    c.rect(7, 1, 8, 14, None)
+    for x in range(1, 15):
+        col = lerp(TEAL[1], TEAL[3], 1 - abs(7.5 - x) / 7.5)
+        c.over(x, 7, col); c.over(x, 8, lerp(col, TEAL[1], 0.4))
+    for y in range(1, 15):
+        col = lerp(TEAL[1], TEAL[3], 1 - abs(7.5 - y) / 7.5)
+        c.over(7, y, col); c.over(8, y, lerp(col, TEAL[1], 0.4))
+    core(c, 7, 7, TEAL, r=1)
+    bloom(c, TEAL, alpha=70); vignette(c, 28)
+    write_png(f"{OUT}/block/tuning_conduit.png", 16, 16, c.px)
+tuning_conduit()
 
 def harmonic_filter():
-    c = C()
-    frame(c, IRON, t=2)
-    c.rect(3, 3, 12, 12, (20, 24, 28))
-    for x in range(3, 13):
+    c = C(); bezel(c, BRONZE, TEAL)
+    face_inset(c)
+    for x in range(3, 13):                     # engraved sieve lattice
         for y in range(3, 13):
             if x % 2 == 0 or y % 2 == 0:
-                c.set(x, y, IRON[2])
-    for x in range(4, 13, 3):
+                c.over(x, y, (BRONZE[2][0], BRONZE[2][1], BRONZE[2][2], 150))
+    for x in range(4, 13, 3):                  # glowing filter nodes
         for y in range(4, 13, 3):
             c.set(x, y, TEAL[3]); c.over(x, y - 1, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 120))
-    _corners(c)
+    bloom(c, TEAL, alpha=55, reach=1); vignette(c, 30)
     write_png(f"{OUT}/block/harmonic_filter.png", 16, 16, c.px)
 harmonic_filter()
 
 def resonant_splitter():
-    c = C()
-    frame(c, IRON, t=2)
-    c.rect(3, 3, 12, 12, (20, 24, 28))
-    for x in range(3, 8):
-        c.set(x, 7, TEAL[3]); c.set(x, 8, TEAL[3])
-    for k in range(4):
+    c = C(); bezel(c, BRONZE, TEAL)
+    face_inset(c)
+    for x in range(3, 8):                       # one shaft in
+        c.set(x, 7, TEAL[2]); c.set(x, 8, TEAL[2])
+    for k in range(4):                          # forking to two
         c.set(8 + k, 7 - k, TEAL[3]); c.set(8 + k, 8 + k, TEAL[3])
-    c.set(11, 3, TEAL[4]); c.set(11, 12, TEAL[4]); c.set(3, 7, TEAL[4])
-    glow(c, TEAL, alpha=40, thresh=150)
-    _corners(c)
+    for (x, y) in [(3, 7), (11, 3), (11, 12)]:
+        c.set(x, y, TEAL[4])
+    bloom(c, TEAL, alpha=60); vignette(c, 30)
     write_png(f"{OUT}/block/resonant_splitter.png", 16, 16, c.px)
 resonant_splitter()
 
 def conduit_coupler():
-    c = C()
-    frame(c, IRON, t=2)
-    c.rect(3, 3, 12, 12, (22, 26, 30))
-    _arcs(c, TEAL, cx=5.0, cy=7.5, r=4.0)          # wireless half
-    c.rect(9, 3, 12, 12, IRON[2])                    # conduit half plate
+    c = C(); bezel(c, BRONZE, TEAL)
+    face_inset(c)
+    ripples(c, 4.5, 7.5, TEAL, rmax=4.2, x0=3, y0=3, x1=7, y1=12)   # wireless half
+    c.rect(9, 3, 12, 12, BRONZE[1])                                  # wired plate
     for y in range(3, 13): c.over(10, y, TEAL[2])
     for x in range(9, 13): c.over(x, 7, TEAL[3]); c.over(x, 8, TEAL[2])
-    c.set(10, 7, TEAL[4])
-    _corners(c)
+    c.over(8, 3, (0, 0, 0, 120)); c.over(8, 12, (0, 0, 0, 120))      # seam
+    core(c, 4, 7, TEAL, r=0); c.set(10, 7, TEAL[4])
+    bloom(c, TEAL, alpha=62); vignette(c, 30)
     write_png(f"{OUT}/block/conduit_coupler.png", 16, 16, c.px)
 conduit_coupler()
 
-def resonant_chest():
-    c = C()
-    wood = [(54, 34, 16), (84, 54, 26), (110, 72, 36), (140, 96, 50), (170, 120, 66)]
-    for y in range(16):
-        for x in range(16):
-            n = hash_noise(x, y, 311)
-            c.set(x, y, wood[1] if n < 0.4 else wood[2] if n < 0.8 else wood[3])
-    c.rect(0, 0, 15, 0, wood[4]); c.rect(0, 0, 0, 15, wood[4])
-    c.rect(0, 15, 15, 15, wood[0]); c.rect(15, 0, 15, 15, wood[0])
-    c.rect(0, 2, 15, 3, TEAL[2])                      # channel band
-    for x in range(16): c.over(x, 2, (TEAL[3][0], TEAL[3][1], TEAL[3][2], 160))
-    c.rect(7, 6, 8, 10, IRON[1]); c.rect(7, 6, 8, 6, IRON[3])  # latch
-    write_png(f"{OUT}/block/resonant_chest.png", 16, 16, c.px)
-resonant_chest()
-
 def note_relay():
-    c = C()
-    frame(c, IRON, t=2)
-    c.rect(3, 3, 12, 12, (20, 24, 28))
-    c.rect(7, 4, 7, 11, TEAL[3])                      # stem
-    for (x, y) in [(4, 10), (5, 10), (6, 10), (4, 11), (5, 11), (6, 11), (4, 12), (5, 12), (6, 12)]:
-        c.set(x, y, TEAL[3])                          # note head
-    c.set(8, 4, TEAL[3]); c.set(9, 5, TEAL[3]); c.set(9, 6, TEAL[3]); c.set(8, 6, TEAL[3])  # flag
-    c.set(5, 10, TEAL[4]); c.set(7, 4, TEAL[4])
-    glow(c, TEAL, alpha=45, thresh=150)
-    _corners(c)
+    c = C(); bezel(c, BRONZE, TEAL)
+    face_inset(c)
+    c.rect(8, 4, 8, 11, TEAL[2])                # stem
+    for (x, y) in [(5, 10), (6, 10), (7, 10), (5, 11), (6, 11), (7, 11), (5, 12), (6, 12), (7, 12)]:
+        c.set(x, y, TEAL[3])                    # note head
+    c.set(9, 4, TEAL[3]); c.set(10, 5, TEAL[3]); c.set(10, 6, TEAL[3]); c.set(9, 6, TEAL[3])  # flag
+    c.set(6, 10, TEAL[4]); c.set(8, 4, TEAL[4])
+    bloom(c, TEAL, alpha=62, reach=2); vignette(c, 30)
     write_png(f"{OUT}/block/note_relay.png", 16, 16, c.px)
 note_relay()
 
-def frequency_tuner():
+def resonant_chest():
     c = C()
-    r = STEEL
-    c.rect(5, 2, 5, 8, r[3]); c.rect(10, 2, 10, 8, r[3])   # prongs
-    c.rect(5, 8, 10, 9, r[2])                              # bridge
-    c.rect(7, 9, 8, 14, r[3])                              # handle
-    c.set(5, 2, r[4]); c.set(10, 2, r[4]); c.set(7, 9, r[4])
-    glow(c, TEAL, alpha=45, thresh=150)
-    outline(c, thresh=150)
-    write_png(f"{OUT}/item/frequency_tuner.png", 16, 16, c.px)
-frequency_tuner()
+    # ancient dark casket body with a thin bronze rim
+    c.rect(0, 0, 15, 15, BRONZE[1])
+    c.rect(1, 1, 14, 14, (16, 24, 26))
+    for x in range(1, 15):                        # lit top edge, shadowed bottom
+        c.set(x, 1, BRONZE[3]); c.set(x, 14, BRONZE[0])
+    for y in range(1, 15):
+        c.set(1, y, BRONZE[2]); c.set(14, y, BRONZE[0])
+    # lid: top quarter, separated by a bright bronze seam band
+    c.rect(1, 2, 14, 4, (22, 32, 34))
+    c.rect(1, 5, 14, 5, BRONZE[3]); c.rect(1, 6, 14, 6, BRONZE[1])
+    # vertical bronze corner straps
+    c.rect(3, 2, 3, 13, BRONZE[2]); c.rect(12, 2, 12, 13, BRONZE[1])
+    # central rune lock plate straddling the seam
+    c.rect(6, 4, 9, 9, BRONZE[3])
+    c.set(6, 4, BRONZE[4]); c.rect(6, 9, 9, 9, BRONZE[0])
+    c.set(7, 6, TEAL[4]); c.set(8, 7, TEAL[3]); c.set(8, 6, TEAL[3]); c.set(7, 7, TEAL[3])  # keyhole rune
+    c.over(7, 8, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 150))
+    # faint channel glow leaking from the seam corners
+    for x in (2, 13): c.over(x, 5, (TEAL[3][0], TEAL[3][1], TEAL[3][2], 120))
+    bloom(c, TEAL, alpha=55, reach=2, thresh=170); vignette(c, 32)
+    write_png(f"{OUT}/block/resonant_chest.png", 16, 16, c.px)
+resonant_chest()
 
-def channel_atlas():
-    c = C()
-    c.rect(3, 2, 12, 14, TEAL[2])                          # cover
-    c.rect(3, 2, 4, 14, TEAL[0])                           # spine
-    c.rect(11, 3, 12, 13, (232, 230, 212))                # page edge
-    c.set(7, 7, TEAL[4]); c.set(8, 8, TEAL[4]); c.set(8, 7, TEAL[3]); c.set(7, 8, TEAL[3])
-    glow(c, TEAL, alpha=40, thresh=150)
-    outline(c, thresh=150)
-    write_png(f"{OUT}/item/channel_atlas.png", 16, 16, c.px)
-channel_atlas()
+def crusher():
+    c = C(); bezel(c, BRONZE, TEAL)
+    c.rect(2, 2, 13, 13, (16, 22, 24))
+    for y in range(2, 5):                        # hopper maw
+        c.rect(3 + (y - 2), y, 12 - (y - 2), y, (10, 14, 16))
+    for x in range(3, 13):                        # interlocking teeth
+        h = 2 if x % 2 == 0 else 3
+        for k in range(h): c.set(x, 6 + k, BONE[3 if k == 0 else 2])
+        c.set(x, 6, BONE[4])
+        h2 = 3 if x % 2 == 0 else 2
+        for k in range(h2): c.set(x, 11 - k, BONE[2 if k == 0 else 1])
+    for x in range(3, 13):                        # teal grind glow
+        c.over(x, 9, (TEAL[3][0], TEAL[3][1], TEAL[3][2], 165))
+        c.over(x, 8, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 95))
+        c.over(x, 10, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 80))
+    bloom(c, TEAL, alpha=58, reach=1); vignette(c, 30)
+    write_png(f"{OUT}/block/crusher.png", 16, 16, c.px)
+crusher()
 
 # ================================================================ ITEMS
-def ingot(name, ramp):
+def chunk_item(name, rock, accent, seed):
+    c = C(); nx = rng(seed); cx, cy = 8, 8
+    for y in range(2, 15):
+        for x in range(2, 15):
+            d = math.hypot(x - cx, y - cy) + hash_noise(x, y, seed) * 2.2 - 1.0
+            if d <= 5.4:
+                n = hash_noise(x, y, seed + 3)
+                idx = 1 if n < 0.34 else 2 if n < 0.72 else 3
+                if (x - cx) + (y - cy) < -3: idx = min(4, idx + 1)
+                if (x - cx) + (y - cy) > 4: idx = max(0, idx - 1)
+                c.set(x, y, rock[idx])
+    for (gx, gy) in [(6, 6), (10, 9), (8, 11)]:    # accent veins
+        gx2 = gx + (nx() % 3 - 1); gy2 = gy + (nx() % 3 - 1)
+        c.set(gx2, gy2, accent[3]); c.set(gx2, gy2 - 1, accent[4])
+        c.over(gx2 + 1, gy2, (accent[2][0], accent[2][1], accent[2][2], 200))
+    bloom(c, accent, alpha=55, reach=2, thresh=150)
+    outline(c)
+    write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
+chunk_item("raw_echocite", DEEP, TEAL, 201)
+chunk_item("resonant_slag", GREY, TEAL, 202)
+
+def crystal_item(name, ramp):
     c = C()
-    # parallelogram ingot
-    top, bot = 5, 11
+    shape = [(8,1),(7,2),(8,2),(9,2),(6,3),(7,3),(8,3),(9,3),(10,3),
+             (5,4),(6,4),(7,4),(8,4),(9,4),(10,4),(11,4),
+             (5,5),(6,5),(7,5),(8,5),(9,5),(10,5),(11,5),
+             (6,6),(7,6),(8,6),(9,6),(10,6),(6,7),(7,7),(8,7),(9,7),(10,7),
+             (7,8),(8,8),(9,8),(7,9),(8,9),(9,9),(8,10),(8,11)]
+    cx = 8
+    for (x, y) in shape:
+        col = ramp[3] if x < cx - 1 else ramp[1] if x > cx + 1 else ramp[2]
+        c.set(x, y, col)
+    for y in range(2, 9): c.set(cx, y, ramp[4])
+    c.set(7, 3, ramp[4]); c.set(6, 4, (235, 255, 250)); c.set(8, 1, ramp[4])
+    bloom(c, ramp, alpha=55, reach=2, thresh=150)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
+crystal_item("silentite_crystal", AMETH)
+
+def shard_item(name, ramp):
+    c = C()
+    rows = {3:(10,12),4:(9,12),5:(8,12),6:(7,11),7:(6,10),8:(5,10),9:(5,9),10:(4,8),11:(4,7),12:(5,6)}
+    for y, (x0, x1) in rows.items():
+        for x in range(x0, x1 + 1):
+            f = (x - x0) - (x1 - x)
+            c.set(x, y, ramp[3] if f < -1 else ramp[1] if f > 1 else ramp[2])
+    for (x, y) in [(11,4),(10,5),(9,6),(8,7),(7,8),(6,9)]: c.set(x, y, ramp[4])
+    c.set(12, 3, ramp[4]); c.set(10, 4, (235, 255, 250))
+    bloom(c, ramp, alpha=50, reach=2, thresh=150)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
+shard_item("drumstone_shard", AMBER)
+
+def ingot(name, ramp, glow_accent=None):
+    c = C(); top, bot = 5, 11
     for y in range(top, bot + 1):
-        off = (y - top)
-        x0 = 2 + off // 2
-        x1 = 12 + off // 2
+        off = (y - top); x0 = 2 + off // 2; x1 = 12 + off // 2
         for x in range(x0, x1 + 1):
             if y == top: col = ramp[4]
             elif x == x0: col = ramp[3]
             elif x == x1 or y == bot: col = ramp[1]
             else: col = ramp[2]
             c.set(x, y, col)
-    # top face (lighter slab)
-    for x in range(2, 13):
-        c.set(x, top - 1, ramp[3]); c.set(x + 1, top - 1, ramp[3])
-    c.rect(3, 4, 12, 4, ramp[4])
-    c.set(4, 4, (255, 255, 255)); c.set(5, 4, ramp[4])
-    # dark outline bottom
-    for x in range(2, 14):
-        c.over(x + 3, bot + 1, (0, 0, 0, 70))
+    for x in range(2, 13): c.set(x, top - 1, ramp[3])
+    c.rect(3, 4, 12, 4, ramp[4]); c.set(4, 4, (240, 248, 245))
+    if glow_accent:                              # etched resonance rune on the face
+        for (x, y) in [(6, 7), (7, 8), (8, 7), (9, 8)]:
+            c.over(x, y, (glow_accent[3][0], glow_accent[3][1], glow_accent[3][2], 200))
+        bloom(c, glow_accent, alpha=45, reach=1, thresh=150)
+    for x in range(2, 14): c.over(x + 3, bot + 1, (0, 0, 0, 70))
     write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
+ingot("echo_ingot", BONE, glow_accent=TEAL)
+ingot("dull_ingot", GREY)                        # intentionally inert (no glow)
 
-ingot("echo_ingot", STEEL)
-ingot("dull_ingot", GREY)
-
-def crystal_item(name, ramp, tall=True):
-    c = C()
-    # faceted gem, pointed top & bottom
-    shape = [
-        (8, 1), (7, 2), (8, 2), (9, 2),
-        (6, 3), (7, 3), (8, 3), (9, 3), (10, 3),
-        (5, 4), (6, 4), (7, 4), (8, 4), (9, 4), (10, 4), (11, 4),
-        (5, 5), (6, 5), (7, 5), (8, 5), (9, 5), (10, 5), (11, 5),
-        (6, 6), (7, 6), (8, 6), (9, 6), (10, 6),
-        (6, 7), (7, 7), (8, 7), (9, 7), (10, 7),
-        (7, 8), (8, 8), (9, 8),
-        (7, 9), (8, 9), (9, 9),
-        (8, 10), (8, 11),
-    ]
-    cx = 8
-    for (x, y) in shape:
-        if x < cx - 1: col = ramp[3]      # left facet lit
-        elif x > cx + 1: col = ramp[1]    # right facet shadow
-        else: col = ramp[2]
-        c.set(x, y, col)
-    # central highlight ridge + sparkle
-    for y in range(2, 9): c.set(cx, y, ramp[4])
-    c.set(7, 3, ramp[4]); c.set(6, 4, (255, 255, 255)); c.set(8, 1, ramp[4])
-    glow(c, ramp, alpha=50, thresh=150)
-    outline(c, color=(max(0, ramp[0][0]-12), max(0, ramp[0][1]-12), max(0, ramp[0][2]-12)), thresh=150)
-    write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
-
-crystal_item("silentite_crystal", PURPLE)
-
-def chunk_item(name, rockramp, gemramp, seed):
-    """Raw ore chunk: irregular rock blob with embedded crystal bits."""
-    c = C()
-    nx = rng(seed)
-    # blob mask via radial noise
-    cx, cy = 8, 8
-    for y in range(2, 15):
-        for x in range(2, 15):
-            d = math.hypot(x - cx, y - cy) + hash_noise(x, y, seed) * 2.2 - 1.0
-            if d <= 5.4:
-                n = hash_noise(x, y, seed + 3)
-                idx = 1 if n < 0.33 else 2 if n < 0.7 else 3
-                # top-left lighter
-                if (x - cx) + (y - cy) < -3: idx = min(4, idx + 1)
-                if (x - cx) + (y - cy) > 4: idx = max(0, idx - 1)
-                c.set(x, y, rockramp[idx])
-    # embedded gem bits
-    for (gx, gy) in [(6, 6), (10, 9), (8, 11)]:
-        gx2 = gx + (nx() % 3 - 1); gy2 = gy + (nx() % 3 - 1)
-        c.set(gx2, gy2, gemramp[3]); c.set(gx2, gy2 - 1, gemramp[4])
-        c.over(gx2 + 1, gy2, (gemramp[2][0], gemramp[2][1], gemramp[2][2], 200))
-        c.over(gx2, gy2 + 1, (gemramp[1][0], gemramp[1][1], gemramp[1][2], 200))
-    outline(c)
-    write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
-
-chunk_item("raw_echocite", STONE, TEAL, 201)
-chunk_item("resonant_slag", [(40,38,40),(64,60,60),(86,80,78),(108,100,96),(130,120,114)], TEAL, 202)
-
-def shard_item(name, ramp):
-    c = C()
-    # a chunky angular crystal shard running lower-left to upper-right
-    rows = {        # y : (x0, x1) span of the shard body
-        3: (10, 12), 4: (9, 12), 5: (8, 12), 6: (7, 11),
-        7: (6, 10), 8: (5, 10), 9: (5, 9), 10: (4, 8),
-        11: (4, 7), 12: (5, 6),
-    }
-    for y, (x0, x1) in rows.items():
-        for x in range(x0, x1 + 1):
-            # lit facet on the upper-left half, shadow on lower-right
-            f = (x - x0) - (x1 - x)
-            col = ramp[3] if f < -1 else ramp[1] if f > 1 else ramp[2]
-            c.set(x, y, col)
-    # bright central ridge + tip highlights + sparkle
-    for (x, y) in [(11, 4), (10, 5), (9, 6), (8, 7), (7, 8), (6, 9)]:
-        c.set(x, y, ramp[4])
-    c.set(12, 3, ramp[4]); c.set(5, 11, ramp[1]); c.set(10, 4, (255, 255, 255))
-    glow(c, ramp, alpha=45, thresh=150)
-    outline(c, thresh=150)
-    write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
-shard_item("drumstone_shard", AMBER)
-
-def dust_item(name, ramp, seed, sparkle=True):
-    c = C()
-    nx = rng(seed)
-    # mounded heap at the bottom
-    heights = [0,1,2,3,4,5,5,6,6,5,5,4,3,2,1,0]
-    base = 13
+def dust_item(name, ramp, seed):
+    c = C(); nx = rng(seed)
+    heights = [0,1,2,3,4,5,5,6,6,5,5,4,3,2,1,0]; base = 13
     for x in range(16):
-        h = heights[x] + (nx() % 2)
-        for k in range(h):
-            y = base - k
-            n = hash_noise(x, y, seed)
+        for k in range(heights[x] + (nx() % 2)):
+            y = base - k; n = hash_noise(x, y, seed)
             idx = 1 if n < 0.3 else 2 if n < 0.62 else 3 if n < 0.85 else 4
             c.set(x, y, ramp[idx])
-    # scattered granules above
     for _ in range(8):
         x = 2 + nx() % 12; y = 4 + nx() % 6
         c.over(x, y, (ramp[3][0], ramp[3][1], ramp[3][2], 230))
-    if sparkle:
-        for _ in range(4):
-            x = 2 + nx() % 12; y = base - (nx() % 5)
-            c.set(x, y, ramp[4])
-    # base shadow line
+    for _ in range(4):
+        c.set(2 + nx() % 12, base - (nx() % 5), ramp[4])
+    bloom(c, ramp, alpha=50, reach=2, thresh=170)
     for x in range(16):
-        if c.get(x, base)[3] > 0:
-            c.over(x, base + 1, (0, 0, 0, 90))
+        if c.get(x, base)[3] > 0: c.over(x, base + 1, (0, 0, 0, 90))
     write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
-
 dust_item("echocite_dust", TEAL, 221)
-dust_item("echo_dust", [(20,60,70),(40,150,150),(80,220,210),(160,255,240),(230,255,250)], 222)
+dust_item("echo_dust", TEAL, 222)
 
-def core_item(name):
-    c = C()
-    cx, cy = 8, 8
+def drum_core():
+    c = C(); cx, cy = 8, 8
     for y in range(16):
         for x in range(16):
             d = math.hypot(x - cx, y - cy)
             if d <= 6.3:
                 ring = int(d)
-                if ring >= 6: col = IRON[1]
-                elif ring == 5: col = IRON[3]
-                elif ring == 4: col = IRON[2]
-                elif ring == 3: col = TEAL[1]
-                elif ring == 2: col = TEAL[2]
-                elif ring == 1: col = TEAL[3]
-                else: col = TEAL[4]
-                if (x - cx) + (y - cy) < -3: col = lerp(col, (255,255,255), 0.25)
+                if ring >= 6: col = BRONZE[1]
+                elif ring == 5: col = BRONZE[3]
+                elif ring == 4: col = BRONZE[2]
+                elif ring == 3: col = AMBER[2]
+                elif ring == 2: col = AMBER[3]
+                elif ring == 1: col = AMBER[3]
+                else: col = AMBER[4]
+                if (x - cx) + (y - cy) < -3: col = lerp(col, (250, 240, 220), 0.25)
                 if (x - cx) + (y - cy) > 4: col = shade(col, 0.7)
                 c.set(x, y, col)
-    c.set(7, 7, TEAL[4]); c.set(8, 8, TEAL[2])
-    # rim rivets
+    c.set(7, 7, AMBER[4])
     for ang in range(0, 360, 90):
-        x = int(cx + 5.4 * math.cos(math.radians(ang)))
-        y = int(cy + 5.4 * math.sin(math.radians(ang)))
-        c.set(x, y, IRON[4])
+        c.set(int(cx + 5.4 * math.cos(math.radians(ang))), int(cy + 5.4 * math.sin(math.radians(ang))), BRONZE[4])
+    bloom(c, AMBER, alpha=45, reach=1, thresh=170)
     outline(c)
-    write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
-core_item("drum_core")
+    write_png(f"{OUT}/item/drum_core.png", 16, 16, c.px)
+drum_core()
 
-# ================================================================ CRUSHER GUI (256x256)
+def frequency_tuner():
+    c = C(); r = BRONZE
+    c.rect(5, 2, 5, 8, r[3]); c.rect(10, 2, 10, 8, r[3])   # prongs
+    c.rect(5, 8, 10, 9, r[2])                              # bridge
+    c.rect(7, 9, 8, 14, r[3])                              # handle
+    c.set(5, 2, TEAL[4]); c.set(10, 2, TEAL[4])            # resonating tips
+    c.over(5, 3, (TEAL[3][0], TEAL[3][1], TEAL[3][2], 200))
+    c.over(10, 3, (TEAL[3][0], TEAL[3][1], TEAL[3][2], 200))
+    c.set(7, 11, TEAL[3])                                  # rune on the grip
+    bloom(c, TEAL, alpha=55, reach=2, thresh=150)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/frequency_tuner.png", 16, 16, c.px)
+frequency_tuner()
+
+def channel_atlas():
+    c = C()
+    c.rect(3, 2, 12, 14, DEEP[2])                          # dark tome cover
+    c.rect(3, 2, 4, 14, DEEP[0])                           # spine
+    for y in range(2, 15): c.over(4, y, (BRONZE[2][0], BRONZE[2][1], BRONZE[2][2], 160))
+    c.rect(11, 3, 12, 13, BONE[3])                         # page edge
+    c.set(7, 7, TEAL[4]); c.set(8, 8, TEAL[3]); c.set(8, 7, TEAL[3]); c.set(7, 8, TEAL[3])  # rune sigil
+    c.set(6, 6, TEAL[2]); c.set(9, 9, TEAL[2])
+    bloom(c, TEAL, alpha=50, reach=2, thresh=150)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/channel_atlas.png", 16, 16, c.px)
+channel_atlas()
+
+# ================================================================ CRUSHER GUI (256x256) — deep restyle
 def gui():
     W = H = 256
     px = [(0, 0, 0, 0)] * (W * H)
     def s(x, y, c):
-        if 0 <= x < W and 0 <= y < H:
-            px[y * W + x] = (c[0], c[1], c[2], 255) if len(c) == 3 else c
+        if 0 <= x < W and 0 <= y < H: px[y * W + x] = (c[0], c[1], c[2], 255) if len(c) == 3 else c
     def rect(x0, y0, x1, y1, c):
         for y in range(y0, y1 + 1):
             for x in range(x0, x1 + 1): s(x, y, c)
-    PANEL=(198,198,198); LITE=(255,255,255); DARK=(85,85,85); MID=(139,139,139)
-    SDARK=(55,55,55)
-    # main panel 176x166
-    rect(0,0,175,165,PANEL)
-    rect(0,0,175,2,LITE); rect(0,0,2,165,LITE)
-    rect(0,163,175,165,DARK); rect(173,0,175,165,DARK)
-    s(175,0,PANEL); s(0,165,PANEL)
+    PANEL = (26, 32, 34); LITE = (58, 74, 74); DARK = (10, 14, 16); MID = (18, 24, 26); SDARK = (8, 11, 12)
+    rect(0, 0, 175, 165, PANEL)
+    rect(0, 0, 175, 2, LITE); rect(0, 0, 2, 165, LITE)
+    rect(0, 163, 175, 165, DARK); rect(173, 0, 175, 165, DARK)
     def slot(ix, iy):
-        rect(ix-1,iy-1,ix+16,iy+16,MID)
-        rect(ix-1,iy-1,ix+16,iy-1,SDARK); rect(ix-1,iy-1,ix-1,iy+16,SDARK)
-        rect(ix-1,iy+16,ix+16,iy+16,LITE); rect(ix+16,iy-1,ix+16,iy+16,LITE)
-    slot(56,35)   # input
-    slot(116,35)  # output
+        rect(ix - 1, iy - 1, ix + 16, iy + 16, MID)
+        rect(ix - 1, iy - 1, ix + 16, iy - 1, SDARK); rect(ix - 1, iy - 1, ix - 1, iy + 16, SDARK)
+        rect(ix - 1, iy + 16, ix + 16, iy + 16, LITE); rect(ix + 16, iy - 1, ix + 16, iy + 16, LITE)
+    slot(56, 35); slot(116, 35)
     for r in range(3):
-        for col in range(9):
-            slot(8+col*18, 84+r*18)
-    for col in range(9):
-        slot(8+col*18, 142)
-    # arrow track (empty, engraved) around x 79..101 y 33..49
+        for col in range(9): slot(8 + col * 18, 84 + r * 18)
+    for col in range(9): slot(8 + col * 18, 142)
     def arrow(ox, oy, fill):
-        # shaft
-        for yy in range(oy+5, oy+11):
-            for xx in range(ox, ox+15):
-                s(xx, yy, fill)
-        # head
+        for yy in range(oy + 5, oy + 11):
+            for xx in range(ox, ox + 15): s(xx, yy, fill)
         for k in range(8):
-            for yy in range(oy+2+k, oy+14-k):
-                s(ox+14+k, yy, fill)
-    arrow(79, 32, SDARK)  # engraved background
-    # RU gauge frame (left of input)
-    rect(20,20,28,52,SDARK); rect(21,21,27,51,(24,28,30))
-    # teal fill in gauge bottom
-    for yy in range(40,51):
-        for xx in range(21,28):
-            t=(51-yy)/11
-            s(xx,yy, lerp(TEAL[1],TEAL[3],t))
-    # ----- filled progress arrow sprite at (176,0) 24x16 -----
+            for yy in range(oy + 2 + k, oy + 14 - k): s(ox + 14 + k, yy, fill)
+    arrow(79, 32, SDARK)
+    rect(20, 20, 28, 52, SDARK); rect(21, 21, 27, 51, (10, 16, 18))
+    for yy in range(40, 51):
+        for xx in range(21, 28): s(xx, yy, lerp(TEAL[1], TEAL[3], (51 - yy) / 11))
     def sprite_arrow(ox, oy):
-        for yy in range(oy+5, oy+11):
-            for xx in range(ox, ox+15):
-                t=(yy-(oy+5))/5
-                s(xx, yy, lerp(TEAL[3], TEAL[1], t))
+        for yy in range(oy + 5, oy + 11):
+            for xx in range(ox, ox + 15): s(xx, yy, lerp(TEAL[3], TEAL[1], (yy - (oy + 5)) / 5))
         for k in range(8):
-            for yy in range(oy+2+k, oy+14-k):
-                s(ox+14+k, yy, lerp(TEAL[3], TEAL[2], k/8))
-        # top highlight
-        for xx in range(ox, ox+15): s(xx, oy+5, TEAL[4])
+            for yy in range(oy + 2 + k, oy + 14 - k): s(ox + 14 + k, yy, lerp(TEAL[3], TEAL[2], k / 8))
+        for xx in range(ox, ox + 15): s(xx, oy + 5, TEAL[4])
     sprite_arrow(176, 0)
     write_png(f"{OUT}/gui/crusher.png", W, H, px)
 gui()
