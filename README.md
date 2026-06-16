@@ -34,8 +34,8 @@ A complete, end-to-end energy + logistics loop, craftable from scratch in surviv
   [`docs/wireless_transport.md`](docs/wireless_transport.md) for the full design.
 - **Crusher machine** — full block entity with a synced screen, a custom `crushing`
   recipe type (`CrushingRecipe`), and **Transfer API item I/O so vanilla hoppers work**.
-- **Worldgen** — JSON configured/placed feature for Echocite + a `BiomeModifications`
-  hook.
+- **Worldgen** — configured/placed ore features for Echocite & Drumstone (Overworld)
+  and Silentite (rare, Deep Dark only), attached via `BiomeModifications`.
 - **Crafting & progression** — Echocite ore → `raw_echocite` → smelt/blast to **Echo
   Ingot** (or crush to dust for ore-doubling, then smelt). Echo Ingot + dust + iron
   build the Resonator, Tuning Conduit, Crusher, and the whole wireless family; every
@@ -82,13 +82,13 @@ Prioritised list of where this goes next. Nothing here is load-bearing — the m
 complete and survival-craftable as-is.
 
 **Content gaps (close the loop)**
-- **Drumstone & Silentite tiers** — these ores exist with textures, loot, and items
-  (`drumstone_shard`, `silentite_crystal`, `drum_core`), but have no worldgen or
-  processing recipes yet, so the items are currently creative-only. Add placed
-  features (Silentite in the Deep Dark) + crushing/smelting recipes to make them a
-  real second tier.
-- **Crusher byproducts** — wire `dull_ingot` / `resonant_slag` as low-roll crusher
-  outputs (needs a `result`+`secondary` field on `CrushingRecipe`).
+- ✅ **Drumstone & Silentite tiers** — done. Both ores now generate (Drumstone in the
+  Overworld, Silentite in the Deep Dark); Drumstone shards craft the **Drum Core**
+  (an alternate Resonator membrane), and Silentite crystals craft an alternate **Echo
+  Repeater**. All three items are now survival-obtainable.
+- **Crusher byproducts** — wire `dull_ingot` / `resonant_slag` (the last two
+  creative-only items) as low-roll crusher outputs; needs a `secondary`+chance field
+  on `CrushingRecipe` and a byproduct slot in the Crusher screen.
 - **`World#playSound` mixin** — read `resonance_sources.json` so ambient sound (not
   just mob deaths) charges Resonators.
 
