@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "echoes",
+  "version": "${version}",
+  "name": "Echoes of the Deep",
+  "description": "Sound is a physical resource. Capture, route, and spend Resonance to power machines, tools, and stealth gear.",
+  "authors": ["You"],
+  "contact": {
+    "homepage": "https://example.com/echoes",
+    "sources": "https://github.com/you/echoes-of-the-deep"
+  },
+  "license": "MIT",
+  "icon": "assets/echoes/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.echoes.EchoesMod"],
+    "client": ["com.echoes.client.EchoesClient"]
+  },
+  "mixins": [
+    "echoes.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.4",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "trinkets": "*"
+  }
+}

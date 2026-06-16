@@ -1,0 +1,21 @@
+{
+  "itemGroup.echoes.main": "Echoes of the Deep",
+
+  "block.echoes.echocite_ore": "Echocite Ore",
+  "block.echoes.deepslate_echocite_ore": "Deepslate Echocite Ore",
+  "block.echoes.drumstone_ore": "Drumstone Ore",
+  "block.echoes.silentite_ore": "Silentite Ore",
+  "block.echoes.resonator": "Resonator",
+  "block.echoes.tuning_conduit": "Tuning Conduit",
+  "block.echoes.crusher": "Crusher",
+
+  "item.echoes.raw_echocite": "Raw Echocite",
+  "item.echoes.drumstone_shard": "Drumstone Shard",
+  "item.echoes.silentite_crystal": "Silentite Crystal",
+  "item.echoes.echocite_dust": "Echocite Dust",
+  "item.echoes.echo_ingot": "Echo Ingot",
+  "item.echoes.dull_ingot": "Dull Ingot",
+  "item.echoes.resonant_slag": "Resonant Slag",
+  "item.echoes.drum_core": "Drum Core",
+  "item.echoes.echo_dust": "Echo Dust"
+}

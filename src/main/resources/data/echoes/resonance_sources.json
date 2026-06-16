@@ -1,0 +1,13 @@
+{
+  "_comment": "Maps vanilla (or other-mod) SoundEvents to RU. Modpack authors override/extend this datapack file. Read by the World#playSound mixin.",
+  "sources": {
+    "minecraft:block.note_block.harp": 8,
+    "minecraft:block.note_block.bass": 8,
+    "minecraft:block.note_block.bell": 12,
+    "minecraft:block.anvil.land": 40,
+    "minecraft:entity.generic.explode": 40,
+    "minecraft:block.bell.use": 10,
+    "minecraft:entity.lightning_bolt.thunder": 2000,
+    "minecraft:block.beacon.activate": 100
+  }
+}
