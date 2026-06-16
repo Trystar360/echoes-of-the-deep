@@ -24,8 +24,14 @@ A complete, end-to-end energy + processing loop:
   fluids, and RU** between the blocks they face — no conduit required. Right-click to
   cycle mode (Receive/Send/Disabled), sneak-click or use a dye to set the channel.
   Items/fluids ride the Transfer API (vanilla chests & tanks work); RU bridges the
-  `ResonanceNode` grid. See [`docs/wireless_transport.md`](docs/wireless_transport.md)
-  for the full design and the roadmap of companion utilities.
+  `ResonanceNode` grid.
+- **Wireless transport family** — a full system of channel gadgets around the relay:
+  **Resonant Amplifier** (widens a channel's throughput), **Harmonic Filter**
+  (item whitelist), **Resonant Splitter** (round-robin vs. fill-first), **Echo
+  Repeater** (cross-dimension channels), **Conduit Coupler** (bridges the wired RU
+  grid), **Resonant Chest** (storage natively on a channel), **Note Relay** (wireless
+  redstone bus), plus the **Frequency Tuner** and **Channel Atlas** tools. See
+  [`docs/wireless_transport.md`](docs/wireless_transport.md) for the full design.
 - **Crusher machine** — full block entity with a synced screen, a custom `crushing`
   recipe type (`CrushingRecipe`), and **Transfer API item I/O so vanilla hoppers work**.
 - **Worldgen** — JSON configured/placed feature for Echocite + a `BiomeModifications`

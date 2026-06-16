@@ -1,6 +1,8 @@
 package com.echoes.registry;
 
 import com.echoes.EchoesMod;
+import com.echoes.item.ChannelAtlasItem;
+import com.echoes.item.FrequencyTunerItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -25,6 +27,12 @@ public final class ModItems {
     public static final Item RESONANT_SLAG  = register("resonant_slag", Item::new, new Item.Settings());
     public static final Item DRUM_CORE      = register("drum_core", Item::new, new Item.Settings());
     public static final Item ECHO_DUST      = register("echo_dust", Item::new, new Item.Settings());
+
+    // Wireless transport tools
+    public static final Item FREQUENCY_TUNER = register("frequency_tuner",
+            FrequencyTunerItem::new, new Item.Settings().maxCount(1));
+    public static final Item CHANNEL_ATLAS   = register("channel_atlas",
+            ChannelAtlasItem::new, new Item.Settings().maxCount(1));
 
     public static Item register(String name, Function<Item.Settings, Item> factory, Item.Settings settings) {
         Identifier id = Identifier.of(EchoesMod.MOD_ID, name);

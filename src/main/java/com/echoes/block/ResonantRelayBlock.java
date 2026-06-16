@@ -1,45 +1,32 @@
 package com.echoes.block;
 
+import com.echoes.block.entity.AbstractChannelDeviceBlockEntity;
 import com.echoes.block.entity.ResonantRelayBlockEntity;
-import com.echoes.registry.ModBlockEntities;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.DyeItem;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The flagship of the wireless transport family. Place it against a chest, tank,
- * machine, or Resonator; tune two or more relays to the same channel and they
- * resonate, beaming items, fluids, and RU between the blocks they face — no
- * conduit in between.
- *
- * <p>Interaction (right-click, no GUI needed):
- * <ul>
- *   <li>empty hand — cycle mode (Receive → Send → Disabled)</li>
- *   <li>sneak + empty hand — step the channel forward one colour</li>
- *   <li>any dye — jump straight to that colour's channel</li>
- * </ul>
+ * Tune two or more relays to the same channel and they resonate, beaming items,
+ * fluids, and RU between the blocks they face — no conduit required. Empty-hand
+ * right-click cycles the mode (Receive → Send → Disabled); dye/sneak set the
+ * channel (see {@link AbstractChannelDeviceBlock}). Comparator-readable.
  */
-public class ResonantRelayBlock extends Block implements BlockEntityProvider {
+public class ResonantRelayBlock extends AbstractChannelDeviceBlock {
 
     public ResonantRelayBlock(Settings settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState().with(Properties.FACING, net.minecraft.util.math.Direction.NORTH));
+        setDefaultState(getStateManager().getDefaultState().with(Properties.FACING, Direction.NORTH));
     }
 
     @Override
@@ -49,7 +36,6 @@ public class ResonantRelayBlock extends Block implements BlockEntityProvider {
 
     @Override
     public @Nullable BlockState getPlacementState(ItemPlacementContext ctx) {
-        // Face into the block we were placed against, so we wrap its inventory.
         return getDefaultState().with(Properties.FACING, ctx.getSide().getOpposite());
     }
 
@@ -59,32 +45,13 @@ public class ResonantRelayBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        if (world.isClient || type != ModBlockEntities.RESONANT_RELAY) return null;
-        return (w, p, s, be) -> ResonantRelayBlockEntity.tick(w, p, s, (ResonantRelayBlockEntity) be);
-    }
-
-    @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (world.isClient) return ActionResult.SUCCESS;
-        if (!(world.getBlockEntity(pos) instanceof ResonantRelayBlockEntity relay)) return ActionResult.PASS;
-
-        ItemStack held = player.getMainHandStack();
-        if (held.getItem() instanceof DyeItem dye) {
-            DyeColor color = dye.getColor();
-            relay.setChannel(color.getId());
-            player.sendMessage(Text.translatable("message.echoes.relay.channel",
-                    Text.translatable("color.minecraft." + color.getName())), true);
-        } else if (player.isSneaking()) {
-            relay.cycleChannel();
-            DyeColor color = DyeColor.byId(relay.channel());
-            player.sendMessage(Text.translatable("message.echoes.relay.channel",
-                    Text.translatable("color.minecraft." + color.getName())), true);
-        } else {
+    protected ActionResult onConfigure(World world, BlockPos pos, PlayerEntity player,
+                                       AbstractChannelDeviceBlockEntity device, ItemStack held) {
+        if (device instanceof ResonantRelayBlockEntity relay) {
             relay.cycleMode();
-            player.sendMessage(Text.translatable("message.echoes.relay.mode",
-                    Text.translatable("message.echoes.relay.mode." + relay.mode().name().toLowerCase())), true);
+            sendStatus(player, "message.echoes.relay.mode",
+                    net.minecraft.text.Text.translatable(
+                            "message.echoes.relay.mode." + relay.mode().name().toLowerCase()));
         }
         return ActionResult.SUCCESS;
     }

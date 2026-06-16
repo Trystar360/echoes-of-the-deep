@@ -45,52 +45,72 @@ barrels, furnaces, and any modded inventory/tank work out of the box. RU bridges
 relay to the existing `ResonanceNode` energy system, so a Resonator's stored RU can
 be beamed to a distant Crusher with no conduit run.
 
-**Tuning constants** (`WirelessNetworkManager`): 8 items, 1 bucket, and 1000 RU per
-*sender* per tick, capped per channel at 64 items / 8 buckets / 16000 RU.
+## The family (implemented)
 
-## The family (roadmap)
-
-A coherent system of "similar utilities" that all build on the channel concept:
+A coherent system of channel gadgets, all sharing the same tuning controls (dye =
+set channel, sneak = step channel) and the `WirelessDevice` interface so the
+router treats them uniformly.
 
 ### Throughput & routing
-- **Resonant Amplifier** — a relay upgrade (or adjacent block) that multiplies a
-  channel's per-tick budget. The intended way to make a channel "fat".
-- **Harmonic Filter** — a relay variant with a ghost-slot filter UI: only matching
-  items/fluids broadcast or are accepted. Enables sorting systems on one channel.
-- **Round-Robin Splitter / Priority Tuner** — pick the distribution policy
-  (even split vs. fill nearest/highest-priority receiver first).
+- **Resonant Amplifier** — placed on a channel, each one doubles that channel's
+  per-tick transfer budget (×2 per amplifier, capped ×16). The way to make a
+  channel "fat".
+- **Harmonic Filter** — right-click with an item to whitelist its type (empty hand
+  clears). Item transport on the channel is then constrained to the union of every
+  filter's whitelist. Enables wireless sorting.
+- **Resonant Splitter** — toggles the channel between even round-robin sharing
+  across receivers and fill-first delivery.
 
 ### Range & cost
-- **Hush Cost** — broadcasting could consume a trickle of RU per tick scaled by
-  distance/volume, tying logistics back into the energy economy (toggleable, off by
-  default to keep the base relay "cheap").
-- **Echo Repeater** — extends a channel across dimensions, or boosts an otherwise
-  range-limited variant if range limits are introduced for balance.
+- **Echo Repeater** — pools its channel across *every dimension* it appears in;
+  without one, a channel stays within a single dimension.
+- **Hush Cost** — opt-in (`WirelessNetworkManager.HUSH_COST`): when on, broadcasting
+  cargo drains a little RU per sender from the channel's energy providers, tying
+  logistics back into the energy economy. Off by default to keep the base relay
+  cheap; free on channels with no energy provider.
 
 ### Quality of life
-- **Frequency Tuner** (handheld) — right-click a relay to copy its channel, right-click
-  another to paste it. Batch-tunes a build without dye juggling.
-- **Channel Atlas** — a book/screen listing every relay on a channel, its mode, and
-  live throughput, for debugging large networks.
-- **Resonant Tank / Resonant Chest** — storage blocks that are *natively* on a channel
-  (no separate relay needed), the wireless analogue of an Ender Chest.
+- **Frequency Tuner** (handheld) — sneak + right-click a device to copy its channel
+  into the tuner; right-click another to paste it. Batch-tune without dyes.
+- **Channel Atlas** (handheld) — right-click a device to print its channel roster
+  (device/sender/receiver/modifier counts); right-click the air for an overview of
+  every active channel.
+- **Resonant Chest** — a 27-slot storage block natively on a channel (no separate
+  relay). A *passive* buffer: senders fill it, receivers drain it, but it never
+  shuffles with other passive stores.
 
 ### Cross-system glue
-- **Conduit Coupler** — a block that injects a wireless channel's RU into the wired
-  Tuning Conduit grid (and vice-versa), formally bridging the two transport systems.
-- **Note Beacon link** — relays could broadcast a redstone/comparator signal on a
-  channel, turning frequencies into a wireless redstone bus.
+- **Conduit Coupler** — joins the wired Tuning Conduit grid as a STORAGE node while
+  its buffer doubles as a wireless RU endpoint, formally bridging the two transport
+  systems (Send = wired→channel, Receive = channel→wired).
+- **Note Relay** — wireless redstone bus: Send broadcasts the redstone power it
+  receives onto the channel; Receive emits the channel's strongest broadcast.
+
+**Tuning constants** (`WirelessNetworkManager`): 8 items, 1 bucket, and 1000 RU per
+*sender* per tick, base-capped at 64 items / 8 buckets / 16000 RU, all scaled by the
+amplifier multiplier.
+
+### Still open
+- Per-target **priority** ordering (the Splitter only picks even vs. fill-first).
+- A ghost-slot **filter GUI** and **fluid** filtering (the filter is item-type, set
+  by clicking).
+- Persisting the roster via a `PersistentState` (today it is rebuilt from NBT on
+  chunk load, like the wired grid).
 
 ## Implementation notes
 
-- `com.echoes.wireless.WirelessNetworkManager` — per-`ServerWorld` router, one roster
-  list per channel; ticks on `END_WORLD_TICK`, skipping channels without both a sender
-  and a receiver.
+- `com.echoes.wireless.WirelessDevice` — the interface the router sees: channel,
+  transport mode, item/fluid/energy endpoints, and the modifier hooks (amplifier,
+  repeater, round-robin, item whitelist, redstone).
+- `com.echoes.wireless.WirelessNetworkManager` — server-global router keyed by
+  `GlobalPos` (so repeaters can span dimensions). Ticks on `END_SERVER_TICK`,
+  skipping channels with fewer than two devices; per channel it groups by dimension
+  (unless a repeater is present), then moves items (two-pass so passive chests don't
+  shuffle), fluids, RU, and the redstone level.
 - `com.echoes.wireless.RelayMode` — Receive / Send / Disabled.
-- `com.echoes.block.ResonantRelayBlock` (+ `entity.ResonantRelayBlockEntity`) — the
-  block, its `FACING`, interactions, and a lightweight ticker that keeps the relay on
-  the roster across chunk loads.
+- `com.echoes.block.AbstractChannelDeviceBlock` / `entity.AbstractChannelDeviceBlockEntity`
+  — shared tuning, ticker-based registration, and NBT for every gadget; each concrete
+  device overrides only the `WirelessDevice` hooks it needs.
 
 Like `ResonanceNetworkManager`, the roster is in-memory and rebuilt from the world as
-chunks load (the relay's channel/mode live in its block-entity NBT). A shipping build
-would back it with a `PersistentState`.
+chunks load (every device's channel/mode lives in its block-entity NBT).

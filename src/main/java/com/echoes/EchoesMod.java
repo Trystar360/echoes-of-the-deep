@@ -42,6 +42,10 @@ public class EchoesMod implements ModInitializer {
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.CRUSHER);
 
+        // Resonant Chest exposes its inventory to hoppers/pipes too.
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.RESONANT_CHEST);
+
         LOGGER.info("Echoes of the Deep initialized.");
     }
 }

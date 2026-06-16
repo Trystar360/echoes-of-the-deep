@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "echoes:block/note_relay"
+    },
+    "powered=true": {
+      "model": "echoes:block/note_relay"
+    }
+  }
+}

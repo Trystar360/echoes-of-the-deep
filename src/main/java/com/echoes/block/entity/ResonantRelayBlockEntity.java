@@ -1,100 +1,76 @@
 package com.echoes.block.entity;
 
+import com.echoes.energy.ResonanceNode;
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.wireless.RelayMode;
-import com.echoes.wireless.WirelessNetworkManager;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * A wireless transport node. It is tuned to a {@code channel} (0–15, one per dye
- * colour) and a {@link RelayMode}; the {@link WirelessNetworkManager} pairs it
- * with every other relay on the same channel and moves items, fluids, and RU
- * between the blocks they face.
- *
- * <p>The relay holds no buffer of its own — it is a pure broadcast endpoint over
- * whatever inventory/tank/energy node sits on its facing side.
+ * The flagship wireless transport endpoint. It wraps the inventory / tank /
+ * energy node on its facing side and broadcasts on its channel: {@code SEND}
+ * pushes that block's contents onto the channel, {@code RECEIVE} pulls cargo off
+ * the channel into it. Holds no buffer of its own.
  */
-public class ResonantRelayBlockEntity extends BlockEntity {
+public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
 
-    private int channel = 0;
     private RelayMode mode = RelayMode.RECEIVE;
-    private boolean registered = false;
 
     public ResonantRelayBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.RESONANT_RELAY, pos, state);
     }
 
-    /** Lightweight ticker: guarantees the relay is on the roster once loaded. */
-    public static void tick(World world, BlockPos pos, BlockState state, ResonantRelayBlockEntity be) {
-        if (be.registered || !(world instanceof ServerWorld sw)) return;
-        WirelessNetworkManager.get(sw).register(pos, be.channel, be.mode, be.facing());
-        be.registered = true;
-    }
-
-    public int channel() { return channel; }
     public RelayMode mode() { return mode; }
+
+    public void cycleMode() {
+        mode = mode.next();
+        sync();
+    }
 
     public Direction facing() {
         return getCachedState().getOrEmpty(Properties.FACING).orElse(Direction.NORTH);
     }
 
-    public void cycleMode() {
-        mode = mode.next();
-        syncToNetwork();
-    }
-
-    public void setChannel(int channel) {
-        this.channel = ((channel % WirelessNetworkManager.CHANNELS) + WirelessNetworkManager.CHANNELS)
-                % WirelessNetworkManager.CHANNELS;
-        syncToNetwork();
-    }
-
-    public void cycleChannel() {
-        setChannel(channel + 1);
-    }
-
-    private void syncToNetwork() {
-        markDirty();
-        if (world instanceof ServerWorld sw) {
-            WirelessNetworkManager.get(sw).register(pos, channel, mode, facing());
-            registered = true;
-        }
-    }
+    /** The block this relay reads from / writes to. */
+    private BlockPos attachedPos() { return getPos().offset(facing()); }
 
     /** 0 when disabled, otherwise a rough channel indicator (1–15) for comparators. */
     public int comparatorOutput() {
         return mode == RelayMode.DISABLED ? 0 : Math.min(15, channel + 1);
     }
 
-    @Override
-    public void markRemoved() {
-        if (world instanceof ServerWorld sw) {
-            WirelessNetworkManager.get(sw).unregister(pos);
-        }
-        registered = false;
-        super.markRemoved();
+    // --- WirelessDevice transport ---
+    @Override public RelayMode transportMode() { return mode; }
+
+    @Override public @Nullable Storage<ItemVariant> wirelessItems() {
+        return ItemStorage.SIDED.find(world, attachedPos(), facing().getOpposite());
+    }
+
+    @Override public @Nullable Storage<FluidVariant> wirelessFluids() {
+        return FluidStorage.SIDED.find(world, attachedPos(), facing().getOpposite());
+    }
+
+    @Override public @Nullable ResonanceNode wirelessEnergy() {
+        return world.getBlockEntity(attachedPos()) instanceof ResonanceNode n ? n : null;
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        super.writeNbt(nbt, lookup);
-        nbt.putInt("channel", channel);
+    protected void writeExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         nbt.putInt("mode", mode.ordinal());
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        super.readNbt(nbt, lookup);
-        channel = nbt.getInt("channel");
+    protected void readExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         mode = RelayMode.byId(nbt.getInt("mode"));
-        registered = false; // re-register against the (possibly new) world roster
     }
 }

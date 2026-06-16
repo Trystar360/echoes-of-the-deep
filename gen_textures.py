@@ -306,6 +306,131 @@ def relay():
     write_png(f"{OUT}/block/resonant_relay.png", 16, 16, c.px)
 relay()
 
+# ---------------- wireless transport family ----------------
+def _corners(c):
+    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        rivet(c, rx, ry, IRON)
+
+def _arcs(c, ramp, cx=7.5, cy=7.5, r=5.0, alpha=235):
+    for y in range(3, 13):
+        for x in range(3, 13):
+            d = math.hypot(x - cx, y - cy)
+            if d <= r and int(round(d)) % 2 == 0:
+                t = max(0.0, 1 - d / r)
+                col = lerp(ramp[1], ramp[4], t)
+                if (x - cx) + (y - cy) < -1:
+                    col = lerp(col, ramp[4], 0.35)
+                c.over(x, y, (col[0], col[1], col[2], alpha))
+
+def emitter(name, ramp, bg):
+    c = C()
+    frame(c, IRON, t=2)
+    c.rect(3, 3, 12, 12, bg)
+    _arcs(c, ramp)
+    c.rect(7, 7, 8, 8, ramp[4])
+    c.set(7, 7, (235, 255, 250))
+    for (px, py) in [(7, 1), (8, 14), (1, 8), (14, 7)]:
+        c.set(px, py, ramp[4])
+    _corners(c)
+    write_png(f"{OUT}/block/{name}.png", 16, 16, c.px)
+
+emitter("resonant_amplifier", AMBER, (28, 22, 12))
+emitter("echo_repeater", PURPLE, (24, 18, 34))
+
+def harmonic_filter():
+    c = C()
+    frame(c, IRON, t=2)
+    c.rect(3, 3, 12, 12, (20, 24, 28))
+    for x in range(3, 13):
+        for y in range(3, 13):
+            if x % 2 == 0 or y % 2 == 0:
+                c.set(x, y, IRON[2])
+    for x in range(4, 13, 3):
+        for y in range(4, 13, 3):
+            c.set(x, y, TEAL[3]); c.over(x, y - 1, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 120))
+    _corners(c)
+    write_png(f"{OUT}/block/harmonic_filter.png", 16, 16, c.px)
+harmonic_filter()
+
+def resonant_splitter():
+    c = C()
+    frame(c, IRON, t=2)
+    c.rect(3, 3, 12, 12, (20, 24, 28))
+    for x in range(3, 8):
+        c.set(x, 7, TEAL[3]); c.set(x, 8, TEAL[3])
+    for k in range(4):
+        c.set(8 + k, 7 - k, TEAL[3]); c.set(8 + k, 8 + k, TEAL[3])
+    c.set(11, 3, TEAL[4]); c.set(11, 12, TEAL[4]); c.set(3, 7, TEAL[4])
+    glow(c, TEAL, alpha=40, thresh=150)
+    _corners(c)
+    write_png(f"{OUT}/block/resonant_splitter.png", 16, 16, c.px)
+resonant_splitter()
+
+def conduit_coupler():
+    c = C()
+    frame(c, IRON, t=2)
+    c.rect(3, 3, 12, 12, (22, 26, 30))
+    _arcs(c, TEAL, cx=5.0, cy=7.5, r=4.0)          # wireless half
+    c.rect(9, 3, 12, 12, IRON[2])                    # conduit half plate
+    for y in range(3, 13): c.over(10, y, TEAL[2])
+    for x in range(9, 13): c.over(x, 7, TEAL[3]); c.over(x, 8, TEAL[2])
+    c.set(10, 7, TEAL[4])
+    _corners(c)
+    write_png(f"{OUT}/block/conduit_coupler.png", 16, 16, c.px)
+conduit_coupler()
+
+def resonant_chest():
+    c = C()
+    wood = [(54, 34, 16), (84, 54, 26), (110, 72, 36), (140, 96, 50), (170, 120, 66)]
+    for y in range(16):
+        for x in range(16):
+            n = hash_noise(x, y, 311)
+            c.set(x, y, wood[1] if n < 0.4 else wood[2] if n < 0.8 else wood[3])
+    c.rect(0, 0, 15, 0, wood[4]); c.rect(0, 0, 0, 15, wood[4])
+    c.rect(0, 15, 15, 15, wood[0]); c.rect(15, 0, 15, 15, wood[0])
+    c.rect(0, 2, 15, 3, TEAL[2])                      # channel band
+    for x in range(16): c.over(x, 2, (TEAL[3][0], TEAL[3][1], TEAL[3][2], 160))
+    c.rect(7, 6, 8, 10, IRON[1]); c.rect(7, 6, 8, 6, IRON[3])  # latch
+    write_png(f"{OUT}/block/resonant_chest.png", 16, 16, c.px)
+resonant_chest()
+
+def note_relay():
+    c = C()
+    frame(c, IRON, t=2)
+    c.rect(3, 3, 12, 12, (20, 24, 28))
+    c.rect(7, 4, 7, 11, TEAL[3])                      # stem
+    for (x, y) in [(4, 10), (5, 10), (6, 10), (4, 11), (5, 11), (6, 11), (4, 12), (5, 12), (6, 12)]:
+        c.set(x, y, TEAL[3])                          # note head
+    c.set(8, 4, TEAL[3]); c.set(9, 5, TEAL[3]); c.set(9, 6, TEAL[3]); c.set(8, 6, TEAL[3])  # flag
+    c.set(5, 10, TEAL[4]); c.set(7, 4, TEAL[4])
+    glow(c, TEAL, alpha=45, thresh=150)
+    _corners(c)
+    write_png(f"{OUT}/block/note_relay.png", 16, 16, c.px)
+note_relay()
+
+def frequency_tuner():
+    c = C()
+    r = STEEL
+    c.rect(5, 2, 5, 8, r[3]); c.rect(10, 2, 10, 8, r[3])   # prongs
+    c.rect(5, 8, 10, 9, r[2])                              # bridge
+    c.rect(7, 9, 8, 14, r[3])                              # handle
+    c.set(5, 2, r[4]); c.set(10, 2, r[4]); c.set(7, 9, r[4])
+    glow(c, TEAL, alpha=45, thresh=150)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/frequency_tuner.png", 16, 16, c.px)
+frequency_tuner()
+
+def channel_atlas():
+    c = C()
+    c.rect(3, 2, 12, 14, TEAL[2])                          # cover
+    c.rect(3, 2, 4, 14, TEAL[0])                           # spine
+    c.rect(11, 3, 12, 13, (232, 230, 212))                # page edge
+    c.set(7, 7, TEAL[4]); c.set(8, 8, TEAL[4]); c.set(8, 7, TEAL[3]); c.set(7, 8, TEAL[3])
+    glow(c, TEAL, alpha=40, thresh=150)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/channel_atlas.png", 16, 16, c.px)
+channel_atlas()
+
 # ================================================================ ITEMS
 def ingot(name, ramp):
     c = C()
