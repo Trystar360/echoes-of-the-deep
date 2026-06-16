@@ -70,6 +70,7 @@ function router() {
   else if (route === "edit") renderForm(view, { logId: arg });
   else if (route === "log") renderDetail(view, arg);
   else if (route === "history") renderHistory(view);
+  else if (route === "export") renderExport(view);
   else if (route === "settings") renderSettings(view);
   else renderDashboard(view);
 
@@ -425,11 +426,206 @@ function metaPill(label, value) {
 function renderHistory(view) {
   const logs = Store.all();
 
-  const exportBtn = el("button", { class: "btn btn-ghost", onclick: () => {
-    const blob = new Blob([JSON.stringify(logs, null, 2)], { type: "application/json" });
-    const a = el("a", { href: URL.createObjectURL(blob), download: `inspection-logs-${todayISO()}.json` });
-    document.body.appendChild(a); a.click(); a.remove();
-  } }, "Export JSON");
+  view.replaceChildren(
+    el("section", { class: "stack" },
+      el("div", { class: "section-head-row" },
+        el("h1", { class: "page-title" }, "Log history"),
+        el("div", { class: "head-actions" },
+          el("a", { class: "btn btn-ghost", href: "#/export" }, "Export"),
+          el("button", { class: "btn btn-primary", onclick: () => (location.hash = "/new") }, "New log"))),
+
+      logs.length
+        ? el("div", { class: "log-list" }, logs.map(logRow))
+        : el("div", { class: "empty-hint" }, "No logs recorded yet."))
+  );
+}
+
+/* ====================================================================
+ * Export — JSON backup, CSV (two shapes), printable PDF report
+ * ================================================================== */
+const statusLabel = (key) => (STATUSES.find((s) => s.key === key) || {}).label || "";
+
+function download(filename, text, mime) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = el("a", { href: url, download: filename });
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+const csvCell = (v) => {
+  const s = v === null || v === undefined ? "" : String(v);
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+const toCSV = (rows) => "﻿" + rows.map((r) => r.map(csvCell).join(",")).join("\r\n");
+
+function filterLogs(p) {
+  return Store.all().filter((l) => {
+    if (p.templateId && p.templateId !== "all" && l.templateId !== p.templateId) return false;
+    const d = l.meta.date || "";
+    if (p.from && d < p.from) return false;
+    if (p.to && d > p.to) return false;
+    if (p.group && !(l.meta.group || "").toLowerCase().includes(p.group.toLowerCase())) return false;
+    return true;
+  });
+}
+
+function buildPerItemCSV(logs) {
+  const rows = [["Date", "Log Type", "Group", "Participants", "Inspector", "Section", "Item", "Status", "Initials", "Log Notes", "Created"]];
+  logs.forEach((log) => {
+    const tpl = TEMPLATE_BY_ID[log.templateId];
+    const base = [log.meta.date, log.templateName, log.meta.group, log.meta.participants, log.meta.inspector];
+    if (!tpl) { rows.push([...base, "", "", "", "", log.notes || "", log.createdAt]); return; }
+    tpl.sections.forEach((sec) => sec.items.forEach((item) => {
+      const r = log.results[item.id] || {};
+      rows.push([...base, sec.title, item.label, statusLabel(r.status), r.initials || "", log.notes || "", log.createdAt]);
+    }));
+  });
+  return toCSV(rows);
+}
+
+function buildSummaryCSV(logs) {
+  const rows = [["Date", "Log Type", "Group", "Participants", "Inspector", "Items", "Pass", "Fail", "N/A", "Status", "Flagged Items", "Notes", "Created"]];
+  logs.forEach((log) => {
+    const st = logStats(log);
+    const tpl = TEMPLATE_BY_ID[log.templateId];
+    const flagged = [];
+    if (tpl) tpl.sections.forEach((sec) => sec.items.forEach((item) => {
+      if ((log.results[item.id] || {}).status === "fail") flagged.push(item.label);
+    }));
+    rows.push([
+      log.meta.date, log.templateName, log.meta.group, log.meta.participants, log.meta.inspector,
+      st.total, st.pass, st.fail, st.na,
+      st.fail ? "Flagged" : st.complete ? "Complete" : "Incomplete",
+      flagged.join("; "), log.notes || "", log.createdAt,
+    ]);
+  });
+  return toCSV(rows);
+}
+
+function filterSummary(p) {
+  const parts = [];
+  parts.push(p.templateId === "all" || !p.templateId ? "All log types" : (TEMPLATE_BY_ID[p.templateId] || {}).name || p.templateId);
+  if (p.from || p.to) parts.push(`${p.from ? fmtDate(p.from) : "start"} → ${p.to ? fmtDate(p.to) : "today"}`);
+  if (p.group) parts.push(`group contains “${p.group}”`);
+  return parts.join(" · ");
+}
+
+function buildReportHTML(logs, p) {
+  const blocks = logs.map((log) => {
+    const tpl = TEMPLATE_BY_ID[log.templateId];
+    const st = logStats(log);
+    const sections = tpl ? tpl.sections.map((sec) => `
+      <h4>${escapeHTML(sec.title)}</h4>
+      <table class="items">
+        ${sec.items.map((item) => {
+          const r = log.results[item.id] || {};
+          return `<tr class="${r.status === "fail" ? "fail" : ""}">
+            <td class="lbl">${escapeHTML(item.label)}</td>
+            <td class="st st-${r.status || "blank"}">${escapeHTML(statusLabel(r.status) || "—")}</td>
+            <td class="ini">${escapeHTML(r.initials || "")}</td></tr>`;
+        }).join("")}
+      </table>`).join("") : "<p><em>Unknown log type</em></p>";
+    return `
+      <section class="log">
+        <div class="loghd">
+          <h3>${escapeHTML(log.templateName)}</h3>
+          <span class="tag ${st.fail ? "t-fail" : st.complete ? "t-ok" : "t-part"}">${st.fail ? st.fail + " flagged" : st.complete ? "All clear" : st.done + "/" + st.total}</span>
+        </div>
+        <p class="meta">${escapeHTML(fmtDate(log.meta.date))} &nbsp;·&nbsp; Group: ${escapeHTML(log.meta.group || "—")} &nbsp;·&nbsp; Participants: ${escapeHTML(String(log.meta.participants || 0))} &nbsp;·&nbsp; Inspector: ${escapeHTML(log.meta.inspector || "—")}</p>
+        ${sections}
+        ${log.notes ? `<p class="notes"><strong>Notes:</strong> ${escapeHTML(log.notes)}</p>` : ""}
+      </section>`;
+  }).join("");
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Spruce Lake Adventure — Inspection Report</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font: 13px/1.5 -apple-system, Segoe UI, Roboto, sans-serif; color: #16201f; margin: 32px; }
+    header { border-bottom: 2px solid #16545e; padding-bottom: 10px; margin-bottom: 18px; }
+    h1 { margin: 0 0 2px; font-size: 21px; }
+    .sub { color: #555; }
+    .log { page-break-inside: avoid; border: 1px solid #cdd6d4; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }
+    .loghd { display: flex; justify-content: space-between; align-items: baseline; }
+    h3 { margin: 0; font-size: 16px; }
+    h4 { margin: 12px 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: #16545e; }
+    .meta { color: #444; margin: 4px 0 6px; }
+    table.items { width: 100%; border-collapse: collapse; }
+    table.items td { border-bottom: 1px solid #eef1f0; padding: 3px 6px; vertical-align: top; }
+    td.lbl { width: 70%; }
+    td.st { font-weight: 700; white-space: nowrap; } td.ini { text-align: right; color: #555; }
+    .st-pass { color: #1f8a5b; } .st-fail { color: #cc3a2c; } .st-na { color: #9a7a1e; }
+    tr.fail td { background: #fdeeec; }
+    .tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1px solid #bbb; }
+    .t-ok { color: #1f8a5b; border-color: #1f8a5b; } .t-fail { color: #cc3a2c; border-color: #cc3a2c; }
+    .notes { margin-top: 8px; }
+    @media print { body { margin: 12mm; } button { display: none; } }
+  </style></head><body>
+    <header>
+      <h1>Spruce Lake Adventure — Inspection Report</h1>
+      <div class="sub">${escapeHTML(filterSummary(p))} &nbsp;·&nbsp; ${logs.length} log${logs.length === 1 ? "" : "s"} &nbsp;·&nbsp; generated ${escapeHTML(fmtDate(todayISO()))}</div>
+    </header>
+    ${logs.length ? blocks : "<p>No logs match these filters.</p>"}
+    <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 250); };<\/script>
+  </body></html>`;
+}
+
+function openPrintReport(logs, p) {
+  const w = window.open("", "_blank");
+  if (!w) { alert("Pop-up blocked. Allow pop-ups to open the printable report."); return; }
+  w.document.open(); w.document.write(buildReportHTML(logs, p)); w.document.close();
+}
+
+const exportPrefs = { format: "json", templateId: "all", from: "", to: "", group: "" };
+
+const EXPORT_FORMATS = [
+  { key: "json", title: "JSON backup", desc: "Full data — re-importable into this app" },
+  { key: "csv-item", title: "CSV · per check", desc: "One row per inspection item" },
+  { key: "csv-summary", title: "CSV · per log", desc: "One row per log with pass/fail totals" },
+  { key: "pdf", title: "Printable report", desc: "Formatted document — Save as PDF" },
+];
+
+function renderExport(view) {
+  const summaryEl = el("p", { class: "export-summary" });
+  const previewEl = el("div", { class: "log-list export-preview" });
+  const formatCards = el("div", { class: "format-grid" });
+
+  function doExport() {
+    const logs = filterLogs(exportPrefs);
+    const stamp = todayISO();
+    if (!logs.length && exportPrefs.format !== "pdf") { alert("No logs match these filters."); return; }
+    if (exportPrefs.format === "json") download(`spruce-lake-logs-${stamp}.json`, JSON.stringify(logs, null, 2), "application/json");
+    else if (exportPrefs.format === "csv-item") download(`spruce-lake-logs-per-check-${stamp}.csv`, buildPerItemCSV(logs), "text/csv");
+    else if (exportPrefs.format === "csv-summary") download(`spruce-lake-logs-summary-${stamp}.csv`, buildSummaryCSV(logs), "text/csv");
+    else if (exportPrefs.format === "pdf") openPrintReport(logs, exportPrefs);
+  }
+
+  const primaryBtn = el("button", { class: "btn btn-primary", onclick: doExport }, "Export");
+
+  function renderFormatCards() {
+    formatCards.replaceChildren(...EXPORT_FORMATS.map((f) =>
+      el("button", {
+        type: "button",
+        class: "format-card" + (exportPrefs.format === f.key ? " active" : ""),
+        onclick: () => { exportPrefs.format = f.key; renderFormatCards(); refresh(); },
+      },
+        el("span", { class: "format-title" }, f.title),
+        el("span", { class: "format-desc" }, f.desc))));
+  }
+
+  function refresh() {
+    const logs = filterLogs(exportPrefs);
+    let checks = 0;
+    logs.forEach((l) => { const t = TEMPLATE_BY_ID[l.templateId]; if (t) t.sections.forEach((s) => (checks += s.items.length)); });
+    summaryEl.textContent = `${logs.length} log${logs.length === 1 ? "" : "s"} · ${checks} item checks match`;
+    previewEl.replaceChildren(...(logs.length ? logs.slice(0, 8).map(logRow)
+      : [el("div", { class: "empty-hint" }, "No logs match these filters.")]));
+    primaryBtn.textContent = exportPrefs.format === "pdf" ? "Open printable report" : "Download";
+  }
+
+  const tplSelect = el("select", { class: "field-input", onchange: (e) => { exportPrefs.templateId = e.target.value; refresh(); } },
+    el("option", { value: "all" }, "All log types"),
+    TEMPLATES.map((t) => el("option", { value: t.id, selected: exportPrefs.templateId === t.id ? "selected" : false }, t.name)));
 
   const importInput = el("input", { type: "file", accept: "application/json", class: "visually-hidden",
     onchange: (e) => {
@@ -439,26 +635,48 @@ function renderHistory(view) {
       reader.onload = async () => {
         try {
           const data = JSON.parse(reader.result);
-          if (confirm(`Import ${Array.isArray(data) ? data.length : 0} logs? They'll be merged in and synced.`)) {
-            await Store.importMerge(data); router();
+          if (confirm(`Restore ${Array.isArray(data) ? data.length : 0} logs? They'll be merged in and synced.`)) {
+            await Store.importMerge(data); location.hash = "/history";
           }
         } catch (err) { alert("Could not read that file: " + err.message); }
       };
       reader.readAsText(file);
     } });
-  const importBtn = el("button", { class: "btn btn-ghost", onclick: () => importInput.click() }, "Import");
+
+  renderFormatCards();
 
   view.replaceChildren(
-    el("section", { class: "stack" },
-      el("div", { class: "section-head-row" },
-        el("h1", { class: "page-title" }, "Log history"),
-        el("div", { class: "head-actions" }, importBtn, importInput, exportBtn,
-          el("button", { class: "btn btn-primary", onclick: () => (location.hash = "/new") }, "New log"))),
+    el("section", { class: "stack form-wrap" },
+      crumb("Export", "history", "History"),
+      el("h1", { class: "page-title" }, "Export logs"),
+      el("p", { class: "page-sub" }, "Download a backup, a spreadsheet, or a printable report. Filter first to export exactly the logs you need."),
 
-      logs.length
-        ? el("div", { class: "log-list" }, logs.map(logRow))
-        : el("div", { class: "empty-hint" }, "No logs recorded yet."))
+      el("div", { class: "export-card" },
+        el("h3", { class: "log-section-title" }, "Format"),
+        formatCards),
+
+      el("div", { class: "export-card" },
+        el("h3", { class: "log-section-title" }, "Filter"),
+        el("div", { class: "meta-grid" },
+          el("label", { class: "field" }, el("span", { class: "field-label" }, "Log type"), tplSelect),
+          el("label", { class: "field" }, el("span", { class: "field-label" }, "From date"),
+            el("input", { class: "field-input", type: "date", value: exportPrefs.from, oninput: (e) => { exportPrefs.from = e.target.value; refresh(); } })),
+          el("label", { class: "field" }, el("span", { class: "field-label" }, "To date"),
+            el("input", { class: "field-input", type: "date", value: exportPrefs.to, oninput: (e) => { exportPrefs.to = e.target.value; refresh(); } })),
+          el("label", { class: "field" }, el("span", { class: "field-label" }, "Group contains"),
+            el("input", { class: "field-input", placeholder: "any group", value: exportPrefs.group, oninput: (e) => { exportPrefs.group = e.target.value; refresh(); } })))),
+
+      el("div", { class: "export-bar" },
+        summaryEl,
+        el("div", { class: "head-actions" },
+          el("button", { class: "btn btn-ghost", onclick: () => importInput.click() }, "Restore backup"),
+          importInput,
+          primaryBtn)),
+
+      previewEl)
   );
+
+  refresh();
 }
 
 /* ====================================================================

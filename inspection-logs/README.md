@@ -28,8 +28,13 @@ A bright, outdoorsy interface tuned for fast use in the field:
 - "**Mark all Pass**" for fast clean runs; auto-fills initials from the
   inspector field.
 - Capture **date, group name, # participants, inspector** for every log.
-- **History** of every log, **print / save-as-PDF** of any log, and
-  **export / import JSON** for backup or moving between devices.
+- **History** of every log and **print / save-as-PDF** of any single log.
+- **Robust export** (Export screen): filter by **log type, date range, and
+  group**, see a live match count, then export as a **JSON backup**
+  (re-importable), **CSV — one row per check**, **CSV — one row per log** (with
+  pass/fail totals and flagged items), or a **formatted printable report**
+  (Save as PDF). CSVs include a UTF-8 BOM so they open cleanly in Excel.
+  **Restore from a JSON backup** merges logs back in and syncs them.
 - **Offline-first storage** — logs save instantly to an on-device database
   (**IndexedDB**), so the app fully works with no signal in the field.
 - **Cloud sync (optional)** — connect a **Supabase** database to back logs up

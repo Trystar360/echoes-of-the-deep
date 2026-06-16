@@ -331,6 +331,23 @@ button { font-family: inherit; cursor: pointer; }
   color: #bfe0d8; font-family: ui-monospace, "SF Mono", Menlo, monospace; white-space: pre;
 }
 
+/* ---------- export ---------- */
+.export-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r1); padding: var(--s2); display: flex; flex-direction: column; gap: var(--s1); }
+.format-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); gap: var(--s0); }
+.format-card {
+  display: flex; flex-direction: column; gap: var(--s-2); text-align: left;
+  background: var(--surface-2); border: 1px solid var(--line); color: inherit;
+  border-radius: var(--r0); padding: var(--s1); transition: border-color 0.16s ease, background 0.16s ease;
+}
+.format-card:hover { background: rgba(255, 255, 255, 0.1); }
+.format-card.active { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 14%, transparent); box-shadow: inset 0 0 0 1px var(--gold); }
+.format-title { font-weight: 600; }
+.format-desc { font-size: var(--fs--1); color: var(--ink-faint); }
+.export-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--s1); }
+.export-summary { color: var(--ink-soft); font-weight: 600; }
+.export-preview { margin-top: var(--s0); }
+select.field-input { appearance: none; cursor: pointer; }
+
 /* ---------- responsive ---------- */
 @media (max-width: 760px) {
   .hero { grid-template-columns: 1fr; text-align: center; padding: var(--s3) var(--s2); }
