@@ -9,6 +9,7 @@ import com.echoes.registry.ModItemGroups;
 import com.echoes.registry.ModItems;
 import com.echoes.registry.ModScreens;
 import com.echoes.registry.ModWorldGen;
+import com.echoes.wireless.WirelessNetworkManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
@@ -32,11 +33,18 @@ public class EchoesMod implements ModInitializer {
         // Per-world Resonance network ticking.
         ResonanceNetworkManager.init();
 
+        // Per-world wireless transport (Resonant Relay channels).
+        WirelessNetworkManager.init();
+
         // Expose the Crusher's inventory to hoppers/pipes via the Transfer API.
         // Top face inserts to input, other faces extract from output (see
         // ImplementedInventory#getAvailableSlots).
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.CRUSHER);
+
+        // Resonant Chest exposes its inventory to hoppers/pipes too.
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.RESONANT_CHEST);
 
         LOGGER.info("Echoes of the Deep initialized.");
     }

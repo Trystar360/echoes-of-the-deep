@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "echoes:resonant_relay",
+    "minecraft:comparator"
+  ],
+  "result": {
+    "id": "echoes:resonant_splitter",
+    "count": 1
+  }
+}

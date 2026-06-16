@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "ere",
+    "rRr",
+    "ere"
+  ],
+  "key": {
+    "e": "echoes:echo_ingot",
+    "r": "minecraft:redstone",
+    "R": "echoes:resonant_relay"
+  },
+  "result": {
+    "id": "echoes:resonant_amplifier",
+    "count": 1
+  }
+}

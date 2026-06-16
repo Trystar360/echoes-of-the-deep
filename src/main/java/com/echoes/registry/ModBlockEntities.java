@@ -2,7 +2,15 @@ package com.echoes.registry;
 
 import com.echoes.EchoesMod;
 import com.echoes.block.entity.ConduitBlockEntity;
+import com.echoes.block.entity.ConduitCouplerBlockEntity;
 import com.echoes.block.entity.CrusherBlockEntity;
+import com.echoes.block.entity.EchoRepeaterBlockEntity;
+import com.echoes.block.entity.HarmonicFilterBlockEntity;
+import com.echoes.block.entity.NoteRelayBlockEntity;
+import com.echoes.block.entity.ResonantAmplifierBlockEntity;
+import com.echoes.block.entity.ResonantChestBlockEntity;
+import com.echoes.block.entity.ResonantRelayBlockEntity;
+import com.echoes.block.entity.ResonantSplitterBlockEntity;
 import com.echoes.block.entity.ResonatorBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.Block;
@@ -21,6 +29,22 @@ public final class ModBlockEntities {
             register("tuning_conduit", ConduitBlockEntity::new, ModBlocks.TUNING_CONDUIT);
     public static final BlockEntityType<CrusherBlockEntity> CRUSHER =
             register("crusher", CrusherBlockEntity::new, ModBlocks.CRUSHER);
+    public static final BlockEntityType<ResonantRelayBlockEntity> RESONANT_RELAY =
+            register("resonant_relay", ResonantRelayBlockEntity::new, ModBlocks.RESONANT_RELAY);
+    public static final BlockEntityType<ResonantAmplifierBlockEntity> RESONANT_AMPLIFIER =
+            register("resonant_amplifier", ResonantAmplifierBlockEntity::new, ModBlocks.RESONANT_AMPLIFIER);
+    public static final BlockEntityType<HarmonicFilterBlockEntity> HARMONIC_FILTER =
+            register("harmonic_filter", HarmonicFilterBlockEntity::new, ModBlocks.HARMONIC_FILTER);
+    public static final BlockEntityType<ResonantSplitterBlockEntity> RESONANT_SPLITTER =
+            register("resonant_splitter", ResonantSplitterBlockEntity::new, ModBlocks.RESONANT_SPLITTER);
+    public static final BlockEntityType<EchoRepeaterBlockEntity> ECHO_REPEATER =
+            register("echo_repeater", EchoRepeaterBlockEntity::new, ModBlocks.ECHO_REPEATER);
+    public static final BlockEntityType<ConduitCouplerBlockEntity> CONDUIT_COUPLER =
+            register("conduit_coupler", ConduitCouplerBlockEntity::new, ModBlocks.CONDUIT_COUPLER);
+    public static final BlockEntityType<ResonantChestBlockEntity> RESONANT_CHEST =
+            register("resonant_chest", ResonantChestBlockEntity::new, ModBlocks.RESONANT_CHEST);
+    public static final BlockEntityType<NoteRelayBlockEntity> NOTE_RELAY =
+            register("note_relay", NoteRelayBlockEntity::new, ModBlocks.NOTE_RELAY);
 
     private static <T extends BlockEntity> BlockEntityType<T> register(
             String name, FabricBlockEntityTypeBuilder.Factory<T> factory, Block... blocks) {

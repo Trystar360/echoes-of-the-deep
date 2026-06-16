@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": "echoes:echocite_dust",
+  "result": {
+    "id": "echoes:echo_ingot"
+  },
+  "experience": 0.5,
+  "cookingtime": 200
+}

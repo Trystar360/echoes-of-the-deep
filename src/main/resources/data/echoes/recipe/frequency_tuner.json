@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "tools",
+  "pattern": [
+    " e ",
+    " e ",
+    "r r"
+  ],
+  "key": {
+    "e": "echoes:echo_ingot",
+    "r": "minecraft:redstone"
+  },
+  "result": {
+    "id": "echoes:frequency_tuner",
+    "count": 1
+  }
+}

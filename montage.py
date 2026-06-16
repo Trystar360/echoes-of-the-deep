@@ -34,8 +34,13 @@ def write_png(path, w, h, px):
     open(path,"wb").write(b"\x89PNG\r\n\x1a\n"+ch(b"IHDR",struct.pack(">IIBBBBB",w,h,8,6,0,0,0))+ch(b"IDAT",zlib.compress(bytes(raw),9))+ch(b"IEND",b""))
 
 OUT="src/main/resources/assets/echoes/textures"
-blocks=["echocite_ore","deepslate_echocite_ore","drumstone_ore","silentite_ore","resonator","tuning_conduit","crusher"]
-items=["raw_echocite","echocite_dust","echo_ingot","dull_ingot","resonant_slag","drumstone_shard","drum_core","silentite_crystal","echo_dust"]
+blocks=["echocite_ore","deepslate_echocite_ore","drumstone_ore","silentite_ore",
+        "resonator","tuning_conduit","crusher","resonant_relay","resonant_amplifier",
+        "harmonic_filter","resonant_splitter","echo_repeater","conduit_coupler",
+        "resonant_chest","note_relay"]
+items=["raw_echocite","echocite_dust","echo_ingot","dull_ingot","resonant_slag",
+       "drumstone_shard","drum_core","silentite_crystal","echo_dust",
+       "frequency_tuner","channel_atlas"]
 tiles=[("block",b) for b in blocks]+[("item",it) for it in items]
 
 SCALE=12; TILE=16*SCALE; GAP=10; COLS=4

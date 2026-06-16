@@ -28,6 +28,16 @@ public final class ModItemGroups {
                     entries.add(ModBlocks.RESONATOR);
                     entries.add(ModBlocks.TUNING_CONDUIT);
                     entries.add(ModBlocks.CRUSHER);
+                    entries.add(ModBlocks.RESONANT_RELAY);
+                    entries.add(ModBlocks.RESONANT_AMPLIFIER);
+                    entries.add(ModBlocks.HARMONIC_FILTER);
+                    entries.add(ModBlocks.RESONANT_SPLITTER);
+                    entries.add(ModBlocks.ECHO_REPEATER);
+                    entries.add(ModBlocks.CONDUIT_COUPLER);
+                    entries.add(ModBlocks.RESONANT_CHEST);
+                    entries.add(ModBlocks.NOTE_RELAY);
+                    entries.add(ModItems.FREQUENCY_TUNER);
+                    entries.add(ModItems.CHANNEL_ATLAS);
                     entries.add(ModItems.RAW_ECHOCITE);
                     entries.add(ModItems.DRUMSTONE_SHARD);
                     entries.add(ModItems.SILENTITE_CRYSTAL);

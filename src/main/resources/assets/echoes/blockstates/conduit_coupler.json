@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "echoes:block/conduit_coupler"
+    },
+    "facing=east": {
+      "model": "echoes:block/conduit_coupler",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "echoes:block/conduit_coupler",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "echoes:block/conduit_coupler",
+      "y": 270
+    }
+  }
+}

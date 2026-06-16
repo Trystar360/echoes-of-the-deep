@@ -1,1 +1,19 @@
-{ "variants": { "": { "model": "echoes:block/crusher" } } }
+{
+  "variants": {
+    "facing=north": {
+      "model": "echoes:block/crusher"
+    },
+    "facing=east": {
+      "model": "echoes:block/crusher",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "echoes:block/crusher",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "echoes:block/crusher",
+      "y": 270
+    }
+  }
+}
