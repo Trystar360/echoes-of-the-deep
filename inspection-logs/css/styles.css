@@ -1,6 +1,6 @@
 /* ============================================================
-   Summit Logs — golden-ratio design system
-   φ ≈ 1.618 drives the type scale, spacing, and layout columns.
+   Spruce Lake Adventure — inspection logs design system
+   A consistent proportional scale drives type, spacing, and layout columns.
    ============================================================ */
 
 :root {
@@ -127,14 +127,12 @@ button { font-family: inherit; cursor: pointer; }
 .hero-sub { color: var(--ink-soft); font-size: var(--fs-1); max-width: 52ch; }
 .hero-actions { display: flex; gap: var(--s1); margin-top: var(--s2); flex-wrap: wrap; }
 
-.spiral { width: 100%; max-width: 16.18rem; justify-self: center; filter: drop-shadow(0 0 1.2rem rgba(236, 192, 106, 0.25)); }
-.spiral-cell { fill: none; stroke: rgba(244, 239, 228, 0.1); stroke-width: 0.6; }
-.spiral-arc {
-  fill: none; stroke: var(--gold); stroke-width: 1.6; stroke-linecap: round;
-  stroke-dasharray: 1400; stroke-dashoffset: 1400;
-  animation: draw 2.6s 0.2s cubic-bezier(0.4, 0, 0.1, 1) forwards;
+.hero-art { width: 100%; max-width: 21rem; justify-self: center; }
+.hero-art-svg {
+  width: 100%; height: auto; display: block; border-radius: var(--r2);
+  box-shadow: 0 1rem 2.618rem rgba(4, 30, 34, 0.34);
+  animation: rise 0.6s 0.1s both cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-@keyframes draw { to { stroke-dashoffset: 0; } }
 
 /* ---------- buttons ---------- */
 .btn {
@@ -298,7 +296,7 @@ button { font-family: inherit; cursor: pointer; }
   .hero-title { margin-inline: auto; }
   .hero-sub { margin-inline: auto; }
   .hero-actions { justify-content: center; }
-  .spiral { grid-row: 1; max-width: 11rem; margin-inline: auto; }
+  .hero-art { grid-row: 1; max-width: 18rem; margin-inline: auto; }
   .view { padding: var(--s2) var(--s1) var(--s3); }
   .item-controls { width: 100%; justify-content: space-between; }
   .brand-text small { display: none; }
@@ -307,7 +305,7 @@ button { font-family: inherit; cursor: pointer; }
 /* ---------- print / PDF ---------- */
 @media print {
   body { background: #fff; color: #111; }
-  .topbar, .footer, .form-actions, .head-actions, .crumb, .spiral, .progress, .btn { display: none !important; }
+  .topbar, .footer, .form-actions, .head-actions, .crumb, .hero-art, .progress, .btn { display: none !important; }
   .view { max-width: none; padding: 0; }
   .log-section, .item-row, .surface, .tpl-card, .meta-pill { background: #fff !important; border-color: #bbb !important; box-shadow: none !important; color: #111 !important; }
   .item-hint, .page-sub, .log-row-sub { color: #555 !important; }

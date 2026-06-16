@@ -1,9 +1,9 @@
-# Summit Logs — Adventure Programming Inspection Logs
+# Spruce Lake Adventure — Daily Inspection Logs
 
-A creative, intuitive web app for running **daily inspection logs** for adventure
-programming activities (high ropes courses, power swings, and more). It's a
-static, offline-first app — no build step, no server, no account. Open
-`index.html` and go.
+A creative, intuitive web app for running **daily inspection logs** for Spruce
+Lake's adventure programming activities (high ropes courses, power swings, and
+more). It's a static, offline-first app — no build step, no server, no account.
+Open `index.html` and go.
 
 ## Design
 
@@ -14,7 +14,7 @@ A bright, outdoorsy interface tuned for fast use in the field:
 - **High-contrast** controls — clear Pass / Fail / N/A buttons and a live
   progress bar — so a glance tells you where you are.
 - A bright "alpine daylight over clear water" palette with a warm accent.
-- A flowing spiral mark on the home screen for a touch of adventure character.
+- A hand-drawn Spruce Lake scene on the home screen for a touch of place.
 
 ## Features
 

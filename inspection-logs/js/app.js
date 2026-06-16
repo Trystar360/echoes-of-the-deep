@@ -1,5 +1,5 @@
 /*
- * Summit Logs — adventure programming daily inspection logs.
+ * Spruce Lake Adventure — daily inspection logs.
  * Vanilla JS, no build step. Hash router renders into #view.
  */
 
@@ -81,7 +81,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ====================================================================
- * App chrome (header + golden spiral mark)
+ * App chrome (header)
  * ================================================================== */
 function buildChrome() {
   $("#brand").addEventListener("click", () => (location.hash = "/"));
@@ -105,7 +105,7 @@ function renderDashboard(view) {
   view.replaceChildren(
     el("section", { class: "hero" },
       el("div", { class: "hero-copy" },
-        el("p", { class: "eyebrow" }, "Adventure Programming"),
+        el("p", { class: "eyebrow" }, "Spruce Lake · Adventure Programming"),
         el("h1", { class: "hero-title" }, "Daily Inspection Logs"),
         el("p", { class: "hero-sub" },
           "Run every pre-use, set-up and closing check from one place. Tap through your gear, sign off, and keep a clean record for every group — before the first rider clips in."),
@@ -113,7 +113,7 @@ function renderDashboard(view) {
           el("button", { class: "btn btn-primary", onclick: () => (location.hash = "/new") }, "Start a log"),
           el("button", { class: "btn btn-ghost", onclick: () => (location.hash = "/history") },
             `History (${logs.length})`))),
-      goldenSpiral()),
+      spruceScene()),
 
     el("section", { class: "stack" },
       el("h2", { class: "section-head" }, "Choose a log"),
@@ -439,48 +439,56 @@ function crumb(current, backRoute = "", backLabel = "Home") {
     el("span", { class: "crumb-current" }, current));
 }
 
-function goldenSpiral() {
-  // A true logarithmic golden spiral: radius grows by φ every quarter turn.
-  // Sampled as points, then auto-fit to the viewBox so the pole and the
-  // outer sweep sit nicely inside the frame.
-  const PHI = (1 + Math.sqrt(5)) / 2;
-  const ns = "http://www.w3.org/2000/svg";
-  const box = 240, pad = 18;
+function spruceScene() {
+  // A bright Spruce Lake postcard: sun, mountains, spruce treeline, lake.
+  const W = 320, H = 198;
+  // A spruce silhouette as a single zig-zag polygon, built from base point.
+  const spruce = (bx, by, w, h, color) => {
+    const pts = [
+      [0, -h], [0.10 * w, -0.62 * h], [0.06 * w, -0.62 * h], [0.20 * w, -0.30 * h],
+      [0.13 * w, -0.30 * h], [0.30 * w, 0], [-0.30 * w, 0], [-0.13 * w, -0.30 * h],
+      [-0.20 * w, -0.30 * h], [-0.06 * w, -0.62 * h], [-0.10 * w, -0.62 * h],
+    ].map(([dx, dy]) => `${(bx + dx).toFixed(1)},${(by + dy).toFixed(1)}`).join(" ");
+    return `<polygon points="${pts}" fill="${color}"/>`;
+  };
 
-  const pts = [];
-  const a = 1;
-  for (let t = 0; t <= 1; t += 0.005) {
-    const theta = t * 5.2 * Math.PI;               // ~2.6 turns
-    const r = a * Math.pow(PHI, (2 * theta) / Math.PI);
-    pts.push([r * Math.cos(theta), -r * Math.sin(theta)]);
-  }
-  // Fit points into the padded box.
-  const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
-  const minX = Math.min(...xs), maxX = Math.max(...xs);
-  const minY = Math.min(...ys), maxY = Math.max(...ys);
-  const scale = (box - pad * 2) / Math.max(maxX - minX, maxY - minY);
-  const ox = pad + ((box - pad * 2) - (maxX - minX) * scale) / 2 - minX * scale;
-  const oy = pad + ((box - pad * 2) - (maxY - minY) * scale) / 2 - minY * scale;
-  const fit = ([x, y]) => [(x * scale + ox).toFixed(2), (y * scale + oy).toFixed(2)];
+  const trees =
+    spruce(34, 122, 30, 56, "#1f6f5c") +
+    spruce(58, 122, 22, 40, "#2a8068") +
+    spruce(288, 122, 32, 60, "#1c6857") +
+    spruce(264, 122, 22, 42, "#2a8068") +
+    spruce(150, 122, 18, 34, "#27795f");
 
-  const svg = document.createElementNS(ns, "svg");
-  svg.setAttribute("viewBox", `0 0 ${box} ${box}`);
-  svg.setAttribute("class", "spiral");
-  svg.setAttribute("aria-hidden", "true");
-
-  // Faint golden rectangle around the sweep for texture.
-  const rect = document.createElementNS(ns, "rect");
-  const rw = box - pad * 2, rh = rw / PHI;
-  rect.setAttribute("x", pad); rect.setAttribute("y", (box - rh) / 2);
-  rect.setAttribute("width", rw); rect.setAttribute("height", rh);
-  rect.setAttribute("rx", 6);
-  rect.setAttribute("class", "spiral-cell");
-  svg.appendChild(rect);
-
-  const d = pts.map((p, i) => (i ? "L" : "M") + fit(p).join(",")).join(" ");
-  const path = document.createElementNS(ns, "path");
-  path.setAttribute("class", "spiral-arc");
-  path.setAttribute("d", d);
-  svg.appendChild(path);
-  return svg;
+  const svg = `
+<svg viewBox="0 0 ${W} ${H}" class="hero-art-svg" role="img" aria-label="Spruce Lake landscape">
+  <defs>
+    <linearGradient id="sl-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a9e9e0"/><stop offset="1" stop-color="#eafaf5"/>
+    </linearGradient>
+    <linearGradient id="sl-lake" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f9aa6"/><stop offset="1" stop-color="#16545e"/>
+    </linearGradient>
+    <clipPath id="sl-frame"><rect x="0" y="0" width="${W}" height="${H}" rx="16"/></clipPath>
+  </defs>
+  <g clip-path="url(#sl-frame)">
+    <rect x="0" y="0" width="${W}" height="122" fill="url(#sl-sky)"/>
+    <circle cx="244" cy="48" r="26" fill="#ffcf6e"/>
+    <circle cx="244" cy="48" r="34" fill="#ffcf6e" opacity="0.28"/>
+    <path d="M0 122 L58 60 L116 122 Z" fill="#79bdba"/>
+    <path d="M64 122 L150 40 L236 122 Z" fill="#579e9e"/>
+    <path d="M176 122 L250 64 L320 122 Z" fill="#6cb4b0"/>
+    <path d="M138 58 L150 40 L162 58 L154 53 L150 57 L146 53 Z" fill="#eafaf5"/>
+    <rect x="0" y="122" width="${W}" height="76" fill="url(#sl-lake)"/>
+    <g stroke="#cdf2ec" stroke-width="2.4" opacity="0.5" stroke-linecap="round">
+      <line x1="28" y1="140" x2="78" y2="140"/>
+      <line x1="120" y1="152" x2="196" y2="152"/>
+      <line x1="214" y1="143" x2="256" y2="143"/>
+      <line x1="56" y1="172" x2="138" y2="172"/>
+      <line x1="180" y1="176" x2="250" y2="176"/>
+    </g>
+    ${trees}
+  </g>
+  <rect x="1" y="1" width="${W - 2}" height="${H - 2}" rx="16" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2"/>
+</svg>`;
+  return el("div", { class: "hero-art", html: svg });
 }
