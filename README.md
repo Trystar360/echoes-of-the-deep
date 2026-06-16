@@ -14,8 +14,10 @@ A complete, end-to-end energy + logistics loop, craftable from scratch in surviv
 - **Incremental network manager** — `ResonanceNetworkManager` merges/splits networks
   on conduit place/break with **no per-tick flood fill**; the only expensive path is a
   split check when a conduit is removed.
-- **Ambient capture** — a `LivingEntity#onDeath` mixin emits 25 RU to the nearest
-  Resonator. Sound→RU is data-driven (`data/echoes/resonance_sources.json`).
+- **Ambient capture** — a `LivingEntity#onDeath` mixin (25 RU) plus a
+  `ServerWorld#playSound` mixin that charges the nearest Resonator from a data-driven
+  sound→RU table (`data/echoes/resonance_sources.json`, reloadable, modpack-extendable):
+  note blocks, anvils, bells, explosions, thunder, and more.
 - **Blocks** — Echocite ore (+deepslate), Drumstone ore, Silentite ore, **Resonator**
   (provider+storage, comparator-readable), **Tuning Conduit** (carrier), **Crusher**
   (consumer, ore-doubling).
@@ -91,8 +93,10 @@ complete and survival-craftable as-is.
   Crushing raw echocite now yields a ~15% **Resonant Slag**, which smelts to a
   **Dull Ingot** (an alternate cheap conduit material). **Every item in the mod is
   now survival-obtainable** — no creative-only stubs remain.
-- **`World#playSound` mixin** — read `resonance_sources.json` so ambient sound (not
-  just mob deaths) charges Resonators.
+- ✅ **`ServerWorld#playSound` mixin** — done. A data-driven sound→RU table
+  (`resonance_sources.json`, loaded via a reload listener) now charges the nearest
+  Resonator from ambient world sound, not just mob deaths. *(All "close the loop"
+  content gaps are now complete.)*
 
 **Systems & polish**
 - **Persist networks** — back `ResonanceNetworkManager` / `WirelessNetworkManager`
