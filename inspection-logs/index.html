@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0e2a2f" />
+  <title>Summit Logs · Adventure Programming Inspections</title>
+  <meta name="description" content="Daily inspection logs for adventure programming activities — ropes courses, power swings and more. Golden-ratio design, works offline." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header id="topbar" class="topbar">
+    <div class="topbar-inner">
+      <button id="brand" class="brand" aria-label="Home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M16 3 L29 27 L3 27 Z" /><path class="brand-mark-inner" d="M16 12 L23 27 L9 27 Z" /></svg>
+        </span>
+        <span class="brand-text">
+          <strong>Summit Logs</strong>
+          <small>Adventure inspections</small>
+        </span>
+      </button>
+      <nav class="topnav">
+        <a id="nav-history" href="#/history" class="topnav-link">History</a>
+        <a id="nav-new" href="#/new" class="topnav-link topnav-cta">New log</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="view" class="view"></main>
+
+  <footer class="footer">
+    <span>Built on the golden ratio · φ ≈ 1.618</span>
+    <span>Works offline — logs are saved on this device.</span>
+  </footer>
+
+  <script src="js/templates.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
