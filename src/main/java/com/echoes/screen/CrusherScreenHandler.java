@@ -15,20 +15,25 @@ public class CrusherScreenHandler extends ScreenHandler {
     private final Inventory inventory;
     private final PropertyDelegate props;
 
+    private static final int MACHINE_SLOTS = 3;
+
     /** Client constructor. */
     public CrusherScreenHandler(int syncId, PlayerInventory playerInv) {
-        this(syncId, playerInv, new SimpleInventory(2), new ArrayPropertyDelegate(3));
+        this(syncId, playerInv, new SimpleInventory(MACHINE_SLOTS), new ArrayPropertyDelegate(3));
     }
 
     public CrusherScreenHandler(int syncId, PlayerInventory playerInv, Inventory inv, PropertyDelegate props) {
         super(ModScreens.CRUSHER, syncId);
         this.inventory = inv;
         this.props = props;
-        checkSize(inv, 2);
+        checkSize(inv, MACHINE_SLOTS);
         inv.onOpen(playerInv.player);
 
         this.addSlot(new Slot(inv, 0, 56, 35));        // input
         this.addSlot(new Slot(inv, 1, 116, 35) {       // output (extract-only)
+            @Override public boolean canInsert(ItemStack stack) { return false; }
+        });
+        this.addSlot(new Slot(inv, 2, 116, 57) {       // byproduct (extract-only)
             @Override public boolean canInsert(ItemStack stack) { return false; }
         });
 
@@ -58,10 +63,9 @@ public class CrusherScreenHandler extends ScreenHandler {
         if (slot != null && slot.hasStack()) {
             ItemStack original = slot.getStack();
             newStack = original.copy();
-            int machineSlots = 2;
-            if (slotIndex < machineSlots) {
-                if (!this.insertItem(original, machineSlots, this.slots.size(), true)) return ItemStack.EMPTY;
-            } else if (!this.insertItem(original, 0, 1, false)) {
+            if (slotIndex < MACHINE_SLOTS) {
+                if (!this.insertItem(original, MACHINE_SLOTS, this.slots.size(), true)) return ItemStack.EMPTY;
+            } else if (!this.insertItem(original, 0, 1, false)) {  // player -> input only
                 return ItemStack.EMPTY;
             }
             if (original.isEmpty()) slot.setStack(ItemStack.EMPTY);

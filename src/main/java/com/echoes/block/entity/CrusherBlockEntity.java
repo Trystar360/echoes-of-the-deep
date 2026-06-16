@@ -22,6 +22,7 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import java.util.Optional;
@@ -36,10 +37,10 @@ import java.util.Optional;
 public class CrusherBlockEntity extends BlockEntity
         implements ImplementedInventory, ResonanceNode, NamedScreenHandlerFactory {
 
-    private static final int INPUT = 0, OUTPUT = 1;
+    private static final int INPUT = 0, OUTPUT = 1, BYPRODUCT = 2;
     private static final long INTERNAL_BUFFER = 1_000;
 
-    private final DefaultedList<ItemStack> items = DefaultedList.ofSize(2, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> items = DefaultedList.ofSize(3, ItemStack.EMPTY);
     private final ResonanceStorage buffer = new ResonanceStorage(INTERNAL_BUFFER);
 
     private int progress;       // ticks accumulated toward current recipe
@@ -113,8 +114,28 @@ public class CrusherBlockEntity extends BlockEntity
         ItemStack result = recipe.result();
         if (getStack(OUTPUT).isEmpty()) setStack(OUTPUT, result.copy());
         else getStack(OUTPUT).increment(result.getCount());
+
+        // Roll the optional byproduct (e.g. resonant slag) into the third slot.
+        ItemStack sec = recipe.secondary();
+        if (!sec.isEmpty() && world != null && world.getRandom().nextFloat() < recipe.secondaryChance()) {
+            ItemStack slot = getStack(BYPRODUCT);
+            if (slot.isEmpty()) {
+                setStack(BYPRODUCT, sec.copy());
+            } else if (ItemStack.areItemsAndComponentsEqual(slot, sec)
+                    && slot.getCount() + sec.getCount() <= slot.getMaxCount()) {
+                slot.increment(sec.getCount());
+            }
+            // else: byproduct slot is full/mismatched — the roll is forfeited, machine keeps running.
+        }
         markDirty();
     }
+
+    // --- sided access: top inserts input; other faces extract output + byproduct ---
+    @Override public int[] getAvailableSlots(Direction side) {
+        return side == Direction.UP ? new int[]{INPUT} : new int[]{OUTPUT, BYPRODUCT};
+    }
+    @Override public boolean canInsert(int slot, ItemStack stack, Direction dir) { return slot == INPUT; }
+    @Override public boolean canExtract(int slot, ItemStack stack, Direction dir) { return slot == OUTPUT || slot == BYPRODUCT; }
 
     // --- ResonanceNode (CONSUMER) ---
     @Override public int roleMask() { return NodeRole.of(NodeRole.CONSUMER); }

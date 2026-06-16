@@ -86,9 +86,11 @@ complete and survival-craftable as-is.
   Overworld, Silentite in the Deep Dark); Drumstone shards craft the **Drum Core**
   (an alternate Resonator membrane), and Silentite crystals craft an alternate **Echo
   Repeater**. All three items are now survival-obtainable.
-- **Crusher byproducts** — wire `dull_ingot` / `resonant_slag` (the last two
-  creative-only items) as low-roll crusher outputs; needs a `secondary`+chance field
-  on `CrushingRecipe` and a byproduct slot in the Crusher screen.
+- ✅ **Crusher byproducts** — done. `CrushingRecipe` gained an optional
+  `secondary` + `secondaryChance`; the Crusher has a third (byproduct) slot.
+  Crushing raw echocite now yields a ~15% **Resonant Slag**, which smelts to a
+  **Dull Ingot** (an alternate cheap conduit material). **Every item in the mod is
+  now survival-obtainable** — no creative-only stubs remain.
 - **`World#playSound` mixin** — read `resonance_sources.json` so ambient sound (not
   just mob deaths) charges Resonators.
 
