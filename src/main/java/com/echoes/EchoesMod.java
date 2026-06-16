@@ -2,6 +2,7 @@ package com.echoes;
 
 import com.echoes.block.entity.CrusherBlockEntity;
 import com.echoes.energy.ResonanceNetworkManager;
+import com.echoes.energy.ResonanceSources;
 import com.echoes.recipe.ModRecipes;
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.registry.ModBlocks;
@@ -35,6 +36,9 @@ public class EchoesMod implements ModInitializer {
 
         // Per-world wireless transport (Resonant Relay channels).
         WirelessNetworkManager.init();
+
+        // Data-driven sound -> RU table for the ambient-capture mixin.
+        ResonanceSources.register();
 
         // Expose the Crusher's inventory to hoppers/pipes via the Transfer API.
         // Top face inserts to input, other faces extract from output (see
