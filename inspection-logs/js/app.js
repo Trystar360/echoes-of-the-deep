@@ -70,13 +70,27 @@ function router() {
   else if (route === "edit") renderForm(view, { logId: arg });
   else if (route === "log") renderDetail(view, arg);
   else if (route === "history") renderHistory(view);
+  else if (route === "settings") renderSettings(view);
   else renderDashboard(view);
 
   $("#topbar").scrollIntoView({ behavior: "auto", block: "start" });
 }
+function currentRoute() { return (location.hash.slice(1) || "/").split("/")[1] || ""; }
+
 window.addEventListener("hashchange", router);
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   buildChrome();
+  try { await Store.init(); } catch (e) { console.error("Store init failed", e); }
+  Sync.onStatus(updateSyncBadge);
+  Store.onChange(() => {
+    updateSyncBadge(Sync.status());
+    // Re-render data views on remote/background changes, but never clobber an
+    // open form the user is filling in.
+    const r = currentRoute();
+    if (r !== "new" && r !== "edit" && r !== "settings") router();
+  });
+  Sync.init();
+  updateSyncBadge(Sync.status());
   router();
 });
 
@@ -85,14 +99,32 @@ window.addEventListener("DOMContentLoaded", () => {
  * ================================================================== */
 function buildChrome() {
   $("#brand").addEventListener("click", () => (location.hash = "/"));
-  $("#nav-history").addEventListener("click", (e) => {
-    e.preventDefault();
-    location.hash = "/history";
-  });
-  $("#nav-new").addEventListener("click", (e) => {
-    e.preventDefault();
-    location.hash = "/new";
-  });
+  const go = (id, hash) => $(id).addEventListener("click", (e) => { e.preventDefault(); location.hash = hash; });
+  go("#nav-history", "/history");
+  go("#nav-new", "/new");
+  go("#nav-settings", "/settings");
+  $("#sync-badge").addEventListener("click", () => (location.hash = "/settings"));
+}
+
+const SYNC_BADGE = {
+  local:   { dot: "is-local",   label: "On device" },
+  offline: { dot: "is-offline", label: "Offline" },
+  syncing: { dot: "is-syncing", label: "Syncing…" },
+  idle:    { dot: "is-synced",  label: "Synced" },
+  error:   { dot: "is-error",   label: "Sync error" },
+};
+function updateSyncBadge(status) {
+  const badge = $("#sync-badge");
+  if (!badge) return;
+  const spec = SYNC_BADGE[status.mode] || SYNC_BADGE.local;
+  let label = spec.label;
+  if (status.pending && (status.mode === "offline" || status.mode === "idle"))
+    label = `${status.pending} pending`;
+  badge.querySelector(".sync-dot").className = "sync-dot " + spec.dot;
+  badge.querySelector(".sync-label").textContent = label;
+  badge.title = status.mode === "error" ? (status.error || "Sync error")
+    : status.mode === "local" ? "Saved on this device — tap to connect a cloud database"
+    : `Cloud sync: ${label}`;
 }
 
 /* ====================================================================
@@ -404,11 +436,11 @@ function renderHistory(view) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         try {
           const data = JSON.parse(reader.result);
-          if (confirm(`Import ${Array.isArray(data) ? data.length : 0} logs? This replaces all current logs.`)) {
-            Store.replaceAll(data); router();
+          if (confirm(`Import ${Array.isArray(data) ? data.length : 0} logs? They'll be merged in and synced.`)) {
+            await Store.importMerge(data); router();
           }
         } catch (err) { alert("Could not read that file: " + err.message); }
       };
@@ -427,6 +459,118 @@ function renderHistory(view) {
         ? el("div", { class: "log-list" }, logs.map(logRow))
         : el("div", { class: "empty-hint" }, "No logs recorded yet."))
   );
+}
+
+/* ====================================================================
+ * Settings — cloud sync
+ * ================================================================== */
+const SCHEMA_SQL = `-- Run once in your Supabase project (SQL editor)
+create table if not exists inspection_logs (
+  id            text primary key,
+  template_id   text,
+  template_name text,
+  meta          jsonb,
+  results       jsonb,
+  notes         text,
+  deleted       boolean default false,
+  created_at    timestamptz,
+  updated_at    timestamptz
+);
+create index if not exists inspection_logs_updated_at
+  on inspection_logs (updated_at);
+
+-- Row Level Security. The policy below allows the public (anon) key full
+-- access — fine for a single trusted team / kiosk. Tighten for production.
+alter table inspection_logs enable row level security;
+create policy "team access" on inspection_logs
+  for all using (true) with check (true);`;
+
+function renderSettings(view) {
+  const cfg = Remote.cfg || {};
+  const status = Sync.status();
+
+  const urlEl = el("input", { class: "field-input", type: "url", placeholder: "https://YOUR-PROJECT.supabase.co", value: cfg.url || "" });
+  const keyEl = el("input", { class: "field-input", type: "password", placeholder: "anon / public API key", value: cfg.key || "" });
+  const tableEl = el("input", { class: "field-input", placeholder: "inspection_logs", value: cfg.table || "inspection_logs" });
+  const result = el("p", { class: "settings-result" });
+
+  const collect = () => ({ url: urlEl.value.trim(), key: keyEl.value.trim(), table: (tableEl.value.trim() || "inspection_logs") });
+
+  const saveConnect = () => {
+    const c = collect();
+    if (!c.url || !c.key) { result.textContent = "Enter both a project URL and an API key."; result.className = "settings-result is-warn"; return; }
+    Remote.save(c);
+    result.textContent = "Saved. Syncing…";
+    result.className = "settings-result is-ok";
+    Sync.run().then(() => router());
+  };
+
+  const testConn = async () => {
+    const c = collect();
+    if (!c.url || !c.key) { result.textContent = "Enter a URL and key first."; result.className = "settings-result is-warn"; return; }
+    Remote.save(c);
+    result.textContent = "Testing connection…"; result.className = "settings-result";
+    try { await Remote.test(); result.textContent = "✓ Connected — table reachable."; result.className = "settings-result is-ok"; }
+    catch (e) { result.textContent = "✕ " + e.message; result.className = "settings-result is-error"; }
+  };
+
+  const disconnect = () => {
+    if (!confirm("Disconnect cloud sync? Logs stay on this device.")) return;
+    Remote.clear(); router();
+  };
+
+  const copySchema = (e) => {
+    navigator.clipboard?.writeText(SCHEMA_SQL).then(
+      () => { e.target.textContent = "Copied ✓"; setTimeout(() => (e.target.textContent = "Copy SQL"), 1500); },
+      () => { e.target.textContent = "Copy failed"; });
+  };
+
+  view.replaceChildren(
+    el("section", { class: "stack form-wrap" },
+      crumb("Settings"),
+      el("h1", { class: "page-title" }, "Cloud sync"),
+      el("p", { class: "page-sub" },
+        "Logs always save on this device first, so the app keeps working with no signal. " +
+        "Connect a Supabase database to back them up and sync across phones, tablets and staff."),
+
+      el("div", { class: `sync-status-card is-${status.mode}` },
+        el("span", { class: "sync-dot " + (SYNC_BADGE[status.mode] || SYNC_BADGE.local).dot }),
+        el("div", {},
+          el("strong", {}, statusHeadline(status)),
+          el("span", { class: "page-sub" }, statusDetail(status)))),
+
+      el("div", { class: "settings-form" },
+        el("label", { class: "field" }, el("span", { class: "field-label" }, "Supabase project URL"), urlEl),
+        el("label", { class: "field" }, el("span", { class: "field-label" }, "Anon / public API key"), keyEl),
+        el("label", { class: "field" }, el("span", { class: "field-label" }, "Table name"), tableEl),
+        result,
+        el("div", { class: "form-actions settings-actions" },
+          Remote.isConfigured() ? el("button", { class: "btn btn-danger", onclick: disconnect }, "Disconnect") : null,
+          el("button", { class: "btn btn-ghost", onclick: testConn }, "Test connection"),
+          el("button", { class: "btn btn-ghost", onclick: () => Sync.run() }, "Sync now"),
+          el("button", { class: "btn btn-primary", onclick: saveConnect }, "Save & connect"))),
+
+      el("details", { class: "schema-block" },
+        el("summary", {}, "Database setup — one-time SQL"),
+        el("p", { class: "page-sub" }, "Create a free Supabase project, then paste this into its SQL editor:"),
+        el("div", { class: "schema-head" },
+          el("button", { class: "btn btn-mini", onclick: copySchema }, "Copy SQL")),
+        el("pre", { class: "schema-sql" }, SCHEMA_SQL),
+        el("p", { class: "page-sub" },
+          "Find the URL and anon key in Supabase under Project Settings → API. " +
+          "The anon key is meant for browsers; keep the service-role key out of this app.")))
+  );
+}
+
+function statusHeadline(s) {
+  return { local: "Saved on this device", offline: "Offline", syncing: "Syncing…", idle: "Cloud sync active", error: "Sync error" }[s.mode] || "Saved on this device";
+}
+function statusDetail(s) {
+  if (s.mode === "local") return "No cloud connected. Logs live in this browser only.";
+  if (s.mode === "offline") return `${s.pending} change${s.pending === 1 ? "" : "s"} will sync when you're back online.`;
+  if (s.mode === "error") return s.error || "Could not reach the database.";
+  if (s.mode === "idle") return s.pending ? `${s.pending} change(s) pending.` : "Everything is backed up.";
+  return "Working…";
 }
 
 /* ====================================================================

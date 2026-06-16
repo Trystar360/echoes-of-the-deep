@@ -30,8 +30,33 @@ A bright, outdoorsy interface tuned for fast use in the field:
 - Capture **date, group name, # participants, inspector** for every log.
 - **History** of every log, **print / save-as-PDF** of any log, and
   **export / import JSON** for backup or moving between devices.
-- **Saved locally** in the browser (`localStorage`) — works with no signal in
-  the field.
+- **Offline-first storage** — logs save instantly to an on-device database
+  (**IndexedDB**), so the app fully works with no signal in the field.
+- **Cloud sync (optional)** — connect a **Supabase** database to back logs up
+  and sync across phones, tablets and staff. A header badge shows live status
+  (On device · Syncing · Synced · N pending · Offline · Error).
+
+## Cloud sync
+
+The app is **offline-first**: every change is written to the local IndexedDB
+database first, then synced to the cloud in the background when online. A small
+**sync engine** keeps an outbox of changed records, pushes them up, pulls remote
+changes down, and resolves conflicts **last-write-wins** by `updated_at`
+(deletes are tombstoned so they propagate too).
+
+To enable it:
+
+1. Create a free [Supabase](https://supabase.com) project.
+2. In its SQL editor, run [`supabase-schema.sql`](supabase-schema.sql) (also
+   shown, copyable, on the in-app **Settings** screen).
+3. Open **Settings (⚙)** in the app and paste your **Project URL** and **anon /
+   public API key** (Supabase → Project Settings → API). Hit **Test
+   connection**, then **Save & connect**.
+
+Without this step the app simply runs **local-only** — still fully functional,
+just not synced. The config is stored on the device; the anon key is the
+browser-safe key (keep the service-role key out of the app), and the default RLS
+policy grants the anon key full table access — tighten it for wider use.
 
 ## Adding a new log type
 

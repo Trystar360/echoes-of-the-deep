@@ -24,7 +24,11 @@
         </span>
       </button>
       <nav class="topnav">
+        <button id="sync-badge" class="sync-badge" type="button" title="Sync status">
+          <span class="sync-dot"></span><span class="sync-label">…</span>
+        </button>
         <a id="nav-history" href="#/history" class="topnav-link">History</a>
+        <a id="nav-settings" href="#/settings" class="topnav-link topnav-icon" title="Settings" aria-label="Settings">⚙</a>
         <a id="nav-new" href="#/new" class="topnav-link topnav-cta">New log</a>
       </nav>
     </div>
@@ -37,8 +41,11 @@
     <span>Works offline — logs are saved on this device.</span>
   </footer>
 
+  <script src="js/db.js"></script>
   <script src="js/templates.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/remote.js"></script>
+  <script src="js/sync.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
