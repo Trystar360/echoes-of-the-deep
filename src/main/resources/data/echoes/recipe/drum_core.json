@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " s ",
+    "sis",
+    " s "
+  ],
+  "key": {
+    "s": "echoes:drumstone_shard",
+    "i": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "echoes:drum_core",
+    "count": 1
+  }
+}
