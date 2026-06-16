@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 /** Widens the per-tick transfer budget of its channel. Each one doubles it (capped). */
-public class ResonantAmplifierBlock extends AbstractChannelDeviceBlock {
+public class ResonantAmplifierBlock extends AbstractHorizontalDeviceBlock {
 
     public ResonantAmplifierBlock(Settings settings) {
         super(settings);

@@ -1,1 +1,19 @@
-{ "variants": { "": { "model": "echoes:block/resonator" } } }
+{
+  "variants": {
+    "facing=north": {
+      "model": "echoes:block/resonator"
+    },
+    "facing=east": {
+      "model": "echoes:block/resonator",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "echoes:block/resonator",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "echoes:block/resonator",
+      "y": 270
+    }
+  }
+}

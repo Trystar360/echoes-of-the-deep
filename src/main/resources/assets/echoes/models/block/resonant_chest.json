@@ -1,6 +1,8 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/orientable",
   "textures": {
-    "all": "echoes:block/resonant_chest"
+    "front": "echoes:block/resonant_chest",
+    "side": "echoes:block/device_side",
+    "top": "echoes:block/device_top"
   }
 }

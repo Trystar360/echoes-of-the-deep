@@ -22,15 +22,18 @@ import org.jetbrains.annotations.Nullable;
  * channel; RECEIVE emits the channel's strongest broadcast. Empty-hand right-click
  * cycles the mode; dye/sneak tune the channel.
  */
-public class NoteRelayBlock extends AbstractChannelDeviceBlock {
+public class NoteRelayBlock extends AbstractHorizontalDeviceBlock {
 
     public NoteRelayBlock(Settings settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState().with(Properties.POWERED, false));
+        setDefaultState(getStateManager().getDefaultState()
+                .with(Properties.HORIZONTAL_FACING, net.minecraft.util.math.Direction.NORTH)
+                .with(Properties.POWERED, false));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
         builder.add(Properties.POWERED);
     }
 

@@ -1,1 +1,8 @@
-{ "parent": "minecraft:block/cube_all", "textures": { "all": "echoes:block/crusher" } }
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "echoes:block/crusher",
+    "side": "echoes:block/device_side",
+    "top": "echoes:block/device_top"
+  }
+}

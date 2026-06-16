@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 /** Toggles its channel between even round-robin sharing and fill-first delivery. */
-public class ResonantSplitterBlock extends AbstractChannelDeviceBlock {
+public class ResonantSplitterBlock extends AbstractHorizontalDeviceBlock {
 
     public ResonantSplitterBlock(Settings settings) {
         super(settings);

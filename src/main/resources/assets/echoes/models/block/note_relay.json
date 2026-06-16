@@ -1,6 +1,8 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/orientable",
   "textures": {
-    "all": "echoes:block/note_relay"
+    "front": "echoes:block/note_relay",
+    "side": "echoes:block/device_side",
+    "top": "echoes:block/device_top"
   }
 }

@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * Tuning Conduit; empty-hand right-click cycles the bridge direction (Send pushes
  * wired RU onto the channel, Receive pulls channel RU into the grid).
  */
-public class ConduitCouplerBlock extends AbstractChannelDeviceBlock {
+public class ConduitCouplerBlock extends AbstractHorizontalDeviceBlock {
 
     public ConduitCouplerBlock(Settings settings) {
         super(settings);

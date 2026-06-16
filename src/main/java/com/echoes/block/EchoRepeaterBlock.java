@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 /** Pools its channel across every dimension it appears in (cross-dimension transport). */
-public class EchoRepeaterBlock extends AbstractChannelDeviceBlock {
+public class EchoRepeaterBlock extends AbstractHorizontalDeviceBlock {
 
     public EchoRepeaterBlock(Settings settings) {
         super(settings);

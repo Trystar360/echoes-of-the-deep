@@ -12,7 +12,7 @@ Shared mystique (every sprite speaks the same language):
   * Top-left light source, beveled edges, a gentle dark vignette so it all reads
     as something ancient pulled up "from the deep".
 """
-import struct, zlib, os, math
+import struct, zlib, os, math, json
 
 # ---------------------------------------------------------------- PNG (RGBA)
 def write_png(path, w, h, px):
@@ -94,6 +94,12 @@ OUT = "src/main/resources/assets/echoes/textures"
 for d in ("block", "item", "gui"):
     os.makedirs(os.path.join(OUT, d), exist_ok=True)
 
+# Animation: GLOW scales every emissive draw (bloom/ripple/core). Frame builders
+# re-run with different GLOW values to make the resonance breathe.
+GLOW = 1.0
+PULSE = [1.0, 0.9, 0.74, 0.66, 0.74, 0.9]   # smooth loop, ~1.1s at frametime 3
+FRAMETIME = 3
+
 # ---------------------------------------------------------------- shared toolkit
 def vignette(c, strength=46):
     cx, cy = 7.5, 7.5
@@ -129,6 +135,7 @@ def sculk_bg(c, seed, base=DEEP, accent=TEAL, veins=True):
     ambient(c)
 
 def bloom(c, accent, alpha=72, reach=2, thresh=175):
+    alpha = int(alpha * GLOW)
     a3 = accent[3]
     bright = [(x, y) for y in range(c.h) for x in range(c.w)
               if c.get(x, y)[3] > 0 and lum(c.get(x, y)) > thresh]
@@ -151,20 +158,23 @@ def ripples(c, cx, cy, accent, rmax=6.0, x0=0, y0=0, x1=15, y1=15, alpha=235, ph
             if d > rmax: continue
             ring = int(round(d)) + phase
             t = max(0.0, 1 - d / rmax)
+            g = 0.55 + 0.45 * GLOW
             if ring % 2 == 0:
                 col = lerp(accent[1], accent[4], t)
                 if (x - cx) + (y - cy) < -1: col = lerp(col, accent[4], 0.4)
-                c.over(x, y, (col[0], col[1], col[2], int(alpha * (0.35 + 0.65 * t))))
+                c.over(x, y, (col[0], col[1], col[2], int(alpha * (0.35 + 0.65 * t) * g)))
             else:
                 col = lerp((10, 14, 16), accent[2], t * 0.5)
-                c.over(x, y, (col[0], col[1], col[2], int(120 * t)))
+                c.over(x, y, (col[0], col[1], col[2], int(120 * t * g)))
 
 def core(c, cx, cy, accent, r=1):
+    body = lerp(accent[2], accent[4], GLOW)
+    center = lerp(accent[3], (235, 255, 250), GLOW)
     for dy in range(-r, r + 1):
         for dx in range(-r, r + 1):
             if dx * dx + dy * dy <= r * r + 1:
-                c.set(int(cx) + dx, int(cy) + dy, accent[4])
-    c.set(int(cx), int(cy), (235, 255, 250))
+                c.set(int(cx) + dx, int(cy) + dy, body)
+    c.set(int(cx), int(cy), center)
 
 def bezel(c, metal=BRONZE, accent=TEAL, t=2, runes=True):
     dark, mid, lite = metal[0], metal[2], metal[3]
@@ -246,51 +256,48 @@ ore("drumstone_ore", DEEPER, AMBER, 103, 3)
 ore("silentite_ore", DEEPER, AMETH, 104, 2)
 
 # ================================================================ MACHINES / DEVICES
+# Each "front" is a build_*() that returns a canvas, so it can be re-rendered at
+# several GLOW levels into an animated strip (the resonance breathes).
 def emitter_face(c, accent, rmax=5.4, phase=0, bg=FACE):
     """The archetypal resonance face: dark inset, concentric ripples, glowing core."""
     face_inset(c, bg)
     ripples(c, 7.5, 7.5, accent, rmax=rmax, x0=3, y0=3, x1=12, y1=12, phase=phase)
     core(c, 7, 7, accent, r=1)
 
-def resonator():
+def build_resonator():
     c = C(); bezel(c, BRONZE, TEAL)
     emitter_face(c, TEAL, rmax=5.6)
     bloom(c, TEAL, alpha=80); vignette(c, 30)
-    write_png(f"{OUT}/block/resonator.png", 16, 16, c.px)
-resonator()
+    return c
 
-def resonant_relay():
+def build_resonant_relay():
     c = C(); bezel(c, BRONZE, TEAL)
     emitter_face(c, TEAL, rmax=5.4)
     for (x, y) in [(7, 3), (8, 12), (3, 8), (12, 7)]:  # four broadcast pips
         c.set(x, y, TEAL[4])
     bloom(c, TEAL, alpha=78); vignette(c, 30)
-    write_png(f"{OUT}/block/resonant_relay.png", 16, 16, c.px)
-resonant_relay()
+    return c
 
-def resonant_amplifier():
+def build_resonant_amplifier():
     c = C(); bezel(c, BRONZE, AMBER)
     emitter_face(c, TEAL, rmax=5.4)            # teal core (resonance through-line)
     glyph(c, AMBER, [(4, 7), (5, 6), (4, 8), (10, 7), (11, 6), (10, 8)],
           hi=[(5, 6), (11, 6)])                # amber boost chevrons
     bloom(c, TEAL, alpha=70); bloom(c, AMBER, alpha=40, reach=1); vignette(c, 30)
-    write_png(f"{OUT}/block/resonant_amplifier.png", 16, 16, c.px)
-resonant_amplifier()
+    return c
 
-def echo_repeater():
+def build_echo_repeater():
     c = C(); bezel(c, BRONZE, AMETH)
     face_inset(c)
     ripples(c, 7.5, 7.5, AMETH, rmax=5.4, x0=3, y0=3, x1=12, y1=12)  # dimensional swirl
     core(c, 7, 7, TEAL, r=1)                   # teal heart inside amethyst rings
     bloom(c, AMETH, alpha=70); bloom(c, TEAL, alpha=45, reach=1); vignette(c, 30)
-    write_png(f"{OUT}/block/echo_repeater.png", 16, 16, c.px)
-echo_repeater()
+    return c
 
-def tuning_conduit():
+def build_tuning_conduit():
     c = C(); bezel(c, BRONZE, TEAL, t=1)
     face_inset(c, (14, 22, 24))
-    # rune channel carrying resonance edge-to-edge
-    c.rect(7, 1, 8, 14, None)
+    c.rect(7, 1, 8, 14, None)                  # rune channel carrying resonance edge-to-edge
     for x in range(1, 15):
         col = lerp(TEAL[1], TEAL[3], 1 - abs(7.5 - x) / 7.5)
         c.over(x, 7, col); c.over(x, 8, lerp(col, TEAL[1], 0.4))
@@ -299,10 +306,9 @@ def tuning_conduit():
         c.over(7, y, col); c.over(8, y, lerp(col, TEAL[1], 0.4))
     core(c, 7, 7, TEAL, r=1)
     bloom(c, TEAL, alpha=70); vignette(c, 28)
-    write_png(f"{OUT}/block/tuning_conduit.png", 16, 16, c.px)
-tuning_conduit()
+    return c
 
-def harmonic_filter():
+def build_harmonic_filter():
     c = C(); bezel(c, BRONZE, TEAL)
     face_inset(c)
     for x in range(3, 13):                     # engraved sieve lattice
@@ -313,10 +319,9 @@ def harmonic_filter():
         for y in range(4, 13, 3):
             c.set(x, y, TEAL[3]); c.over(x, y - 1, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 120))
     bloom(c, TEAL, alpha=55, reach=1); vignette(c, 30)
-    write_png(f"{OUT}/block/harmonic_filter.png", 16, 16, c.px)
-harmonic_filter()
+    return c
 
-def resonant_splitter():
+def build_resonant_splitter():
     c = C(); bezel(c, BRONZE, TEAL)
     face_inset(c)
     for x in range(3, 8):                       # one shaft in
@@ -326,10 +331,9 @@ def resonant_splitter():
     for (x, y) in [(3, 7), (11, 3), (11, 12)]:
         c.set(x, y, TEAL[4])
     bloom(c, TEAL, alpha=60); vignette(c, 30)
-    write_png(f"{OUT}/block/resonant_splitter.png", 16, 16, c.px)
-resonant_splitter()
+    return c
 
-def conduit_coupler():
+def build_conduit_coupler():
     c = C(); bezel(c, BRONZE, TEAL)
     face_inset(c)
     ripples(c, 4.5, 7.5, TEAL, rmax=4.2, x0=3, y0=3, x1=7, y1=12)   # wireless half
@@ -339,10 +343,9 @@ def conduit_coupler():
     c.over(8, 3, (0, 0, 0, 120)); c.over(8, 12, (0, 0, 0, 120))      # seam
     core(c, 4, 7, TEAL, r=0); c.set(10, 7, TEAL[4])
     bloom(c, TEAL, alpha=62); vignette(c, 30)
-    write_png(f"{OUT}/block/conduit_coupler.png", 16, 16, c.px)
-conduit_coupler()
+    return c
 
-def note_relay():
+def build_note_relay():
     c = C(); bezel(c, BRONZE, TEAL)
     face_inset(c)
     c.rect(8, 4, 8, 11, TEAL[2])                # stem
@@ -351,35 +354,28 @@ def note_relay():
     c.set(9, 4, TEAL[3]); c.set(10, 5, TEAL[3]); c.set(10, 6, TEAL[3]); c.set(9, 6, TEAL[3])  # flag
     c.set(6, 10, TEAL[4]); c.set(8, 4, TEAL[4])
     bloom(c, TEAL, alpha=62, reach=2); vignette(c, 30)
-    write_png(f"{OUT}/block/note_relay.png", 16, 16, c.px)
-note_relay()
+    return c
 
-def resonant_chest():
+def build_resonant_chest():
     c = C()
-    # ancient dark casket body with a thin bronze rim
-    c.rect(0, 0, 15, 15, BRONZE[1])
+    c.rect(0, 0, 15, 15, BRONZE[1])             # ancient dark casket body, thin bronze rim
     c.rect(1, 1, 14, 14, (16, 24, 26))
-    for x in range(1, 15):                        # lit top edge, shadowed bottom
+    for x in range(1, 15):
         c.set(x, 1, BRONZE[3]); c.set(x, 14, BRONZE[0])
     for y in range(1, 15):
         c.set(1, y, BRONZE[2]); c.set(14, y, BRONZE[0])
-    # lid: top quarter, separated by a bright bronze seam band
-    c.rect(1, 2, 14, 4, (22, 32, 34))
+    c.rect(1, 2, 14, 4, (22, 32, 34))           # lid quarter + bronze seam band
     c.rect(1, 5, 14, 5, BRONZE[3]); c.rect(1, 6, 14, 6, BRONZE[1])
-    # vertical bronze corner straps
-    c.rect(3, 2, 3, 13, BRONZE[2]); c.rect(12, 2, 12, 13, BRONZE[1])
-    # central rune lock plate straddling the seam
-    c.rect(6, 4, 9, 9, BRONZE[3])
+    c.rect(3, 2, 3, 13, BRONZE[2]); c.rect(12, 2, 12, 13, BRONZE[1])   # corner straps
+    c.rect(6, 4, 9, 9, BRONZE[3])               # central rune lock plate
     c.set(6, 4, BRONZE[4]); c.rect(6, 9, 9, 9, BRONZE[0])
-    c.set(7, 6, TEAL[4]); c.set(8, 7, TEAL[3]); c.set(8, 6, TEAL[3]); c.set(7, 7, TEAL[3])  # keyhole rune
+    c.set(7, 6, TEAL[4]); c.set(8, 7, TEAL[3]); c.set(8, 6, TEAL[3]); c.set(7, 7, TEAL[3])
     c.over(7, 8, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 150))
-    # faint channel glow leaking from the seam corners
     for x in (2, 13): c.over(x, 5, (TEAL[3][0], TEAL[3][1], TEAL[3][2], 120))
     bloom(c, TEAL, alpha=55, reach=2, thresh=170); vignette(c, 32)
-    write_png(f"{OUT}/block/resonant_chest.png", 16, 16, c.px)
-resonant_chest()
+    return c
 
-def crusher():
+def build_crusher():
     c = C(); bezel(c, BRONZE, TEAL)
     c.rect(2, 2, 13, 13, (16, 22, 24))
     for y in range(2, 5):                        # hopper maw
@@ -395,8 +391,74 @@ def crusher():
         c.over(x, 8, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 95))
         c.over(x, 10, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 80))
     bloom(c, TEAL, alpha=58, reach=1); vignette(c, 30)
-    write_png(f"{OUT}/block/crusher.png", 16, 16, c.px)
-crusher()
+    return c
+
+# Shared bronze casing — the SIDE and TOP/BOTTOM of every machine, so the whole
+# family reads as one material; only the glowing front differs.
+def device_side():
+    c = C()
+    for y in range(16):
+        for x in range(16):
+            n = hash_noise(x, y, 711)
+            c.set(x, y, BRONZE[1] if n < 0.42 else BRONZE[2] if n < 0.85 else BRONZE[3])
+    for x in range(16): c.set(x, 0, BRONZE[3]); c.set(x, 15, BRONZE[0])
+    for y in range(16): c.set(0, y, BRONZE[2]); c.set(15, y, BRONZE[0])
+    for y in range(2, 14): c.over(4, y, (0, 0, 0, 70)); c.over(11, y, (0, 0, 0, 70))  # panel seams
+    for y in range(3, 13):                       # faint inner teal vein
+        c.over(7, y, (TEAL[1][0], TEAL[1][1], TEAL[1][2], 70))
+        c.over(8, y, (TEAL[1][0], TEAL[1][1], TEAL[1][2], 50))
+    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        c.set(rx, ry, BRONZE[4]); c.over(rx + 1, ry + 1, (0, 0, 0, 90))
+    nx = rng(712)
+    for _ in range(3): c.over(1 + nx() % 14, 1 + nx() % 14, (VERDI[0], VERDI[1], VERDI[2], 120))
+    vignette(c, 26)
+    write_png(f"{OUT}/block/device_side.png", 16, 16, c.px)
+device_side()
+
+def device_top():
+    c = C()
+    for y in range(16):
+        for x in range(16):
+            n = hash_noise(x, y, 733)
+            c.set(x, y, BRONZE[1] if n < 0.42 else BRONZE[2] if n < 0.85 else BRONZE[3])
+    for x in range(16): c.set(x, 0, BRONZE[3]); c.set(x, 15, BRONZE[0])
+    for y in range(16): c.set(0, y, BRONZE[2]); c.set(15, y, BRONZE[0])
+    for y in range(16):                          # centred resonance ring stamp
+        for x in range(16):
+            if abs(math.hypot(x - 7.5, y - 7.5) - 4) < 0.6:
+                c.over(x, y, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 70))
+    c.over(7, 7, (TEAL[3][0], TEAL[3][1], TEAL[3][2], 130)); c.over(8, 8, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 90))
+    for (rx, ry) in [(2, 2), (13, 2), (2, 13), (13, 13)]:
+        c.set(rx, ry, BRONZE[4]); c.over(rx + 1, ry + 1, (0, 0, 0, 90))
+    vignette(c, 26)
+    write_png(f"{OUT}/block/device_top.png", 16, 16, c.px)
+device_top()
+
+# Render the breathing fronts as vertical animation strips + .mcmeta.
+ANIMATED = {
+    "resonator": build_resonator, "resonant_relay": build_resonant_relay,
+    "resonant_amplifier": build_resonant_amplifier, "echo_repeater": build_echo_repeater,
+    "tuning_conduit": build_tuning_conduit, "harmonic_filter": build_harmonic_filter,
+    "resonant_splitter": build_resonant_splitter, "conduit_coupler": build_conduit_coupler,
+    "note_relay": build_note_relay, "resonant_chest": build_resonant_chest, "crusher": build_crusher,
+}
+def emit_block(name, builder):
+    global GLOW
+    n = len(PULSE)
+    strip = [(0, 0, 0, 0)] * (16 * 16 * n)
+    for i, g in enumerate(PULSE):
+        GLOW = g
+        c = builder()
+        for y in range(16):
+            for x in range(16):
+                strip[(i * 16 + y) * 16 + x] = c.get(x, y)
+    GLOW = 1.0
+    write_png(f"{OUT}/block/{name}.png", 16, 16 * n, strip)
+    with open(f"{OUT}/block/{name}.png.mcmeta", "w") as f:
+        json.dump({"animation": {"frametime": FRAMETIME}}, f)
+        f.write("\n")
+for _nm, _fn in ANIMATED.items():
+    emit_block(_nm, _fn)
 
 # ================================================================ ITEMS
 def chunk_item(name, rock, accent, seed):

@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * it, no separate relay needed. Empty-hand right-click opens it; dye/sneak tune
  * the channel.
  */
-public class ResonantChestBlock extends AbstractChannelDeviceBlock {
+public class ResonantChestBlock extends AbstractHorizontalDeviceBlock {
 
     public ResonantChestBlock(Settings settings) {
         super(settings);

@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * Whitelists item types on its channel. Right-click with an item to add its type;
  * empty-hand right-click clears the list. (Dye/sneak still tune the channel.)
  */
-public class HarmonicFilterBlock extends AbstractChannelDeviceBlock {
+public class HarmonicFilterBlock extends AbstractHorizontalDeviceBlock {
 
     public HarmonicFilterBlock(Settings settings) {
         super(settings);
