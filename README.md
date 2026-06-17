@@ -50,7 +50,7 @@ A complete, end-to-end energy + logistics loop, craftable from scratch in surviv
 ✅ **This builds and runs.** Verified against Minecraft **1.21.4**, Yarn `1.21.4+build.8`,
 Loom `1.9.2`, Fabric API `0.119.2+1.21.4`, Gradle `8.12`, JDK 21. The mod loads on a
 dedicated server: registries populate, the `LivingEntity#onDeath` mixin applies, all
-recipes parse (1389 total), and the Echocite worldgen attaches via biome modifications
+recipes parse (1399 total), and the Echocite worldgen attaches via biome modifications
 (`Applied 54 biome modifications`).
 
 ```bash
@@ -121,8 +121,15 @@ complete and survival-craftable as-is.
 - ✅ **Attunement Furnace** — done. An RU-powered machine that smelts *any vanilla
   furnace recipe* (no fuel), drawing from the grid like the Crusher. Directional
   model + its own screen.
-- Resonance Centrifuge, Echo Forge; Resonance Cell / Capacitor.
-- Resonant tools, Silence Cloak (+ Trinkets compat); Dense Conduit upgrade.
+- ✅ **Resonance Capacitor** — done. Bulk STORAGE node (250k RU) so the grid can
+  bank surplus instead of being capped at the Resonators' small reserves;
+  comparator-readable.
+- ✅ **Dense Tuning Conduit** — done. A ×16 throughput conduit (16k RU/t) for
+  feeding many or hungry consumers without huge conduit bundles.
+- ✅ **Resonance Meter** — done. Handheld diagnostic: right-click any Resonance
+  device to read its role, stored / capacity RU, demand, and conduit throughput
+  (RU is otherwise invisible).
+- Resonance Centrifuge, Echo Forge; Resonant tools, Silence Cloak (+ Trinkets compat).
 
 ## Art
 

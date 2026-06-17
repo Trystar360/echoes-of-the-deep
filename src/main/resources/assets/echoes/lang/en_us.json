@@ -6,6 +6,8 @@
   "block.echoes.silentite_ore": "Silentite Ore",
   "block.echoes.resonator": "Resonator",
   "block.echoes.tuning_conduit": "Tuning Conduit",
+  "block.echoes.dense_conduit": "Dense Tuning Conduit",
+  "block.echoes.resonance_capacitor": "Resonance Capacitor",
   "block.echoes.crusher": "Crusher",
   "block.echoes.attunement_furnace": "Attunement Furnace",
   "block.echoes.resonant_relay": "Resonant Relay",
@@ -18,6 +20,7 @@
   "block.echoes.note_relay": "Note Relay",
   "item.echoes.frequency_tuner": "Frequency Tuner",
   "item.echoes.channel_atlas": "Channel Atlas",
+  "item.echoes.resonance_meter": "Resonance Meter",
   "message.echoes.channel": "Channel: %s",
   "message.echoes.relay.mode": "Mode: %s",
   "message.echoes.relay.mode.receive": "Receive",
@@ -42,5 +45,9 @@
   "item.echoes.dull_ingot": "Dull Ingot",
   "item.echoes.resonant_slag": "Resonant Slag",
   "item.echoes.drum_core": "Drum Core",
-  "item.echoes.echo_dust": "Echo Dust"
+  "item.echoes.echo_dust": "Echo Dust",
+  "message.echoes.meter.header": "%s — %s",
+  "message.echoes.meter.stored": "  %s / %s RU (%s%%)",
+  "message.echoes.meter.demand": "  Demand: %s RU/t",
+  "message.echoes.meter.throughput": "  Throughput: %s RU/t"
 }

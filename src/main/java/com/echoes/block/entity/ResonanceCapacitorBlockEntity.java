@@ -11,28 +11,23 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * Captures ambient RU emitted by Resonance events and offers it to the network.
- * PROVIDER + STORAGE: its buffer doubles as the network's first source.
+ * Bulk RU storage for the wired grid. A pure STORAGE node with a large buffer, so
+ * surplus Resonance can be banked and drawn on later instead of capped at the
+ * Resonators' small reserves. Comparator-readable by fill level.
  */
-public class ResonatorBlockEntity extends BlockEntity implements ResonanceNode {
-    public static final long DEFAULT_CAPACITY = 10_000;
+public class ResonanceCapacitorBlockEntity extends BlockEntity implements ResonanceNode {
+    public static final long CAPACITY = 250_000;
 
-    private final ResonanceStorage storage = new ResonanceStorage(DEFAULT_CAPACITY);
+    private final ResonanceStorage storage = new ResonanceStorage(CAPACITY);
 
-    public ResonatorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.RESONATOR, pos, state);
-    }
-
-    /** Called by ResonanceEvents when a nearby event fires. */
-    public void absorbAmbient(int ru) {
-        storage.absorb(ru);
-        markDirty();
+    public ResonanceCapacitorBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.RESONANCE_CAPACITOR, pos, state);
     }
 
     public ResonanceStorage storage() { return storage; }
 
-    // --- ResonanceNode ---
-    @Override public int roleMask() { return NodeRole.of(NodeRole.PROVIDER, NodeRole.STORAGE); }
+    // --- ResonanceNode (STORAGE) ---
+    @Override public int roleMask() { return NodeRole.of(NodeRole.STORAGE); }
     @Override public long extract(long max, boolean simulate) { return storage.extract(max, simulate); }
     @Override public long insert(long max, boolean simulate) { return storage.insert(max, simulate); }
     @Override public long demand() { return 0; }

@@ -5,6 +5,8 @@ import com.echoes.block.entity.AttunementFurnaceBlockEntity;
 import com.echoes.block.entity.ConduitBlockEntity;
 import com.echoes.block.entity.ConduitCouplerBlockEntity;
 import com.echoes.block.entity.CrusherBlockEntity;
+import com.echoes.block.entity.DenseConduitBlockEntity;
+import com.echoes.block.entity.ResonanceCapacitorBlockEntity;
 import com.echoes.block.entity.EchoRepeaterBlockEntity;
 import com.echoes.block.entity.HarmonicFilterBlockEntity;
 import com.echoes.block.entity.NoteRelayBlockEntity;
@@ -28,6 +30,10 @@ public final class ModBlockEntities {
             register("resonator", ResonatorBlockEntity::new, ModBlocks.RESONATOR);
     public static final BlockEntityType<ConduitBlockEntity> CONDUIT =
             register("tuning_conduit", ConduitBlockEntity::new, ModBlocks.TUNING_CONDUIT);
+    public static final BlockEntityType<DenseConduitBlockEntity> DENSE_CONDUIT =
+            register("dense_conduit", DenseConduitBlockEntity::new, ModBlocks.DENSE_CONDUIT);
+    public static final BlockEntityType<ResonanceCapacitorBlockEntity> RESONANCE_CAPACITOR =
+            register("resonance_capacitor", ResonanceCapacitorBlockEntity::new, ModBlocks.RESONANCE_CAPACITOR);
     public static final BlockEntityType<CrusherBlockEntity> CRUSHER =
             register("crusher", CrusherBlockEntity::new, ModBlocks.CRUSHER);
     public static final BlockEntityType<AttunementFurnaceBlockEntity> ATTUNEMENT_FURNACE =

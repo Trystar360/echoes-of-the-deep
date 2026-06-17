@@ -5,6 +5,8 @@ import com.echoes.block.AttunementFurnaceBlock;
 import com.echoes.block.ConduitBlock;
 import com.echoes.block.ConduitCouplerBlock;
 import com.echoes.block.CrusherBlock;
+import com.echoes.block.DenseConduitBlock;
+import com.echoes.block.ResonanceCapacitorBlock;
 import com.echoes.block.EchoRepeaterBlock;
 import com.echoes.block.HarmonicFilterBlock;
 import com.echoes.block.NoteRelayBlock;
@@ -45,6 +47,10 @@ public final class ModBlocks {
             ResonatorBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool().nonOpaque());
     public static final Block TUNING_CONDUIT = register("tuning_conduit",
             ConduitBlock::new, AbstractBlock.Settings.create().strength(1.5f).nonOpaque());
+    public static final Block DENSE_CONDUIT = register("dense_conduit",
+            DenseConduitBlock::new, AbstractBlock.Settings.create().strength(2.0f).requiresTool().nonOpaque());
+    public static final Block RESONANCE_CAPACITOR = register("resonance_capacitor",
+            ResonanceCapacitorBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque());
     public static final Block CRUSHER = register("crusher",
             CrusherBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool());
     public static final Block ATTUNEMENT_FURNACE = register("attunement_furnace",

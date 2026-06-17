@@ -148,6 +148,8 @@ public class CrusherBlockEntity extends BlockEntity
     }
     @Override public int transferCap() { return 0; }
     @Override public BlockPos pos() { return getPos(); }
+    @Override public long storedRu() { return buffer.getAmount(); }
+    @Override public long capacityRu() { return buffer.getCapacity(); }
 
     // --- screen ---
     @Override public Text getDisplayName() { return Text.translatable("block.echoes.crusher"); }

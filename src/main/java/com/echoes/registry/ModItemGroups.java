@@ -27,6 +27,8 @@ public final class ModItemGroups {
                     entries.add(ModBlocks.SILENTITE_ORE);
                     entries.add(ModBlocks.RESONATOR);
                     entries.add(ModBlocks.TUNING_CONDUIT);
+                    entries.add(ModBlocks.DENSE_CONDUIT);
+                    entries.add(ModBlocks.RESONANCE_CAPACITOR);
                     entries.add(ModBlocks.CRUSHER);
                     entries.add(ModBlocks.ATTUNEMENT_FURNACE);
                     entries.add(ModBlocks.RESONANT_RELAY);
@@ -39,6 +41,7 @@ public final class ModItemGroups {
                     entries.add(ModBlocks.NOTE_RELAY);
                     entries.add(ModItems.FREQUENCY_TUNER);
                     entries.add(ModItems.CHANNEL_ATLAS);
+                    entries.add(ModItems.RESONANCE_METER);
                     entries.add(ModItems.RAW_ECHOCITE);
                     entries.add(ModItems.DRUMSTONE_SHARD);
                     entries.add(ModItems.SILENTITE_CRYSTAL);
