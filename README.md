@@ -105,8 +105,12 @@ complete and survival-craftable as-is.
   robin** ordering on the Splitter.
 - **True emissive textures** — ship an optional Continuity/Indium integration so the
   resonance cores glow fullbright in the dark (today they frame-animate/pulse).
-- **Cross-mod energy bridge** — expose RU over Team Reborn Energy so the grid and
-  Coupler interoperate with other tech mods.
+- ✅ **Cross-mod energy bridge** — done. An optional Team Reborn Energy bridge
+  exposes the Resonator's and Conduit Coupler's RU buffers as `EnergyStorage`
+  (1 RU = 1 E), so other tech mods can read and feed the grid. Compiled against the
+  TR Energy API as a `modCompileOnly` soft dependency and gated by `isModLoaded`, so
+  it activates only when a 1.21.x-compatible Team Reborn Energy is installed and is
+  completely inert otherwise.
 
 **Future blocks/items (from the design spec)**
 - Attunement Furnace, Resonance Centrifuge, Echo Forge; Resonance Cell / Capacitor.

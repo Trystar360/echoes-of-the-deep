@@ -11,7 +11,8 @@ base {
 }
 
 repositories {
-    // (Trinkets soft-dep repo will be re-added when the Silence Cloak lands)
+    maven { name = 'TerraformersMC'; url = 'https://maven.terraformersmc.com/releases' }
+    maven { name = 'Nucleoid'; url = 'https://maven.nucleoid.xyz/' }
 }
 
 loom {
@@ -29,6 +30,11 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // Team Reborn Energy — optional soft dependency. Compile against the (stable)
+    // API only; it is not shipped or run by us. The bridge activates at runtime
+    // solely when the player supplies a 1.21.x-compatible Team Reborn Energy.
+    modCompileOnly "teamreborn:energy:${project.tr_energy_version}"
 }
 
 processResources {
