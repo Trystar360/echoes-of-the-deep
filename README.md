@@ -99,8 +99,11 @@ complete and survival-craftable as-is.
   content gaps are now complete.)*
 
 **Systems & polish**
-- **Persist networks** — back `ResonanceNetworkManager` / `WirelessNetworkManager`
-  with a `PersistentState` instead of rebuilding from NBT on chunk load.
+- ✅ **Persist networks** — done. The wired grid (`ResonanceNetworkManager`) now
+  saves its conduit topology to a `PersistentState`, so networks survive a server
+  restart instead of going dark until a conduit is re-placed. (The wireless side
+  already self-heals: every device carries its channel/mode in NBT and re-registers
+  on load.)
 - **Harmonic Filter GUI** — a ghost-slot screen + fluid filtering; **priority/round-
   robin** ordering on the Splitter.
 - **True emissive textures** — ship an optional Continuity/Indium integration so the
