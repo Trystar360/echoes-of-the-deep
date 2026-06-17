@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "echoes:tuning_conduit",
+    "echoes:tuning_conduit",
+    "echoes:tuning_conduit",
+    "echoes:echo_ingot"
+  ],
+  "result": {
+    "id": "echoes:dense_conduit",
+    "count": 2
+  }
+}

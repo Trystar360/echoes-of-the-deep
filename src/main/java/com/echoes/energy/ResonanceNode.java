@@ -28,4 +28,10 @@ public interface ResonanceNode {
     default boolean is(NodeRole role) {
         return NodeRole.has(roleMask(), role);
     }
+
+    /** Diagnostics (Resonance Meter / comparators): RU currently held. 0 if bufferless. */
+    default long storedRu() { return 0; }
+
+    /** Diagnostics: RU capacity of this node's buffer. 0 if bufferless. */
+    default long capacityRu() { return 0; }
 }

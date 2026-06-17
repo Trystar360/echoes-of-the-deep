@@ -49,6 +49,8 @@ public class ConduitCouplerBlockEntity extends AbstractChannelDeviceBlockEntity 
     @Override public long demand() { return 0; }
     @Override public int transferCap() { return 0; }
     @Override public BlockPos pos() { return getPos(); }
+    @Override public long storedRu() { return buffer.getAmount(); }
+    @Override public long capacityRu() { return buffer.getCapacity(); }
 
     @Override
     protected void writeExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {

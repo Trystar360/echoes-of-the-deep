@@ -3,6 +3,7 @@ package com.echoes.registry;
 import com.echoes.EchoesMod;
 import com.echoes.item.ChannelAtlasItem;
 import com.echoes.item.FrequencyTunerItem;
+import com.echoes.item.ResonanceMeterItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -33,6 +34,8 @@ public final class ModItems {
             FrequencyTunerItem::new, new Item.Settings().maxCount(1));
     public static final Item CHANNEL_ATLAS   = register("channel_atlas",
             ChannelAtlasItem::new, new Item.Settings().maxCount(1));
+    public static final Item RESONANCE_METER = register("resonance_meter",
+            ResonanceMeterItem::new, new Item.Settings().maxCount(1));
 
     public static Item register(String name, Function<Item.Settings, Item> factory, Item.Settings settings) {
         Identifier id = Identifier.of(EchoesMod.MOD_ID, name);

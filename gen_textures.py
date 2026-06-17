@@ -413,6 +413,33 @@ def build_attunement_furnace():
     bloom(c, TEAL, alpha=66, reach=2); vignette(c, 30)
     return c
 
+def build_dense_conduit():
+    c = C(); bezel(c, BRONZE, TEAL, t=1)
+    face_inset(c, (14, 22, 24))
+    c.rect(6, 1, 9, 14, None)                       # thick rune channel (denser carrier)
+    for x in range(1, 15):
+        edge = lerp(TEAL[1], TEAL[3], 1 - abs(7.5 - x) / 7.5)
+        c.over(x, 6, edge); c.over(x, 7, TEAL[3]); c.over(x, 8, TEAL[3]); c.over(x, 9, edge)
+    for y in range(1, 15):
+        edge = lerp(TEAL[1], TEAL[3], 1 - abs(7.5 - y) / 7.5)
+        c.over(6, y, edge); c.over(7, y, TEAL[3]); c.over(8, y, TEAL[3]); c.over(9, y, edge)
+    core(c, 7, 7, TEAL, r=1)
+    bloom(c, TEAL, alpha=85); vignette(c, 28)
+    return c
+
+def build_resonance_capacitor():
+    c = C(); bezel(c, BRONZE, TEAL)
+    c.rect(3, 3, 12, 12, FACE)
+    for bx in (4, 7, 10):                           # three teal "cells" filling from the base
+        for y in range(4, 12):
+            t = (11 - y) / 7.0
+            col = lerp(TEAL[1], TEAL[4], t)
+            c.over(bx, y, (col[0], col[1], col[2], int(220 * (0.5 + 0.5 * GLOW))))
+            c.over(bx + 1, y, (col[0], col[1], col[2], int(150 * (0.5 + 0.5 * GLOW))))
+    c.rect(6, 2, 9, 2, BRONZE[3]); c.set(7, 2, TEAL[4])   # terminal
+    bloom(c, TEAL, alpha=70); vignette(c, 30)
+    return c
+
 # Shared bronze casing — the SIDE and TOP/BOTTOM of every machine, so the whole
 # family reads as one material; only the glowing front differs.
 def device_side():
@@ -462,6 +489,7 @@ ANIMATED = {
     "resonant_splitter": build_resonant_splitter, "conduit_coupler": build_conduit_coupler,
     "note_relay": build_note_relay, "resonant_chest": build_resonant_chest, "crusher": build_crusher,
     "attunement_furnace": build_attunement_furnace,
+    "dense_conduit": build_dense_conduit, "resonance_capacitor": build_resonance_capacitor,
 }
 def emit_block(name, builder):
     global GLOW
@@ -627,6 +655,26 @@ def channel_atlas():
     outline(c, thresh=150)
     write_png(f"{OUT}/item/channel_atlas.png", 16, 16, c.px)
 channel_atlas()
+
+def resonance_meter():
+    c = C(); r = BRONZE
+    cx, cy = 8, 7
+    for y in range(16):                                    # round bronze dial
+        for x in range(16):
+            d = math.hypot(x - cx, y - cy)
+            if d <= 5.2: c.set(x, y, r[2] if d > 4 else (12, 18, 20))
+    for ang in range(200, 341, 20):                        # teal tick marks
+        c.set(int(cx + 3.4 * math.cos(math.radians(ang))),
+              int(cy + 3.4 * math.sin(math.radians(ang))), TEAL[2])
+    na = math.radians(295)                                  # needle
+    for k in range(5):
+        c.set(int(round(cx + k * math.cos(na))), int(round(cy + k * math.sin(na))), TEAL[4])
+    c.set(cx, cy, TEAL[3])
+    c.rect(7, 12, 8, 15, r[3])                              # handle
+    bloom(c, TEAL, alpha=48, reach=1, thresh=150)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/resonance_meter.png", 16, 16, c.px)
+resonance_meter()
 
 # ================================================================ CRUSHER GUI (256x256) — deep restyle
 def gui():
