@@ -122,7 +122,19 @@ percussive gear). Machine blocks use **directional models**: a glowing front tha
 orients to the player over a shared bronze side/top casing, so the family reads as
 one material. The resonance cores are **frame-animated** so they breathe (vertical
 animation strips + `.mcmeta`; true fullbright emissivity would need a client mod
-like Continuity). Run `python3 montage.py` to render the full sheet to `/tmp`.
+like Continuity).
+
+Every block and item texture (animated sprites shown at their brightest frame):
+
+![Echoes of the Deep texture sheet](docs/images/textures.png)
+
+Machine blocks are directional — a glowing **front** over a shared bronze
+**side** / **top** casing, so the whole family reads as one material:
+
+![Machine front / side / top faces](docs/images/machines.png)
+
+Regenerate the sprites with `python3 gen_textures.py`, and the gallery images above
+with `python3 gallery.py` (or `python3 montage.py` for a zoomed `/tmp` preview).
 
 ## Layout
 
