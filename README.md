@@ -101,8 +101,10 @@ complete and survival-craftable as-is.
 **Systems & polish**
 - **Persist networks** — back `ResonanceNetworkManager` / `WirelessNetworkManager`
   with a `PersistentState` instead of rebuilding from NBT on chunk load.
-- **Harmonic Filter GUI** — a ghost-slot screen + fluid filtering; **priority/round-
-  robin** ordering on the Splitter.
+- ✅ **Harmonic Filter GUI** — done. A 3×3 **ghost-slot** screen sets the channel's
+  item whitelist (samples aren't consumed); **fluids** are filtered by their bucket
+  item, so a water bucket in the grid whitelists water. (The Splitter already toggles
+  round-robin vs. fill-first; per-target priority ordering remains open.)
 - **True emissive textures** — ship an optional Continuity/Indium integration so the
   resonance cores glow fullbright in the dark (today they frame-animate/pulse).
 - **Cross-mod energy bridge** — expose RU over Team Reborn Energy so the grid and
