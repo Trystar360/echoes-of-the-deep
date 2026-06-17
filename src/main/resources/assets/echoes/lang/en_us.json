@@ -1,6 +1,5 @@
 {
   "itemGroup.echoes.main": "Echoes of the Deep",
-
   "block.echoes.echocite_ore": "Echocite Ore",
   "block.echoes.deepslate_echocite_ore": "Deepslate Echocite Ore",
   "block.echoes.drumstone_ore": "Drumstone Ore",
@@ -8,6 +7,7 @@
   "block.echoes.resonator": "Resonator",
   "block.echoes.tuning_conduit": "Tuning Conduit",
   "block.echoes.crusher": "Crusher",
+  "block.echoes.attunement_furnace": "Attunement Furnace",
   "block.echoes.resonant_relay": "Resonant Relay",
   "block.echoes.resonant_amplifier": "Resonant Amplifier",
   "block.echoes.harmonic_filter": "Harmonic Filter",
@@ -16,10 +16,8 @@
   "block.echoes.conduit_coupler": "Conduit Coupler",
   "block.echoes.resonant_chest": "Resonant Chest",
   "block.echoes.note_relay": "Note Relay",
-
   "item.echoes.frequency_tuner": "Frequency Tuner",
   "item.echoes.channel_atlas": "Channel Atlas",
-
   "message.echoes.channel": "Channel: %s",
   "message.echoes.relay.mode": "Mode: %s",
   "message.echoes.relay.mode.receive": "Receive",
@@ -36,7 +34,6 @@
   "message.echoes.atlas.line": "  %s: %s devices",
   "message.echoes.atlas.roster": "Channel %s: %s devices (%s send, %s receive, %s modifiers)",
   "message.echoes.atlas.empty": "  (none)",
-
   "item.echoes.raw_echocite": "Raw Echocite",
   "item.echoes.drumstone_shard": "Drumstone Shard",
   "item.echoes.silentite_crystal": "Silentite Crystal",

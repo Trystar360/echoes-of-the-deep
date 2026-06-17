@@ -50,6 +50,10 @@ public class EchoesMod implements ModInitializer {
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.RESONANT_CHEST);
 
+        // Attunement Furnace exposes its input/output to hoppers/pipes.
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.ATTUNEMENT_FURNACE);
+
         LOGGER.info("Echoes of the Deep initialized.");
     }
 }

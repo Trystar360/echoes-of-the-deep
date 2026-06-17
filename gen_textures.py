@@ -393,6 +393,26 @@ def build_crusher():
     bloom(c, TEAL, alpha=58, reach=1); vignette(c, 30)
     return c
 
+def build_attunement_furnace():
+    c = C(); bezel(c, BRONZE, TEAL)
+    c.rect(2, 2, 13, 13, (14, 20, 22))
+    # arched smelting mouth (dark), glowing teal forge within
+    for y in range(5, 12):
+        half = min(5, (y - 4) + 1) if y < 9 else min(5, (12 - y) + 2)
+        for x in range(7 - half, 8 + half):
+            c.set(x, y, (8, 12, 14))
+    for y in range(7, 12):
+        for x in range(5, 11):
+            d = abs(x - 7.5) + abs(y - 10)
+            if d < 3.4:
+                t = max(0.0, 1 - d / 3.4)
+                col = lerp(TEAL[1], TEAL[4], t)
+                c.over(x, y, (col[0], col[1], col[2], int((140 + 90 * t) * (0.55 + 0.45 * GLOW))))
+    core(c, 7, 10, TEAL, r=1)
+    c.set(7, 4, TEAL[3]); c.set(8, 4, TEAL[2])     # vent spark at the crown
+    bloom(c, TEAL, alpha=66, reach=2); vignette(c, 30)
+    return c
+
 # Shared bronze casing — the SIDE and TOP/BOTTOM of every machine, so the whole
 # family reads as one material; only the glowing front differs.
 def device_side():
@@ -441,6 +461,7 @@ ANIMATED = {
     "tuning_conduit": build_tuning_conduit, "harmonic_filter": build_harmonic_filter,
     "resonant_splitter": build_resonant_splitter, "conduit_coupler": build_conduit_coupler,
     "note_relay": build_note_relay, "resonant_chest": build_resonant_chest, "crusher": build_crusher,
+    "attunement_furnace": build_attunement_furnace,
 }
 def emit_block(name, builder):
     global GLOW
@@ -646,6 +667,43 @@ def gui():
     sprite_arrow(176, 0)
     write_png(f"{OUT}/gui/crusher.png", W, H, px)
 gui()
+
+def gui_furnace():
+    W = H = 256
+    px = [(0, 0, 0, 0)] * (W * H)
+    def s(x, y, c):
+        if 0 <= x < W and 0 <= y < H: px[y * W + x] = (c[0], c[1], c[2], 255) if len(c) == 3 else c
+    def rect(x0, y0, x1, y1, c):
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1): s(x, y, c)
+    PANEL = (26, 32, 34); LITE = (58, 74, 74); DARK = (10, 14, 16); MID = (18, 24, 26); SDARK = (8, 11, 12)
+    rect(0, 0, 175, 165, PANEL)
+    rect(0, 0, 175, 2, LITE); rect(0, 0, 2, 165, LITE)
+    rect(0, 163, 175, 165, DARK); rect(173, 0, 175, 165, DARK)
+    def slot(ix, iy):
+        rect(ix - 1, iy - 1, ix + 16, iy + 16, MID)
+        rect(ix - 1, iy - 1, ix + 16, iy - 1, SDARK); rect(ix - 1, iy - 1, ix - 1, iy + 16, SDARK)
+        rect(ix - 1, iy + 16, ix + 16, iy + 16, LITE); rect(ix + 16, iy - 1, ix + 16, iy + 16, LITE)
+    slot(56, 35); slot(116, 35)                  # input, output (no byproduct)
+    for r in range(3):
+        for col in range(9): slot(8 + col * 18, 84 + r * 18)
+    for col in range(9): slot(8 + col * 18, 142)
+    for yy in range(37, 43):                      # engraved arrow track
+        for xx in range(79, 94): s(xx, yy, SDARK)
+    for k in range(8):
+        for yy in range(34 + k, 46 - k): s(93 + k, yy, SDARK)
+    rect(20, 20, 28, 52, SDARK); rect(21, 21, 27, 51, (10, 16, 18))
+    for yy in range(40, 51):
+        for xx in range(21, 28): s(xx, yy, lerp(TEAL[1], TEAL[3], (51 - yy) / 11))
+    def sprite_arrow(ox, oy):                     # filled progress sprite at (176,0)
+        for yy in range(oy + 5, oy + 11):
+            for xx in range(ox, ox + 15): s(xx, yy, lerp(TEAL[3], TEAL[1], (yy - (oy + 5)) / 5))
+        for k in range(8):
+            for yy in range(oy + 2 + k, oy + 14 - k): s(ox + 14 + k, yy, lerp(TEAL[3], TEAL[2], k / 8))
+        for xx in range(ox, ox + 15): s(xx, oy + 5, TEAL[4])
+    sprite_arrow(176, 0)
+    write_png(f"{OUT}/gui/attunement_furnace.png", W, H, px)
+gui_furnace()
 
 # ================================================================ MOD ICON (128x128)
 def icon():
