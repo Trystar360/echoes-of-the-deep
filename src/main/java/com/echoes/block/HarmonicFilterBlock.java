@@ -6,14 +6,15 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Whitelists item types on its channel. Right-click with an item to add its type;
- * empty-hand right-click clears the list. (Dye/sneak still tune the channel.)
+ * Whitelists transport on its channel via a 3×3 ghost-slot screen. Empty-hand
+ * right-click opens it; dye/sneak still tune the channel.
  */
 public class HarmonicFilterBlock extends AbstractHorizontalDeviceBlock {
 
@@ -29,18 +30,8 @@ public class HarmonicFilterBlock extends AbstractHorizontalDeviceBlock {
     @Override
     protected ActionResult onConfigure(World world, BlockPos pos, PlayerEntity player,
                                        AbstractChannelDeviceBlockEntity device, ItemStack held) {
-        if (device instanceof HarmonicFilterBlockEntity filter) {
-            if (held.isEmpty()) {
-                filter.clearFilter();
-                sendStatus(player, "message.echoes.filter.cleared");
-            } else {
-                int size = filter.addItem(held.getItem());
-                if (size < 0) {
-                    sendStatus(player, "message.echoes.filter.full");
-                } else {
-                    sendStatus(player, "message.echoes.filter.added", held.getName(), size);
-                }
-            }
+        if (device instanceof NamedScreenHandlerFactory factory) {
+            player.openHandledScreen(factory);
         }
         return ActionResult.SUCCESS;
     }
