@@ -1,6 +1,7 @@
 package com.echoes.registry;
 
 import com.echoes.EchoesMod;
+import com.echoes.block.entity.AttunementFurnaceBlockEntity;
 import com.echoes.block.entity.ConduitBlockEntity;
 import com.echoes.block.entity.ConduitCouplerBlockEntity;
 import com.echoes.block.entity.CrusherBlockEntity;
@@ -29,6 +30,8 @@ public final class ModBlockEntities {
             register("tuning_conduit", ConduitBlockEntity::new, ModBlocks.TUNING_CONDUIT);
     public static final BlockEntityType<CrusherBlockEntity> CRUSHER =
             register("crusher", CrusherBlockEntity::new, ModBlocks.CRUSHER);
+    public static final BlockEntityType<AttunementFurnaceBlockEntity> ATTUNEMENT_FURNACE =
+            register("attunement_furnace", AttunementFurnaceBlockEntity::new, ModBlocks.ATTUNEMENT_FURNACE);
     public static final BlockEntityType<ResonantRelayBlockEntity> RESONANT_RELAY =
             register("resonant_relay", ResonantRelayBlockEntity::new, ModBlocks.RESONANT_RELAY);
     public static final BlockEntityType<ResonantAmplifierBlockEntity> RESONANT_AMPLIFIER =

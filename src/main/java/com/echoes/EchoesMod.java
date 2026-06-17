@@ -51,6 +51,10 @@ public class EchoesMod implements ModInitializer {
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.RESONANT_CHEST);
 
+        // Attunement Furnace exposes its input/output to hoppers/pipes.
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.ATTUNEMENT_FURNACE);
+
         // Optional cross-mod energy bridge — only when Team Reborn Energy is present.
         // Isolated in a separate class so its TR Energy references aren't loaded otherwise.
         if (FabricLoader.getInstance().isModLoaded("team_reborn_energy")) {

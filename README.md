@@ -118,7 +118,10 @@ complete and survival-craftable as-is.
   completely inert otherwise.
 
 **Future blocks/items (from the design spec)**
-- Attunement Furnace, Resonance Centrifuge, Echo Forge; Resonance Cell / Capacitor.
+- ✅ **Attunement Furnace** — done. An RU-powered machine that smelts *any vanilla
+  furnace recipe* (no fuel), drawing from the grid like the Crusher. Directional
+  model + its own screen.
+- Resonance Centrifuge, Echo Forge; Resonance Cell / Capacitor.
 - Resonant tools, Silence Cloak (+ Trinkets compat); Dense Conduit upgrade.
 
 ## Art

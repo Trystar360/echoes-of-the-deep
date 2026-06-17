@@ -1,6 +1,7 @@
 package com.echoes.registry;
 
 import com.echoes.EchoesMod;
+import com.echoes.block.AttunementFurnaceBlock;
 import com.echoes.block.ConduitBlock;
 import com.echoes.block.ConduitCouplerBlock;
 import com.echoes.block.CrusherBlock;
@@ -46,6 +47,8 @@ public final class ModBlocks {
             ConduitBlock::new, AbstractBlock.Settings.create().strength(1.5f).nonOpaque());
     public static final Block CRUSHER = register("crusher",
             CrusherBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool());
+    public static final Block ATTUNEMENT_FURNACE = register("attunement_furnace",
+            AttunementFurnaceBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool());
     public static final Block RESONANT_RELAY = register("resonant_relay",
             ResonantRelayBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
 

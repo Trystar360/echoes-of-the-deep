@@ -1,6 +1,7 @@
 package com.echoes.registry;
 
 import com.echoes.EchoesMod;
+import com.echoes.screen.AttunementFurnaceScreenHandler;
 import com.echoes.screen.CrusherScreenHandler;
 import com.echoes.screen.HarmonicFilterScreenHandler;
 import net.minecraft.registry.Registries;
@@ -16,6 +17,11 @@ public final class ModScreens {
             Registry.register(Registries.SCREEN_HANDLER,
                     Identifier.of(EchoesMod.MOD_ID, "crusher"),
                     new ScreenHandlerType<>(CrusherScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
+
+    public static final ScreenHandlerType<AttunementFurnaceScreenHandler> ATTUNEMENT_FURNACE =
+            Registry.register(Registries.SCREEN_HANDLER,
+                    Identifier.of(EchoesMod.MOD_ID, "attunement_furnace"),
+                    new ScreenHandlerType<>(AttunementFurnaceScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
 
     public static final ScreenHandlerType<HarmonicFilterScreenHandler> HARMONIC_FILTER =
             Registry.register(Registries.SCREEN_HANDLER,

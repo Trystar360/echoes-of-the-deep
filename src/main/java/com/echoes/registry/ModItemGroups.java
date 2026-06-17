@@ -28,6 +28,7 @@ public final class ModItemGroups {
                     entries.add(ModBlocks.RESONATOR);
                     entries.add(ModBlocks.TUNING_CONDUIT);
                     entries.add(ModBlocks.CRUSHER);
+                    entries.add(ModBlocks.ATTUNEMENT_FURNACE);
                     entries.add(ModBlocks.RESONANT_RELAY);
                     entries.add(ModBlocks.RESONANT_AMPLIFIER);
                     entries.add(ModBlocks.HARMONIC_FILTER);
