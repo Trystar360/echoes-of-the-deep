@@ -705,6 +705,37 @@ def gui_furnace():
     write_png(f"{OUT}/gui/attunement_furnace.png", W, H, px)
 gui_furnace()
 
+# ================================================================ HARMONIC FILTER GUI (256x256)
+def gui_filter():
+    W = H = 256
+    px = [(0, 0, 0, 0)] * (W * H)
+    def s(x, y, c):
+        if 0 <= x < W and 0 <= y < H: px[y * W + x] = (c[0], c[1], c[2], 255) if len(c) == 3 else c
+    def rect(x0, y0, x1, y1, c):
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1): s(x, y, c)
+    PANEL = (26, 32, 34); LITE = (58, 74, 74); DARK = (10, 14, 16); MID = (18, 24, 26); SDARK = (8, 11, 12)
+    rect(0, 0, 175, 165, PANEL)
+    rect(0, 0, 175, 2, LITE); rect(0, 0, 2, 165, LITE)
+    rect(0, 163, 175, 165, DARK); rect(173, 0, 175, 165, DARK)
+    def slot(ix, iy, tint=MID):
+        rect(ix - 1, iy - 1, ix + 16, iy + 16, tint)
+        rect(ix - 1, iy - 1, ix + 16, iy - 1, SDARK); rect(ix - 1, iy - 1, ix - 1, iy + 16, SDARK)
+        rect(ix - 1, iy + 16, ix + 16, iy + 16, LITE); rect(ix + 16, iy - 1, ix + 16, iy + 16, LITE)
+    # 3x3 ghost grid (teal-tinted to read as "filter samples")
+    for r in range(3):
+        for c in range(3):
+            slot(62 + c * 18, 18 + r * 18, (16, 30, 32))
+    # subtle teal frame around the grid
+    rect(60, 16, 115, 16, TEAL[1]); rect(60, 69, 115, 69, TEAL[1])
+    rect(60, 16, 60, 69, TEAL[1]); rect(115, 16, 115, 69, TEAL[1])
+    # player inventory + hotbar
+    for r in range(3):
+        for c in range(9): slot(8 + c * 18, 84 + r * 18)
+    for c in range(9): slot(8 + c * 18, 142)
+    write_png(f"{OUT}/gui/harmonic_filter.png", W, H, px)
+gui_filter()
+
 # ================================================================ MOD ICON (128x128)
 def icon():
     N = 128; cx = cy = 63.5

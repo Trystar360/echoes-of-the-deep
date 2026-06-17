@@ -175,7 +175,7 @@ public final class WirelessNetworkManager {
             }
         }
         if (!senders.isEmpty() && !receivers.isEmpty()) {
-            transferFluids(senders, receivers, mult, roundRobin);
+            transferFluids(senders, receivers, mult, whitelist, roundRobin);
             transferEnergy(senders, receivers, mult);
         }
     }
@@ -211,7 +211,7 @@ public final class WirelessNetworkManager {
     }
 
     private static void transferFluids(List<WirelessDevice> senders, List<WirelessDevice> receivers,
-                                       long mult, boolean roundRobin) {
+                                       long mult, Set<Item> whitelist, boolean roundRobin) {
         long budget = Math.min(MAX_FLUID * mult, senders.size() * FLUID_PER_SENDER * mult);
         List<Storage<FluidVariant>> sources = new ArrayList<>();
         List<Storage<FluidVariant>> targets = new ArrayList<>();
@@ -223,7 +223,18 @@ public final class WirelessNetworkManager {
             Storage<FluidVariant> t = d.wirelessFluids();
             if (t != null && t.supportsInsertion()) targets.add(t);
         }
-        moveAll(sources, targets, budget, v -> true, roundRobin);
+        // A Harmonic Filter constrains fluids only when it whitelists fluid containers:
+        // match each fluid by its bucket item. An item-only whitelist leaves fluids free.
+        Predicate<FluidVariant> filter = v -> true;
+        if (whitelist != null) {
+            boolean anyFluid = false;
+            for (Item it : whitelist) { if (it instanceof net.minecraft.item.BucketItem) { anyFluid = true; break; } }
+            if (anyFluid) {
+                final Set<Item> wl = whitelist;
+                filter = v -> wl.contains(v.getFluid().getBucketItem());
+            }
+        }
+        moveAll(sources, targets, budget, filter, roundRobin);
     }
 
     /** Generic Transfer-API distribution: drain sources into targets up to budget. */
