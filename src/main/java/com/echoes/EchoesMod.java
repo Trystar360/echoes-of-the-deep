@@ -14,6 +14,7 @@ import com.echoes.wireless.WirelessNetworkManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,12 @@ public class EchoesMod implements ModInitializer {
         // Resonant Chest exposes its inventory to hoppers/pipes too.
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.RESONANT_CHEST);
+
+        // Optional cross-mod energy bridge — only when Team Reborn Energy is present.
+        // Isolated in a separate class so its TR Energy references aren't loaded otherwise.
+        if (FabricLoader.getInstance().isModLoaded("team_reborn_energy")) {
+            com.echoes.compat.TeamRebornEnergyCompat.register();
+        }
 
         LOGGER.info("Echoes of the Deep initialized.");
     }
