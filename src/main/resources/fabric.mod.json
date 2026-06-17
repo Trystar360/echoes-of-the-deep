@@ -27,6 +27,7 @@
     "fabric-api": "*"
   },
   "suggests": {
-    "trinkets": "*"
+    "trinkets": "*",
+    "team_reborn_energy": "*"
   }
 }

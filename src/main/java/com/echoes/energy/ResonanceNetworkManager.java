@@ -30,9 +30,36 @@ public class ResonanceNetworkManager {
     private final Map<Integer, ResonanceNetwork> networks = new HashMap<>();
     private final Map<BlockPos, Integer> posToNetwork = new HashMap<>();
     private int nextId = 1;
+    private ResonanceNetworkState state;
 
     private ResonanceNetworkManager(ServerWorld world) {
         this.world = world;
+        load();
+    }
+
+    /** Restore persisted network topology (conduit sets) on first access per world. */
+    private void load() {
+        state = world.getPersistentStateManager().getOrCreate(ResonanceNetworkState.TYPE, ResonanceNetworkState.KEY);
+        nextId = Math.max(nextId, state.nextId);
+        for (Map.Entry<Integer, java.util.Set<BlockPos>> e : state.networks.entrySet()) {
+            ResonanceNetwork net = new ResonanceNetwork(e.getKey());
+            net.conduits.addAll(e.getValue());
+            net.markDirty(); // nodes re-scanned from the world on the next tick
+            networks.put(net.id, net);
+            for (BlockPos p : e.getValue()) posToNetwork.put(p, net.id);
+            nextId = Math.max(nextId, net.id + 1);
+        }
+    }
+
+    /** Mirror the live topology into the PersistentState. Called after every change. */
+    private void syncState() {
+        if (state == null) return;
+        state.networks.clear();
+        for (ResonanceNetwork net : networks.values()) {
+            state.networks.put(net.id, new java.util.HashSet<>(net.conduits));
+        }
+        state.nextId = nextId;
+        state.markDirty();
     }
 
     public static ResonanceNetworkManager get(ServerWorld world) {
@@ -72,14 +99,19 @@ public class ResonanceNetworkManager {
         net.conduits.add(pos);
         posToNetwork.put(pos, net.id);
         markNeighborsDirty(pos, net);
+        syncState();
     }
 
     /** A conduit was removed. Remove it, then check whether the network split. */
     public void onConduitBroken(BlockPos pos) {
+        if (doConduitBroken(pos)) syncState();
+    }
+
+    private boolean doConduitBroken(BlockPos pos) {
         Integer id = posToNetwork.remove(pos);
-        if (id == null) return;
+        if (id == null) return false;
         ResonanceNetwork net = networks.get(id);
-        if (net == null) return;
+        if (net == null) return true;
         net.conduits.remove(pos);
 
         // Seeds = surviving conduit neighbors.
@@ -87,8 +119,8 @@ public class ResonanceNetworkManager {
         for (BlockPos n : ResonanceNetwork.neighbors(pos))
             if (net.conduits.contains(n)) seeds.add(n);
 
-        if (net.conduits.isEmpty()) { networks.remove(id); return; }
-        if (seeds.size() <= 1) { net.markDirty(); return; }
+        if (net.conduits.isEmpty()) { networks.remove(id); return true; }
+        if (seeds.size() <= 1) { net.markDirty(); return true; }
 
         // Flood-fill from each seed; if they don't all reach each other, split.
         List<Set<BlockPos>> components = new ArrayList<>();
@@ -97,7 +129,7 @@ public class ResonanceNetworkManager {
             if (globalVisited.contains(seed)) continue;
             components.add(floodFill(seed, net.conduits, globalVisited));
         }
-        if (components.size() <= 1) { net.markDirty(); return; }
+        if (components.size() <= 1) { net.markDirty(); return true; }
 
         // Split: keep the largest as the original, spin up new ones for the rest.
         networks.remove(id);
@@ -109,6 +141,7 @@ public class ResonanceNetworkManager {
             for (BlockPos p : comp) posToNetwork.put(p, fresh.id);
             fresh.markDirty();
         }
+        return true;
     }
 
     /** A machine/storage/provider next to a conduit changed — re-scan attached nodes. */

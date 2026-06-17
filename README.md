@@ -99,14 +99,21 @@ complete and survival-craftable as-is.
   content gaps are now complete.)*
 
 **Systems & polish**
-- **Persist networks** — back `ResonanceNetworkManager` / `WirelessNetworkManager`
-  with a `PersistentState` instead of rebuilding from NBT on chunk load.
+- ✅ **Persist networks** — done. The wired grid (`ResonanceNetworkManager`) now
+  saves its conduit topology to a `PersistentState`, so networks survive a server
+  restart instead of going dark until a conduit is re-placed. (The wireless side
+  already self-heals: every device carries its channel/mode in NBT and re-registers
+  on load.)
 - **Harmonic Filter GUI** — a ghost-slot screen + fluid filtering; **priority/round-
   robin** ordering on the Splitter.
 - **True emissive textures** — ship an optional Continuity/Indium integration so the
   resonance cores glow fullbright in the dark (today they frame-animate/pulse).
-- **Cross-mod energy bridge** — expose RU over Team Reborn Energy so the grid and
-  Coupler interoperate with other tech mods.
+- ✅ **Cross-mod energy bridge** — done. An optional Team Reborn Energy bridge
+  exposes the Resonator's and Conduit Coupler's RU buffers as `EnergyStorage`
+  (1 RU = 1 E), so other tech mods can read and feed the grid. Compiled against the
+  TR Energy API as a `modCompileOnly` soft dependency and gated by `isModLoaded`, so
+  it activates only when a 1.21.x-compatible Team Reborn Energy is installed and is
+  completely inert otherwise.
 
 **Future blocks/items (from the design spec)**
 - ✅ **Attunement Furnace** — done. An RU-powered machine that smelts *any vanilla
@@ -125,7 +132,19 @@ percussive gear). Machine blocks use **directional models**: a glowing front tha
 orients to the player over a shared bronze side/top casing, so the family reads as
 one material. The resonance cores are **frame-animated** so they breathe (vertical
 animation strips + `.mcmeta`; true fullbright emissivity would need a client mod
-like Continuity). Run `python3 montage.py` to render the full sheet to `/tmp`.
+like Continuity).
+
+Every block and item texture (animated sprites shown at their brightest frame):
+
+![Echoes of the Deep texture sheet](docs/images/textures.png)
+
+Machine blocks are directional — a glowing **front** over a shared bronze
+**side** / **top** casing, so the whole family reads as one material:
+
+![Machine front / side / top faces](docs/images/machines.png)
+
+Regenerate the sprites with `python3 gen_textures.py`, and the gallery images above
+with `python3 gallery.py` (or `python3 montage.py` for a zoomed `/tmp` preview).
 
 ## Layout
 

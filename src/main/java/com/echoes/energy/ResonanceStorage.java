@@ -46,6 +46,11 @@ public class ResonanceStorage {
         amount = Math.min(capacity, amount + Math.max(0, ru));
     }
 
+    /** Set the stored amount directly (clamped). Used for transaction snapshots. */
+    public void setAmount(long value) {
+        amount = Math.max(0, Math.min(capacity, value));
+    }
+
     /** 0..15 for comparator output. */
     public int comparatorOutput() {
         if (capacity == 0) return 0;
