@@ -22,6 +22,11 @@
   "item.echoes.channel_atlas": "Channel Atlas",
   "item.echoes.resonance_meter": "Resonance Meter",
   "item.echoes.resonance_thrusters": "Resonance Thrusters",
+  "item.echoes.resonant_pickaxe": "Resonant Pickaxe",
+  "item.echoes.resonant_axe": "Resonant Axe",
+  "item.echoes.resonant_shovel": "Resonant Shovel",
+  "item.echoes.resonant_sword": "Resonant Sword",
+  "item.echoes.resonant_hoe": "Resonant Hoe",
   "message.echoes.channel": "Channel: %s",
   "message.echoes.relay.mode": "Mode: %s",
   "message.echoes.relay.mode.receive": "Receive",
@@ -53,5 +58,6 @@
   "message.echoes.meter.throughput": "  Throughput: %s RU/t",
   "message.echoes.thrusters.charge": "Thrusters: %s / %s RU",
   "tooltip.echoes.thrusters.charge": "Charge: %s / %s RU",
-  "tooltip.echoes.thrusters.hint": "Hold use to thrust; right-click a Resonator or Capacitor to recharge"
+  "tooltip.echoes.thrusters.hint": "Hold use to thrust; right-click a Resonator or Capacitor to recharge",
+  "tooltip.echoes.resonant.lore": "Tuned to the octave — rhythmic balanced interchange."
 }

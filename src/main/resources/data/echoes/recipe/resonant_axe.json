@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ee",
+    "es",
+    " s"
+  ],
+  "key": {
+    "e": "echoes:echo_ingot",
+    "s": "minecraft:stick"
+  },
+  "result": {
+    "id": "echoes:resonant_axe",
+    "count": 1
+  }
+}
