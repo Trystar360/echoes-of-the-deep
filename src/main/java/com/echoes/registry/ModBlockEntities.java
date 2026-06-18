@@ -7,6 +7,7 @@ import com.echoes.block.entity.ConduitCouplerBlockEntity;
 import com.echoes.block.entity.CrusherBlockEntity;
 import com.echoes.block.entity.DenseConduitBlockEntity;
 import com.echoes.block.entity.ResonanceCapacitorBlockEntity;
+import com.echoes.block.entity.StillnessCoreBlockEntity;
 import com.echoes.block.entity.EchoRepeaterBlockEntity;
 import com.echoes.block.entity.HarmonicFilterBlockEntity;
 import com.echoes.block.entity.NoteRelayBlockEntity;
@@ -34,6 +35,8 @@ public final class ModBlockEntities {
             register("dense_conduit", DenseConduitBlockEntity::new, ModBlocks.DENSE_CONDUIT);
     public static final BlockEntityType<ResonanceCapacitorBlockEntity> RESONANCE_CAPACITOR =
             register("resonance_capacitor", ResonanceCapacitorBlockEntity::new, ModBlocks.RESONANCE_CAPACITOR);
+    public static final BlockEntityType<StillnessCoreBlockEntity> STILLNESS_CORE =
+            register("stillness_core", StillnessCoreBlockEntity::new, ModBlocks.STILLNESS_CORE);
     public static final BlockEntityType<CrusherBlockEntity> CRUSHER =
             register("crusher", CrusherBlockEntity::new, ModBlocks.CRUSHER);
     public static final BlockEntityType<AttunementFurnaceBlockEntity> ATTUNEMENT_FURNACE =

@@ -34,7 +34,7 @@ public class AttunementFurnaceScreen extends HandledScreen<AttunementFurnaceScre
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
         super.render(ctx, mouseX, mouseY, delta);
         drawMouseoverTooltip(ctx, mouseX, mouseY);
-        ctx.drawText(textRenderer, Text.literal(handler.storedRu() + " RU"),
+        ctx.drawText(textRenderer, Text.literal(handler.storedRu() + " Light"),
                 (width - backgroundWidth) / 2 + 8, (height - backgroundHeight) / 2 + 6, 0x7FE9DD, false);
     }
 }

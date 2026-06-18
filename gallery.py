@@ -43,12 +43,14 @@ def blit(img,W,ox,oy,tex,sc):
 
 # --- full sprite sheet ---
 blocks=["echocite_ore","deepslate_echocite_ore","drumstone_ore","silentite_ore",
-        "resonator","tuning_conduit","crusher","resonant_relay","resonant_amplifier",
+        "stillness_core","resonator","tuning_conduit","dense_conduit","resonance_capacitor",
+        "crusher","attunement_furnace","resonant_relay","resonant_amplifier",
         "harmonic_filter","resonant_splitter","echo_repeater","conduit_coupler",
         "resonant_chest","note_relay"]
 items=["raw_echocite","echocite_dust","echo_ingot","dull_ingot","resonant_slag",
        "drumstone_shard","drum_core","silentite_crystal","echo_dust",
-       "frequency_tuner","channel_atlas"]
+       "frequency_tuner","channel_atlas","resonance_meter","resonance_thrusters",
+       "resonant_pickaxe","resonant_axe","resonant_shovel","resonant_sword","resonant_hoe"]
 tiles=[("block",b) for b in blocks]+[("item",i) for i in items]
 SC=10; TILE=16*SC; GAP=10; COLS=6
 ROWS=(len(tiles)+COLS-1)//COLS
@@ -61,8 +63,9 @@ write_png("docs/images/textures.png",W,H,img)
 
 # --- directional machine faces: front | side | top ---
 side=frame0("device_side","block"); top=frame0("device_top","block")
-machines=["resonator","resonant_relay","crusher","echo_repeater","conduit_coupler",
-          "resonant_chest","note_relay","resonant_amplifier","harmonic_filter","resonant_splitter"]
+machines=["stillness_core","resonator","attunement_furnace","crusher","resonant_relay",
+          "echo_repeater","conduit_coupler","resonant_chest","note_relay",
+          "resonant_amplifier","harmonic_filter","resonant_splitter"]
 SC2=8; T2=16*SC2; G=10; C3=3
 W2=GAP+C3*(T2+GAP); H2=GAP+len(machines)*(T2+GAP)
 img2=[checker(x,y,(60,64,70),(50,54,60)) for y in range(H2) for x in range(W2)]

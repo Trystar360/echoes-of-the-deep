@@ -36,7 +36,7 @@ public class CrusherScreen extends HandledScreen<CrusherScreenHandler> {
         super.render(ctx, mouseX, mouseY, delta);
         drawMouseoverTooltip(ctx, mouseX, mouseY);
         // RU readout
-        ctx.drawText(textRenderer, Text.literal(handler.storedRu() + " RU"),
+        ctx.drawText(textRenderer, Text.literal(handler.storedRu() + " Light"),
                 (width - backgroundWidth) / 2 + 8, (height - backgroundHeight) / 2 + 6,
                 0x404040, false);
     }
