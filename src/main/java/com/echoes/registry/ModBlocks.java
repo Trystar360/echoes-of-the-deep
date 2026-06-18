@@ -6,6 +6,7 @@ import com.echoes.block.ConduitBlock;
 import com.echoes.block.ConduitCouplerBlock;
 import com.echoes.block.CrusherBlock;
 import com.echoes.block.DenseConduitBlock;
+import com.echoes.block.RadiatorBlock;
 import com.echoes.block.ResonanceCapacitorBlock;
 import com.echoes.block.StillnessCoreBlock;
 import com.echoes.block.EchoRepeaterBlock;
@@ -26,6 +27,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 
 import java.util.function.Function;
@@ -54,6 +56,9 @@ public final class ModBlocks {
             ResonanceCapacitorBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque());
     public static final Block STILLNESS_CORE = register("stillness_core",
             StillnessCoreBlock::new, AbstractBlock.Settings.create().strength(4.0f).requiresTool().nonOpaque());
+    public static final Block RADIATOR = register("radiator",
+            RadiatorBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque()
+                    .luminance(s -> s.get(Properties.LIT) ? 12 : 2));
     public static final Block CRUSHER = register("crusher",
             CrusherBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool());
     public static final Block ATTUNEMENT_FURNACE = register("attunement_furnace",

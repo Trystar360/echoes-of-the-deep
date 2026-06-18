@@ -44,7 +44,7 @@ def blit(img,W,ox,oy,tex,sc):
 # --- full sprite sheet ---
 blocks=["echocite_ore","deepslate_echocite_ore","drumstone_ore","silentite_ore",
         "stillness_core","resonator","tuning_conduit","dense_conduit","resonance_capacitor",
-        "crusher","attunement_furnace","resonant_relay","resonant_amplifier",
+        "crusher","attunement_furnace","radiator","resonant_relay","resonant_amplifier",
         "harmonic_filter","resonant_splitter","echo_repeater","conduit_coupler",
         "resonant_chest","note_relay"]
 items=["raw_echocite","echocite_dust","echo_ingot","dull_ingot","resonant_slag",
@@ -63,7 +63,7 @@ write_png("docs/images/textures.png",W,H,img)
 
 # --- directional machine faces: front | side | top ---
 side=frame0("device_side","block"); top=frame0("device_top","block")
-machines=["stillness_core","resonator","attunement_furnace","crusher","resonant_relay",
+machines=["stillness_core","resonator","radiator","attunement_furnace","crusher","resonant_relay",
           "echo_repeater","conduit_coupler","resonant_chest","note_relay",
           "resonant_amplifier","harmonic_filter","resonant_splitter"]
 SC2=8; T2=16*SC2; G=10; C3=3

@@ -87,8 +87,13 @@ To install into a real instance, drop `build/libs/echoes-of-the-deep-0.1.0.jar` 
 
 ## Roadmap & possible improvements
 
-Prioritised list of where this goes next. Nothing here is load-bearing — the mod is
-complete and survival-craftable as-is.
+📜 **The full project map lives in [`docs/roadmap.md`](docs/roadmap.md)** — a cohesive
+plan organized by Russell's cosmology (Phase I the generation↔radiation duality, II the
+octaves, III the wave, …). Recent additions: ✅ **Stillness Core** (baseline Light from
+the still centre) and ✅ **Radiator** (the radiation half — a Light-fed crop-growth aura).
+
+The list below is the prior, still-accurate history. Nothing here is load-bearing — the
+mod is complete and survival-craftable as-is.
 
 **Content gaps (close the loop)**
 - ✅ **Drumstone & Silentite tiers** — done. Both ores now generate (Drumstone in the
