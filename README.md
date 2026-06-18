@@ -50,7 +50,7 @@ A complete, end-to-end energy + logistics loop, craftable from scratch in surviv
 ✅ **This builds and runs.** Verified against Minecraft **1.21.4**, Yarn `1.21.4+build.8`,
 Loom `1.9.2`, Fabric API `0.119.2+1.21.4`, Gradle `8.12`, JDK 21. The mod loads on a
 dedicated server: registries populate, the `LivingEntity#onDeath` mixin applies, all
-recipes parse (1400 total), and the Echocite worldgen attaches via biome modifications
+recipes parse (1405 total), and the Echocite worldgen attaches via biome modifications
 (`Applied 54 biome modifications`).
 
 ```bash
@@ -129,11 +129,21 @@ complete and survival-craftable as-is.
 - ✅ **Resonance Meter** — done. Handheld diagnostic: right-click any Resonance
   device to read its role, stored / capacity RU, demand, and conduit throughput
   (RU is otherwise invisible).
-- ✅ **Resonance Thrusters** — done. Sound-powered flight: hold *use* to thrust
-  upward (drains RU, negates fall damage, sprint adds a forward boost); recharge by
-  right-clicking a Resonator / Capacitor / Coupler. Portable RU lives on the item via
-  a custom `stored_ru` data component — fully server-side, no client mod needed.
-- Resonance Centrifuge, Echo Forge; Resonant tools, Silence Cloak (+ Trinkets compat).
+- ✅ **Resonance Thrusters** — done. Sound-powered flight: hold *use* to fly in the
+  direction you look (sprint = faster, sneak = hover/brake), with **fall-damage
+  immunity** while you carry a charged set. Cheap to fly off a huge reserve;
+  recharge by right-clicking a Resonator / Capacitor / Coupler. Portable RU lives on
+  the item via a `stored_ru` data component — fully server-side, no client mod.
+- ✅ **Resonant tools** — done. A full set (pickaxe/axe/shovel/sword/hoe) on the
+  **Echo** tool material: faster than netherite (speed 12), 4000 durability, mines
+  anything, highly enchantable (22), with a hefty attack bonus. Deliberately strong.
+- Resonance Centrifuge, Echo Forge; Silence Cloak (+ Trinkets compat).
+
+> **Design note.** The gear is intentionally over-tuned, framed in-world by Walter
+> Russell's *rhythmic balanced interchange* — Resonance is *carried, not consumed*,
+> so a device tuned to its octave gives back as freely as the grid pours in. (Flavour,
+> not physics.) Tune the constants in `ResonanceThrustersItem` / `ModItems.ECHO_MATERIAL`
+> to taste.
 
 ## Art
 

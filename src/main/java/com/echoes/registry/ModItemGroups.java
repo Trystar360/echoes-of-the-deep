@@ -43,6 +43,11 @@ public final class ModItemGroups {
                     entries.add(ModItems.CHANNEL_ATLAS);
                     entries.add(ModItems.RESONANCE_METER);
                     entries.add(ModItems.RESONANCE_THRUSTERS);
+                    entries.add(ModItems.RESONANT_PICKAXE);
+                    entries.add(ModItems.RESONANT_AXE);
+                    entries.add(ModItems.RESONANT_SHOVEL);
+                    entries.add(ModItems.RESONANT_SWORD);
+                    entries.add(ModItems.RESONANT_HOE);
                     entries.add(ModItems.RAW_ECHOCITE);
                     entries.add(ModItems.DRUMSTONE_SHARD);
                     entries.add(ModItems.SILENTITE_CRYSTAL);

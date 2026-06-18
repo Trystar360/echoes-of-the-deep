@@ -695,6 +695,43 @@ def resonance_thrusters():
     write_png(f"{OUT}/item/resonance_thrusters.png", 16, 16, c.px)
 resonance_thrusters()
 
+# ---------------- Resonant tools (echo-metal heads on a haft) ----------------
+EMET = [(22, 50, 52), (44, 96, 94), (78, 150, 144), (132, 212, 202), (212, 255, 250)]
+WOOD = [(60, 42, 24), (96, 68, 38), (132, 96, 54)]
+def _haft(c):
+    for (x, y) in [(4, 13), (5, 12), (6, 11), (7, 10), (8, 9), (8, 8), (8, 7)]:
+        c.set(x, y, WOOD[1]); c.over(x + 1, y, (WOOD[0][0], WOOD[0][1], WOOD[0][2], 200))
+    c.set(4, 13, WOOD[2])
+def _metal(c, pts):
+    for (x, y) in pts: c.set(x, y, EMET[2])
+    for (x, y) in pts:
+        if (x - 1, y) not in pts and (x, y - 1) not in pts: c.set(x, y, EMET[3])
+    if pts: c.set(pts[0][0], pts[0][1], EMET[4])
+def tool(name, head, haft=True):
+    c = C()
+    if haft: _haft(c)
+    _metal(c, head)
+    bloom(c, TEAL, alpha=42, reach=1, thresh=185)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
+
+tool("resonant_pickaxe", [(4,4),(5,3),(6,3),(7,3),(8,3),(9,3),(10,3),(11,4),(8,4),(8,5),(8,6)])
+tool("resonant_axe", [(9,2),(10,2),(11,2),(9,3),(10,3),(11,3),(10,4),(11,4),(10,5),(9,6)])
+tool("resonant_shovel", [(7,2),(8,2),(9,2),(7,3),(8,3),(9,3),(8,4),(8,5),(8,6)])
+tool("resonant_hoe", [(6,2),(7,2),(8,2),(8,3),(8,4),(8,5),(8,6)])
+def resonant_sword():
+    c = C()
+    blade = [(12,1),(11,2),(10,3),(9,4),(8,5),(7,6),(6,7),(5,8)]
+    _metal(c, blade)
+    c.set(12, 1, EMET[4])
+    for (x, y) in [(4,8),(6,8),(5,9)]: c.set(x, y, EMET[1])   # guard
+    for (x, y) in [(4,10),(3,11)]: c.set(x, y, WOOD[1])        # grip
+    c.set(3, 11, WOOD[2])
+    bloom(c, TEAL, alpha=45, reach=2, thresh=185)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/resonant_sword.png", 16, 16, c.px)
+resonant_sword()
+
 # ================================================================ CRUSHER GUI (256x256) — deep restyle
 def gui():
     W = H = 256

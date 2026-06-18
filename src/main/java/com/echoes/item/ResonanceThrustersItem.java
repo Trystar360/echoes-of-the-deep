@@ -26,16 +26,28 @@ import java.util.List;
  * it siphons RU out of that block.
  */
 public class ResonanceThrustersItem extends Item {
-    public static final int CAPACITY = 100_000;
-    private static final int DRAIN_PER_TICK = 20;
-    private static final int RECHARGE_PER_USE = 20_000;
-    private static final double THRUST = 0.10, MAX_RISE = 0.55, FORWARD = 0.06;
+    // Tuned strong on purpose — "rhythmic balanced interchange": the device gives
+    // back as freely as the grid pours in. Huge reserve, cheap to fly, very fast.
+    public static final int CAPACITY = 1_000_000;
+    private static final int DRAIN_PER_TICK = 8;
+    private static final int RECHARGE_PER_USE = 200_000;
+    private static final double FLY_SPEED = 0.85, SPRINT_SPEED = 1.45, LIFT = 0.06;
 
     public ResonanceThrustersItem(Settings settings) {
         super(settings);
     }
 
     public static int ru(ItemStack stack) { return stack.getOrDefault(ModComponents.STORED_RU, 0); }
+
+    /** True if this living entity is a player carrying charged thrusters — no fall damage. */
+    public static boolean shieldsFall(net.minecraft.entity.LivingEntity entity) {
+        if (!(entity instanceof PlayerEntity p)) return false;
+        for (ItemStack s : p.getInventory().main) {
+            if (s.getItem() instanceof ResonanceThrustersItem && ru(s) > 0) return true;
+        }
+        return p.getOffHandStack().getItem() instanceof ResonanceThrustersItem
+                && ru(p.getOffHandStack()) > 0;
+    }
     private static void setRu(ItemStack stack, int value) {
         stack.set(ModComponents.STORED_RU, Math.max(0, Math.min(CAPACITY, value)));
     }
@@ -81,15 +93,14 @@ public class ResonanceThrustersItem extends Item {
             user.stopUsingItem();
             return;
         }
-        Vec3d v = user.getVelocity();
-        double riseY = Math.min(v.y + THRUST, MAX_RISE);
-        double fx = 0, fz = 0;
-        if (user.isSprinting()) {
+        // Full directional flight: ride wherever you look. Sneak hovers in place.
+        double speed = user.isSprinting() ? SPRINT_SPEED : FLY_SPEED;
+        if (user.isSneaking()) {
+            user.setVelocity(user.getVelocity().multiply(0.6, 0.0, 0.6)); // hover/brake
+        } else {
             Vec3d look = user.getRotationVector();
-            fx = look.x * FORWARD;
-            fz = look.z * FORWARD;
+            user.setVelocity(look.x * speed, look.y * speed + LIFT, look.z * speed);
         }
-        user.setVelocity(v.x + fx, riseY, v.z + fz);
         user.velocityModified = true;
         user.fallDistance = 0;
 
