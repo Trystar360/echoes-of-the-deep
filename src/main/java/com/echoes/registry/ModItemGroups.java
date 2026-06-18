@@ -25,6 +25,7 @@ public final class ModItemGroups {
                     entries.add(ModBlocks.DEEPSLATE_ECHOCITE_ORE);
                     entries.add(ModBlocks.DRUMSTONE_ORE);
                     entries.add(ModBlocks.SILENTITE_ORE);
+                    entries.add(ModBlocks.STILLNESS_CORE);
                     entries.add(ModBlocks.RESONATOR);
                     entries.add(ModBlocks.TUNING_CONDUIT);
                     entries.add(ModBlocks.DENSE_CONDUIT);

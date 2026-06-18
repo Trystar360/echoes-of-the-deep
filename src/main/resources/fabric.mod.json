@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "echoes",
   "version": "${version}",
-  "name": "Echoes of the Deep",
-  "description": "Sound is a physical resource. Capture, route, and spend Resonance to power machines, tools, and stealth gear.",
+  "name": "Octaves of the One",
+  "description": "A tech mod themed on Walter Russell's cosmology: the two-way universe of rhythmic balanced interchange. Draw Light from the still centre of zero, wind it through the octaves by generation (compression) and radiation (expansion), and spend it across a wired and wireless grid.",
   "authors": ["Trystar360"],
   "contact": {
     "homepage": "https://github.com/Trystar360/echoes-of-the-deep",
