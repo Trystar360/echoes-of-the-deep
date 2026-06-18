@@ -1,6 +1,5 @@
 {
   "itemGroup.echoes.main": "Octaves of the One",
-
   "block.echoes.echocite_ore": "Echocite Ore",
   "block.echoes.deepslate_echocite_ore": "Deepslate Echocite Ore",
   "block.echoes.drumstone_ore": "Drumstone Ore",
@@ -12,6 +11,7 @@
   "block.echoes.resonance_capacitor": "Accumulator",
   "block.echoes.crusher": "Compressor",
   "block.echoes.attunement_furnace": "Transmuter",
+  "block.echoes.radiator": "Radiator",
   "block.echoes.resonant_relay": "Wave Relay",
   "block.echoes.resonant_amplifier": "Amplitude Coil",
   "block.echoes.harmonic_filter": "Harmonic Filter",
@@ -20,7 +20,6 @@
   "block.echoes.conduit_coupler": "Polarity Coupler",
   "block.echoes.resonant_chest": "Locked Potential Vault",
   "block.echoes.note_relay": "Tone Relay",
-
   "item.echoes.frequency_tuner": "Octave Tuner",
   "item.echoes.channel_atlas": "Octave Atlas",
   "item.echoes.resonance_meter": "Light Meter",
@@ -30,7 +29,6 @@
   "item.echoes.resonant_shovel": "Resonant Shovel",
   "item.echoes.resonant_sword": "Resonant Sword",
   "item.echoes.resonant_hoe": "Resonant Hoe",
-
   "item.echoes.raw_echocite": "Raw Echocite",
   "item.echoes.drumstone_shard": "Drumstone Shard",
   "item.echoes.silentite_crystal": "Silentite Crystal",
@@ -40,7 +38,6 @@
   "item.echoes.resonant_slag": "Resonant Slag",
   "item.echoes.drum_core": "Drum Core",
   "item.echoes.echo_dust": "Echo Dust",
-
   "message.echoes.channel": "Octave: %s",
   "message.echoes.relay.mode": "Interchange: %s",
   "message.echoes.relay.mode.receive": "Regive (receive)",
@@ -57,7 +54,6 @@
   "message.echoes.atlas.line": "  %s: %s devices",
   "message.echoes.atlas.roster": "Octave %s: %s devices (%s give, %s regive, %s shapers)",
   "message.echoes.atlas.empty": "  (silent)",
-
   "message.echoes.meter.header": "%s — %s",
   "message.echoes.meter.stored": "  %s / %s Light (%s%%)",
   "message.echoes.meter.demand": "  Drawing: %s Light/t",

@@ -450,6 +450,21 @@ def build_stillness_core():
     bloom(c, TEAL, alpha=88, reach=2); vignette(c, 28)
     return c
 
+def build_radiator():
+    c = C(); bezel(c, BRONZE, TEAL)
+    face_inset(c)
+    cx, cy = 7.5, 7.5
+    for ang in range(0, 360, 45):                                               # eight outward rays
+        for r in range(1, 6):
+            x = int(round(cx + r * math.cos(math.radians(ang))))
+            y = int(round(cy + r * math.sin(math.radians(ang))))
+            t = 1 - r / 6.0
+            col = lerp(TEAL[2], TEAL[4], t)
+            c.over(x, y, (col[0], col[1], col[2], int((150 + 90 * t) * (0.55 + 0.45 * GLOW))))
+    c.rect(7, 7, 8, 8, lerp(TEAL[3], (235, 255, 250), GLOW)); c.set(7, 7, (255, 255, 250))
+    bloom(c, TEAL, alpha=82, reach=2); vignette(c, 28)
+    return c
+
 # Shared bronze casing — the SIDE and TOP/BOTTOM of every machine, so the whole
 # family reads as one material; only the glowing front differs.
 def device_side():
@@ -500,7 +515,7 @@ ANIMATED = {
     "note_relay": build_note_relay, "resonant_chest": build_resonant_chest, "crusher": build_crusher,
     "attunement_furnace": build_attunement_furnace,
     "dense_conduit": build_dense_conduit, "resonance_capacitor": build_resonance_capacitor,
-    "stillness_core": build_stillness_core,
+    "stillness_core": build_stillness_core, "radiator": build_radiator,
 }
 def emit_block(name, builder):
     global GLOW

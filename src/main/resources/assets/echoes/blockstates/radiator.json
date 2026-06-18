@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "echoes:block/radiator"
+    },
+    "lit=true": {
+      "model": "echoes:block/radiator"
+    }
+  }
+}
