@@ -12,6 +12,9 @@
   "block.echoes.crusher": "Compressor",
   "block.echoes.attunement_furnace": "Transmuter",
   "block.echoes.radiator": "Radiator",
+  "block.echoes.warmth_radiator": "Warmth Radiator",
+  "block.echoes.polarity_field": "Polarity Field",
+  "block.echoes.balancer": "Balancer",
   "block.echoes.resonant_relay": "Wave Relay",
   "block.echoes.resonant_amplifier": "Amplitude Coil",
   "block.echoes.harmonic_filter": "Harmonic Filter",
@@ -62,5 +65,7 @@
   "tooltip.echoes.thrusters.charge": "Light: %s / %s",
   "tooltip.echoes.thrusters.hint": "Hold use to fly where you look; right-click a Coil or Accumulator to recharge",
   "tooltip.echoes.resonant.lore": "Tuned to the octave — rhythmic balanced interchange.",
-  "tooltip.echoes.stillness.lore": "The still magnetic centre of zero — all motion springs from rest."
+  "tooltip.echoes.stillness.lore": "The still magnetic centre of zero — all motion springs from rest.",
+  "message.echoes.polarity.attract": "Polarity: Attract (draw in)",
+  "message.echoes.polarity.repel": "Polarity: Repel (cast out)"
 }

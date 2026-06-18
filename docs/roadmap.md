@@ -14,15 +14,16 @@ Status legend: ✅ done · 🔜 next · ⬜ planned. Each project notes its **co
 Make the charge/discharge duality a real, paired mechanic. *Today only generation
 (Coils, Stillness Core) exists; radiation is the missing half.*
 
-- 🔜 **Radiator** — *radiation / centrifugal outpouring.* Consumes Light and pours it
-  back into the world as **life**: accelerates crops & saplings in a radius, and
-  glows. The discharge counterpart to the Generative Coil. **(starting now)**
-- ⬜ **Warmth Radiator** — radiates heat: auto-smelts dropped items / melts snow & ice
-  / keeps an area warm (powered campfire-of-Light).
-- ⬜ **Repulsor & Attractor** — centrifugal vs centripetal motion on entities: a push
-  field and a pull/item-vacuum field, the two poles of one device.
-- ⬜ **Balancer** — *rhythmic balanced interchange.* Averages Light across all storage
-  on its network so no buffer hoards; the grid breathes evenly.
+- ✅ **Radiator** — *radiation / centrifugal outpouring.* Consumes Light and pours it
+  back into the world as **life**: accelerates crops & saplings in a radius, and glows.
+- ✅ **Warmth Radiator** — radiates heat: cooks dropped items (vanilla smelting), melts
+  snow & ice nearby, glows brightly (a powered campfire-of-Light).
+- ✅ **Polarity Field** — *the two poles of one device.* Right-click toggles **Attract**
+  (centripetal — pulls in items & XP) and **Repel** (centrifugal — throws mobs outward).
+- ✅ **Balancer** — *rhythmic balanced interchange.* Nudges all storage on its network
+  toward the same fill ratio so no Accumulator hoards; the grid breathes evenly.
+
+*Phase I complete — the generation↔radiation duality is now a full, paired mechanic.*
 
 ## Phase II — The Octaves (tiered progression)
 Russell builds matter in nine octaves of tones; give the tech tree the same spine.

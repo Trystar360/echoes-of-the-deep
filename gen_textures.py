@@ -465,6 +465,50 @@ def build_radiator():
     bloom(c, TEAL, alpha=82, reach=2); vignette(c, 28)
     return c
 
+def build_warmth_radiator():
+    c = C(); bezel(c, BRONZE, AMBER)
+    face_inset(c)
+    cx, cy = 7.5, 7.5
+    for ang in range(0, 360, 45):                                               # warm outward rays
+        for r in range(1, 6):
+            x = int(round(cx + r * math.cos(math.radians(ang))))
+            y = int(round(cy + r * math.sin(math.radians(ang))))
+            t = 1 - r / 6.0
+            col = lerp(AMBER[2], AMBER[4], t)
+            c.over(x, y, (col[0], col[1], col[2], int((150 + 90 * t) * (0.55 + 0.45 * GLOW))))
+    c.rect(7, 7, 8, 8, lerp(AMBER[3], (255, 245, 210), GLOW)); c.set(7, 7, (255, 250, 230))
+    bloom(c, AMBER, alpha=82, reach=2); vignette(c, 28)
+    return c
+
+def build_polarity_field():
+    c = C(); bezel(c, BRONZE, TEAL)
+    face_inset(c)
+    # left pole: rings drawn inward (attract, teal); right pole: rays out (repel, amethyst)
+    ripples(c, 4.5, 7.5, TEAL, rmax=4.0, x0=3, y0=3, x1=7, y1=12)
+    for ang in (-45, 0, 45):
+        for r in range(1, 5):
+            x = int(round(10.5 + r * math.cos(math.radians(ang))))
+            y = int(round(7.5 + r * math.sin(math.radians(ang))))
+            t = 1 - r / 5.0
+            col = lerp(AMETH[2], AMETH[4], t)
+            c.over(x, y, (col[0], col[1], col[2], int((150 + 80 * t) * (0.55 + 0.45 * GLOW))))
+    c.over(8, 3, (0, 0, 0, 120)); c.over(8, 12, (0, 0, 0, 120))                  # seam
+    c.set(4, 7, lerp(TEAL[3], (235, 255, 250), GLOW))
+    c.set(11, 7, lerp(AMETH[3], (235, 215, 255), GLOW))
+    bloom(c, TEAL, alpha=60); bloom(c, AMETH, alpha=55); vignette(c, 28)
+    return c
+
+def build_balancer():
+    c = C(); bezel(c, BRONZE, TEAL)
+    face_inset(c)
+    c.rect(4, 7, 11, 7, BRONZE[3]); c.set(7, 5, BRONZE[4]); c.rect(7, 4, 8, 6, BRONZE[3])  # beam + fulcrum
+    for px in (4, 11):                                                            # two pans, level
+        c.rect(px - 1, 9, px + 1, 9, BRONZE[2])
+        c.over(px, 9, (TEAL[3][0], TEAL[3][1], TEAL[3][2], int(220 * (0.5 + 0.5 * GLOW))))
+    c.set(7, 7, lerp(TEAL[3], (235, 255, 250), GLOW)); c.set(8, 7, TEAL[3])
+    bloom(c, TEAL, alpha=62, reach=2); vignette(c, 28)
+    return c
+
 # Shared bronze casing — the SIDE and TOP/BOTTOM of every machine, so the whole
 # family reads as one material; only the glowing front differs.
 def device_side():
@@ -516,6 +560,8 @@ ANIMATED = {
     "attunement_furnace": build_attunement_furnace,
     "dense_conduit": build_dense_conduit, "resonance_capacitor": build_resonance_capacitor,
     "stillness_core": build_stillness_core, "radiator": build_radiator,
+    "warmth_radiator": build_warmth_radiator, "polarity_field": build_polarity_field,
+    "balancer": build_balancer,
 }
 def emit_block(name, builder):
     global GLOW

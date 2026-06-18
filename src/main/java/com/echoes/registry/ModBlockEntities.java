@@ -7,8 +7,11 @@ import com.echoes.block.entity.ConduitCouplerBlockEntity;
 import com.echoes.block.entity.CrusherBlockEntity;
 import com.echoes.block.entity.DenseConduitBlockEntity;
 import com.echoes.block.entity.ResonanceCapacitorBlockEntity;
+import com.echoes.block.entity.BalancerBlockEntity;
+import com.echoes.block.entity.PolarityFieldBlockEntity;
 import com.echoes.block.entity.RadiatorBlockEntity;
 import com.echoes.block.entity.StillnessCoreBlockEntity;
+import com.echoes.block.entity.WarmthRadiatorBlockEntity;
 import com.echoes.block.entity.EchoRepeaterBlockEntity;
 import com.echoes.block.entity.HarmonicFilterBlockEntity;
 import com.echoes.block.entity.NoteRelayBlockEntity;
@@ -40,6 +43,12 @@ public final class ModBlockEntities {
             register("stillness_core", StillnessCoreBlockEntity::new, ModBlocks.STILLNESS_CORE);
     public static final BlockEntityType<RadiatorBlockEntity> RADIATOR =
             register("radiator", RadiatorBlockEntity::new, ModBlocks.RADIATOR);
+    public static final BlockEntityType<WarmthRadiatorBlockEntity> WARMTH_RADIATOR =
+            register("warmth_radiator", WarmthRadiatorBlockEntity::new, ModBlocks.WARMTH_RADIATOR);
+    public static final BlockEntityType<PolarityFieldBlockEntity> POLARITY_FIELD =
+            register("polarity_field", PolarityFieldBlockEntity::new, ModBlocks.POLARITY_FIELD);
+    public static final BlockEntityType<BalancerBlockEntity> BALANCER =
+            register("balancer", BalancerBlockEntity::new, ModBlocks.BALANCER);
     public static final BlockEntityType<CrusherBlockEntity> CRUSHER =
             register("crusher", CrusherBlockEntity::new, ModBlocks.CRUSHER);
     public static final BlockEntityType<AttunementFurnaceBlockEntity> ATTUNEMENT_FURNACE =

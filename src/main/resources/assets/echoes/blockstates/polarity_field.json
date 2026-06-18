@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "echoes:block/polarity_field"
+    },
+    "lit=true": {
+      "model": "echoes:block/polarity_field"
+    }
+  }
+}
