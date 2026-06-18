@@ -50,7 +50,7 @@ A complete, end-to-end energy + logistics loop, craftable from scratch in surviv
 ✅ **This builds and runs.** Verified against Minecraft **1.21.4**, Yarn `1.21.4+build.8`,
 Loom `1.9.2`, Fabric API `0.119.2+1.21.4`, Gradle `8.12`, JDK 21. The mod loads on a
 dedicated server: registries populate, the `LivingEntity#onDeath` mixin applies, all
-recipes parse (1399 total), and the Echocite worldgen attaches via biome modifications
+recipes parse (1400 total), and the Echocite worldgen attaches via biome modifications
 (`Applied 54 biome modifications`).
 
 ```bash
@@ -129,6 +129,10 @@ complete and survival-craftable as-is.
 - ✅ **Resonance Meter** — done. Handheld diagnostic: right-click any Resonance
   device to read its role, stored / capacity RU, demand, and conduit throughput
   (RU is otherwise invisible).
+- ✅ **Resonance Thrusters** — done. Sound-powered flight: hold *use* to thrust
+  upward (drains RU, negates fall damage, sprint adds a forward boost); recharge by
+  right-clicking a Resonator / Capacitor / Coupler. Portable RU lives on the item via
+  a custom `stored_ru` data component — fully server-side, no client mod needed.
 - Resonance Centrifuge, Echo Forge; Resonant tools, Silence Cloak (+ Trinkets compat).
 
 ## Art

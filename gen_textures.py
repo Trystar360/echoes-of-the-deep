@@ -676,6 +676,25 @@ def resonance_meter():
     write_png(f"{OUT}/item/resonance_meter.png", 16, 16, c.px)
 resonance_meter()
 
+def resonance_thrusters():
+    c = C(); r = BRONZE
+    for bx in (5, 9):                                  # twin thruster bodies
+        c.rect(bx, 3, bx + 1, 11, r[2])
+        c.set(bx, 3, r[3]); c.set(bx + 1, 3, r[3])
+        c.set(bx + 1, 11, r[0])
+        c.over(bx, 6, TEAL[2]); c.over(bx + 1, 6, TEAL[3])   # teal core windows
+        c.over(bx, 7, TEAL[3]); c.over(bx + 1, 7, TEAL[2])
+    c.rect(7, 5, 8, 6, r[1])                            # harness
+    for bx in (5, 9):                                  # nozzles + teal exhaust
+        c.set(bx, 12, r[0]); c.set(bx + 1, 12, r[0])
+        c.set(bx, 13, TEAL[4]); c.over(bx + 1, 13, (TEAL[3][0], TEAL[3][1], TEAL[3][2], 230))
+        c.over(bx, 14, (TEAL[3][0], TEAL[3][1], TEAL[3][2], 200)); c.over(bx + 1, 14, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 160))
+        c.over(bx, 15, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 110))
+    bloom(c, TEAL, alpha=55, reach=2, thresh=150)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/resonance_thrusters.png", 16, 16, c.px)
+resonance_thrusters()
+
 # ================================================================ CRUSHER GUI (256x256) — deep restyle
 def gui():
     W = H = 256

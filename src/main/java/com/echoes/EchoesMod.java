@@ -6,6 +6,7 @@ import com.echoes.energy.ResonanceSources;
 import com.echoes.recipe.ModRecipes;
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.registry.ModBlocks;
+import com.echoes.registry.ModComponents;
 import com.echoes.registry.ModItemGroups;
 import com.echoes.registry.ModItems;
 import com.echoes.registry.ModScreens;
@@ -24,6 +25,7 @@ public class EchoesMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        ModComponents.register();
         ModItems.register();
         ModBlocks.register();
         ModItemGroups.register();

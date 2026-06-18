@@ -21,6 +21,7 @@
   "item.echoes.frequency_tuner": "Frequency Tuner",
   "item.echoes.channel_atlas": "Channel Atlas",
   "item.echoes.resonance_meter": "Resonance Meter",
+  "item.echoes.resonance_thrusters": "Resonance Thrusters",
   "message.echoes.channel": "Channel: %s",
   "message.echoes.relay.mode": "Mode: %s",
   "message.echoes.relay.mode.receive": "Receive",
@@ -49,5 +50,8 @@
   "message.echoes.meter.header": "%s — %s",
   "message.echoes.meter.stored": "  %s / %s RU (%s%%)",
   "message.echoes.meter.demand": "  Demand: %s RU/t",
-  "message.echoes.meter.throughput": "  Throughput: %s RU/t"
+  "message.echoes.meter.throughput": "  Throughput: %s RU/t",
+  "message.echoes.thrusters.charge": "Thrusters: %s / %s RU",
+  "tooltip.echoes.thrusters.charge": "Charge: %s / %s RU",
+  "tooltip.echoes.thrusters.hint": "Hold use to thrust; right-click a Resonator or Capacitor to recharge"
 }
