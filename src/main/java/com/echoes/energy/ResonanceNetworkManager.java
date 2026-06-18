@@ -152,6 +152,18 @@ public class ResonanceNetworkManager {
         }
     }
 
+    /** Equalize storage on every network adjacent to {@code pos} (the Balancer). */
+    public void balanceAround(BlockPos pos, long rate) {
+        java.util.Set<Integer> seen = new HashSet<>();
+        for (BlockPos n : ResonanceNetwork.neighbors(pos)) {
+            Integer id = posToNetwork.get(n);
+            if (id != null && seen.add(id)) {
+                ResonanceNetwork net = networks.get(id);
+                if (net != null) net.balanceStorages(world, rate);
+            }
+        }
+    }
+
     private void merge(ResonanceNetwork keep, ResonanceNetwork drop) {
         if (keep == drop || drop == null) return;
         for (BlockPos p : drop.conduits) {

@@ -65,8 +65,7 @@ public class ResonanceNetwork {
     }
 
     /** Per-tick distribution. Call from the manager. */
-    public void tick(ServerWorld world) {
-        if ((id + world.getTime()) % tickInterval != 0) return;
+    public void tick(ServerWorld world) {        if ((id + world.getTime()) % tickInterval != 0) return;
         if (dirty) rescan(world);
         if (consumers.isEmpty() && storages.isEmpty()) return;
 
@@ -167,6 +166,26 @@ public class ResonanceNetwork {
         for (ResonanceNode s : storages) {
             if (remaining <= 0) break;
             remaining -= s.insert(remaining, false);
+        }
+    }
+
+    /**
+     * Rhythmic balanced interchange: nudge every storage node toward the network's
+     * mean fill ratio (Light is conserved — over-full give, under-full regive), so
+     * no Accumulator hoards. Driven by the Balancer.
+     */
+    public void balanceStorages(ServerWorld world, long rate) {
+        if (dirty) rescan(world);
+        if (storages.size() < 2) return;
+        long totalStored = 0, totalCap = 0;
+        for (ResonanceNode s : storages) { totalStored += s.storedRu(); totalCap += s.capacityRu(); }
+        if (totalCap <= 0) return;
+        double ratio = (double) totalStored / totalCap;
+        for (ResonanceNode s : storages) {
+            long diff = Math.round(s.capacityRu() * ratio) - s.storedRu();
+            long step = Math.min(Math.abs(diff), rate);
+            if (diff > 0) s.insert(step, false);
+            else if (diff < 0) s.extract(step, false);
         }
     }
 

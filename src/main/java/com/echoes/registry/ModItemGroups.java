@@ -33,6 +33,9 @@ public final class ModItemGroups {
                     entries.add(ModBlocks.CRUSHER);
                     entries.add(ModBlocks.ATTUNEMENT_FURNACE);
                     entries.add(ModBlocks.RADIATOR);
+                    entries.add(ModBlocks.WARMTH_RADIATOR);
+                    entries.add(ModBlocks.POLARITY_FIELD);
+                    entries.add(ModBlocks.BALANCER);
                     entries.add(ModBlocks.RESONANT_RELAY);
                     entries.add(ModBlocks.RESONANT_AMPLIFIER);
                     entries.add(ModBlocks.HARMONIC_FILTER);

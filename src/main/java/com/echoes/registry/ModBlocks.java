@@ -2,13 +2,16 @@ package com.echoes.registry;
 
 import com.echoes.EchoesMod;
 import com.echoes.block.AttunementFurnaceBlock;
+import com.echoes.block.BalancerBlock;
 import com.echoes.block.ConduitBlock;
 import com.echoes.block.ConduitCouplerBlock;
 import com.echoes.block.CrusherBlock;
 import com.echoes.block.DenseConduitBlock;
+import com.echoes.block.PolarityFieldBlock;
 import com.echoes.block.RadiatorBlock;
 import com.echoes.block.ResonanceCapacitorBlock;
 import com.echoes.block.StillnessCoreBlock;
+import com.echoes.block.WarmthRadiatorBlock;
 import com.echoes.block.EchoRepeaterBlock;
 import com.echoes.block.HarmonicFilterBlock;
 import com.echoes.block.NoteRelayBlock;
@@ -59,6 +62,14 @@ public final class ModBlocks {
     public static final Block RADIATOR = register("radiator",
             RadiatorBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque()
                     .luminance(s -> s.get(Properties.LIT) ? 12 : 2));
+    public static final Block WARMTH_RADIATOR = register("warmth_radiator",
+            WarmthRadiatorBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque()
+                    .luminance(s -> s.get(Properties.LIT) ? 14 : 2));
+    public static final Block POLARITY_FIELD = register("polarity_field",
+            PolarityFieldBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque()
+                    .luminance(s -> s.get(Properties.LIT) ? 8 : 2));
+    public static final Block BALANCER = register("balancer",
+            BalancerBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque());
     public static final Block CRUSHER = register("crusher",
             CrusherBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool());
     public static final Block ATTUNEMENT_FURNACE = register("attunement_furnace",
