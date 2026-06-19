@@ -1,5 +1,8 @@
 package com.echoes.block.entity;
 
+import com.echoes.config.BlockConfig;
+import com.echoes.config.Configurable;
+import com.echoes.config.ConfigSpec;
 import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
@@ -16,6 +19,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -28,18 +32,26 @@ import java.util.List;
  * toward it — a vacuum; REPEL (centrifugal) throws mobs outward — a ward. Spends a
  * little Light while acting; glows while charged.
  */
-public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNode {
+public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNode, Configurable {
     private static final long BUFFER = 3_000;
     private static final long COST = 20;
     private static final int INTERVAL = 5;
-    private static final double RADIUS = 6.0, PULL = 0.28, PUSH = 0.45;
+    private static final double PULL = 0.28, PUSH = 0.45;
+
+    /** Polarity Fields expose redstone behaviour, per-face I/O and an adjustable radius. */
+    public static final ConfigSpec SPEC = ConfigSpec.builder()
+            .redstone().sides()
+            .tuning("config.echoes.tuning.radius", 2, 12, 1, 6)
+            .build();
 
     private final ResonanceStorage buffer = new ResonanceStorage(BUFFER);
+    private final BlockConfig config = new BlockConfig();
     private boolean attract;
     private int timer;
 
     public PolarityFieldBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.POLARITY_FIELD, pos, state);
+        config.applyDefaults(SPEC);
     }
 
     public boolean attract() { return attract; }
@@ -52,7 +64,8 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
 
     public static void tick(World world, BlockPos pos, BlockState state, PolarityFieldBlockEntity be) {
         if (!(world instanceof ServerWorld sw)) return;
-        boolean active = be.buffer.getAmount() >= COST;
+        boolean powered = sw.isReceivingRedstonePower(pos);
+        boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         if (state.contains(Properties.LIT) && state.get(Properties.LIT) != active) {
             sw.setBlockState(pos, state.with(Properties.LIT, active), Block.NOTIFY_ALL);
         }
@@ -61,7 +74,7 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
         if (!active) return;
 
         Vec3d c = Vec3d.ofCenter(pos);
-        Box box = new Box(pos).expand(RADIUS);
+        Box box = new Box(pos).expand(be.config.tuningA());
         boolean acted = false;
 
         if (be.attract) {
@@ -98,10 +111,17 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
     @Override public long storedRu() { return buffer.getAmount(); }
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
+    // --- Configurable ---
+    @Override public BlockConfig getConfig() { return config; }
+    @Override public ConfigSpec getConfigSpec() { return SPEC; }
+    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public void onConfigChanged() { markDirty(); }
+
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         super.writeNbt(nbt, lookup);
         buffer.writeNbt(nbt);
+        config.writeNbt(nbt);
         nbt.putBoolean("attract", attract);
     }
 
@@ -109,6 +129,7 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         super.readNbt(nbt, lookup);
         buffer.readNbt(nbt);
+        config.readNbt(nbt);
         attract = nbt.getBoolean("attract");
     }
 }

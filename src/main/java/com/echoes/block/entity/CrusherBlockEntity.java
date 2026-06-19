@@ -35,13 +35,19 @@ import java.util.Optional;
  * briefly dips; it pulls its per-tick energy need from the network via demand().
  */
 public class CrusherBlockEntity extends BlockEntity
-        implements ImplementedInventory, ResonanceNode, NamedScreenHandlerFactory {
+        implements ImplementedInventory, ResonanceNode, NamedScreenHandlerFactory,
+        com.echoes.config.Configurable {
 
     private static final int INPUT = 0, OUTPUT = 1, BYPRODUCT = 2;
     private static final long INTERNAL_BUFFER = 1_000;
 
+    /** The Crusher exposes redstone behaviour and per-face I/O. */
+    public static final com.echoes.config.ConfigSpec SPEC =
+            com.echoes.config.ConfigSpec.builder().redstone().sides().build();
+
     private final DefaultedList<ItemStack> items = DefaultedList.ofSize(3, ItemStack.EMPTY);
     private final ResonanceStorage buffer = new ResonanceStorage(INTERNAL_BUFFER);
+    private final com.echoes.config.BlockConfig config = new com.echoes.config.BlockConfig();
 
     private int progress;       // ticks accumulated toward current recipe
     private int maxProgress;    // recipe.processingTime, cached
@@ -159,11 +165,18 @@ public class CrusherBlockEntity extends BlockEntity
 
     @Override public void markDirty() { super.markDirty(); }
 
+    // --- Configurable ---
+    @Override public com.echoes.config.BlockConfig getConfig() { return config; }
+    @Override public com.echoes.config.ConfigSpec getConfigSpec() { return SPEC; }
+    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public void onConfigChanged() { markDirty(); }
+
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         super.writeNbt(nbt, lookup);
         net.minecraft.inventory.Inventories.writeNbt(nbt, items, lookup);
         buffer.writeNbt(nbt);
+        config.writeNbt(nbt);
         nbt.putInt("progress", progress);
     }
 
@@ -172,6 +185,7 @@ public class CrusherBlockEntity extends BlockEntity
         super.readNbt(nbt, lookup);
         net.minecraft.inventory.Inventories.readNbt(nbt, items, lookup);
         buffer.readNbt(nbt);
+        config.readNbt(nbt);
         progress = nbt.getInt("progress");
     }
 }

@@ -46,7 +46,7 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
 
     /** 0 when disabled, otherwise a rough channel indicator (1–15) for comparators. */
     public int comparatorOutput() {
-        return mode == RelayMode.DISABLED ? 0 : Math.min(15, channel + 1);
+        return mode == RelayMode.DISABLED ? 0 : Math.min(15, channel() + 1);
     }
 
     // --- WirelessDevice transport ---

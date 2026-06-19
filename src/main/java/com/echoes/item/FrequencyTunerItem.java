@@ -1,6 +1,9 @@
 package com.echoes.item;
 
 import com.echoes.block.entity.AbstractChannelDeviceBlockEntity;
+import com.echoes.config.Configurable;
+import com.echoes.screen.ConfigScreenFactory;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,9 +16,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 
 /**
- * Copies a channel between wireless devices without juggling dyes. Sneak +
- * right-click a device to copy its channel into the tuner; right-click another
- * device to paste it.
+ * The device wrench. Right-click any configurable device to open its
+ * configuration screen (channel/octave, redstone, per-face I/O and tuning).
+ * Sneak + right-click a wireless device to copy its channel into the tuner.
  */
 public class FrequencyTunerItem extends Item {
 
@@ -28,25 +31,22 @@ public class FrequencyTunerItem extends Item {
         if (context.getWorld().isClient) return ActionResult.SUCCESS;
         PlayerEntity player = context.getPlayer();
         if (player == null) return ActionResult.PASS;
-        if (!(context.getWorld().getBlockEntity(context.getBlockPos())
-                instanceof AbstractChannelDeviceBlockEntity device)) {
-            return ActionResult.PASS;
-        }
-
+        BlockEntity be = context.getWorld().getBlockEntity(context.getBlockPos());
         ItemStack tuner = context.getStack();
-        if (player.isSneaking()) {
+
+        // Sneak on a wireless device still does the quick channel-copy.
+        if (player.isSneaking() && be instanceof AbstractChannelDeviceBlockEntity device) {
             store(tuner, device.channel());
             player.sendMessage(Text.translatable("message.echoes.tuner.copied", colorName(device.channel())), true);
-        } else {
-            device.setChannel(read(tuner));
-            player.sendMessage(Text.translatable("message.echoes.tuner.pasted", colorName(device.channel())), true);
+            return ActionResult.SUCCESS;
         }
-        return ActionResult.SUCCESS;
-    }
 
-    private static int read(ItemStack stack) {
-        NbtComponent comp = stack.get(DataComponentTypes.CUSTOM_DATA);
-        return comp == null ? 0 : comp.copyNbt().getInt("channel");
+        // Otherwise, open the configuration screen for any configurable device.
+        if (be instanceof Configurable cfg) {
+            player.openHandledScreen(new ConfigScreenFactory(cfg, context.getBlockPos().toImmutable()));
+            return ActionResult.SUCCESS;
+        }
+        return ActionResult.PASS;
     }
 
     private static void store(ItemStack stack, int channel) {
