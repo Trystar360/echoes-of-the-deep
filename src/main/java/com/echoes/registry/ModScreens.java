@@ -5,6 +5,7 @@ import com.echoes.screen.AttunementFurnaceScreenHandler;
 import com.echoes.screen.ConfigScreenHandler;
 import com.echoes.screen.CrusherScreenHandler;
 import com.echoes.screen.HarmonicFilterScreenHandler;
+import com.echoes.screen.TransmutationTableScreenHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -30,6 +31,11 @@ public final class ModScreens {
             Registry.register(Registries.SCREEN_HANDLER,
                     Identifier.of(EchoesMod.MOD_ID, "wave_filter"),
                     new ScreenHandlerType<>(HarmonicFilterScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
+
+    public static final ScreenHandlerType<TransmutationTableScreenHandler> TRANSMUTATION_TABLE =
+            Registry.register(Registries.SCREEN_HANDLER,
+                    Identifier.of(EchoesMod.MOD_ID, "transmutation_table"),
+                    new ScreenHandlerType<>(TransmutationTableScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
 
     /** Shared configuration screen for every Configurable device. */
     public static final ExtendedScreenHandlerType<ConfigScreenHandler, BlockPos> CONFIG =

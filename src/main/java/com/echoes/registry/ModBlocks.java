@@ -18,6 +18,7 @@ import com.echoes.block.NoteRelayBlock;
 import com.echoes.block.OctaveCoilBlock;
 import com.echoes.block.OctaveConduitBlock;
 import com.echoes.block.StormCallerBlock;
+import com.echoes.block.TransmutationTableBlock;
 import com.echoes.block.ResonantAmplifierBlock;
 import com.echoes.block.ResonantChestBlock;
 import com.echoes.block.ResonantRelayBlock;
@@ -189,6 +190,11 @@ public final class ModBlocks {
     public static final Block OCTAVE_CONDUIT = register("octave_conduit",
             OctaveConduitBlock::new, AbstractBlock.Settings.create().strength(2.5f).requiresTool()
                     .nonOpaque().luminance(s -> 4));
+
+    // The Verdant Octave — the transmutation economy (EMC = Bound Light)
+    public static final Block TRANSMUTATION_TABLE = register("transmutation_table",
+            TransmutationTableBlock::new, AbstractBlock.Settings.create().strength(3.5f)
+                    .requiresTool().nonOpaque().luminance(s -> 6));
 
     // Phase VII — Storm Caller (lightning generation)
     public static final Block STORM_CALLER = register("storm_caller",

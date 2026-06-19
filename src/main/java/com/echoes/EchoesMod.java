@@ -43,6 +43,9 @@ public class EchoesMod implements ModInitializer {
         // Data-driven sound -> RU table for the ambient-capture mixin.
         ResonanceSources.register();
 
+        // Data-driven Light Value table (EMC = Bound Light) for the Transmutation Table.
+        com.echoes.transmute.LightValues.register();
+
         // Expose the Crusher's inventory to hoppers/pipes via the Transfer API.
         // Top face inserts to input, other faces extract from output (see
         // ImplementedInventory#getAvailableSlots).
@@ -56,6 +59,10 @@ public class EchoesMod implements ModInitializer {
         // Attunement Furnace exposes its input/output to hoppers/pipes.
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.ATTUNEMENT_FURNACE);
+
+        // Transmutation Table: top face feeds the dissolve slot, sides extract output.
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.TRANSMUTATION_TABLE);
 
         // Optional cross-mod energy bridge — only when Team Reborn Energy is present.
         // Isolated in a separate class so its TR Energy references aren't loaded otherwise.

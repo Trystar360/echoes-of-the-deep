@@ -25,6 +25,26 @@ tool, and wireless device needs it. The **Dull Ingot** and **Drum Core** lines
 are cheaper/alternate paths so the loop has redundancy. See
 [Crafting & Progression](Crafting-and-Progression.md).
 
+## The transmutation economy — Bound Light (EMC)
+
+Russell's premise is that **all matter is condensed Light**, so the mod has a native
+EMC: every item carries a **Light Value** (its *Bound Light*). The
+**[Transmutation Table](Blocks.md)** dissolves matter into a banked Bound-Light pool and
+pays it back out as **Mote coins**. The Mote ladder is the denomination scale — each tone
+is Light wound one octave higher (×4 per octave):
+
+| | In-world name | Id | Light Value | Tone |
+| :-: | --- | --- | --: | --- |
+| <img src="images/icons/light_mote.png" width="28"> | Light Mote | `light_mote` | 64 | O0 — raw Light, the universal One |
+| <img src="images/icons/tonic_mote.png" width="28"> | Tonic Mote | `tonic_mote` | 256 | O1 — the tonic |
+| <img src="images/icons/mediant_mote.png" width="28"> | Mediant Mote | `mediant_mote` | 1,024 | O2 — the mediant |
+| <img src="images/icons/dominant_mote.png" width="28"> | Dominant Mote | `dominant_mote` | 4,096 | O3 — the dominant |
+| <img src="images/icons/harmonic_mote.png" width="28"> | Harmonic Mote | `harmonic_mote` | 16,384 | O4 — the resolved crest (balance) |
+
+Light Values are **data-driven** (`data/echoes/light_values.json`, modpack-overridable);
+items absent from the table — or set to `0` — cannot be dissolved, which keeps unique and
+exploit items out of the economy.
+
 ## <img src="images/icons/resonant_thrusters.png" width="28" align="top"> Resonant Thrusters — `echoes:resonant_thrusters`
 
 *Centrifugal radiation = expansion.* **Sound-powered flight** with no client mod

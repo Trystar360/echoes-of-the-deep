@@ -43,6 +43,20 @@ public final class ModItems {
     public static final Item RADIANT_DUST   = register("radiant_dust", Item::new, new Item.Settings());
     public static final Item RADIANT_INGOT  = register("radiant_ingot", Item::new, new Item.Settings());
 
+    // The Verdant Octave — charged-Light currency (the EMC "coins"). Each tone is
+    // Light wound one octave higher; the ladder doubles as the Bound-Light denomination
+    // scale (×4 per octave). Withdrawn from a Transmutation Table's banked Bound Light.
+    public static final Item LIGHT_MOTE    = register("light_mote", Item::new, new Item.Settings());
+    public static final Item TONIC_MOTE    = register("tonic_mote", Item::new, new Item.Settings());
+    public static final Item MEDIANT_MOTE  = register("mediant_mote", Item::new, new Item.Settings());
+    public static final Item DOMINANT_MOTE = register("dominant_mote", Item::new, new Item.Settings());
+    public static final Item HARMONIC_MOTE = register("harmonic_mote", Item::new, new Item.Settings());
+
+    /** The Mote ladder in ascending octave order (denominations of Bound Light). */
+    public static final Item[] MOTES = { LIGHT_MOTE, TONIC_MOTE, MEDIANT_MOTE, DOMINANT_MOTE, HARMONIC_MOTE };
+    /** Light Value of each Mote (×4 per octave): Light=64 … Harmonic=16384. */
+    public static final long[] MOTE_VALUES = { 64L, 256L, 1024L, 4096L, 16384L };
+
     // Wireless transport tools
     public static final Item FREQUENCY_TUNER = register("wave_tuner",
             FrequencyTunerItem::new, new Item.Settings().maxCount(1));

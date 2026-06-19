@@ -86,6 +86,13 @@ public final class ModItemGroups {
                     entries.add(ModItems.OCTAVE_SEED);
                     entries.add(ModItems.RADIANT_DUST);
                     entries.add(ModItems.RADIANT_INGOT);
+                    // The Verdant Octave — transmutation economy
+                    entries.add(ModBlocks.TRANSMUTATION_TABLE);
+                    entries.add(ModItems.LIGHT_MOTE);
+                    entries.add(ModItems.TONIC_MOTE);
+                    entries.add(ModItems.MEDIANT_MOTE);
+                    entries.add(ModItems.DOMINANT_MOTE);
+                    entries.add(ModItems.HARMONIC_MOTE);
                 })
                 .build());
     }
