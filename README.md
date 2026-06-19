@@ -25,6 +25,10 @@ A full wiki lives in [`docs/wiki/`](docs/wiki/Home.md) — start at the
 - [Crafting & Progression](docs/wiki/Crafting-and-Progression.md) — every recipe
 - [Compatibility](docs/wiki/Compatibility.md) · [Reference & FAQ](docs/wiki/Reference-and-FAQ.md)
 
+To mirror these pages to the repository's **GitHub Wiki** tab, run
+[`scripts/publish-wiki.sh`](scripts/publish-wiki.sh) from a machine with wiki push
+access (it rewrites the inter-page links and generates a sidebar).
+
 ## What's inside
 
 A complete, end-to-end energy + logistics loop, craftable from scratch in survival:
