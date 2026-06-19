@@ -13,21 +13,21 @@ grid to power machines, flight, and deliberately over-tuned gear.
 
 ## 📖 Wiki
 
-A full wiki lives in [`docs/wiki/`](docs/wiki/Home.md) — start at the
-[Home page](docs/wiki/Home.md):
+The full wiki is a themed, searchable **HTML site** — one page per block/item,
+with **clickable crafting grids** (every ingredient links to its own page):
 
-- [Getting Started](docs/wiki/Getting-Started.md) — install, build, your first powered machine
-- [Cosmology & Lore](docs/wiki/Cosmology-and-Lore.md) — Russell's two-way universe
-- [Energy System](docs/wiki/Energy-System.md) — Light/RU, networks, fair distribution
-- [Blocks](docs/wiki/Blocks.md) · [Items & Gear](docs/wiki/Items-and-Gear.md)
-- [Wireless Transport](docs/wiki/Wireless-Transport.md) — channels & the relay family
-- [Ores & Worldgen](docs/wiki/Ores-and-Worldgen.md) · [Ambient Capture](docs/wiki/Ambient-Capture.md)
-- [Crafting & Progression](docs/wiki/Crafting-and-Progression.md) — every recipe
-- [Compatibility](docs/wiki/Compatibility.md) · [Reference & FAQ](docs/wiki/Reference-and-FAQ.md)
+### → **https://trystar360.github.io/echoes-of-the-deep/**
 
-To mirror these pages to the repository's **GitHub Wiki** tab, run
-[`scripts/publish-wiki.sh`](scripts/publish-wiki.sh) from a machine with wiki push
-access (it rewrites the inter-page links and generates a sidebar).
+It's generated from the mod's own textures, recipes, and lang file by
+[`scripts/build_wiki_site.py`](scripts/build_wiki_site.py) into
+[`docs/site/`](docs/site/), and published by the
+[Pages workflow](.github/workflows/pages.yml). To preview locally, open
+`docs/site/index.html` in a browser. *(One-time: in **Settings → Pages**, set the
+source to **GitHub Actions** to make the URL above go live.)*
+
+<sub>Older long-form Markdown reference still lives in [`docs/wiki/`](docs/wiki/Home.md)
+and can be mirrored to the repo's Wiki tab with
+[`scripts/publish-wiki.sh`](scripts/publish-wiki.sh).</sub>
 
 ## What's inside
 
