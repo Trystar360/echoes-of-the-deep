@@ -70,6 +70,9 @@ A complete, end-to-end energy + logistics loop, craftable from scratch in surviv
 - **Octaves & transmutation (Phase II progression)** — the **Octave Seed** catalyst
   feeds **Radiant Dust → Radiant Ingot**, which builds the **Greater Accumulator**, a
   block-of-light bank (2,000,000 Light) with a comparator output and full config GUI.
+  Radiant Ingots also forge the higher-octave grid tier: the **Octave Coil** (a strong
+  baseline generator with a tunable rate) and the **Octave Conduit** (64,000 Light/t,
+  4× the Dense Conduit).
 - **Worldgen** — configured/placed ore features for Echocite & Drumstone (Overworld)
   and Silentite (rare, Deep Dark only) plus the Lumewood grove, attached via
   `BiomeModifications`.

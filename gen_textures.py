@@ -1107,6 +1107,35 @@ def build_greater_accumulator():
     return c
 emit_block("greater_accumulator", build_greater_accumulator)
 
+# ---- Octave tiers (Radiant-tier generation & throughput) — amber-wound versions
+def build_octave_coil():
+    c = C(); bezel(c, BRONZE, AMBER)
+    face_inset(c)
+    ripples(c, 7.5, 7.5, AMBER, rmax=5.6, x0=3, y0=3, x1=12, y1=12, alpha=120)  # wound-up motion
+    for (x, y) in [(7, 4), (7, 11), (4, 7), (11, 7)]: c.set(x, y, AMBER[4])
+    gem(c, 4, 4, AMBER, r=1); gem(c, 11, 4, AMBER, r=1)
+    gem(c, 4, 11, AMBER, r=1); gem(c, 11, 11, AMBER, r=1)
+    core(c, 8, 8, AMBER, r=2)
+    c.set(7, 7, (255, 255, 255)); c.set(8, 8, (255, 255, 255))
+    bloom(c, AMBER, alpha=90, reach=2); vignette(c, 28)
+    return c
+emit_block("octave_coil", build_octave_coil)
+
+def build_octave_conduit():
+    c = C(); bezel(c, BRONZE, AMBER, t=1)
+    face_inset(c, (22, 16, 8))
+    c.rect(6, 1, 9, 14, None)                            # thick amber rune channel
+    for x in range(1, 15):
+        edge = lerp(AMBER[1], AMBER[3], 1 - abs(7.5 - x) / 7.5)
+        c.over(x, 6, edge); c.over(x, 7, AMBER[4]); c.over(x, 8, AMBER[4]); c.over(x, 9, edge)
+    for y in range(1, 15):
+        edge = lerp(AMBER[1], AMBER[3], 1 - abs(7.5 - y) / 7.5)
+        c.over(6, y, edge); c.over(7, y, AMBER[4]); c.over(8, y, AMBER[4]); c.over(9, y, edge)
+    core(c, 7, 7, AMBER, r=1)
+    bloom(c, AMBER, alpha=90); vignette(c, 28)
+    return c
+emit_block("octave_conduit", build_octave_conduit)
+
 # ---- Phase II items
 def octave_seed():
     c = C(); cx, cy = 8, 8

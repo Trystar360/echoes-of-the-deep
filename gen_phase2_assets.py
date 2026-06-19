@@ -325,4 +325,14 @@ smelt("radiant_ingot_from_blasting", f"{MC}:radiant_dust", "radiant_ingot", blas
 shaped("greater_accumulator", ["###", "#C#", "###"],
        {"#": f"{MC}:radiant_ingot", "C": f"{MC}:resonance_capacitor"}, "greater_accumulator", 1)
 
+# Octave tiers — higher-octave generation & throughput (Radiant-tier)
+cube_all("octave_coil")
+cube_all("octave_conduit")
+# Octave Coil: a ring of Radiant Ingots wound around a Stillness Core.
+shaped("octave_coil", ["RRR", "RSR", "RRR"],
+       {"R": f"{MC}:radiant_ingot", "S": f"{MC}:stillness_core"}, "octave_coil", 1)
+# Octave Conduit: charge a Dense Conduit with Radiant Ingots.
+shaped("octave_conduit", ["RDR"],
+       {"R": f"{MC}:radiant_ingot", "D": f"{MC}:dense_conduit"}, "octave_conduit", 2)
+
 print("Phase II assets generated.")

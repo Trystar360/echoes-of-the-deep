@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "RRR",
+    "RSR",
+    "RRR"
+  ],
+  "key": {
+    "R": "echoes:radiant_ingot",
+    "S": "echoes:stillness_core"
+  },
+  "result": {
+    "id": "echoes:octave_coil",
+    "count": 1
+  }
+}

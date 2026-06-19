@@ -45,6 +45,8 @@ public final class ModItemGroups {
                     entries.add(ModBlocks.RESONANT_CHEST);
                     entries.add(ModBlocks.NOTE_RELAY);
                     entries.add(ModBlocks.GREATER_ACCUMULATOR);
+                    entries.add(ModBlocks.OCTAVE_COIL);
+                    entries.add(ModBlocks.OCTAVE_CONDUIT);
                     // Phase II — The Octave Grove
                     entries.add(ModBlocks.LUMEWOOD_LOG);
                     entries.add(ModBlocks.LUMEWOOD_WOOD);

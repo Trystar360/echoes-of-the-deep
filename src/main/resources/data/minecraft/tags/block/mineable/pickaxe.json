@@ -28,6 +28,8 @@
     "echoes:echocite_brick_stairs",
     "echoes:echocite_brick_slab",
     "echoes:greater_accumulator",
-    "echoes:lume_lantern"
+    "echoes:lume_lantern",
+    "echoes:octave_coil",
+    "echoes:octave_conduit"
   ]
 }

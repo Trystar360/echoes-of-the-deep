@@ -6,6 +6,8 @@ import com.echoes.block.entity.ConduitBlockEntity;
 import com.echoes.block.entity.ConduitCouplerBlockEntity;
 import com.echoes.block.entity.CrusherBlockEntity;
 import com.echoes.block.entity.DenseConduitBlockEntity;
+import com.echoes.block.entity.OctaveCoilBlockEntity;
+import com.echoes.block.entity.OctaveConduitBlockEntity;
 import com.echoes.block.entity.ResonanceCapacitorBlockEntity;
 import com.echoes.block.entity.BalancerBlockEntity;
 import com.echoes.block.entity.PolarityFieldBlockEntity;
@@ -75,6 +77,10 @@ public final class ModBlockEntities {
             register("verdant_loam", VerdantLoamBlockEntity::new, ModBlocks.VERDANT_LOAM);
     public static final BlockEntityType<GreaterAccumulatorBlockEntity> GREATER_ACCUMULATOR =
             register("greater_accumulator", GreaterAccumulatorBlockEntity::new, ModBlocks.GREATER_ACCUMULATOR);
+    public static final BlockEntityType<OctaveCoilBlockEntity> OCTAVE_COIL =
+            register("octave_coil", OctaveCoilBlockEntity::new, ModBlocks.OCTAVE_COIL);
+    public static final BlockEntityType<OctaveConduitBlockEntity> OCTAVE_CONDUIT =
+            register("octave_conduit", OctaveConduitBlockEntity::new, ModBlocks.OCTAVE_CONDUIT);
 
     private static <T extends BlockEntity> BlockEntityType<T> register(
             String name, FabricBlockEntityTypeBuilder.Factory<T> factory, Block... blocks) {
