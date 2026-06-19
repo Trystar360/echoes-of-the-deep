@@ -74,15 +74,48 @@ public class TransmutationTableBlockEntity extends BlockEntity
         }
     }
 
-    /** Pay one Mote of the given tier (0..4) out of the pool, if affordable. */
+    /**
+     * Pay one Mote of the given tier (0..4) out of the pool, if affordable. The coin
+     * lands in the output slot (so hoppers can pull it), falling back to the player's
+     * inventory only when the slot is blocked by a different tone and full.
+     */
     public boolean withdraw(int tier, PlayerEntity player) {
         if (tier < 0 || tier >= ModItems.MOTES.length) return false;
         long cost = ModItems.MOTE_VALUES[tier];
         if (boundLight < cost) return false;
+        ItemStack mote = new ItemStack(ModItems.MOTES[tier]);
+        ItemStack out = getStack(OUTPUT);
+        if (out.isEmpty()) {
+            setStack(OUTPUT, mote);
+        } else if (ItemStack.areItemsAndComponentsEqual(out, mote) && out.getCount() < out.getMaxCount()) {
+            out.increment(1);
+        } else if (!player.getInventory().insertStack(mote)) {
+            return false; // output slot holds another tone and the inventory is full
+        }
         boundLight -= cost;
-        player.getInventory().offerOrDrop(new ItemStack(ModItems.MOTES[tier]));
         markDirty();
         return true;
+    }
+
+    /**
+     * Drain the banked pool into Mote coins (largest denomination first) and scatter
+     * them, so breaking the Table never silently destroys saved Bound Light. Any
+     * sub-coin remainder (&lt; 64 LV) is below the smallest Mote and is forfeited.
+     */
+    public void dropBankedLight(World world, BlockPos pos) {
+        long remaining = boundLight;
+        boundLight = 0;
+        for (int t = ModItems.MOTES.length - 1; t >= 0 && remaining > 0; t--) {
+            long value = ModItems.MOTE_VALUES[t];
+            long count = remaining / value;
+            remaining %= value;
+            while (count > 0) {
+                int batch = (int) Math.min(64, count);
+                count -= batch;
+                net.minecraft.util.ItemScatterer.spawn(world, pos.getX() + 0.5, pos.getY() + 0.5,
+                        pos.getZ() + 0.5, new ItemStack(ModItems.MOTES[t], batch));
+            }
+        }
     }
 
     // --- screen ---
