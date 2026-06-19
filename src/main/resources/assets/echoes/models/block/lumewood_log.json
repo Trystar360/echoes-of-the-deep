@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "echoes:block/lumewood_log_top",
+    "side": "echoes:block/lumewood_log"
+  }
+}

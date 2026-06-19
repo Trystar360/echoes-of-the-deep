@@ -23,6 +23,11 @@
     "echoes:echo_repeater",
     "echoes:conduit_coupler",
     "echoes:resonant_chest",
-    "echoes:note_relay"
+    "echoes:note_relay",
+    "echoes:echocite_bricks",
+    "echoes:echocite_brick_stairs",
+    "echoes:echocite_brick_slab",
+    "echoes:greater_accumulator",
+    "echoes:lume_lantern"
   ]
 }

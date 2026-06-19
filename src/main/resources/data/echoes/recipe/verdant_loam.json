@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#g#",
+    "gdg",
+    "#g#"
+  ],
+  "key": {
+    "#": "minecraft:dirt",
+    "g": "minecraft:bone_meal",
+    "d": "echoes:echocite_dust"
+  },
+  "result": {
+    "id": "echoes:verdant_loam",
+    "count": 4
+  }
+}

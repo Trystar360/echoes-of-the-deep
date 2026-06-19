@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "/#/",
+    "/#/"
+  ],
+  "key": {
+    "#": "echoes:lumewood_planks",
+    "/": "minecraft:stick"
+  },
+  "result": {
+    "id": "echoes:lumewood_fence_gate",
+    "count": 1
+  }
+}

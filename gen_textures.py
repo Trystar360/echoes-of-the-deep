@@ -912,6 +912,246 @@ def gui_filter():
     write_png(f"{OUT}/gui/harmonic_filter.png", W, H, px)
 gui_filter()
 
+# ================================================================ PHASE II — THE OCTAVE GROVE
+# Pale, teal-lit "Lumewood" + echocite masonry + garden flora.
+LUME = [(18, 28, 30), (38, 56, 56), (74, 102, 98), (126, 156, 150), (188, 214, 208)]
+MOSS = [(10, 24, 18), (20, 44, 34), (34, 72, 56), (60, 116, 92), (120, 190, 150)]
+SOIL = [(14, 12, 10), (28, 22, 17), (44, 34, 26), (62, 50, 38), (86, 72, 56)]
+
+def _bloom_lines(c, xs, accent, alpha=150):
+    for (x, y) in xs:
+        col = accent[3]
+        c.over(x, y, (col[0], col[1], col[2], int(alpha * GLOW)))
+
+def lumewood_planks():
+    c = C()
+    for y in range(16):
+        for x in range(16):
+            n = hash_noise(x, y // 4 * 4, 920)
+            idx = 1 if n < 0.4 else 2 if n < 0.8 else 3
+            c.set(x, y, LUME[idx])
+    for y in (0, 4, 8, 12):                       # plank seams
+        for x in range(16): c.over(x, y, (0, 0, 0, 90))
+    for k, y in enumerate((2, 6, 10, 14)):        # faint teal grain glow
+        for x in range(1, 15):
+            if hash_noise(x, y, 921 + k) > 0.74:
+                col = TEAL[3]; c.over(x, y, (col[0], col[1], col[2], int(70 * GLOW)))
+    vignette(c, 22)
+    write_png(f"{OUT}/block/lumewood_planks.png", 16, 16, c.px)
+lumewood_planks()
+
+def lumewood_log():
+    c = C()
+    for y in range(16):
+        for x in range(16):
+            n = hash_noise(x // 2 * 2, y, 930)
+            idx = 1 if n < 0.42 else 2 if n < 0.82 else 3
+            c.set(x, y, LUME[idx])
+    for x in (3, 7, 11):
+        for y in range(16):
+            if hash_noise(x, y, 931) > 0.5: c.over(x, y, (0, 0, 0, 70))
+    for y in range(16):                           # a glowing vein
+        if hash_noise(8, y, 932) > 0.45:
+            col = TEAL[3]; c.over(8, y, (col[0], col[1], col[2], int(90 * GLOW)))
+    vignette(c, 24)
+    write_png(f"{OUT}/block/lumewood_log.png", 16, 16, c.px)
+lumewood_log()
+
+def lumewood_log_top():
+    c = C()
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, y - 7.5)
+            idx = 1 + int(d / 2.6) % 3
+            c.set(x, y, LUME[min(3, idx)])
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, y - 7.5)
+            if abs(d - 3.2) < 0.5 or abs(d - 6.0) < 0.5: c.over(x, y, (0, 0, 0, 70))
+            if d < 1.6:
+                col = TEAL[3]; c.over(x, y, (col[0], col[1], col[2], int(150 * GLOW)))
+    vignette(c, 26)
+    write_png(f"{OUT}/block/lumewood_log_top.png", 16, 16, c.px)
+lumewood_log_top()
+
+def lumewood_trapdoor():
+    c = C()
+    for y in range(16):
+        for x in range(16):
+            n = hash_noise(x, y, 940)
+            c.set(x, y, LUME[1] if n < 0.5 else LUME[2])
+    for x in (0, 15):
+        for y in range(16): c.set(x, y, LUME[3])
+    for y in (0, 15):
+        for x in range(16): c.set(x, y, LUME[3])
+    for y in (5, 10):
+        for x in range(16): c.over(x, y, (0, 0, 0, 80))
+    for (x, y) in [(3, 2), (12, 2), (3, 13), (12, 13)]:    # bolt studs w/ glow
+        col = TEAL[3]; c.over(x, y, (col[0], col[1], col[2], int(150 * GLOW)))
+    outline(c, alpha=120)
+    write_png(f"{OUT}/block/lumewood_trapdoor.png", 16, 16, c.px)
+lumewood_trapdoor()
+
+def lumewood_leaves():
+    c = C()
+    for y in range(16):
+        for x in range(16):
+            n = hash_noise(x, y, 950)
+            idx = 1 if n < 0.34 else 2 if n < 0.7 else 3
+            c.set(x, y, MOSS[idx])
+    for _ in range(26):                            # glints
+        nx = rng(951)
+        pass
+    nx = rng(951)
+    for _ in range(22):
+        x = nx() % 16; y = nx() % 16
+        if hash_noise(x, y, 952) > 0.5:
+            col = TEAL[4]; c.over(x, y, (col[0], col[1], col[2], int(110 * GLOW)))
+    vignette(c, 20)
+    write_png(f"{OUT}/block/lumewood_leaves.png", 16, 16, c.px)
+lumewood_leaves()
+
+def lume_lantern():
+    c = C()
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, y - 7.5)
+            base = lerp(TEAL[2], DEEP[1], min(1.0, d / 9))
+            c.set(x, y, base)
+    bezel(c, BRONZE, TEAL, t=2)
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, y - 7.5)
+            if d < 5:
+                col = lerp(TEAL[4], (235, 255, 250), max(0.0, 1 - d / 5))
+                c.over(x, y, (col[0], col[1], col[2], int((120 + 100 * (1 - d / 5)))))
+    write_png(f"{OUT}/block/lume_lantern.png", 16, 16, c.px)
+lume_lantern()
+
+def verdant_loam():
+    c = C()
+    for y in range(16):
+        for x in range(16):
+            n = hash_noise(x, y, 960)
+            idx = 1 if n < 0.4 else 2 if n < 0.78 else 3
+            c.set(x, y, SOIL[idx])
+    nx = rng(961)
+    for _ in range(30):                            # teal spores / living roots
+        x = nx() % 16; y = nx() % 16
+        col = MOSS[3] if (x + y) % 2 else TEAL[3]
+        c.over(x, y, (col[0], col[1], col[2], 150))
+    vignette(c, 26)
+    write_png(f"{OUT}/block/verdant_loam.png", 16, 16, c.px)
+verdant_loam()
+
+def echocite_bricks():
+    c = C()
+    for y in range(16):
+        for x in range(16):
+            n = hash_noise(x, y, 970)
+            idx = 1 if n < 0.4 else 2 if n < 0.8 else 3
+            c.set(x, y, DEEP[idx])
+    # brick courses (offset rows)
+    for y in range(16):
+        mortar = (y % 8 == 0)
+        if mortar:
+            for x in range(16): c.set(x, y, DEEP[0])
+    for y in range(16):
+        row = y // 8
+        off = 0 if row % 2 == 0 else 8
+        for x in range(16):
+            if (x + off) % 8 == 0: c.set(x, y, DEEP[0])
+    for y in range(16):                            # glowing mortar veins
+        for x in range(16):
+            if c.get(x, y)[:3] == DEEP[0]:
+                if hash_noise(x, y, 971) > 0.6:
+                    col = TEAL[2]; c.over(x, y, (col[0], col[1], col[2], int(90 * GLOW)))
+    vignette(c, 26)
+    write_png(f"{OUT}/block/echocite_bricks.png", 16, 16, c.px)
+echocite_bricks()
+
+def lumewood_sapling():
+    c = C()
+    for y in range(9, 15):                          # stem
+        c.set(7, y, LUME[2]); c.set(8, y, LUME[1])
+    leaf = [(6, 6), (7, 5), (8, 5), (9, 6), (5, 8), (10, 8), (6, 9), (9, 9), (7, 8), (8, 8)]
+    for (x, y) in leaf:
+        c.set(x, y, MOSS[3])
+        col = TEAL[4]; c.over(x, y, (col[0], col[1], col[2], int(110 * GLOW)))
+    outline(c, alpha=120)
+    write_png(f"{OUT}/block/lumewood_sapling.png", 16, 16, c.px)
+lumewood_sapling()
+
+def lumebloom():
+    c = C()
+    for y in range(8, 15): c.set(7, y, MOSS[2]); c.set(8, y, MOSS[1])   # stem
+    c.set(6, 11, MOSS[3]); c.set(9, 10, MOSS[3])                        # leaves
+    petals = [(7, 3), (8, 3), (6, 4), (9, 4), (5, 5), (10, 5),
+              (6, 6), (9, 6), (7, 7), (8, 7), (7, 4), (8, 4), (7, 5), (8, 5)]
+    for (x, y) in petals:
+        c.set(x, y, AMETH[3] if (x + y) % 3 == 0 else TEAL[3])
+    for (x, y) in [(7, 5), (8, 5), (7, 4), (8, 4)]:                     # glowing core
+        col = (240, 255, 250); c.over(x, y, (col[0], col[1], col[2], int(170 * GLOW)))
+    outline(c, alpha=120)
+    write_png(f"{OUT}/block/lumebloom.png", 16, 16, c.px)
+lumebloom()
+
+# ---- Greater Accumulator: an animated machine face (octave II of the capacitor)
+def build_greater_accumulator():
+    c = C(); bezel(c, BRONZE, TEAL)
+    emitter_face(c, TEAL, rmax=6.0)
+    for (gx, gy) in [(4, 4), (11, 4), (4, 11), (11, 11)]:    # four banked cells
+        gem(c, gx, gy, TEAL, r=1)
+    core(c, 8, 8, TEAL, r=2)
+    glyph(c, AMBER, [(7, 2), (8, 2), (7, 13), (8, 13)])
+    return c
+emit_block("greater_accumulator", build_greater_accumulator)
+
+# ---- Phase II items
+def octave_seed():
+    c = C(); cx, cy = 8, 8
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - cx, y - cy)
+            if d <= 5.2:
+                t = max(0.0, 1 - d / 5.2)
+                col = lerp(AMETH[1], TEAL[2], t)
+                c.set(x, y, col)
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - cx, y - cy)
+            if d < 2.4:
+                col = lerp(TEAL[4], (240, 255, 250), 1 - d / 2.4)
+                c.over(x, y, (col[0], col[1], col[2], 210))
+    bloom(c, TEAL, alpha=70, reach=2, thresh=150)
+    outline(c)
+    write_png(f"{OUT}/item/octave_seed.png", 16, 16, c.px)
+octave_seed()
+
+def radiant_dust():
+    c = C(); nx = rng(980)
+    for _ in range(60):
+        x = 3 + nx() % 10; y = 6 + nx() % 8
+        idx = 2 + nx() % 3
+        c.set(x, y, lerp(TEAL[idx % 5], AMBER[2], 0.25))
+    bloom(c, TEAL, alpha=80, reach=2, thresh=140)
+    outline(c)
+    write_png(f"{OUT}/item/radiant_dust.png", 16, 16, c.px)
+radiant_dust()
+
+def radiant_ingot():
+    c = C()
+    for y in range(6, 11):
+        for x in range(3, 13):
+            t = (x - 3) / 10.0
+            c.set(x, y, lerp(TEAL[2], TEAL[4], t))
+    for x in range(3, 13): c.over(x, 6, (255, 255, 255, 80))
+    for x in range(3, 13): c.over(x, 10, (0, 0, 0, 90))
+    bloom(c, TEAL, alpha=90, reach=2, thresh=150)
+    outline(c)
+    write_png(f"{OUT}/item/radiant_ingot.png", 16, 16, c.px)
+radiant_ingot()
+
 # ================================================================ MOD ICON (128x128)
 def icon():
     N = 128; cx = cy = 63.5

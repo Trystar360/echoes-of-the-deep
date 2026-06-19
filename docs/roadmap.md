@@ -36,15 +36,26 @@ Make the charge/discharge duality a real, paired mechanic. *Today only generatio
 
 *Phase I complete — the generation↔radiation duality is now a full, paired mechanic.*
 
-## Phase II — The Octaves (tiered progression)
-Russell builds matter in nine octaves of tones; give the tech tree the same spine.
+## Phase II — The Octaves (tiered progression + the living garden)
+Russell builds matter in nine octaves of tones; give the tech tree the same spine —
+and a botanical octave the player can build, light, and tend.
 
-- ⬜ **Octave tiers** — Coil / Accumulator / Conduit each in higher octaves (II, III)
-  with larger capacity, throughput, and generation, gated by material tier.
-- ⬜ **Inert-gas Seeds** — each octave's rest point. Crafted "Seed" items that unlock /
-  catalyze the next octave's recipes (soft progression gates).
-- ⬜ **Transmutation chains** — the Transmuter raises matter up an octave: dust → ingot
-  → charged ingot → block-of-light, with Light cost per step.
+- ✅ **Inert-gas Seed** — *each octave's rest point.* The **Octave Seed** (Silentite +
+  Drum Core + Echo Dust) is the catalyst that opens the transmutation chain.
+- ✅ **Transmutation chain** — the Seed feeds **Radiant Dust → Radiant Ingot** (smelt /
+  blast), the charged matter that builds the higher-octave bank.
+- ✅ **Greater Accumulator** — block-of-light tier storage (2,000,000 Light), built from
+  a ring of Radiant Ingots around an Accumulator; full config GUI + comparator output.
+- ✅ **Lumewood set** — a glowing custom tree (log/wood, planks, stairs, slab, fence,
+  fence gate, trapdoor, luminous leaves, sapling) that grows from the **Octave Grove**
+  feature in forests — a full building-material family that emits Light.
+- ✅ **Verdant Loam** — a configurable growth block: a ticking soil that pulses Light
+  upward to fertilize/grow nearby plants in a tunable radius and interval (config GUI).
+- ✅ **Garden flora & décor** — **Lumebloom** (glowing flower, grants Glowing), **Lume
+  Lantern** (full-bright décor block), and **Echocite Bricks** (+ stairs & slab) for a
+  matching luminous masonry set.
+- 🔜 **Octave coil/conduit tiers** — Coil / Conduit in higher octaves (II, III) with
+  larger generation & throughput, gated by Radiant-tier material (extends the chain).
 
 ## Phase III — The Wave (motion & fields)
 The wave is the unit of the cosmos; lean into movement and area effects.
@@ -78,7 +89,8 @@ Russell's universe is Mind knowing itself; this is the control & information lay
 
 ## Phase V — Stillness & Balance (storage & endgame)
 - ✅ **Stillness Core** — baseline Light from the still centre. *(done)*
-- ⬜ **Great Accumulator** — a multiblock bank (huge capacity, shared formation).
+- ✅ **Greater Accumulator** — high-octave bank (2,000,000 Light) from Radiant Ingots.
+  *(see Phase II)*
 - ⬜ **Zero-Point Well** — endgame: stronger generation tied to a rare structure/cost.
 
 ## Phase VI — Silence & the Unstruck Tone (the Silentite path)

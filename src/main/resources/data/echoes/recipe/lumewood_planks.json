@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "echoes:lumewood_log"
+  ],
+  "result": {
+    "id": "echoes:lumewood_planks",
+    "count": 4
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": "echoes:lumewood_log"
+  },
+  "result": {
+    "id": "echoes:lumewood_wood",
+    "count": 3
+  }
+}

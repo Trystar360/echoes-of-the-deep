@@ -4,10 +4,13 @@ import com.echoes.client.screen.AttunementFurnaceScreen;
 import com.echoes.client.screen.ConfigScreen;
 import com.echoes.client.screen.CrusherScreen;
 import com.echoes.client.screen.HarmonicFilterScreen;
+import com.echoes.registry.ModBlocks;
 import com.echoes.registry.ModScreens;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
@@ -35,5 +38,13 @@ public class EchoesClient implements ClientModInitializer {
                 lines.add(Text.translatable(key).formatted(Formatting.GRAY));
             }
         });
+
+        // Cutout flora + trapdoor; mipped cutout for leaves.
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(),
+                ModBlocks.LUMEWOOD_SAPLING, ModBlocks.LUMEBLOOM,
+                ModBlocks.LUMEWOOD_TRAPDOOR, ModBlocks.LUME_LANTERN,
+                ModBlocks.GREATER_ACCUMULATOR);
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(),
+                ModBlocks.LUMEWOOD_LEAVES);
     }
 }

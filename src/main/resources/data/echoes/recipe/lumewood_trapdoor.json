@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "echoes:lumewood_planks"
+  },
+  "result": {
+    "id": "echoes:lumewood_trapdoor",
+    "count": 2
+  }
+}

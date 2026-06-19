@@ -61,8 +61,18 @@ A complete, end-to-end energy + logistics loop, craftable from scratch in surviv
   [`docs/wireless_transport.md`](docs/wireless_transport.md) for the full design.
 - **Crusher machine** — full block entity with a synced screen, a custom `crushing`
   recipe type (`CrushingRecipe`), and **Transfer API item I/O so vanilla hoppers work**.
+- **The Octave Grove (botanical octave)** — a full luminous garden system: the
+  **Lumewood** tree (log/wood, planks, stairs, slab, fence, gate, trapdoor, glowing
+  leaves & sapling) that generates in forests, **Lumebloom** (a glowing flower) and the
+  **Lume Lantern** for décor, plus **Echocite Bricks** (+ stairs & slab) masonry.
+  **Verdant Loam** is a configurable growth block that pulses Light upward to grow
+  nearby plants over a tunable radius/interval — utilitarian *and* pretty to build with.
+- **Octaves & transmutation (Phase II progression)** — the **Octave Seed** catalyst
+  feeds **Radiant Dust → Radiant Ingot**, which builds the **Greater Accumulator**, a
+  block-of-light bank (2,000,000 Light) with a comparator output and full config GUI.
 - **Worldgen** — configured/placed ore features for Echocite & Drumstone (Overworld)
-  and Silentite (rare, Deep Dark only), attached via `BiomeModifications`.
+  and Silentite (rare, Deep Dark only) plus the Lumewood grove, attached via
+  `BiomeModifications`.
 - **Crafting & progression** — Echocite ore → `raw_echocite` → smelt/blast to **Echo
   Ingot** (or crush to dust for ore-doubling, then smelt). Echo Ingot + dust + iron
   build the Resonator, Tuning Conduit, Crusher, and the whole wireless family; every

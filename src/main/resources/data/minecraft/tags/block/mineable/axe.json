@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "echoes:lumewood_log",
+    "echoes:lumewood_wood",
+    "echoes:lumewood_planks",
+    "echoes:lumewood_stairs",
+    "echoes:lumewood_slab",
+    "echoes:lumewood_fence",
+    "echoes:lumewood_fence_gate",
+    "echoes:lumewood_trapdoor"
+  ]
+}
