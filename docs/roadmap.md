@@ -62,30 +62,24 @@ and a botanical octave the player can build, light, and tend.
 ## Phase II½ — The Verdant Octave (botanical & crop suite)
 The garden as the grid's slowest octave: a Mystical-Agriculture–style economy built on
 one **base crop that is compressed and re-used everywhere**, plus food, decorative
-flora, and new wood types. Full design plan in
-[`docs/botanical_suite.md`](botanical_suite.md). Depends only on shipped systems
-(Compressor, Transmuter, Verdant Loam, Growth Radiator, transmutation chain).
+flora, and new wood types. Full proposal (awaiting sign-off) in
+[`docs/botanicals-proposal.md`](botanicals-proposal.md). Depends only on shipped
+systems (Compressor, Transmuter, Verdant Loam, Growth Radiator, transmutation chain).
 
-- ⬜ **Lumen Essence base loop** — the **Mote Seed** → **Lumen Sprout** crop → **Lumen
-  Essence**, the universal binder used in every seed/soil/tier-up. Density compression
-  (9↔1 **Lumen Essence Block**) runs through the **Compressor**.
-- ⬜ **Octave essence ladder** — **Lumen → Resonant → Radiant → Brilliant → Zenith**,
-  each "raised an octave" in the **Transmuter** (Octave Seed catalyst); the 3rd octave
-  folds into the existing **Radiant Dust** tier so the trees are one tree.
-- ⬜ **Soil tiers** — **Attuned / Radiant / Brilliant / Zenith Loam** on top of Verdant
-  Loam, gating which crop tier can mature.
-- ⬜ **Resource crops (ores & materials)** — a crop per resource growing a
-  `<Resource> Essence` (8 essence → 1 unit), incl. the mod's own Echocite/Drumstone/
-  Silentite/**Radiant** crops, making the resonance economy renewable.
-- ⬜ **Food crops** — Chime Grain, Tuneroot, Lumeberry, Echo Gourd, Stillfruit, Glowcap,
-  Hush Pepper, plus cooking combos.
-- ⬜ **Decorative flora** — flower set, grow-able **dye crops** (the 16 octave colours),
-  Resonant Reeds, Bloomvine, Lumemoss/petal blocks.
-- ⬜ **Wood types** — **Drumwood**, **Hushwood** (sound-dampening), **Sunwood** (Radiant,
-  glowing), each a full vanilla-parity set; plus a **Heartwood** wood-crop.
-- ⬜ **Automation** — **Harvest Resonator** (RU auto-harvester via Transfer API),
-  **Lumewater Can**, **Fertilized Essence**.
-- ⬜ **Mob-essence crops** — a small Deep-Dark–themed set, gated to tier 3+.
+- ⬜ **Mote base loop** — **Mote Seed** → **Mote Sprout** crop → **Light Mote**, the
+  universal binder used in every seed/soil/tier recipe.
+- ⬜ **Mote compression ladder** — **Light → Condensed → Radiant Mote** (9↔1 via the
+  **Compressor**); the Radiant tier bridges to the existing Radiant Dust chain.
+- ⬜ **Soil tiers** — **Attuned / Radiant Loam** on top of Verdant Loam, gating which
+  crop tier can mature.
+- ⬜ **Resource crops (ores & materials)** — a `<Material> Sprout` per resource (incl.
+  the mod's own Echocite/Drumstone/Silentite/**Radiant** crops), making the economy
+  renewable but gated behind compressed Motes + Growth-Radiator cost.
+- ⬜ **Food crops** — Resonant Grain → Bread, Glowgourd, Stillmint → Still Tea (with a
+  buff hook).
+- ⬜ **Decorative flora** — Lumecap, Chime Lily / Octave Orchid (dye outputs), Verdant Fern.
+- ⬜ **Wood types** — **Hushwood** (full set, worldgen) and **Sunwood** (golden, glowing;
+  sapling only matures under a Growth Radiator).
 
 ## Phase III — The Wave (motion & fields)
 The wave is the unit of the cosmos; lean into movement and area effects.
