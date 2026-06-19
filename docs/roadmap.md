@@ -82,6 +82,15 @@ systems (Compressor, Transmuter, Verdant Loam, Growth Radiator, transmutation ch
 - ⬜ **Decorative flora** — Lumecap, Chime Lily / Octave Orchid (dye outputs), Verdant Fern.
 - ⬜ **Wood types** — **Hushwood** (full set, worldgen) and **Sunwood** (golden, glowing;
   sapling only matures under a Growth Radiator).
+- ⬜ **Transmutation economy (EMC = Bound Light)** — every item carries a **Light Value**
+  (the Light condensed into it; Russell's "matter is condensed Light"). A
+  **Transmutation Table** (and portable **Transmutation Tablet**) is the balanced-
+  interchange altar: dissolve matter → Bound Light, condense Bound Light → any *attuned*
+  item. The Mote octave ladder is the value scale (×4/octave). Optional ProjectE-shaped
+  extras: **Octave Stars** (portable Bound-Light batteries), **Tone Collector** (winds
+  ambient light into Bound Light), **Condenser** (auto-duplicate), **Codex of Tones**
+  (attune-all), and an optional **Interchange Coil** (free⇄bound Light bridge). Gated to
+  the Radiant tier with attune-from-sample + capped sources to protect ore progression.
 
 ## Phase III — The Wave (motion & fields)
 The wave is the unit of the cosmos; lean into movement and area effects.

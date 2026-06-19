@@ -127,6 +127,84 @@ renewable**, not a shortcut. (Roster confirmable at sign-off.)
 | `hushwood_*` | Hushwood (set) | wood set | **Committed full set** (log/stripped/wood/stripped wood/planks/stairs/slab/fence/gate/door/trapdoor/button/pressure plate/sign/hanging sign/leaves/sapling). The **inert/rest octave**: deep-Dark indigo, matte, sound-dampening; ties to Silentite. Worldgen tree near Deep Dark. |
 | `sunwood_*` | Sunwood (set) | wood set | The **Radiant crest octave**: golden, light-emitting. Its sapling matures **only under a Growth Radiator** — i.e. it must literally be *charged up an octave* with added energy. Second full set. |
 
+## The transmutation economy — an EMC analogue: **Bound Light**
+
+Russell's whole premise is that **all matter is condensed Light**. So the mod already has
+a perfect, native EMC: every item carries a **Light Value** — the amount of Light wound
+into it to make it exist. This is the ProjectE/Equivalent-Exchange "EMC," reskinned so it
+isn't a bolt-on number but the literal cosmology.
+
+- **Free Light** = the grid's energy (RU; what Coils generate, Cells store, Conduits
+  carry) — *Light in motion / radiating.*
+- **Bound Light** = Light wound into matter; an item's **Light Value** is its bound Light
+  — *Light at rest in form.*
+- A **Transmutation Table** is the **balanced-interchange altar** where the two trade:
+  one side **unwinds** matter into Bound Light (radiation), the other **rewinds** Bound
+  Light into matter (generation). That *is* Russell's two-way universe, made a workstation.
+
+This deliberately keeps the smelter (**Transmuter** — raises *one* item *one* octave with
+*free* Light) distinct from the **Transmutation Table** (trades *Bound* Light for *any*
+attuned matter).
+
+### Light Value — the currency (EMC)
+Every item is assigned a Light Value. The **octave Mote ladder is the denomination
+scale** (×4 per octave — the same curve as the energy climb), so Motes are literally the
+*coins* of Bound Light and the system is one economy, not two:
+
+| Token | Light Value (LV) | role |
+| --- | --- | --- |
+| (base unit) | 1 LV | cobblestone/dirt ≈ 1 LV; the floor |
+| **Light Mote** | 64 LV | the smallest Light "coin" you can crystallize from the Table |
+| **Sparked Mote** | 256 LV | ×4 |
+| **Resonant Mote** | 1,024 LV | ×4 |
+| **Brilliant Mote** | 4,096 LV | ×4 |
+| **Radiant Mote** | 16,384 LV | ×4 — the crest coin |
+
+Example item values (tunable, vanilla-anchored): iron ingot ≈ 256, gold ≈ 2,048,
+diamond ≈ 8,192, Echocite/Radiant materials priced off their octave. You can **withdraw**
+stored Bound Light from the Table as physical Motes (it makes change in denominations) and
+**deposit** Motes or any item to top it up — so the base crop, the octave ladder, and EMC
+are the same thing seen three ways.
+
+### The three requested pieces
+| id | display name | type | what it does |
+| --- | --- | --- | --- |
+| `transmutation_table` | Transmutation Table | block (+ screen) | The workstation. **Attune** an item by placing one in it (records its tone in your personal ledger — ProjectE-style "learning"); thereafter **condense** that item from your stored Bound Light, or **dissolve** items to add their Light Value. Stores a large Bound-Light pool; shows your attuned tones with a search/sort GUI. |
+| `transmutation_tablet` | Transmutation Tablet | item (portable) | A handheld slate — opens the same interface from your inventory, drawing on the same per-player Bound-Light pool and ledger. The portable Table. Right-click in-world to do quick transmutes (cobble↔stone, sand↔glass, rotate a material through its tier). |
+| `light_value` | Light Value (LV) | stat / data | The EMC number itself: **Bound Light**, assigned per item (data-driven JSON map, modpack-overridable), with a blacklist for unique/exploit items. Surfaced in tooltips (hold a key) and read by the Light Meter. |
+
+### Extended brainstorm (optional, keep ProjectE's shape — all themed)
+| id | display name | type | what it does |
+| --- | --- | --- | --- |
+| `octave_star` (I–VI) | Octave Star | item (tiered) | Portable **Bound-Light battery** (the "Klein Star" analogue): six tiers of growing capacity; charge at a Table, carry your Light between worlds/bases. (Distinct from the **Cell** family, which stores *free* Light/RU.) |
+| `tone_collector` | Tone Collector | block | Passively **winds ambient light into Bound Light** (the EE "Energy Collector"): faster in sunlight / near Lumebloom & the glowing garden, so the botanical octave feeds the EMC pool. Slow and capped — a trickle, not a fountain. |
+| `condenser` | Condenser | block (+ screen) | Set a target (an attuned item) + feed Bound Light → it **auto-produces** that item repeatedly (the EE "Condenser"). The duplication engine, gated late. |
+| `codex_of_tones` | Codex of Tones | item (endgame) | Attunes you to **every** tone at once (the "Tome of Knowledge"). A capstone behind the Radiant/Zenith tier. |
+| `interchange_coil` | Interchange Coil | block (optional) | The **bridge**: converts *free* Light (grid RU) ⇌ *Bound* Light at a steep, hard-capped rate — the literal generation↔radiation interchange. Off by default / gated, since it couples the two economies (see balance). |
+
+### Balance & anti-exploit (this system is famous for trivializing progression)
+- **Gate it late:** the Table unlocks at the **Radiant (O4)** tier; Tablet, Stars,
+  Condenser, and the grid bridge later still.
+- **Attune from a real sample first** — you must legitimately obtain each item once before
+  condensing it (so ore/structure progression still has to happen).
+- **The pool is matter-fed:** Collectors trickle and are capped; the **Interchange Coil**
+  (free↔bound) is steep, capped, and optional, so you can't pour a Coil farm into infinite
+  diamonds.
+- **Data-driven values + blacklist:** no LV for unique/exploitable items (spawn eggs,
+  bedrock, command blocks); audit for any A→B→A loop that nets free LV (the classic EMC
+  bug) before shipping.
+- All numbers are named constants / JSON so a pack author can retune or disable the whole
+  economy.
+
+### Recipe sketches (transmutation)
+- `transmutation_table` ← a ring of **Radiant Mote** + **Radiant Ingot** corners around an
+  **Octave Seed** (the inert-gas rest at the centre of interchange) on a stone/Echocite base.
+- `transmutation_tablet` ← **Radiant Mote** + the Table's "face" item + a **Light Meter**
+  (it reads Light Value) — folds the workstation onto a slate.
+- `octave_star` I ← **Radiant Mote** ring + **Resonance Cell** core; higher tiers re-craft
+  the lower Star with more Radiant Motes.
+- `tone_collector` / `condenser` ← Lumewood/glass + Radiant Ingots + an Octave Coil core.
+
 ## Progression at a glance
 
 ```
@@ -138,10 +216,15 @@ Mote Seed ─► Mote Sprout ─► Light Mote (O0, raw Light, the universal One
             ▼                ▼                                   ▼
    O1 crops + Verdant   O2 crops + Attuned Loam         O4 crops + Radiant Loam,
    Hushwood worldgen                                    Sunwood (matures under a Growth Radiator)
+                                                                 │  unlocks ↓
+                                              Transmutation Table ⇄ Bound Light (EMC) ⇄ any attuned item
+                                              (Tablet · Octave Stars · Collector · Condenser)
 ```
 
 The whole tree is gated by **how much energy you've wound into the Light** — exactly the
-Mystical-Agriculture climb, but reskinned to Russell's octave wave.
+Mystical-Agriculture climb, but reskinned to Russell's octave wave — and it caps off in
+the **transmutation economy**, where Light and matter become freely interchangeable
+(ProjectE-style EMC, reskinned as **Bound Light**).
 
 ## Recipe sketches
 
@@ -185,6 +268,12 @@ Mystical-Agriculture climb, but reskinned to Russell's octave wave.
    is the Echocite=O1 / Drumstone=O2 / Silentite=O4 / Radiant=crest mapping right?
 4. **Wood scope:** Hushwood first (lower build risk), Sunwood fast-follow, or both at once?
 5. **Mob-essence crops** (Sculk/Phantom/Blaze, Deep-Dark themed) — in scope now or defer?
+6. **Transmutation economy scope:** ship just the three requested pieces (Table, Tablet,
+   Light Value) first, or the full ProjectE-shaped set (Stars, Collector, Condenser,
+   Codex) too? And — keep the **Interchange Coil** (free⇄bound Light bridge) in, or omit
+   it to protect balance?
+7. **Light Value source:** authored by hand (curated JSON), or auto-derived from recipes
+   with hand overrides? And confirm the base scale (cobble = 1 LV, ×4 per octave).
 
 ## Implementation checklist (runs only after approval)
 
@@ -199,8 +288,11 @@ Mystical-Agriculture climb, but reskinned to Russell's octave wave.
 - [ ] Per-wood file checklist (blockstate/model/loot/tags: mineable·axe, logs, planks,
       leaves, saplings; flammability; strippable map) — verify all ~18 files per set
 - [ ] `lang/en_us.json`: name + `tooltip.echoes.desc.<id>` for every new id
+- [ ] **Transmutation economy:** data-driven **Light Value** map (+ blacklist) and a
+      per-player ledger (NBT); `transmutation_table` block + screen, `transmutation_tablet`
+      item + screen; LV in tooltips/Light Meter; then (if approved) Octave Stars, Tone
+      Collector, Condenser, Codex, Interchange Coil. Audit for free-LV loops.
 - [ ] Regenerate wiki (`scripts/build_wiki_site.py`, `gen_wiki_*`) **and** edit the prose
       (Blocks.md, Items-and-Gear.md, Ores-and-Worldgen.md, Crafting-and-Progression.md)
 - [ ] Verify: `./gradlew build` (toolchain JDK 21) **and** a dedicated-server boot with no
       registry/recipe/tag/worldgen errors (baseline ~1430 recipes) before un-drafting
-</content>
