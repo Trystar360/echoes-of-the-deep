@@ -26,7 +26,7 @@ In-world the modes read **Regive (receive)**, **Give (send)**, and **Stilled**.
 A comparator next to a device reads `0` when disabled, otherwise a coarse channel
 indicator (1–15).
 
-## <img src="images/icons/resonant_relay.png" width="28" align="top"> The Wave Relay (the flagship)
+## <img src="images/blocks3d/resonant_relay.png" width="46" align="top"> The Wave Relay (the flagship)
 
 **Wave Relay** — `echoes:resonant_relay`. Place it against any container, tank,
 machine, or Coil — it "wraps" the block on its facing side. Then:
@@ -41,7 +41,7 @@ distant Compressor with no conduit run. Crafts **2 at a time**.
 
 ## The channel-gadget family
 
-<img src="images/icons/resonant_amplifier.png" width="40"> <img src="images/icons/harmonic_filter.png" width="40"> <img src="images/icons/resonant_splitter.png" width="40"> <img src="images/icons/echo_repeater.png" width="40"> <img src="images/icons/conduit_coupler.png" width="40"> <img src="images/icons/resonant_chest.png" width="40"> <img src="images/icons/note_relay.png" width="40">
+<img src="images/blocks3d/resonant_amplifier.png" width="58"> <img src="images/blocks3d/harmonic_filter.png" width="58"> <img src="images/blocks3d/resonant_splitter.png" width="58"> <img src="images/blocks3d/echo_repeater.png" width="58"> <img src="images/blocks3d/conduit_coupler.png" width="58"> <img src="images/blocks3d/resonant_chest.png" width="58"> <img src="images/blocks3d/note_relay.png" width="58">
 
 *Left to right: Amplitude Coil · Harmonic Filter · Interchange Splitter · Octave
 Repeater · Polarity Coupler · Locked Potential Vault · Tone Relay.*
