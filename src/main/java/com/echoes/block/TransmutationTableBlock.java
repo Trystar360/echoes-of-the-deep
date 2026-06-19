@@ -68,6 +68,7 @@ public class TransmutationTableBlock extends Block implements BlockEntityProvide
         if (!state.isOf(newState.getBlock())
                 && world.getBlockEntity(pos) instanceof TransmutationTableBlockEntity be) {
             ItemScatterer.spawn(world, pos, be.getItems());
+            be.dropBankedLight(world, pos); // don't lose banked Bound Light on break
         }
         super.onStateReplaced(state, world, pos, newState, moved);
     }
