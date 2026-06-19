@@ -11,8 +11,8 @@ other mod is present.
 An optional bridge exposes the mod's Light buffers to other tech mods as Team
 Reborn `EnergyStorage`, at **1 RU = 1 E**.
 
-- **Bridged blocks:** the **Generative Coil** (`resonator`) and the **Polarity
-  Coupler** (`conduit_coupler`) expose their RU buffers, so other tech mods can
+- **Bridged blocks:** the **Resonant Coil** (`resonant_coil`) and the **Polarity
+  Coupler** (`wave_coupler`) expose their RU buffers, so other tech mods can
   both **read and feed** the grid.
 - **Soft dependency:** compiled against the TR Energy API as `modCompileOnly` and
   gated by `FabricLoader.isModLoaded(...)`, so it activates only when a

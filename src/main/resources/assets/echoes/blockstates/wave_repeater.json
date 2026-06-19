@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "echoes:block/wave_repeater"
+    },
+    "facing=east": {
+      "model": "echoes:block/wave_repeater",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "echoes:block/wave_repeater",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "echoes:block/wave_repeater",
+      "y": 270
+    }
+  }
+}

@@ -43,10 +43,10 @@ def blit(img,W,ox,oy,tex,sc):
 
 # --- full sprite sheet ---
 blocks=["echocite_ore","deepslate_echocite_ore","drumstone_ore","silentite_ore",
-        "stillness_core","resonator","tuning_conduit","dense_conduit","resonance_capacitor",
-        "crusher","attunement_furnace","radiator","warmth_radiator","polarity_field","balancer","resonant_relay","resonant_amplifier",
-        "harmonic_filter","resonant_splitter","echo_repeater","conduit_coupler",
-        "resonant_chest","note_relay","greater_accumulator","octave_coil","octave_conduit",
+        "stillness_core","resonant_coil","wave_conduit","dense_wave_conduit","resonance_cell",
+        "compressor","transmuter","growth_radiator","warmth_radiator","polarity_field","balancer","wave_relay","wave_amplifier",
+        "wave_filter","wave_splitter","wave_repeater","wave_coupler",
+        "wave_chest","signal_relay","greater_resonance_cell","octave_coil","octave_conduit",
         "storm_caller",
         "lumewood_log","lumewood_log_top","lumewood_planks","lumewood_leaves",
         "lumewood_sapling","lumewood_trapdoor","lumebloom","lume_lantern",
@@ -54,7 +54,7 @@ blocks=["echocite_ore","deepslate_echocite_ore","drumstone_ore","silentite_ore",
 items=["raw_echocite","echocite_dust","echo_ingot","dull_ingot","resonant_slag",
        "drumstone_shard","drum_core","silentite_crystal","echo_dust",
        "octave_seed","radiant_dust","radiant_ingot",
-       "frequency_tuner","channel_atlas","resonance_meter","resonance_thrusters",
+       "wave_tuner","wave_atlas","light_meter","resonant_thrusters",
        "resonant_pickaxe","resonant_axe","resonant_shovel","resonant_sword","resonant_hoe"]
 tiles=[("block",b) for b in blocks]+[("item",i) for i in items]
 SC=10; TILE=16*SC; GAP=10; COLS=6
@@ -68,9 +68,9 @@ write_png("docs/images/textures.png",W,H,img)
 
 # --- directional machine faces: front | side | top ---
 side=frame0("device_side","block"); top=frame0("device_top","block")
-machines=["stillness_core","resonator","radiator","warmth_radiator","polarity_field","balancer","attunement_furnace","crusher","resonant_relay",
-          "echo_repeater","conduit_coupler","resonant_chest","note_relay",
-          "resonant_amplifier","harmonic_filter","resonant_splitter"]
+machines=["stillness_core","resonant_coil","growth_radiator","warmth_radiator","polarity_field","balancer","transmuter","compressor","wave_relay",
+          "wave_repeater","wave_coupler","wave_chest","signal_relay",
+          "wave_amplifier","wave_filter","wave_splitter"]
 SC2=8; T2=16*SC2; G=10; C3=3
 W2=GAP+C3*(T2+GAP); H2=GAP+len(machines)*(T2+GAP)
 img2=[checker(x,y,(60,64,70),(50,54,60)) for y in range(H2) for x in range(W2)]

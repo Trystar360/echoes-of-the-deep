@@ -26,12 +26,12 @@ Echocite Ore ──mine──▶ Raw Echocite
    ┌──────────┼───────────┐           +Glowstone Dust        ▼
    ▼          ▼           ▼            ▼                  Dull Ingot
  Machines  Conduits     Tools      Echo Dust                 │
- Wireless  Thrusters   (Echo mat)  (Octave Atlas)        Wave Conduit (alt)
+ Wireless  Thrusters   (Echo mat)  (Wave Atlas)        Wave Conduit (alt)
 ```
 
 **Echo Ingot** gates almost everything. Side lines: **Drum Core** (from Drumstone)
 feeds the Coil and Thrusters; **Silentite Crystal** (Deep Dark) feeds the
-Stillness Core and an alternate Octave Repeater; **Dull Ingot** (from Slag) is a
+Stillness Core and an alternate Wave Repeater; **Dull Ingot** (from Slag) is a
 cheap conduit material.
 
 ## Smelting & crushing
@@ -45,8 +45,8 @@ cheap conduit material.
 
 ## Core blocks
 
-### Generative Coil
-<img src="images/recipes/resonator.png" width="230">
+### Resonant Coil
+<img src="images/recipes/resonant_coil.png" width="230">
 
 <details><summary>▸ layout</summary>
 
@@ -59,7 +59,7 @@ Also craftable with a **Drum Core** in the centre instead of an Echo Ingot.
 </details>
 
 ### Wave Conduit (makes 4)
-<img src="images/recipes/tuning_conduit.png" width="230">
+<img src="images/recipes/wave_conduit.png" width="230">
 
 <details><summary>▸ layout</summary>
 
@@ -70,15 +70,15 @@ Alt: `d r d` with **Dull Ingots** in place of dust.
 </details>
 
 ### Dense Wave Conduit (makes 2)
-<img src="images/recipes/dense_conduit.png" width="230">
+<img src="images/recipes/dense_wave_conduit.png" width="230">
 
 <details><summary>▸ layout</summary>
 
 Shapeless: 3× **Wave Conduit** + **Echo Ingot**.
 </details>
 
-### Accumulator
-<img src="images/recipes/resonance_capacitor.png" width="230">
+### Resonance Cell
+<img src="images/recipes/resonance_cell.png" width="230">
 
 <details><summary>▸ layout</summary>
 
@@ -102,7 +102,7 @@ e s e     R = redstone block
 </details>
 
 ### Compressor
-<img src="images/recipes/crusher.png" width="230">
+<img src="images/recipes/compressor.png" width="230">
 
 <details><summary>▸ layout</summary>
 
@@ -114,7 +114,7 @@ C I C     e = echo ingot
 </details>
 
 ### Transmuter
-<img src="images/recipes/attunement_furnace.png" width="230">
+<img src="images/recipes/transmuter.png" width="230">
 
 <details><summary>▸ layout</summary>
 
@@ -127,8 +127,8 @@ e F e     F = furnace
 
 ## Radiation & field blocks
 
-### Radiator
-<img src="images/recipes/radiator.png" width="230">
+### Growth Radiator
+<img src="images/recipes/growth_radiator.png" width="230">
 
 <details><summary>▸ layout</summary>
 
@@ -180,7 +180,7 @@ e c e     R = redstone block
 The **Wave Relay** is the root; every other channel gadget is a relay upgrade.
 
 ### Wave Relay (makes 2)
-<img src="images/recipes/resonant_relay.png" width="230">
+<img src="images/recipes/wave_relay.png" width="230">
 
 <details><summary>▸ layout</summary>
 
@@ -191,8 +191,8 @@ e I e     e = echocite dust
 ```
 </details>
 
-### Amplitude Coil
-<img src="images/recipes/resonant_amplifier.png" width="230">
+### Wave Amplifier
+<img src="images/recipes/wave_amplifier.png" width="230">
 
 <details><summary>▸ layout</summary>
 
@@ -203,8 +203,8 @@ e r e
 ```
 </details>
 
-### Octave Repeater
-<img src="images/recipes/echo_repeater.png" width="230">
+### Wave Repeater
+<img src="images/recipes/wave_repeater.png" width="230">
 
 <details><summary>▸ layout</summary>
 
@@ -220,16 +220,16 @@ Alt: **Silentite crystals** in place of ender pearls.
 
 | | Result | Ingredients |
 | --- | --- | --- |
-| <img src="images/recipes/conduit_coupler.png" width="200"> | **Polarity Coupler** | Wave Relay + Wave Conduit + Echo Ingot |
-| <img src="images/recipes/note_relay.png" width="200"> | **Tone Relay** | Wave Relay + note block |
-| <img src="images/recipes/resonant_chest.png" width="200"> | **Locked Potential Vault** | Wave Relay + chest |
-| <img src="images/recipes/harmonic_filter.png" width="200"> | **Harmonic Filter** | Wave Relay + hopper + iron ingot |
-| <img src="images/recipes/resonant_splitter.png" width="200"> | **Interchange Splitter** | Wave Relay + comparator |
+| <img src="images/recipes/wave_coupler.png" width="200"> | **Wave Coupler** | Wave Relay + Wave Conduit + Echo Ingot |
+| <img src="images/recipes/signal_relay.png" width="200"> | **Signal Relay** | Wave Relay + note block |
+| <img src="images/recipes/wave_chest.png" width="200"> | **Wave Chest** | Wave Relay + chest |
+| <img src="images/recipes/wave_filter.png" width="200"> | **Wave Filter** | Wave Relay + hopper + iron ingot |
+| <img src="images/recipes/wave_splitter.png" width="200"> | **Wave Splitter** | Wave Relay + comparator |
 
 ## Tools & gear
 
-### Centrifugal Thrusters
-<img src="images/recipes/resonance_thrusters.png" width="230">
+### Resonant Thrusters
+<img src="images/recipes/resonant_thrusters.png" width="230">
 
 <details><summary>▸ layout</summary>
 
@@ -264,7 +264,7 @@ Standard vanilla tool shapes with **Echo Ingot** heads and stick handles. See
 
 | | Result | Ingredients |
 | --- | --- | --- |
-| <img src="images/recipes/resonance_meter.png" width="200"> | **Light Meter** | Echo Ingot + redstone + comparator |
-| <img src="images/recipes/frequency_tuner.png" width="200"> | **Octave Tuner** | 2 Echo Ingot + 2 redstone |
-| <img src="images/recipes/channel_atlas.png" width="200"> | **Octave Atlas** | book + Echo Dust |
+| <img src="images/recipes/light_meter.png" width="200"> | **Light Meter** | Echo Ingot + redstone + comparator |
+| <img src="images/recipes/wave_tuner.png" width="200"> | **Wave Tuner** | 2 Echo Ingot + 2 redstone |
+| <img src="images/recipes/wave_atlas.png" width="200"> | **Wave Atlas** | book + Echo Dust |
 | <img src="images/recipes/echo_dust.png" width="200"> | **Echo Dust** | Echocite Dust + Glowstone Dust |

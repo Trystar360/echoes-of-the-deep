@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "echoes:wave_relay",
+    "minecraft:hopper",
+    "minecraft:iron_ingot"
+  ],
+  "result": {
+    "id": "echoes:wave_filter",
+    "count": 1
+  }
+}

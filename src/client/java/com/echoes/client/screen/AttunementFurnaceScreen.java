@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 public class AttunementFurnaceScreen extends HandledScreen<AttunementFurnaceScreenHandler> {
     private static final Identifier TEXTURE =
-            Identifier.of(EchoesMod.MOD_ID, "textures/gui/attunement_furnace.png");
+            Identifier.of(EchoesMod.MOD_ID, "textures/gui/transmuter.png");
 
     public AttunementFurnaceScreen(AttunementFurnaceScreenHandler handler, PlayerInventory inv, Text title) {
         super(handler, inv, title);

@@ -14,9 +14,9 @@ Every Light-aware block exposes a `ResonanceNode` with one or more **roles**
 
 | Role | Meaning | Examples |
 | --- | --- | --- |
-| **PROVIDER** | supplies Light to the network | Generative Coil, Stillness Core |
+| **PROVIDER** | supplies Light to the network | Resonant Coil, Stillness Core |
 | **CONSUMER** | draws Light from the network | Compressor, Transmuter, Radiators, Polarity Field |
-| **STORAGE** | banks Light | Accumulator, Coil, Stillness Core, Coupler |
+| **STORAGE** | banks Light | Resonance Cell, Coil, Stillness Core, Coupler |
 | **CONDUIT** | carries Light, no buffer | Wave Conduit, Dense Wave Conduit |
 
 (`com.echoes.energy.NodeRole`, bit values PROVIDER=1, CONSUMER=2, STORAGE=4,
@@ -30,11 +30,11 @@ scaled to **0–15**. Default capacities:
 
 | Block | Capacity |
 | --- | --- |
-| Generative Coil (Resonator) | 10,000 RU |
+| Resonant Coil (Resonator) | 10,000 RU |
 | Stillness Core | 50,000 RU |
-| Accumulator (Capacitor) | 250,000 RU |
+| Resonance Cell (Capacitor) | 250,000 RU |
 | Compressor / Transmuter (buffer) | 1,000 RU each |
-| Radiator / Warmth Radiator / Polarity Field (buffer) | 3,000 RU each |
+| Growth Radiator / Warmth Radiator / Polarity Field (buffer) | 3,000 RU each |
 
 ## The wired network
 
@@ -55,8 +55,8 @@ Light moves only as fast as the conduits allow:
 
 | Conduit | Throughput |
 | --- | --- |
-| **Wave Conduit** (`tuning_conduit`) | 1,000 RU/t |
-| **Dense Wave Conduit** (`dense_conduit`) | 16,000 RU/t (×16) |
+| **Wave Conduit** (`wave_conduit`) | 1,000 RU/t |
+| **Dense Wave Conduit** (`dense_wave_conduit`) | 16,000 RU/t (×16) |
 
 Use Dense conduit to feed many or hungry consumers without huge conduit bundles.
 
@@ -80,9 +80,9 @@ going dark until a conduit is replaced.
 ## Special network blocks
 
 - **Balancer** — nudges every STORAGE node on its network toward the **same fill
-  ratio** (≈2,000 RU/t, every 10 ticks) so no Accumulator hoards; the grid
+  ratio** (≈2,000 RU/t, every 10 ticks) so no Resonance Cell hoards; the grid
   "breathes" evenly.
-- **Polarity Coupler** (Conduit Coupler) — joins the wired grid as a STORAGE node
+- **Wave Coupler** (Conduit Coupler) — joins the wired grid as a STORAGE node
   while its buffer doubles as a **wireless RU endpoint**, formally bridging the
   wired and wireless transport systems. See [Wireless Transport](Wireless-Transport.md).
 

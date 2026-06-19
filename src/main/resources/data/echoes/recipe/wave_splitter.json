@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "echoes:wave_relay",
+    "minecraft:comparator"
+  ],
+  "result": {
+    "id": "echoes:wave_splitter",
+    "count": 1
+  }
+}

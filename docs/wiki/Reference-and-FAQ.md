@@ -25,12 +25,12 @@
 ### Storage capacities
 | Block | RU |
 | --- | --- |
-| Generative Coil | 10,000 |
+| Resonant Coil | 10,000 |
 | Stillness Core | 50,000 |
-| Accumulator | 250,000 |
+| Resonance Cell | 250,000 |
 | Compressor / Transmuter buffer | 1,000 |
-| Radiator / Warmth Radiator / Polarity Field buffer | 3,000 |
-| Centrifugal Thrusters (item) | 1,000,000 |
+| Growth Radiator / Warmth Radiator / Polarity Field buffer | 3,000 |
+| Resonant Thrusters (item) | 1,000,000 |
 
 ### Rates
 | Thing | Value |
@@ -41,7 +41,7 @@
 | Thrusters flight cost | ~8 RU/t |
 | Mob death capture | 25 RU (≤ 8 blocks) |
 | Balancer | ~2,000 RU/t every 10t |
-| Radiator | ~300 RU/grow, ~8 tries / 10t, 4×2 radius |
+| Growth Radiator | ~300 RU/grow, ~8 tries / 10t, 4×2 radius |
 | Warmth Radiator | ~60 RU/cook, ~4 radius |
 | Polarity Field | ~20 RU/action / 5t, radius 6 |
 | Network stagger threshold | >256 conduits → tick every 4t |
@@ -63,21 +63,21 @@ repaired with Echo Ingot (`#echoes:resonant_repair`).
 ## Block / item id list
 
 **Blocks:** `echocite_ore`, `deepslate_echocite_ore`, `drumstone_ore`,
-`silentite_ore`, `stillness_core`, `resonator`, `tuning_conduit`,
-`dense_conduit`, `resonance_capacitor`, `crusher`, `attunement_furnace`,
-`radiator`, `warmth_radiator`, `polarity_field`, `balancer`, `resonant_relay`,
-`resonant_amplifier`, `harmonic_filter`, `resonant_splitter`, `echo_repeater`,
-`conduit_coupler`, `resonant_chest`, `note_relay`.
+`silentite_ore`, `stillness_core`, `resonant_coil`, `wave_conduit`,
+`dense_wave_conduit`, `resonance_cell`, `compressor`, `transmuter`,
+`growth_radiator`, `warmth_radiator`, `polarity_field`, `balancer`, `wave_relay`,
+`wave_amplifier`, `wave_filter`, `wave_splitter`, `wave_repeater`,
+`wave_coupler`, `wave_chest`, `signal_relay`.
 
 **Items:** `raw_echocite`, `echocite_dust`, `echo_ingot`, `echo_dust`,
 `dull_ingot`, `resonant_slag`, `drumstone_shard`, `drum_core`,
-`silentite_crystal`, `frequency_tuner`, `channel_atlas`, `resonance_meter`,
-`resonance_thrusters`, `resonant_pickaxe`, `resonant_axe`, `resonant_shovel`,
+`silentite_crystal`, `wave_tuner`, `wave_atlas`, `light_meter`,
+`resonant_thrusters`, `resonant_pickaxe`, `resonant_axe`, `resonant_shovel`,
 `resonant_sword`, `resonant_hoe`.
 
 ## FAQ
 
-**My Generative Coil isn't charging.**
+**My Resonant Coil isn't charging.**
 It needs **sound**. Put it within 8 blocks of mob deaths, or near note blocks,
 anvils, bells, or explosions. See [Ambient Capture](Ambient-Capture.md). Check
 the level with a **Light Meter**.
@@ -97,10 +97,10 @@ Cost** would add a small Light tax per sender, but it's off by default.
 
 **Two relays on the same colour aren't talking.**
 Both must be on the same **channel** (dye colour) and in compatible **modes**
-(one Send, one Receive). Cross-dimension channels need an **Octave Repeater**.
+(one Send, one Receive). Cross-dimension channels need an **Wave Repeater**.
 
 **Can other tech mods use my Light?**
-Yes, if **Team Reborn Energy** is installed — the Generative Coil and Polarity
+Yes, if **Team Reborn Energy** is installed — the Resonant Coil and Polarity
 Coupler bridge at 1 RU = 1 E. See [Compatibility](Compatibility.md).
 
 **Will my world break if I update names?**
@@ -116,5 +116,5 @@ roadmap). Crafting/smelting/blasting recipes show up normally.
 The project's forward plan lives in [`docs/roadmap.md`](../roadmap.md), organized
 by Russell's cosmology (Phase I generation↔radiation, II the octaves, III the
 wave, …). Highlights still open: octave tiers, wearable thrusters, a network
-visualizer, advancements, a Great Accumulator multiblock, the Silentite "silence"
+visualizer, advancements, a Great Resonance Cell multiblock, the Silentite "silence"
 path, and true emissive textures.

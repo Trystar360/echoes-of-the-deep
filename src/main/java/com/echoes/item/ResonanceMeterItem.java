@@ -53,7 +53,7 @@ public class ResonanceMeterItem extends Item {
         List<String> r = new ArrayList<>();
         if (node.is(NodeRole.PROVIDER)) r.add("Generator");
         if (node.is(NodeRole.CONSUMER)) r.add("Drawer");
-        if (node.is(NodeRole.STORAGE)) r.add("Accumulator");
+        if (node.is(NodeRole.STORAGE)) r.add("Resonance Cell");
         if (node.is(NodeRole.CONDUIT)) r.add("Conductor");
         return String.join(", ", r);
     }

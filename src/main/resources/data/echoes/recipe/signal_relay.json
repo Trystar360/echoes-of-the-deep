@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "echoes:wave_relay",
+    "minecraft:note_block"
+  ],
+  "result": {
+    "id": "echoes:signal_relay",
+    "count": 1
+  }
+}

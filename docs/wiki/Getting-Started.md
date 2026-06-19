@@ -55,9 +55,9 @@ You have two routes from **Raw Echocite**:
 
 Craft these three blocks (recipes on [Crafting & Progression](Crafting-and-Progression.md)):
 
-1. **Generative Coil** (`echoes:resonator`) — generates + stores Light.
-2. **Wave Conduit** (`echoes:tuning_conduit`) — carries Light between blocks (×4 per craft).
-3. **Compressor** (`echoes:crusher`) — your first Light **consumer** (ore-doubling).
+1. **Resonant Coil** (`echoes:resonant_coil`) — generates + stores Light.
+2. **Wave Conduit** (`echoes:wave_conduit`) — carries Light between blocks (×4 per craft).
+3. **Compressor** (`echoes:compressor`) — your first Light **consumer** (ore-doubling).
 
 Place the Coil, run a line of Conduit from it to the Compressor, and they form a
 single **network**. The Coil charges from **ambient sound** (see below); the
@@ -65,22 +65,22 @@ Compressor draws from the grid to crush ore.
 
 ### 4. Feed the Coil with sound
 
-A **Generative Coil** charges itself from nearby world sound — note blocks,
+A **Resonant Coil** charges itself from nearby world sound — note blocks,
 bells, anvils landing, explosions, and (rarely, hugely) thunder. Mob deaths
 within 8 blocks also add Light. Park a Coil near a note-block contraption or an
 anvil to keep it topped up. Full table on [Ambient Capture](Ambient-Capture.md).
 
 ### 5. Read your grid
 
-Craft a **Light Meter** (`echoes:resonance_meter`) and right-click any device to
+Craft a **Light Meter** (`echoes:light_meter`) and right-click any device to
 print its role, stored/capacity Light, demand, and conduit throughput — Light is
 otherwise invisible.
 
 ## Where to go next
 
-- Bank surplus in an **Accumulator** (250k Light) and add a **Stillness Core**
+- Bank surplus in an **Resonance Cell** (250k Light) and add a **Stillness Core**
   for steady passive generation — see [Blocks](Blocks.md).
 - Skip conduits entirely with the **Wave Relay** wireless system — see
   [Wireless Transport](Wireless-Transport.md).
-- Craft **Centrifugal Thrusters** for sound-powered flight, and a set of
+- Craft **Resonant Thrusters** for sound-powered flight, and a set of
   **Resonant tools** — see [Items & Gear](Items-and-Gear.md).

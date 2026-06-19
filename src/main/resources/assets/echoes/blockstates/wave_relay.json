@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=north": { "model": "echoes:block/wave_relay" },
+    "facing=east":  { "model": "echoes:block/wave_relay", "y": 90 },
+    "facing=south": { "model": "echoes:block/wave_relay", "y": 180 },
+    "facing=west":  { "model": "echoes:block/wave_relay", "y": 270 },
+    "facing=up":    { "model": "echoes:block/wave_relay", "x": 270 },
+    "facing=down":  { "model": "echoes:block/wave_relay", "x": 90 }
+  }
+}

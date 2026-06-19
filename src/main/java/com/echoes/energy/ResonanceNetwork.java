@@ -172,7 +172,7 @@ public class ResonanceNetwork {
     /**
      * Rhythmic balanced interchange: nudge every storage node toward the network's
      * mean fill ratio (Light is conserved — over-full give, under-full regive), so
-     * no Accumulator hoards. Driven by the Balancer.
+     * no Resonance Cell hoards. Driven by the Balancer.
      */
     public void balanceStorages(ServerWorld world, long rate) {
         if (dirty) rescan(world);

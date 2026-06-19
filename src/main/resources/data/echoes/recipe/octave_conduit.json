@@ -6,7 +6,7 @@
   ],
   "key": {
     "R": "echoes:radiant_ingot",
-    "D": "echoes:dense_conduit"
+    "D": "echoes:dense_wave_conduit"
   },
   "result": {
     "id": "echoes:octave_conduit",

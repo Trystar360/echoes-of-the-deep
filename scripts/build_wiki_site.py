@@ -275,21 +275,21 @@ CATEGORIES = [
       "raw_echocite", "echocite_dust", "echo_ingot", "echo_dust", "resonant_slag",
       "dull_ingot", "drumstone_shard", "drum_core", "silentite_crystal"]),
     ("Energy Core", "Generate, store, and carry Light across the wired grid.",
-     ["stillness_core", "resonator", "storm_caller", "resonance_capacitor",
-      "tuning_conduit", "dense_conduit", "balancer"]),
+     ["stillness_core", "resonant_coil", "storm_caller", "resonance_cell",
+      "wave_conduit", "dense_wave_conduit", "balancer"]),
     ("Octave Tier", "The higher octave: charged Radiant matter and its big generators, banks, and conduits.",
      ["octave_seed", "radiant_dust", "radiant_ingot", "octave_coil", "octave_conduit",
-      "greater_accumulator"]),
+      "greater_resonance_cell"]),
     ("Machines", "Light-powered processing.",
-     ["crusher", "attunement_furnace"]),
+     ["compressor", "transmuter"]),
     ("Radiation & Fields", "Pour Light back into the world.",
-     ["radiator", "warmth_radiator", "polarity_field"]),
+     ["growth_radiator", "warmth_radiator", "polarity_field"]),
     ("Wireless", "Move items, fluids, Light, and redstone over channels — no conduits.",
-     ["resonant_relay", "resonant_amplifier", "harmonic_filter", "resonant_splitter",
-      "echo_repeater", "conduit_coupler", "resonant_chest", "note_relay",
-      "frequency_tuner", "channel_atlas"]),
+     ["wave_relay", "wave_amplifier", "wave_filter", "wave_splitter",
+      "wave_repeater", "wave_coupler", "wave_chest", "signal_relay",
+      "wave_tuner", "wave_atlas"]),
     ("Tools & Gear", "Handheld diagnostics, flight, and over-tuned tools.",
-     ["resonance_meter", "resonance_thrusters", "resonant_pickaxe", "resonant_axe",
+     ["light_meter", "resonant_thrusters", "resonant_pickaxe", "resonant_axe",
       "resonant_shovel", "resonant_sword", "resonant_hoe"]),
     ("Lumewood & Garden", "A glowing custom tree, its building set, and the soil and flora that grow it.",
      ["lumewood_sapling", "lumewood_log", "lumewood_wood", "lumewood_planks",
@@ -303,28 +303,28 @@ ORDER = [rid for _, _, ids in CATEGORIES for rid in ids]
 
 STATS = {
     "stillness_core": [("Role", "Provider · Storage"), ("Capacity", "50,000 Light"), ("Generation", "+4 / tick")],
-    "resonator": [("Role", "Provider · Storage"), ("Capacity", "10,000 Light"), ("Charges from", "ambient sound + mob deaths")],
-    "resonance_capacitor": [("Role", "Storage"), ("Capacity", "250,000 Light"), ("Readout", "comparator")],
-    "tuning_conduit": [("Role", "Conduit"), ("Throughput", "1,000 / tick")],
-    "dense_conduit": [("Role", "Conduit"), ("Throughput", "16,000 / tick (×16)")],
+    "resonant_coil": [("Role", "Provider · Storage"), ("Capacity", "10,000 Light"), ("Charges from", "ambient sound + mob deaths")],
+    "resonance_cell": [("Role", "Storage"), ("Capacity", "250,000 Light"), ("Readout", "comparator")],
+    "wave_conduit": [("Role", "Conduit"), ("Throughput", "1,000 / tick")],
+    "dense_wave_conduit": [("Role", "Conduit"), ("Throughput", "16,000 / tick (×16)")],
     "balancer": [("Role", "Network utility"), ("Effect", "evens storage fill (~2,000/t)")],
-    "crusher": [("Role", "Consumer"), ("Buffer", "1,000 Light"), ("Does", "ore-doubling + ~15% slag")],
-    "attunement_furnace": [("Role", "Consumer"), ("Buffer", "1,000 Light"), ("Does", "fuel-free vanilla smelting")],
-    "radiator": [("Role", "Consumer"), ("Buffer", "3,000 Light"), ("Effect", "grows crops, ~300/grow, 4×2 radius")],
+    "compressor": [("Role", "Consumer"), ("Buffer", "1,000 Light"), ("Does", "ore-doubling + ~15% slag")],
+    "transmuter": [("Role", "Consumer"), ("Buffer", "1,000 Light"), ("Does", "fuel-free vanilla smelting")],
+    "growth_radiator": [("Role", "Consumer"), ("Buffer", "3,000 Light"), ("Effect", "grows crops, ~300/grow, 4×2 radius")],
     "warmth_radiator": [("Role", "Consumer"), ("Buffer", "3,000 Light"), ("Effect", "cooks drops, melts ice (~4 blocks)")],
     "polarity_field": [("Role", "Consumer"), ("Buffer", "3,000 Light"), ("Modes", "Attract / Repel, radius 6")],
-    "resonant_relay": [("Role", "Wireless transport"), ("Budget", "8 items · 1 bucket · 1,000 Light / sender")],
-    "resonant_amplifier": [("Role", "Channel modifier"), ("Effect", "×2 throughput each (×16 cap)")],
-    "harmonic_filter": [("Role", "Channel modifier"), ("Effect", "3×3 item whitelist")],
-    "resonant_splitter": [("Role", "Channel modifier"), ("Effect", "round-robin ↔ fill-first")],
-    "echo_repeater": [("Role", "Channel modifier"), ("Effect", "cross-dimension channels")],
-    "conduit_coupler": [("Role", "Storage · bridge"), ("Effect", "wired ↔ wireless gateway")],
-    "resonant_chest": [("Role", "Wireless storage"), ("Slots", "27, native on a channel")],
-    "note_relay": [("Role", "Wireless redstone"), ("Effect", "broadcast / receive redstone")],
-    "frequency_tuner": [("Type", "Tool"), ("Use", "copy/paste channel; sneak-use opens config")],
-    "channel_atlas": [("Type", "Tool"), ("Use", "list devices per channel")],
-    "resonance_meter": [("Type", "Tool"), ("Use", "read role, stored Light, demand, flow")],
-    "resonance_thrusters": [("Type", "Gear"), ("Capacity", "1,000,000 Light"), ("Flight", "~8 / tick, fall-immune")],
+    "wave_relay": [("Role", "Wireless transport"), ("Budget", "8 items · 1 bucket · 1,000 Light / sender")],
+    "wave_amplifier": [("Role", "Channel modifier"), ("Effect", "×2 throughput each (×16 cap)")],
+    "wave_filter": [("Role", "Channel modifier"), ("Effect", "3×3 item whitelist")],
+    "wave_splitter": [("Role", "Channel modifier"), ("Effect", "round-robin ↔ fill-first")],
+    "wave_repeater": [("Role", "Channel modifier"), ("Effect", "cross-dimension channels")],
+    "wave_coupler": [("Role", "Storage · bridge"), ("Effect", "wired ↔ wireless gateway")],
+    "wave_chest": [("Role", "Wireless storage"), ("Slots", "27, native on a channel")],
+    "signal_relay": [("Role", "Wireless redstone"), ("Effect", "broadcast / receive redstone")],
+    "wave_tuner": [("Type", "Tool"), ("Use", "copy/paste channel; sneak-use opens config")],
+    "wave_atlas": [("Type", "Tool"), ("Use", "list devices per channel")],
+    "light_meter": [("Type", "Tool"), ("Use", "read role, stored Light, demand, flow")],
+    "resonant_thrusters": [("Type", "Gear"), ("Capacity", "1,000,000 Light"), ("Flight", "~8 / tick, fall-immune")],
     "echocite_ore": [("Type", "Ore"), ("Where", "Overworld, y −20…60"), ("Drops", "Raw Echocite")],
     "deepslate_echocite_ore": [("Type", "Ore"), ("Where", "Overworld deepslate"), ("Drops", "Raw Echocite")],
     "drumstone_ore": [("Type", "Ore"), ("Where", "Overworld, y −48…24"), ("Drops", "Drumstone Shard")],
@@ -338,7 +338,7 @@ STATS.update({
     "radiant_ingot": [("Type", "Charged matter"), ("Builds", "the higher-octave tier")],
     "octave_coil": [("Role", "Provider · Storage"), ("Capacity", "300,000 Light"), ("Generation", "strong, tunable")],
     "octave_conduit": [("Role", "Conduit"), ("Throughput", "64,000 / tick (4× Dense)")],
-    "greater_accumulator": [("Role", "Storage"), ("Capacity", "2,000,000 Light"), ("Built from", "Radiant Ingots + Accumulator")],
+    "greater_resonance_cell": [("Role", "Storage"), ("Capacity", "2,000,000 Light"), ("Built from", "Radiant Ingots + Resonance Cell")],
     "verdant_loam": [("Role", "Growth soil"), ("Effect", "pulses Light to grow nearby plants (tunable)")],
     "lumebloom": [("Type", "Flora"), ("Effect", "glows; grants Glowing on contact")],
     "lume_lantern": [("Type", "Décor"), ("Light", "full-bright")],
@@ -354,7 +354,7 @@ DESC_EXTRA = {
     "radiant_ingot": "The charged metal that builds the higher-octave bank, coil, and conduit.",
     "octave_coil": "A strong baseline generator — 300,000-Light buffer with a tunable rate.",
     "octave_conduit": "A higher-octave conduit — 64,000 Light/t, 4× the Dense Wave Conduit.",
-    "greater_accumulator": "Block-of-light tier storage: banks 2,000,000 Light.",
+    "greater_resonance_cell": "Block-of-light tier storage: banks 2,000,000 Light.",
     "verdant_loam": "Ticking soil that pulses Light upward to grow nearby plants.",
     "lumebloom": "A glowing flower; brushing it grants the Glowing effect.",
     "lume_lantern": "A full-bright décor block of woven Light.",
@@ -478,7 +478,7 @@ def page(title, body, depth, active=""):
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)} · Octaves of the One</title>
 <link rel="stylesheet" href="{up}style.css">
-<link rel="icon" href="{up}assets/icons/resonator.png">
+<link rel="icon" href="{up}assets/icons/resonant_coil.png">
 </head><body>
 <input type="checkbox" id="navtoggle" hidden>
 <header class="topbar">
@@ -614,15 +614,15 @@ def guides_data():
 <li><b>Mine Echocite.</b> {linkico('echocite_ore')} generates across the Overworld and drops
 {linkico('raw_echocite')} (use a stone pickaxe or better).</li>
 <li><b>Make Echo Ingots.</b> Smelt {linkico('raw_echocite')} → {linkico('echo_ingot')}, or crush it in a
-{linkico('crusher')} for <b>2×</b> {linkico('echocite_dust')} (then smelt). Echo Ingot is the core material.</li>
-<li><b>Build the core.</b> Craft a {linkico('resonator')}, a line of {linkico('tuning_conduit')}, and a
-{linkico('crusher')}. Connected by conduit, they form one network.</li>
-<li><b>Feed it sound.</b> A {linkico('resonator')} charges from nearby note blocks, anvils, bells,
+{linkico('compressor')} for <b>2×</b> {linkico('echocite_dust')} (then smelt). Echo Ingot is the core material.</li>
+<li><b>Build the core.</b> Craft a {linkico('resonant_coil')}, a line of {linkico('wave_conduit')}, and a
+{linkico('compressor')}. Connected by conduit, they form one network.</li>
+<li><b>Feed it sound.</b> A {linkico('resonant_coil')} charges from nearby note blocks, anvils, bells,
 and mob deaths — see <a href="guide-ambient.html">Ambient Capture</a>.</li>
-<li><b>Read the grid.</b> Craft a {linkico('resonance_meter')} and right-click any device.</li>
+<li><b>Read the grid.</b> Craft a {linkico('light_meter')} and right-click any device.</li>
 </ol>
 <p>Next: skip conduits with the <a href="guide-wireless.html">wireless</a> family, bank surplus in an
-{linkico('resonance_capacitor')}, and craft {linkico('resonance_thrusters')} for flight.</p>"""),
+{linkico('resonance_cell')}, and craft {linkico('resonant_thrusters')} for flight.</p>"""),
 
         "guide-energy": ("Energy System", f"""
 <h1>Energy System</h1>
@@ -634,12 +634,12 @@ shares it among consumers by a <em>largest-remainder fair distribution</em> (no 
 storage lowest-first. Networks merge/split incrementally on place/break — no per-tick flood fill — and
 persist across restarts.</p>
 <h2>Throughput</h2>
-<p>{linkico('tuning_conduit')} carries 1,000/t; {linkico('dense_conduit')} carries 16,000/t. Use a
-{linkico('balancer')} to even storage, and a {linkico('conduit_coupler')} to bridge to a wireless channel.</p>
+<p>{linkico('wave_conduit')} carries 1,000/t; {linkico('dense_wave_conduit')} carries 16,000/t. Use a
+{linkico('balancer')} to even storage, and a {linkico('wave_coupler')} to bridge to a wireless channel.</p>
 <table class="stats">
-<tr><th>{linkico('resonator')} Generative Coil</th><td>10,000 Light · ambient capture</td></tr>
+<tr><th>{linkico('resonant_coil')} Resonant Coil</th><td>10,000 Light · ambient capture</td></tr>
 <tr><th>{linkico('stillness_core')} Stillness Core</th><td>50,000 Light · +4/t baseline</td></tr>
-<tr><th>{linkico('resonance_capacitor')} Accumulator</th><td>250,000 Light</td></tr>
+<tr><th>{linkico('resonance_cell')} Resonance Cell</th><td>250,000 Light</td></tr>
 </table>"""),
 
         "guide-wireless": ("Wireless Transport", f"""
@@ -649,15 +649,15 @@ Tune any device: right-click cycles mode (Receive → Send → Disabled), sneak-
 or use a dye to jump to a colour.</p>
 <h2>The family</h2>
 <div class="chips">
-{''.join(linkchip(x) for x in ['resonant_relay','resonant_amplifier','harmonic_filter','resonant_splitter','echo_repeater','conduit_coupler','resonant_chest','note_relay','frequency_tuner','channel_atlas'])}
+{''.join(linkchip(x) for x in ['wave_relay','wave_amplifier','wave_filter','wave_splitter','wave_repeater','wave_coupler','wave_chest','signal_relay','wave_tuner','wave_atlas'])}
 </div>
 <h2>Budget</h2>
 <p>Per channel, per tick: <b>8 items · 1 bucket · 1,000 Light</b> per sender, capped at 64 / 8 / 16,000,
-all scaled by {linkico('resonant_amplifier')} amplifiers (×2 each, ×16 cap). A channel needs ≥2 devices.</p>"""),
+all scaled by {linkico('wave_amplifier')} amplifiers (×2 each, ×16 cap). A channel needs ≥2 devices.</p>"""),
 
         "guide-ambient": ("Ambient Capture", f"""
 <h1>Ambient Capture</h1>
-<p>A {linkico('resonator')} winds <b>sound</b> into Light. Mob deaths within 8 blocks add 25 Light;
+<p>A {linkico('resonant_coil')} winds <b>sound</b> into Light. Mob deaths within 8 blocks add 25 Light;
 mapped world sounds charge the nearest coil from a data-driven, reloadable table.</p>
 <table class="stats">
 <tr><th>Note block (harp/bass)</th><td>8</td></tr><tr><th>Note block (bell)</th><td>12</td></tr>
@@ -693,7 +693,7 @@ save-compatibility, and the display names are the “Octaves of the One” reski
 <tr><th>Energy unit</th><td>Light (RU internally)</td></tr>
 <tr><th>Wireless channels</th><td>16 (dye colours)</td></tr>
 <tr><th>Conduit throughput</th><td>1,000 /t · Dense 16,000 /t</td></tr>
-<tr><th>Capacities</th><td>Coil 10k · Core 50k · Accumulator 250k · Thrusters 1M</td></tr>
+<tr><th>Capacities</th><td>Coil 10k · Core 50k · Resonance Cell 250k · Thrusters 1M</td></tr>
 <tr><th>Echo tools</th><td>speed 12 · 4000 durability · ench 22 · mines anything</td></tr>
 </table>
 <p>This site is generated from the mod's own textures, recipes, and lang file by

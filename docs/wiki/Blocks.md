@@ -23,44 +23,44 @@ player over a shared bronze casing, so the family reads as one material.*
 STORAGE, **50,000 RU** capacity, **+4 RU/t** steady generation. The only block
 that makes Light with no input — "motion springs from rest."
 
-### <img src="images/blocks3d/resonator.png" width="46" align="top"> Generative Coil — `echoes:resonator`
+### <img src="images/blocks3d/resonant_coil.png" width="46" align="top"> Resonant Coil — `echoes:resonant_coil`
 *Generation / centripetal charging.* PROVIDER + STORAGE, **10,000 RU**. Charges
 from **ambient sound** and nearby **mob deaths** (see
 [Ambient Capture](Ambient-Capture.md)). Comparator-readable. Right-click it (or a
-Capacitor / Coupler) to recharge **Centrifugal Thrusters**. Craftable from a
+Capacitor / Coupler) to recharge **Resonant Thrusters**. Craftable from a
 **Drum Core** as an alternate membrane.
 
-### <img src="images/blocks3d/resonance_capacitor.png" width="46" align="top"> Accumulator — `echoes:resonance_capacitor`
+### <img src="images/blocks3d/resonance_cell.png" width="46" align="top"> Resonance Cell — `echoes:resonance_cell`
 *Locked potential.* Bulk **STORAGE**, **250,000 RU**, so the grid can bank
 surplus instead of being capped at the Coils' small reserves. Comparator-readable.
 
 ## Transport (wired)
 
-### <img src="images/blocks3d/tuning_conduit.png" width="46" align="top"> Wave Conduit — `echoes:tuning_conduit`
+### <img src="images/blocks3d/wave_conduit.png" width="46" align="top"> Wave Conduit — `echoes:wave_conduit`
 The carrier of the wired grid. CONDUIT role, **1,000 RU/t** throughput, no buffer.
 Crafts **4 at a time**; also craftable from **Dull Ingots**.
 
-### <img src="images/blocks3d/dense_conduit.png" width="46" align="top"> Dense Wave Conduit — `echoes:dense_conduit`
+### <img src="images/blocks3d/dense_wave_conduit.png" width="46" align="top"> Dense Wave Conduit — `echoes:dense_wave_conduit`
 A **×16** conduit, **16,000 RU/t**, for feeding many or hungry consumers without
 huge conduit bundles.
 
 ## Machines (consumers)
 
-### <img src="images/blocks3d/crusher.png" width="46" align="top"> Compressor — `echoes:crusher`
+### <img src="images/blocks3d/compressor.png" width="46" align="top"> Compressor — `echoes:compressor`
 *Compression = generative motion.* CONSUMER with a **1,000 RU** buffer and a
 synced screen. Runs a custom **`crushing`** recipe type for **ore-doubling**
 (raw echocite → 2× dust), with an optional **secondary byproduct** (raw echocite
 → ~15% Resonant Slag). Item I/O rides the **Transfer API**, so **vanilla hoppers
 work** — input from the top, output on the sides.
 
-### <img src="images/blocks3d/attunement_furnace.png" width="46" align="top"> Transmuter — `echoes:attunement_furnace`
+### <img src="images/blocks3d/transmuter.png" width="46" align="top"> Transmuter — `echoes:transmuter`
 *Raising matter an octave.* CONSUMER with a **1,000 RU** buffer. Smelts **any
 vanilla furnace recipe with no fuel**, drawing from the grid (~4 RU/t over a
 ~100-tick smelt). Directional model and its own screen; hopper-friendly.
 
 ## Radiation (the discharge half)
 
-### <img src="images/blocks3d/radiator.png" width="46" align="top"> Radiator — `echoes:radiator`
+### <img src="images/blocks3d/growth_radiator.png" width="46" align="top"> Growth Radiator — `echoes:growth_radiator`
 *Radiation / centrifugal outpouring.* CONSUMER, **3,000 RU** buffer. Pours Light
 back into the world as **life**: every 10 ticks it makes several growth attempts
 (≈8) on crops & saplings in a **4×2 (h×v)** radius for **~300 RU** per success,
@@ -81,13 +81,13 @@ action every **5 ticks**, radius **6**. Right-click to toggle:
 
 ### <img src="images/blocks3d/balancer.png" width="46" align="top"> Balancer — `echoes:balancer`
 *Rhythmic balanced interchange.* Nudges every STORAGE node on its network toward
-the **same fill ratio** (≈2,000 RU/t, every 10 ticks) so no Accumulator hoards.
+the **same fill ratio** (≈2,000 RU/t, every 10 ticks) so no Resonance Cell hoards.
 
 ## Wireless devices
 
-The wireless family — **Wave Relay**, **Amplitude Coil**, **Harmonic Filter**,
-**Interchange Splitter**, **Octave Repeater**, **Polarity Coupler**, **Locked
-Potential Vault**, **Tone Relay** — has its own page:
+The wireless family — **Wave Relay**, **Wave Amplifier**, **Wave Filter**,
+**Wave Splitter**, **Wave Repeater**, **Wave Coupler**, **Locked
+Potential Vault**, **Signal Relay** — has its own page:
 [Wireless Transport](Wireless-Transport.md).
 
 ## Ores
@@ -100,16 +100,16 @@ documented on [Ores & Worldgen](Ores-and-Worldgen.md).
 | In-world name | Id | Role(s) | Capacity | Notes |
 | --- | --- | --- | --- | --- |
 | Stillness Core | `stillness_core` | Provider+Storage | 50,000 | +4 RU/t baseline |
-| Generative Coil | `resonator` | Provider+Storage | 10,000 | ambient capture, recharges thrusters |
-| Accumulator | `resonance_capacitor` | Storage | 250,000 | comparator-readable |
-| Wave Conduit | `tuning_conduit` | Conduit | — | 1,000 RU/t |
-| Dense Wave Conduit | `dense_conduit` | Conduit | — | 16,000 RU/t |
-| Compressor | `crusher` | Consumer | 1,000 | ore-doubling + byproduct |
-| Transmuter | `attunement_furnace` | Consumer | 1,000 | fuel-free smelting |
-| Radiator | `radiator` | Consumer | 3,000 | grows crops, ~300 RU/grow |
+| Resonant Coil | `resonant_coil` | Provider+Storage | 10,000 | ambient capture, recharges thrusters |
+| Resonance Cell | `resonance_cell` | Storage | 250,000 | comparator-readable |
+| Wave Conduit | `wave_conduit` | Conduit | — | 1,000 RU/t |
+| Dense Wave Conduit | `dense_wave_conduit` | Conduit | — | 16,000 RU/t |
+| Compressor | `compressor` | Consumer | 1,000 | ore-doubling + byproduct |
+| Transmuter | `transmuter` | Consumer | 1,000 | fuel-free smelting |
+| Growth Radiator | `growth_radiator` | Consumer | 3,000 | grows crops, ~300 RU/grow |
 | Warmth Radiator | `warmth_radiator` | Consumer | 3,000 | cooks drops, melts ice |
 | Polarity Field | `polarity_field` | Consumer | 3,000 | Attract/Repel, ~20 RU/action |
 | Balancer | `balancer` | (network util) | — | evens storage fill ratios |
-| Polarity Coupler | `conduit_coupler` | Storage | — | wired ↔ wireless bridge |
+| Wave Coupler | `wave_coupler` | Storage | — | wired ↔ wireless bridge |
 
 *Constants are the in-code defaults and may be tuned by a pack author.*

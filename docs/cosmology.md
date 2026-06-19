@@ -25,19 +25,19 @@ model of his system.
 | In-world name | Concept | What it does |
 | --- | --- | --- |
 | **Stillness Core** | the still magnetic centre of zero | slow baseline Light generator — "motion springs from rest" |
-| **Generative Coil** (Resonator) | generation / centripetal charging | winds ambient tone into stored Light |
-| **Accumulator** (Capacitor) | locked potential | banks large Light |
+| **Resonant Coil** (Resonator) | generation / centripetal charging | winds ambient tone into stored Light |
+| **Resonance Cell** (Capacitor) | locked potential | banks large Light |
 | **Wave / Dense Wave Conduit** | the wave carries Light | wired transport (the wave is the unit of the cosmos) |
 | **Compressor** (Crusher) | compression = generative motion | presses matter into denser form (ore-doubling) |
 | **Transmuter** (Attunement Furnace) | raising matter an octave | RU-powered smelting |
 | **Wave Relay** + family | tones broadcast on an octave | wireless transport keyed by octave (channel) |
-| **Amplitude Coil** (Amplifier) | amplitude of the wave | widens an octave's throughput |
-| **Octave Repeater** | octaves repeat across space | spans an octave across dimensions |
-| **Polarity Coupler** | polarity bridges two conditions | couples the wired grid to a wireless octave (and Team Reborn Energy) |
-| **Interchange Splitter** | balanced interchange | even round-robin vs. fill-first sharing |
-| **Locked Potential Vault** (Chest) | locked potential | storage that lives on an octave |
-| **Tone Relay** (Note Relay) | the divine tone | wireless redstone on an octave |
-| **Centrifugal Thrusters** | centrifugal radiation = expansion | flight: the body thrown outward from centre |
+| **Wave Amplifier** (Amplifier) | amplitude of the wave | widens an octave's throughput |
+| **Wave Repeater** | octaves repeat across space | spans an octave across dimensions |
+| **Wave Coupler** | polarity bridges two conditions | couples the wired grid to a wireless octave (and Team Reborn Energy) |
+| **Wave Splitter** | balanced interchange | even round-robin vs. fill-first sharing |
+| **Wave Chest** (Chest) | locked potential | storage that lives on an octave |
+| **Signal Relay** (Note Relay) | the divine tone | wireless redstone on an octave |
+| **Resonant Thrusters** | centrifugal radiation = expansion | flight: the body thrown outward from centre |
 | **Resonant tools** | tuned to the octave | deliberately strong — interchange gives back as freely as it takes |
 
 ## Why the gear is strong
@@ -51,6 +51,6 @@ oversight. The numbers are named constants (`ResonanceThrustersItem`,
 ## Note on internal names
 
 To keep existing worlds loading, the mod id stays `echoes` and internal identifiers
-(e.g. `echoes:resonator`, the `ResonanceNode` capability) are unchanged. The rework
+(e.g. `echoes:resonant_coil`, the `ResonanceNode` capability) are unchanged. The rework
 is a complete *display* reskin — names, lore, tooltips, and the cosmology framing —
 plus new content (the Stillness Core) that embodies it.

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "echoes:wave_conduit",
+    "echoes:wave_conduit",
+    "echoes:wave_conduit",
+    "echoes:echo_ingot"
+  ],
+  "result": {
+    "id": "echoes:dense_wave_conduit",
+    "count": 2
+  }
+}

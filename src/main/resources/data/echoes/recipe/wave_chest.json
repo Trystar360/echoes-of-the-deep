@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "echoes:wave_relay",
+    "minecraft:chest"
+  ],
+  "result": {
+    "id": "echoes:wave_chest",
+    "count": 1
+  }
+}

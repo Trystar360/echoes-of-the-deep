@@ -55,7 +55,7 @@ router treats them uniformly.
 - **Resonant Amplifier** — placed on a channel, each one doubles that channel's
   per-tick transfer budget (×2 per amplifier, capped ×16). The way to make a
   channel "fat".
-- **Harmonic Filter** — right-click with an item to whitelist its type (empty hand
+- **Wave Filter** — right-click with an item to whitelist its type (empty hand
   clears). Item transport on the channel is then constrained to the union of every
   filter's whitelist. Enables wireless sorting.
 - **Resonant Splitter** — toggles the channel between even round-robin sharing

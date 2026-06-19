@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/orientable",
-  "textures": {
-    "front": "echoes:block/resonator",
-    "side": "echoes:block/device_side",
-    "top": "echoes:block/device_top"
-  }
-}

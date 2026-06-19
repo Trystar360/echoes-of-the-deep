@@ -141,7 +141,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
     // --- screen ---
-    @Override public Text getDisplayName() { return Text.translatable("block.echoes.attunement_furnace"); }
+    @Override public Text getDisplayName() { return Text.translatable("block.echoes.transmuter"); }
     @Override public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         return new AttunementFurnaceScreenHandler(syncId, inv, this, props);
     }

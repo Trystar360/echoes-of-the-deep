@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 public class HarmonicFilterScreen extends HandledScreen<HarmonicFilterScreenHandler> {
     private static final Identifier TEXTURE =
-            Identifier.of(EchoesMod.MOD_ID, "textures/gui/harmonic_filter.png");
+            Identifier.of(EchoesMod.MOD_ID, "textures/gui/wave_filter.png");
 
     public HarmonicFilterScreen(HarmonicFilterScreenHandler handler, PlayerInventory inv, Text title) {
         super(handler, inv, title);

@@ -26,9 +26,9 @@ In-world the modes read **Regive (receive)**, **Give (send)**, and **Stilled**.
 A comparator next to a device reads `0` when disabled, otherwise a coarse channel
 indicator (1–15).
 
-## <img src="images/blocks3d/resonant_relay.png" width="46" align="top"> The Wave Relay (the flagship)
+## <img src="images/blocks3d/wave_relay.png" width="46" align="top"> The Wave Relay (the flagship)
 
-**Wave Relay** — `echoes:resonant_relay`. Place it against any container, tank,
+**Wave Relay** — `echoes:wave_relay`. Place it against any container, tank,
 machine, or Coil — it "wraps" the block on its facing side. Then:
 
 - **Send** relays pull cargo *out* of the block they face and broadcast it on the channel.
@@ -41,27 +41,27 @@ distant Compressor with no conduit run. Crafts **2 at a time**.
 
 ## The channel-gadget family
 
-<img src="images/blocks3d/resonant_amplifier.png" width="58"> <img src="images/blocks3d/harmonic_filter.png" width="58"> <img src="images/blocks3d/resonant_splitter.png" width="58"> <img src="images/blocks3d/echo_repeater.png" width="58"> <img src="images/blocks3d/conduit_coupler.png" width="58"> <img src="images/blocks3d/resonant_chest.png" width="58"> <img src="images/blocks3d/note_relay.png" width="58">
+<img src="images/blocks3d/wave_amplifier.png" width="58"> <img src="images/blocks3d/wave_filter.png" width="58"> <img src="images/blocks3d/wave_splitter.png" width="58"> <img src="images/blocks3d/wave_repeater.png" width="58"> <img src="images/blocks3d/wave_coupler.png" width="58"> <img src="images/blocks3d/wave_chest.png" width="58"> <img src="images/blocks3d/signal_relay.png" width="58">
 
-*Left to right: Amplitude Coil · Harmonic Filter · Interchange Splitter · Octave
-Repeater · Polarity Coupler · Locked Potential Vault · Tone Relay.*
+*Left to right: Wave Amplifier · Wave Filter · Wave Splitter · Octave
+Repeater · Wave Coupler · Wave Chest · Signal Relay.*
 
 All share the tuning controls above and the `WirelessDevice` interface, so the
 router treats them uniformly.
 
 ### Throughput & routing
-- **Amplitude Coil** (`resonant_amplifier`) — each one on a channel **doubles**
+- **Wave Amplifier** (`wave_amplifier`) — each one on a channel **doubles**
   that channel's per-tick budget (**×2 per coil, capped ×16**). The way to make a
   channel "fat".
-- **Harmonic Filter** (`harmonic_filter`) — a **3×3 ghost-slot** screen sets the
+- **Wave Filter** (`wave_filter`) — a **3×3 ghost-slot** screen sets the
   channel's item **whitelist** (samples aren't consumed). Fluids are filtered by
   their **bucket item** (a water bucket whitelists water). Enables wireless
   sorting; item transport is constrained to the union of every filter's whitelist.
-- **Interchange Splitter** (`resonant_splitter`) — toggles delivery between
+- **Wave Splitter** (`wave_splitter`) — toggles delivery between
   **balanced round-robin** across receivers and **fill-first**.
 
 ### Range & cost
-- **Octave Repeater** (`echo_repeater`) — pools its channel across **every
+- **Wave Repeater** (`wave_repeater`) — pools its channel across **every
   dimension** it appears in. Without one, a channel stays within a single
   dimension. (Craftable two ways: with ender pearls, or with Silentite crystals.)
 - **Hush Cost** — an opt-in tax (`WirelessNetworkManager.HUSH_COST`, **off by
@@ -70,21 +70,21 @@ router treats them uniformly.
   on channels with no energy provider.
 
 ### Quality of life
-- **Locked Potential Vault** (`resonant_chest`) — a **27-slot** storage block
+- **Wave Chest** (`wave_chest`) — a **27-slot** storage block
   natively on a channel (no separate relay). A *passive* buffer: senders fill it,
   receivers drain it, but it never shuffles with other passive stores.
-- **Octave Tuner** (`frequency_tuner`, handheld) — copy/paste a channel between
+- **Wave Tuner** (`wave_tuner`, handheld) — copy/paste a channel between
   devices without dyes.
-- **Octave Atlas** (`channel_atlas`, handheld) — print a device's channel roster,
+- **Wave Atlas** (`wave_atlas`, handheld) — print a device's channel roster,
   or an overview of every active channel.
 
 ### Cross-system glue
-- **Polarity Coupler** (`conduit_coupler`) — joins the **wired** Wave Conduit grid
+- **Wave Coupler** (`wave_coupler`) — joins the **wired** Wave Conduit grid
   as a STORAGE node while its buffer doubles as a wireless **RU endpoint**,
   formally bridging the two transport systems (Send = wired→channel,
   Receive = channel→wired). Also the Team Reborn Energy bridge point — see
   [Compatibility](Compatibility.md).
-- **Tone Relay** (`note_relay`) — wireless **redstone bus**: Send broadcasts the
+- **Signal Relay** (`signal_relay`) — wireless **redstone bus**: Send broadcasts the
   redstone power it receives onto the channel; Receive emits the channel's
   strongest broadcast.
 
@@ -99,7 +99,7 @@ Every channel has a per-tick budget that scales with the number of senders but i
 | Fluids | 1 bucket (1,000 mB) | 8 buckets |
 | Light (RU) | 1,000 | 16,000 |
 
-All three caps are multiplied by the **Amplitude Coil** multiplier (×2 each,
+All three caps are multiplied by the **Wave Amplifier** multiplier (×2 each,
 capped ×16). A channel needs at least **2 devices** to tick.
 
 ## Implementation notes

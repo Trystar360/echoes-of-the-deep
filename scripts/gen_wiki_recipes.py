@@ -2,7 +2,7 @@
 """Render crafting-grid / furnace recipe images (modpack-wiki style).
 
 Reads every recipe JSON in data/echoes/recipe and draws it as a GUI-style
-widget: a 3x3 crafting grid (or a 1->1 furnace/crusher slot pair) with an arrow
+widget: a 3x3 crafting grid (or a 1->1 furnace/compressor slot pair) with an arrow
 and the result slot + count. Item sprites come from the mod's own textures;
 vanilla ingredients use compact pixel-art approximations defined here.
 
@@ -10,6 +10,7 @@ Output: docs/wiki/images/recipes/<recipe>.png
 
 Pure-Python PNG I/O (no Pillow), matching gallery.py / montage.py.
 """
+import re
 import struct, zlib, os, json, glob
 
 TEX = "src/main/resources/assets/echoes/textures"
@@ -67,7 +68,17 @@ _BLOCKS = {os.path.basename(p)[:-4] for p in glob.glob(f"{TEX}/block/*.png")}
 
 def our_sprite(name):
     kind = "item" if name in _ITEMS else "block"
-    w, h, px = read_png(f"{TEX}/{kind}/{name}.png")
+    path = f"{TEX}/{kind}/{name}.png"
+    if not os.path.exists(path):
+        # blocks that share a parent texture (e.g. brick stairs/slab reuse the
+        # base brick texture via their model) have no per-id png — fall back.
+        base = re.sub(r"_(slab|stairs|wall|fence|gate)$", "", name)
+        for cand in (base, base + "s", base.rstrip("s")):
+            if os.path.exists(f"{TEX}/block/{cand}.png"):
+                path = f"{TEX}/block/{cand}.png"; break
+        else:
+            return [[(0, 0, 0, 0)]*16 for _ in range(16)]
+    w, h, px = read_png(path)
     return [[px[y*w+x] for x in range(16)] for y in range(16)]
 
 

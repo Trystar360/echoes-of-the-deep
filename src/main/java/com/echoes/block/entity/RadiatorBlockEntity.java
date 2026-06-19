@@ -24,7 +24,7 @@ import net.minecraft.world.World;
  * Radiation — the centrifugal, expansive half of the two-way universe. Draws Light
  * from the grid and pours it back into the world as life, accelerating nearby crops
  * and saplings (a powered bonemeal aura) and glowing while charged. The discharge
- * counterpart to the Generative Coil.
+ * counterpart to the Resonant Coil.
  */
 public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, Configurable {
     private static final long BUFFER = 3_000;

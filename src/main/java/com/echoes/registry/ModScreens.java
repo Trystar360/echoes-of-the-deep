@@ -18,17 +18,17 @@ public final class ModScreens {
 
     public static final ScreenHandlerType<CrusherScreenHandler> CRUSHER =
             Registry.register(Registries.SCREEN_HANDLER,
-                    Identifier.of(EchoesMod.MOD_ID, "crusher"),
+                    Identifier.of(EchoesMod.MOD_ID, "compressor"),
                     new ScreenHandlerType<>(CrusherScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
 
     public static final ScreenHandlerType<AttunementFurnaceScreenHandler> ATTUNEMENT_FURNACE =
             Registry.register(Registries.SCREEN_HANDLER,
-                    Identifier.of(EchoesMod.MOD_ID, "attunement_furnace"),
+                    Identifier.of(EchoesMod.MOD_ID, "transmuter"),
                     new ScreenHandlerType<>(AttunementFurnaceScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
 
     public static final ScreenHandlerType<HarmonicFilterScreenHandler> HARMONIC_FILTER =
             Registry.register(Registries.SCREEN_HANDLER,
-                    Identifier.of(EchoesMod.MOD_ID, "harmonic_filter"),
+                    Identifier.of(EchoesMod.MOD_ID, "wave_filter"),
                     new ScreenHandlerType<>(HarmonicFilterScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
 
     /** Shared configuration screen for every Configurable device. */

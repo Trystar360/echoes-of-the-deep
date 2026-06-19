@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "eee",
+    "eRe",
+    "eee"
+  ],
+  "key": {
+    "e": "echoes:echo_ingot",
+    "R": "minecraft:redstone_block"
+  },
+  "result": {
+    "id": "echoes:resonance_cell",
+    "count": 1
+  }
+}

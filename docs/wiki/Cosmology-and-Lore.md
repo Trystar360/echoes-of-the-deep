@@ -31,22 +31,22 @@ reports **Light** rather than RU.
 | In-world name | Russell concept | What it does |
 | --- | --- | --- |
 | **Stillness Core** | the still magnetic centre of zero | slow baseline Light generator — "motion springs from rest" |
-| **Generative Coil** (Resonator) | generation / centripetal charging | winds ambient tone into stored Light |
-| **Accumulator** (Capacitor) | locked potential | banks large Light |
+| **Resonant Coil** (Resonator) | generation / centripetal charging | winds ambient tone into stored Light |
+| **Resonance Cell** (Capacitor) | locked potential | banks large Light |
 | **Wave / Dense Wave Conduit** | the wave carries Light | wired transport |
 | **Compressor** (Crusher) | compression = generative motion | presses matter denser (ore-doubling) |
 | **Transmuter** (Attunement Furnace) | raising matter an octave | Light-powered smelting |
 | **Wave Relay** + family | tones broadcast on an octave | wireless transport keyed by octave (channel) |
-| **Amplitude Coil** (Amplifier) | amplitude of the wave | widens an octave's throughput |
-| **Octave Repeater** (Echo Repeater) | octaves repeat across space | spans an octave across dimensions |
-| **Polarity Coupler** (Conduit Coupler) | polarity bridges two conditions | couples wired grid to a wireless octave |
-| **Interchange Splitter** | balanced interchange | even round-robin vs. fill-first |
-| **Locked Potential Vault** (Chest) | locked potential | storage that lives on an octave |
-| **Tone Relay** (Note Relay) | the divine tone | wireless redstone on an octave |
-| **Radiator / Warmth Radiator** | radiation / centrifugal outpouring | pours Light back as life (crop growth) and heat (cooking) |
+| **Wave Amplifier** (Amplifier) | amplitude of the wave | widens an octave's throughput |
+| **Wave Repeater** (Echo Repeater) | octaves repeat across space | spans an octave across dimensions |
+| **Wave Coupler** (Conduit Coupler) | polarity bridges two conditions | couples wired grid to a wireless octave |
+| **Wave Splitter** | balanced interchange | even round-robin vs. fill-first |
+| **Wave Chest** (Chest) | locked potential | storage that lives on an octave |
+| **Signal Relay** (Note Relay) | the divine tone | wireless redstone on an octave |
+| **Growth Radiator / Warmth Radiator** | radiation / centrifugal outpouring | pours Light back as life (crop growth) and heat (cooking) |
 | **Polarity Field** | the two poles of one device | Attract (pull in) ↔ Repel (cast out) |
 | **Balancer** | rhythmic balanced interchange | evens storage fill ratios across a network |
-| **Centrifugal Thrusters** | centrifugal radiation = expansion | flight: the body thrown outward from centre |
+| **Resonant Thrusters** | centrifugal radiation = expansion | flight: the body thrown outward from centre |
 | **Resonant tools** | tuned to the octave | deliberately strong — interchange gives back as freely as it takes |
 
 ## Why the gear is strong
@@ -61,7 +61,7 @@ re-balance to taste.
 ## A note on internal names
 
 To keep existing worlds loading, the mod id stays `echoes` and internal
-identifiers (e.g. `echoes:resonator`, the `ResonanceNode` capability) are
+identifiers (e.g. `echoes:resonant_coil`, the `ResonanceNode` capability) are
 unchanged. The "Octaves of the One" rework is a complete **display** reskin —
 names, lore, tooltips, and framing — plus new content (the Stillness Core,
 Radiators, Polarity Field, Balancer) that embodies it.

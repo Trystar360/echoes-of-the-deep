@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "tools",
+  "ingredients": [
+    "echoes:echo_ingot",
+    "minecraft:redstone",
+    "minecraft:comparator"
+  ],
+  "result": {
+    "id": "echoes:light_meter",
+    "count": 1
+  }
+}

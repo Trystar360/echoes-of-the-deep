@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 public class CrusherScreen extends HandledScreen<CrusherScreenHandler> {
     private static final Identifier TEXTURE =
-            Identifier.of(EchoesMod.MOD_ID, "textures/gui/crusher.png");
+            Identifier.of(EchoesMod.MOD_ID, "textures/gui/compressor.png");
 
     public CrusherScreen(CrusherScreenHandler handler, PlayerInventory inv, Text title) {
         super(handler, inv, title);

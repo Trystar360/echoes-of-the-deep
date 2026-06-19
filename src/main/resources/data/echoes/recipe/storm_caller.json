@@ -8,7 +8,7 @@
   ],
   "key": {
     "L": "minecraft:lightning_rod",
-    "C": "echoes:resonance_capacitor",
+    "C": "echoes:resonance_cell",
     "E": "echoes:echo_ingot"
   },
   "result": {

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "#C#",
+    "###"
+  ],
+  "key": {
+    "#": "echoes:radiant_ingot",
+    "C": "echoes:resonance_cell"
+  },
+  "result": {
+    "id": "echoes:greater_resonance_cell",
+    "count": 1
+  }
+}
