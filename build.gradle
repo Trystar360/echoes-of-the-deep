@@ -50,8 +50,11 @@ tasks.withType(JavaCompile).configureEach {
 
 java {
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    // Portable across machines: Gradle auto-detects (or provisions) a JDK 21
+    // toolchain instead of relying on a hardcoded org.gradle.java.home path.
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 jar {
