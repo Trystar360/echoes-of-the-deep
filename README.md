@@ -11,6 +11,20 @@ grid to power machines, flight, and deliberately over-tuned gear.
 > Internally the namespace stays `echoes` (save-compatible); the rework is a complete
 > display reskin plus new content like the **Stillness Core**.
 
+## 📖 Wiki
+
+A full wiki lives in [`docs/wiki/`](docs/wiki/Home.md) — start at the
+[Home page](docs/wiki/Home.md):
+
+- [Getting Started](docs/wiki/Getting-Started.md) — install, build, your first powered machine
+- [Cosmology & Lore](docs/wiki/Cosmology-and-Lore.md) — Russell's two-way universe
+- [Energy System](docs/wiki/Energy-System.md) — Light/RU, networks, fair distribution
+- [Blocks](docs/wiki/Blocks.md) · [Items & Gear](docs/wiki/Items-and-Gear.md)
+- [Wireless Transport](docs/wiki/Wireless-Transport.md) — channels & the relay family
+- [Ores & Worldgen](docs/wiki/Ores-and-Worldgen.md) · [Ambient Capture](docs/wiki/Ambient-Capture.md)
+- [Crafting & Progression](docs/wiki/Crafting-and-Progression.md) — every recipe
+- [Compatibility](docs/wiki/Compatibility.md) · [Reference & FAQ](docs/wiki/Reference-and-FAQ.md)
+
 ## What's inside
 
 A complete, end-to-end energy + logistics loop, craftable from scratch in survival:
