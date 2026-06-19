@@ -66,12 +66,14 @@ flora, and new wood types. Full proposal (awaiting sign-off) in
 [`docs/botanicals-proposal.md`](botanicals-proposal.md). Depends only on shipped
 systems (Compressor, Transmuter, Verdant Loam, Growth Radiator, transmutation chain).
 
-- ⬜ **Mote base loop** — **Mote Seed** → **Mote Sprout** crop → **Light Mote**, the
-  universal binder used in every seed/soil/tier recipe.
-- ⬜ **Mote compression ladder** — **Light → Condensed → Radiant Mote** (9↔1 via the
-  **Compressor**); the Radiant tier bridges to the existing Radiant Dust chain.
+- ⬜ **Mote base loop** — **Mote Seed** → **Mote Sprout** crop → **Light Mote** (O0, raw
+  Light, the universal One), the binder used in every seed/soil/recipe.
+- ⬜ **Octave climb (energy → higher octave)** — feed grid **Light** into a Mote in the
+  **Transmuter** (+ **Octave Seed** as the inert-gas rest) to wind it up the octaves:
+  **Sparked (O1) → Resonant (O2) → Brilliant (O3) → Radiant (O4, crest)**; each step
+  costs more energy, and the Radiant tier bridges into the existing Radiant Dust chain.
 - ⬜ **Soil tiers** — **Attuned / Radiant Loam** on top of Verdant Loam, gating which
-  crop tier can mature.
+  crop octave can mature.
 - ⬜ **Resource crops (ores & materials)** — a `<Material> Sprout` per resource (incl.
   the mod's own Echocite/Drumstone/Silentite/**Radiant** crops), making the economy
   renewable but gated behind compressed Motes + Growth-Radiator cost.
