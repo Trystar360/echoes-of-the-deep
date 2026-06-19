@@ -59,6 +59,51 @@ and a botanical octave the player can build, light, and tend.
   Conduit** (64,000 Light/t — 4× the Dense Conduit), both crafted from Radiant Ingots
   so the transmutation chain feeds directly into higher generation & throughput.
 
+## Phase II½ — The Verdant Octave (botanical & crop suite)
+The garden as the grid's slowest octave: a Mystical-Agriculture–style economy built on
+one **base crop that is compressed and re-used everywhere**, plus food, decorative
+flora, and new wood types. Full proposal (awaiting sign-off) in
+[`docs/botanicals-proposal.md`](botanicals-proposal.md). Depends only on shipped
+systems (Compressor, Transmuter, Verdant Loam, Growth Radiator, transmutation chain).
+
+Decisions are locked (tones, full EMC set, Hushwood-first, resource crops as v1); see the
+proposal's "Decisions (locked)" section.
+
+- ⬜ **Mote base loop** *(v1)* — **Mote Seed** → **Mote Sprout** crop → **Light Mote** (O0,
+  raw Light, the universal One), the binder used in every seed/soil/recipe.
+- ⬜ **Octave climb (energy → higher octave)** *(v1)* — feed grid **Light** into a Mote in
+  the **Transmuter** (+ **Octave Seed** as the inert-gas rest) to wind it up the octaves,
+  named as tones: **Tonic (O1) → Mediant (O2) → Dominant (O3) → Harmonic (O4, crest)** —
+  the triad resolving to harmony; each step costs more energy, and the Harmonic tier
+  bridges into the existing Radiant Dust chain.
+- ⬜ **Soil tiers** *(v1)* — **Attuned / Radiant Loam** on Verdant Loam, gating crop octave.
+- ⬜ **Resource crops (ores & materials)** *(v1)* — a `<Material> Sprout` per resource (incl.
+  the mod's own Echocite=O1/Drumstone=O2/Silentite=O4/**Radiant**=crest), renewable but
+  gated behind charged Motes + Growth-Radiator cost.
+- ⬜ **Wood types** — **Hushwood** *(v1, inert/rest octave; full set, worldgen)*; **Sunwood**
+  *(fast-follow; Harmonic crest, golden/glowing; sapling matures only under a Growth Radiator)*.
+- ⬜ **Transmutation economy (EMC = Bound Light)** *(v1)* — every item carries a **Light
+  Value** (Russell's "matter is condensed Light"). A **Transmutation Table** + portable
+  **Transmutation Tablet** is the balanced-interchange altar: dissolve matter → Bound
+  Light, condense Bound Light → any *attuned* item. The Mote ladder is the value scale
+  (×4/octave). Full set ships: **Octave Stars** (portable Bound-Light batteries), **Tone
+  Collector** (winds ambient light into Bound Light), **Condenser** (auto-duplicate),
+  **Codex of Tones** (attune-all), and the **Interchange Coil** (free⇄bound Light bridge —
+  steep, hard-capped). Gated to the Harmonic tier with attune-from-sample + capped sources
+  to protect ore progression.
+- ⬜ **Later passes** — **food crops** (Resonant Grain→Bread, Glowgourd, Stillmint→Still
+  Tea), **decorative/dye flora** (Lumecap, Chime Lily, Octave Orchid, Verdant Fern), then
+  **mob-essence crops** (Deep-Dark themed).
+- ⬜ **Transmutation economy (EMC = Bound Light)** — every item carries a **Light Value**
+  (the Light condensed into it; Russell's "matter is condensed Light"). A
+  **Transmutation Table** (and portable **Transmutation Tablet**) is the balanced-
+  interchange altar: dissolve matter → Bound Light, condense Bound Light → any *attuned*
+  item. The Mote octave ladder is the value scale (×4/octave). Optional ProjectE-shaped
+  extras: **Octave Stars** (portable Bound-Light batteries), **Tone Collector** (winds
+  ambient light into Bound Light), **Condenser** (auto-duplicate), **Codex of Tones**
+  (attune-all), and an optional **Interchange Coil** (free⇄bound Light bridge). Gated to
+  the Radiant tier with attune-from-sample + capped sources to protect ore progression.
+
 ## Phase III — The Wave (motion & fields)
 The wave is the unit of the cosmos; lean into movement and area effects.
 
