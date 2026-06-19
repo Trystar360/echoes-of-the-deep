@@ -127,6 +127,11 @@ plan organized by Russell's cosmology (Phase I the generation↔radiation dualit
 octaves, III the wave, …). Recent additions: ✅ **Stillness Core** (baseline Light from
 the still centre) and ✅ **Radiator** (the radiation half — a Light-fed crop-growth aura).
 
+🌱 **New design plan:** [`docs/botanical_suite.md`](docs/botanical_suite.md) — *The
+Verdant Octave*, a full Mystical-Agriculture–style botanical suite (food crops,
+decorative flora, new wood types, and an ores/materials crop economy built on one base
+crop that is **compressed** and reused across the whole tree).
+
 The list below is the prior, still-accurate history. Nothing here is load-bearing — the
 mod is complete and survival-craftable as-is.
 
