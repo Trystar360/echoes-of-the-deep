@@ -73,6 +73,10 @@ A complete, end-to-end energy + logistics loop, craftable from scratch in surviv
   Radiant Ingots also forge the higher-octave grid tier: the **Octave Coil** (a strong
   baseline generator with a tunable rate) and the **Octave Conduit** (64,000 Light/t,
   4× the Dense Conduit).
+- **Storm Caller** — a conductive spire that, during thunderstorms, calls lightning to
+  itself far more often than nature would and banks the windfall (40,000 Light per
+  strike). Needs open sky; the self-struck bolts are cosmetic, so it powers the grid
+  without ever igniting a build.
 - **Worldgen** — configured/placed ore features for Echocite & Drumstone (Overworld)
   and Silentite (rare, Deep Dark only) plus the Lumewood grove, attached via
   `BiomeModifications`.

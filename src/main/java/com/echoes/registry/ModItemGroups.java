@@ -47,6 +47,7 @@ public final class ModItemGroups {
                     entries.add(ModBlocks.GREATER_ACCUMULATOR);
                     entries.add(ModBlocks.OCTAVE_COIL);
                     entries.add(ModBlocks.OCTAVE_CONDUIT);
+                    entries.add(ModBlocks.STORM_CALLER);
                     // Phase II — The Octave Grove
                     entries.add(ModBlocks.LUMEWOOD_LOG);
                     entries.add(ModBlocks.LUMEWOOD_WOOD);

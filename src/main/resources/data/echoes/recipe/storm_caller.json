@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " L ",
+    "ECE",
+    "EEE"
+  ],
+  "key": {
+    "L": "minecraft:lightning_rod",
+    "C": "echoes:resonance_capacitor",
+    "E": "echoes:echo_ingot"
+  },
+  "result": {
+    "id": "echoes:storm_caller",
+    "count": 1
+  }
+}

@@ -335,4 +335,11 @@ shaped("octave_coil", ["RRR", "RSR", "RRR"],
 shaped("octave_conduit", ["RDR"],
        {"R": f"{MC}:radiant_ingot", "D": f"{MC}:dense_conduit"}, "octave_conduit", 2)
 
+# Phase VII — Storm Caller (lightning generation)
+cube_all("storm_caller")
+# A lightning rod atop an Accumulator core, framed in Echo Ingots.
+shaped("storm_caller", [" L ", "ECE", "EEE"],
+       {"L": "minecraft:lightning_rod", "C": f"{MC}:resonance_capacitor",
+        "E": f"{MC}:echo_ingot"}, "storm_caller", 1)
+
 print("Phase II assets generated.")
