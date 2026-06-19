@@ -1,5 +1,8 @@
 package com.echoes.block.entity;
 
+import com.echoes.config.BlockConfig;
+import com.echoes.config.Configurable;
+import com.echoes.config.ConfigSpec;
 import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
@@ -12,6 +15,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -22,23 +26,33 @@ import net.minecraft.world.World;
  * and saplings (a powered bonemeal aura) and glowing while charged. The discharge
  * counterpart to the Generative Coil.
  */
-public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode {
+public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, Configurable {
     private static final long BUFFER = 3_000;
     private static final long COST = 300;       // Light per growth
     private static final int INTERVAL = 10;     // ticks between attempts
-    private static final int H_RADIUS = 4, V_RADIUS = 2, TRIES = 8;
+    private static final int V_RADIUS = 2, TRIES = 8;
+
+    /** Radiators expose redstone behaviour, per-face I/O and an adjustable radius. */
+    public static final ConfigSpec SPEC = ConfigSpec.builder()
+            .redstone().sides()
+            .tuning("config.echoes.tuning.radius", 1, 8, 1, 4)
+            .build();
 
     private final ResonanceStorage buffer = new ResonanceStorage(BUFFER);
+    private final BlockConfig config = new BlockConfig();
     private int timer;
 
     public RadiatorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.RADIATOR, pos, state);
+        config.applyDefaults(SPEC);
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, RadiatorBlockEntity be) {
         if (!(world instanceof ServerWorld sw)) return;
 
-        boolean active = be.buffer.getAmount() >= COST;
+        boolean powered = sw.isReceivingRedstonePower(pos);
+        boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
+        int hRadius = be.config.tuningA();
         if (state.contains(Properties.LIT) && state.get(Properties.LIT) != active) {
             sw.setBlockState(pos, state.with(Properties.LIT, active), Block.NOTIFY_ALL);
         }
@@ -48,9 +62,9 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode {
 
         Random rng = sw.getRandom();
         for (int i = 0; i < TRIES; i++) {
-            BlockPos p = pos.add(rng.nextInt(H_RADIUS * 2 + 1) - H_RADIUS,
+            BlockPos p = pos.add(rng.nextInt(hRadius * 2 + 1) - hRadius,
                     rng.nextInt(V_RADIUS * 2 + 1) - V_RADIUS,
-                    rng.nextInt(H_RADIUS * 2 + 1) - H_RADIUS);
+                    rng.nextInt(hRadius * 2 + 1) - hRadius);
             BlockState s = sw.getBlockState(p);
             if (s.getBlock() instanceof Fertilizable f
                     && f.isFertilizable(sw, p, s) && f.canGrow(sw, rng, p, s)) {
@@ -73,15 +87,23 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode {
     @Override public long storedRu() { return buffer.getAmount(); }
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
+    // --- Configurable ---
+    @Override public BlockConfig getConfig() { return config; }
+    @Override public ConfigSpec getConfigSpec() { return SPEC; }
+    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public void onConfigChanged() { markDirty(); }
+
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         super.writeNbt(nbt, lookup);
         buffer.writeNbt(nbt);
+        config.writeNbt(nbt);
     }
 
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         super.readNbt(nbt, lookup);
         buffer.readNbt(nbt);
+        config.readNbt(nbt);
     }
 }

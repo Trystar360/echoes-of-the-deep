@@ -1,5 +1,8 @@
 package com.echoes.block.entity;
 
+import com.echoes.config.BlockConfig;
+import com.echoes.config.Configurable;
+import com.echoes.config.ConfigSpec;
 import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
@@ -17,6 +20,7 @@ import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -29,21 +33,31 @@ import java.util.Optional;
  * Radiates heat: a campfire of Light. Cooks dropped items on the ground (vanilla
  * smelting), melts snow and ice nearby, and glows while charged.
  */
-public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceNode {
+public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceNode, Configurable {
     private static final long BUFFER = 3_000;
     private static final long COST = 60;        // Light per cooked stack
-    private static final int INTERVAL = 10, RADIUS = 4;
+    private static final int INTERVAL = 10;
+
+    /** Warmth Radiators expose redstone behaviour, per-face I/O and an adjustable radius. */
+    public static final ConfigSpec SPEC = ConfigSpec.builder()
+            .redstone().sides()
+            .tuning("config.echoes.tuning.radius", 1, 8, 1, 4)
+            .build();
 
     private final ResonanceStorage buffer = new ResonanceStorage(BUFFER);
+    private final BlockConfig config = new BlockConfig();
     private int timer;
 
     public WarmthRadiatorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.WARMTH_RADIATOR, pos, state);
+        config.applyDefaults(SPEC);
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, WarmthRadiatorBlockEntity be) {
         if (!(world instanceof ServerWorld sw)) return;
-        boolean active = be.buffer.getAmount() >= COST;
+        boolean powered = sw.isReceivingRedstonePower(pos);
+        boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
+        int radius = be.config.tuningA();
         if (state.contains(Properties.LIT) && state.get(Properties.LIT) != active) {
             sw.setBlockState(pos, state.with(Properties.LIT, active), Block.NOTIFY_ALL);
         }
@@ -52,7 +66,7 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
         if (!active) return;
 
         // Cook one dropped stack that has a smelting recipe.
-        Box box = new Box(pos).expand(RADIUS);
+        Box box = new Box(pos).expand(radius);
         List<ItemEntity> drops = sw.getEntitiesByClass(ItemEntity.class, box, e -> !e.getStack().isEmpty());
         for (ItemEntity e : drops) {
             ItemStack stack = e.getStack();
@@ -71,8 +85,8 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
 
         // Thaw a little snow / ice.
         Random rng = sw.getRandom();
-        BlockPos p = pos.add(rng.nextInt(RADIUS * 2 + 1) - RADIUS, rng.nextInt(3) - 1,
-                rng.nextInt(RADIUS * 2 + 1) - RADIUS);
+        BlockPos p = pos.add(rng.nextInt(radius * 2 + 1) - radius, rng.nextInt(3) - 1,
+                rng.nextInt(radius * 2 + 1) - radius);
         BlockState s = sw.getBlockState(p);
         if (s.isOf(Blocks.SNOW) || s.isOf(Blocks.SNOW_BLOCK) || s.isOf(Blocks.POWDER_SNOW)) {
             sw.setBlockState(p, Blocks.AIR.getDefaultState());
@@ -91,15 +105,23 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
     @Override public long storedRu() { return buffer.getAmount(); }
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
+    // --- Configurable ---
+    @Override public BlockConfig getConfig() { return config; }
+    @Override public ConfigSpec getConfigSpec() { return SPEC; }
+    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public void onConfigChanged() { markDirty(); }
+
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         super.writeNbt(nbt, lookup);
         buffer.writeNbt(nbt);
+        config.writeNbt(nbt);
     }
 
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         super.readNbt(nbt, lookup);
         buffer.readNbt(nbt);
+        config.readNbt(nbt);
     }
 }

@@ -49,8 +49,15 @@ The wave is the unit of the cosmos; lean into movement and area effects.
 Russell's universe is Mind knowing itself; this is the control & information layer.
 
 - ✅ **Light Meter / Octave Atlas** — diagnostics. *(done)*
+- ✅ **Device Configuration GUI** — right-click any functional device with the
+  Frequency Tuner to open a shared config screen: wireless **channel/octave**,
+  **redstone** behaviour (always / needs-signal / off-on-signal), **per-face I/O**,
+  and block-specific **tuning** (Radiator & Polarity radius, Balancer rate). Wired
+  effects today: channel (wireless), redstone gating, and tuning; per-face I/O is
+  persisted and surfaced for the network layer to honour next.
 - ⬜ **Seer** — a screen/handheld that visualizes a whole network: nodes, flow, fill.
-- ⬜ **Octave Programmer** — set channels/modes/filters across many devices at once.
+- ⬜ **Octave Programmer** — set channels/modes/filters across many devices at once
+  (builds on the per-device Configuration GUI).
 - ⬜ **Advancements** — a guided "Great Work" progression tree.
 
 ## Phase V — Stillness & Balance (storage & endgame)

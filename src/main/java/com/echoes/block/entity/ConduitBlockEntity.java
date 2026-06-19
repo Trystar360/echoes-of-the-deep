@@ -1,11 +1,17 @@
 package com.echoes.block.entity;
 
+import com.echoes.config.BlockConfig;
+import com.echoes.config.Configurable;
+import com.echoes.config.ConfigSpec;
 import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.registry.ModBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -14,15 +20,22 @@ import net.minecraft.util.math.BlockPos;
  * ResonanceNetworkManager, not here. The Dense Conduit subclass just reports a
  * larger {@link #transferCap()}.
  */
-public class ConduitBlockEntity extends BlockEntity implements ResonanceNode {
+public class ConduitBlockEntity extends BlockEntity implements ResonanceNode, Configurable {
     public static final int DEFAULT_TRANSFER = 1_000;
+
+    /** Conduits expose redstone behaviour and per-face I/O. */
+    public static final ConfigSpec SPEC = ConfigSpec.builder().redstone().sides().build();
+
+    protected final BlockConfig config = new BlockConfig();
 
     public ConduitBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CONDUIT, pos, state);
+        config.applyDefaults(SPEC);
     }
 
     protected ConduitBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+        config.applyDefaults(SPEC);
     }
 
     @Override public int roleMask() { return NodeRole.of(NodeRole.CONDUIT); }
@@ -31,4 +44,22 @@ public class ConduitBlockEntity extends BlockEntity implements ResonanceNode {
     @Override public long demand() { return 0; }
     @Override public int transferCap() { return DEFAULT_TRANSFER; }
     @Override public BlockPos pos() { return getPos(); }
+
+    // --- Configurable ---
+    @Override public BlockConfig getConfig() { return config; }
+    @Override public ConfigSpec getConfigSpec() { return SPEC; }
+    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public void onConfigChanged() { markDirty(); }
+
+    @Override
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.writeNbt(nbt, lookup);
+        config.writeNbt(nbt);
+    }
+
+    @Override
+    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        super.readNbt(nbt, lookup);
+        config.readNbt(nbt);
+    }
 }
