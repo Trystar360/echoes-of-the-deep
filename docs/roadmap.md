@@ -66,22 +66,34 @@ flora, and new wood types. Full proposal (awaiting sign-off) in
 [`docs/botanicals-proposal.md`](botanicals-proposal.md). Depends only on shipped
 systems (Compressor, Transmuter, Verdant Loam, Growth Radiator, transmutation chain).
 
-- ⬜ **Mote base loop** — **Mote Seed** → **Mote Sprout** crop → **Light Mote** (O0, raw
-  Light, the universal One), the binder used in every seed/soil/recipe.
-- ⬜ **Octave climb (energy → higher octave)** — feed grid **Light** into a Mote in the
-  **Transmuter** (+ **Octave Seed** as the inert-gas rest) to wind it up the octaves:
-  **Sparked (O1) → Resonant (O2) → Brilliant (O3) → Radiant (O4, crest)**; each step
-  costs more energy, and the Radiant tier bridges into the existing Radiant Dust chain.
-- ⬜ **Soil tiers** — **Attuned / Radiant Loam** on top of Verdant Loam, gating which
-  crop octave can mature.
-- ⬜ **Resource crops (ores & materials)** — a `<Material> Sprout` per resource (incl.
-  the mod's own Echocite/Drumstone/Silentite/**Radiant** crops), making the economy
-  renewable but gated behind compressed Motes + Growth-Radiator cost.
-- ⬜ **Food crops** — Resonant Grain → Bread, Glowgourd, Stillmint → Still Tea (with a
-  buff hook).
-- ⬜ **Decorative flora** — Lumecap, Chime Lily / Octave Orchid (dye outputs), Verdant Fern.
-- ⬜ **Wood types** — **Hushwood** (full set, worldgen) and **Sunwood** (golden, glowing;
-  sapling only matures under a Growth Radiator).
+Decisions are locked (tones, full EMC set, Hushwood-first, resource crops as v1); see the
+proposal's "Decisions (locked)" section.
+
+- ⬜ **Mote base loop** *(v1)* — **Mote Seed** → **Mote Sprout** crop → **Light Mote** (O0,
+  raw Light, the universal One), the binder used in every seed/soil/recipe.
+- ⬜ **Octave climb (energy → higher octave)** *(v1)* — feed grid **Light** into a Mote in
+  the **Transmuter** (+ **Octave Seed** as the inert-gas rest) to wind it up the octaves,
+  named as tones: **Tonic (O1) → Mediant (O2) → Dominant (O3) → Harmonic (O4, crest)** —
+  the triad resolving to harmony; each step costs more energy, and the Harmonic tier
+  bridges into the existing Radiant Dust chain.
+- ⬜ **Soil tiers** *(v1)* — **Attuned / Radiant Loam** on Verdant Loam, gating crop octave.
+- ⬜ **Resource crops (ores & materials)** *(v1)* — a `<Material> Sprout` per resource (incl.
+  the mod's own Echocite=O1/Drumstone=O2/Silentite=O4/**Radiant**=crest), renewable but
+  gated behind charged Motes + Growth-Radiator cost.
+- ⬜ **Wood types** — **Hushwood** *(v1, inert/rest octave; full set, worldgen)*; **Sunwood**
+  *(fast-follow; Harmonic crest, golden/glowing; sapling matures only under a Growth Radiator)*.
+- ⬜ **Transmutation economy (EMC = Bound Light)** *(v1)* — every item carries a **Light
+  Value** (Russell's "matter is condensed Light"). A **Transmutation Table** + portable
+  **Transmutation Tablet** is the balanced-interchange altar: dissolve matter → Bound
+  Light, condense Bound Light → any *attuned* item. The Mote ladder is the value scale
+  (×4/octave). Full set ships: **Octave Stars** (portable Bound-Light batteries), **Tone
+  Collector** (winds ambient light into Bound Light), **Condenser** (auto-duplicate),
+  **Codex of Tones** (attune-all), and the **Interchange Coil** (free⇄bound Light bridge —
+  steep, hard-capped). Gated to the Harmonic tier with attune-from-sample + capped sources
+  to protect ore progression.
+- ⬜ **Later passes** — **food crops** (Resonant Grain→Bread, Glowgourd, Stillmint→Still
+  Tea), **decorative/dye flora** (Lumecap, Chime Lily, Octave Orchid, Verdant Fern), then
+  **mob-essence crops** (Deep-Dark themed).
 - ⬜ **Transmutation economy (EMC = Bound Light)** — every item carries a **Light Value**
   (the Light condensed into it; Russell's "matter is condensed Light"). A
   **Transmutation Table** (and portable **Transmutation Tablet**) is the balanced-
