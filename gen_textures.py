@@ -511,6 +511,28 @@ def build_balancer():
 
 # Shared bronze casing — the SIDE and TOP/BOTTOM of every machine, so the whole
 # family reads as one material; only the glowing front differs.
+def build_transmutation_table():
+    # The balanced-interchange altar: teal (Bound Light) flows into amber (free Light)
+    # across the face, with the Octave Seed's rest-point orb breathing at the centre.
+    c = C(); bezel(c, BRONZE, TEAL)
+    c.rect(2, 2, 13, 13, (14, 20, 22))
+    for y in range(3, 13):                          # interchange wash, teal -> amber
+        for x in range(3, 13):
+            t = (x - 3) / 9.0
+            col = lerp(TEAL[2], AMBER[2], t)
+            c.over(x, y, (col[0], col[1], col[2], 70))
+    ripples(c, 8, 8, TEAL, rmax=5.0, x0=2, y0=2, x1=13, y1=13,
+            alpha=150, phase=GLOW * 1.6)
+    for y in range(16):                              # central rest-point orb (breathes)
+        for x in range(16):
+            d = math.hypot(x - 8, y - 8)
+            if d < 2.6:
+                col = lerp(TEAL[4], (245, 255, 250), 1 - d / 2.6)
+                c.over(x, y, (col[0], col[1], col[2], int(150 + 95 * GLOW)))
+    core(c, 8, 8, TEAL, r=1)
+    bloom(c, TEAL, alpha=60, reach=2, thresh=145); vignette(c, 28)
+    return c
+
 def device_side():
     c = C()
     for y in range(16):
@@ -562,6 +584,7 @@ ANIMATED = {
     "stillness_core": build_stillness_core, "growth_radiator": build_radiator,
     "warmth_radiator": build_warmth_radiator, "polarity_field": build_polarity_field,
     "balancer": build_balancer,
+    "transmutation_table": build_transmutation_table,
 }
 def emit_block(name, builder):
     global GLOW
@@ -1196,6 +1219,38 @@ def radiant_ingot():
     outline(c)
     write_png(f"{OUT}/item/radiant_ingot.png", 16, 16, c.px)
 radiant_ingot()
+
+# ---- The Verdant Octave — charged-Light Motes (EMC coins) ----
+# A glowing orb that brightens/warms as the octave rises, ringed by one tick-orb
+# per octave so the tone reads at a glance (Light=0 … Harmonic=4).
+GOLD = [(96, 70, 22), (170, 128, 48), (230, 188, 96), (248, 230, 160), (255, 252, 232)]
+def mote(name, ramp, radius, corecol, ticks):
+    c = C(); cx, cy = 8, 8
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - cx, y - cy)
+            if d <= radius:
+                t = max(0.0, 1 - d / radius)
+                c.set(x, y, lerp(ramp[1], ramp[3], t))
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - cx, y - cy)
+            if d < radius * 0.55:
+                col = lerp(ramp[4], corecol, 1 - d / (radius * 0.55))
+                c.over(x, y, (col[0], col[1], col[2], 225))
+    for k in range(ticks):                           # octave tick-orbs around the rim
+        ang = math.radians(-90 + k * (360.0 / max(1, ticks)))
+        ox = int(round(cx + (radius + 1.6) * math.cos(ang)))
+        oy = int(round(cy + (radius + 1.6) * math.sin(ang)))
+        c.set(ox, oy, ramp[4]); c.over(ox, oy + 1, (ramp[3][0], ramp[3][1], ramp[3][2], 150))
+    bloom(c, ramp, alpha=72, reach=2, thresh=140)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
+mote("light_mote",    TEAL,  3.0, (225, 255, 250), 0)
+mote("tonic_mote",    TEAL,  3.4, (240, 255, 250), 1)
+mote("mediant_mote",  AMBER, 3.8, (255, 240, 200), 2)
+mote("dominant_mote", AMBER, 4.2, (255, 246, 214), 3)
+mote("harmonic_mote", GOLD,  4.6, (255, 255, 240), 4)
 
 # ================================================================ MOD ICON (128x128)
 def icon():

@@ -82,15 +82,21 @@ proposal's "Decisions (locked)" section.
   gated behind charged Motes + Growth-Radiator cost.
 - ⬜ **Wood types** — **Hushwood** *(v1, inert/rest octave; full set, worldgen)*; **Sunwood**
   *(fast-follow; Harmonic crest, golden/glowing; sapling matures only under a Growth Radiator)*.
-- ⬜ **Transmutation economy (EMC = Bound Light)** *(v1)* — every item carries a **Light
-  Value** (Russell's "matter is condensed Light"). A **Transmutation Table** + portable
-  **Transmutation Tablet** is the balanced-interchange altar: dissolve matter → Bound
-  Light, condense Bound Light → any *attuned* item. The Mote ladder is the value scale
-  (×4/octave). Full set ships: **Octave Stars** (portable Bound-Light batteries), **Tone
-  Collector** (winds ambient light into Bound Light), **Condenser** (auto-duplicate),
-  **Codex of Tones** (attune-all), and the **Interchange Coil** (free⇄bound Light bridge —
-  steep, hard-capped). Gated to the Harmonic tier with attune-from-sample + capped sources
-  to protect ore progression.
+- **Transmutation economy (EMC = Bound Light)** — every item carries a **Light Value**
+  (Russell's "matter is condensed Light"). Building out in order:
+  - ✅ **Light Value table** — data-driven EMC map (`data/echoes/light_values.json`,
+    modpack-overridable + blacklist), loaded via a reload listener.
+  - ✅ **The Mote ladder** — Light → Tonic → Mediant → Dominant → Harmonic Mote, the
+    Bound-Light denomination coins (×4/octave).
+  - ✅ **Transmutation Table** — the balanced-interchange altar: dissolve matter → banked
+    Bound Light, withdraw it as Mote coins. Directional block, screen, hopper I/O.
+  - ⬜ **Transmutation Tablet** — the portable Table (per-player pool + attuned ledger).
+  - ⬜ **Condense any *attuned* item** — the learn-then-create grid (per-player knowledge).
+  - ⬜ **Octave Stars** (portable Bound-Light batteries), **Tone Collector** (winds ambient
+    light into Bound Light), **Condenser** (auto-duplicate), **Codex of Tones** (attune-all),
+    and the **Interchange Coil** (free⇄bound Light bridge — steep, hard-capped).
+  - Balance: gate the condense/duplication side to the Harmonic tier with attune-from-
+    sample + capped sources to protect ore progression.
 - ⬜ **Later passes** — **food crops** (Resonant Grain→Bread, Glowgourd, Stillmint→Still
   Tea), **decorative/dye flora** (Lumecap, Chime Lily, Octave Orchid, Verdant Fern), then
   **mob-essence crops** (Deep-Dark themed).

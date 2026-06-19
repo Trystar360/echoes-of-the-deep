@@ -58,6 +58,17 @@ work** — input from the top, output on the sides.
 vanilla furnace recipe with no fuel**, drawing from the grid (~4 RU/t over a
 ~100-tick smelt). Directional model and its own screen; hopper-friendly.
 
+## Transmutation (EMC = Bound Light)
+
+### <img src="images/icons/transmutation_table.png" width="40" align="top"> Transmutation Table — `echoes:transmutation_table`
+*The balanced-interchange altar.* All matter is condensed Light, so every item carries a
+**Light Value** (*Bound Light*). Drop matter in the dissolve slot and the Table banks its
+Light Value (one item every ~10 ticks); the five tone buttons withdraw that pool back out
+as **Mote coins** (Light → Tonic → Mediant → Dominant → Harmonic, ×4 per octave). Values
+are data-driven (`data/echoes/light_values.json`); blacklisted/absent items can't be
+dissolved. Pickaxe-mineable; its own screen; top face feeds the dissolve slot for hoppers.
+See [the Mote ladder](Items-and-Gear.md#the-transmutation-economy--bound-light-emc).
+
 ## Radiation (the discharge half)
 
 ### <img src="images/blocks3d/growth_radiator.png" width="46" align="top"> Growth Radiator — `echoes:growth_radiator`
