@@ -47,6 +47,13 @@ if ! git clone --depth 1 "$WIKI_REMOTE" "$WORK/wiki" 2>/dev/null; then
   exit 1
 fi
 
+# Copy images (icons + montages) so the wiki's relative image links resolve.
+if [[ -d "$SRC/images" ]]; then
+  echo "Copying images"
+  rm -rf "$WORK/wiki/images"
+  cp -R "$SRC/images" "$WORK/wiki/images"
+fi
+
 echo "Transforming pages from ${SRC}"
 shopt -s nullglob
 for f in "$SRC"/*.md; do

@@ -6,7 +6,7 @@ Three ores feed the tech tree. Worldgen is attached via Fabric
 `BiomeModifications` (`ModWorldGen`); all three drop their material with a
 standard Fortune bonus.
 
-## Echocite Ore — `echoes:echocite_ore` (+ `deepslate_echocite_ore`)
+## <img src="images/icons/echocite_ore.png" width="28" align="top"> <img src="images/icons/deepslate_echocite_ore.png" width="28" align="top"> Echocite Ore — `echoes:echocite_ore` (+ `deepslate_echocite_ore`)
 
 The backbone resource. Generates throughout the **Overworld** in both stone and
 deepslate, dropping **Raw Echocite**.
@@ -20,7 +20,7 @@ deepslate, dropping **Raw Echocite**.
 | Height | trapezoid distribution, **y −20 → 60** |
 | Targets | `stone_ore_replaceables` (→ echocite) and `deepslate_ore_replaceables` (→ deepslate variant) |
 
-## Drumstone Ore — `echoes:drumstone_ore`
+## <img src="images/icons/drumstone_ore.png" width="28" align="top"> Drumstone Ore — `echoes:drumstone_ore`
 
 A percussive tier. Generates **deeper** in the Overworld and drops **Drumstone
 Shard** → **Drum Core** (an alternate Coil membrane, and the Thrusters ingredient).
@@ -33,7 +33,7 @@ Shard** → **Drum Core** (an alternate Coil membrane, and the Thrusters ingredi
 | Veins / chunk | 5 |
 | Height | trapezoid, **y −48 → 24** |
 
-## Silentite Ore — `echoes:silentite_ore`
+## <img src="images/icons/silentite_ore.png" width="28" align="top"> Silentite Ore — `echoes:silentite_ore`
 
 The rarest tier, the "silence / unstruck tone" line. Generates **only in the Deep
 Dark** and drops **Silentite Crystal** (for the **Stillness Core** and an
