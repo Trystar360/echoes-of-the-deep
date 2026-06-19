@@ -221,9 +221,19 @@ def hopper():
     return g
 
 
+def lightning_rod():
+    g = blank(); cu = (196, 110, 72, 255); dk = (150, 80, 52, 255); hi = (228, 152, 112, 255)
+    rect(g, 7, 3, 8, 13, cu)                                # rod
+    g[2][7] = hi; g[1][7] = hi                              # pointed tip
+    g[3][8] = dk; rect(g, 7, 13, 8, 13, dk)                # shading
+    rect(g, 6, 6, 9, 7, dk)                                 # band
+    return g
+
+
 VANILLA = {
     "iron_ingot": iron_ingot, "stick": stick, "comparator": comparator, "note_block": note_block,
     "furnace": furnace, "ender_pearl": ender_pearl, "book": book, "chest": chest, "hopper": hopper,
+    "lightning_rod": lightning_rod,
     "cobblestone": lambda: speckle((128, 128, 128, 255), (95, 95, 95, 255), (165, 165, 165, 255)),
     "redstone": lambda: dustpile((200, 25, 25, 255), (255, 90, 90, 255)),
     "glowstone_dust": lambda: dustpile((220, 200, 70, 255), (255, 240, 150, 255)),
@@ -240,7 +250,7 @@ VANILLA_NAMES = {
     "book": "Book", "chest": "Chest", "cobblestone": "Cobblestone", "redstone": "Redstone Dust",
     "glowstone_dust": "Glowstone Dust", "blaze_powder": "Blaze Powder",
     "redstone_block": "Block of Redstone", "iron_block": "Block of Iron", "glowstone": "Glowstone",
-    "hopper": "Hopper", "dirt": "Dirt", "bone_meal": "Bone Meal",
+    "hopper": "Hopper", "dirt": "Dirt", "bone_meal": "Bone Meal", "lightning_rod": "Lightning Rod",
 }
 
 
@@ -265,8 +275,8 @@ CATEGORIES = [
       "raw_echocite", "echocite_dust", "echo_ingot", "echo_dust", "resonant_slag",
       "dull_ingot", "drumstone_shard", "drum_core", "silentite_crystal"]),
     ("Energy Core", "Generate, store, and carry Light across the wired grid.",
-     ["stillness_core", "resonator", "resonance_capacitor", "tuning_conduit",
-      "dense_conduit", "balancer"]),
+     ["stillness_core", "resonator", "storm_caller", "resonance_capacitor",
+      "tuning_conduit", "dense_conduit", "balancer"]),
     ("Octave Tier", "The higher octave: charged Radiant matter and its big generators, banks, and conduits.",
      ["octave_seed", "radiant_dust", "radiant_ingot", "octave_coil", "octave_conduit",
       "greater_accumulator"]),
@@ -334,6 +344,8 @@ STATS.update({
     "lume_lantern": [("Type", "Décor"), ("Light", "full-bright")],
     "lumewood_leaves": [("Type", "Leaves"), ("Light", "emits Light")],
     "lumewood_log": [("Type", "Log"), ("From", "the Octave Grove feature in forests")],
+    "storm_caller": [("Role", "Provider · Storage"), ("Capacity", "400,000 Light"),
+                     ("Per strike", "40,000 Light"), ("Needs", "open sky during storms")],
 })
 
 DESC_EXTRA = {
@@ -352,6 +364,7 @@ DESC_EXTRA = {
     "lumewood_leaves": "Luminous leaves that emit Light.",
     "lumewood_sapling": "Plant and grow it into a glowing Lumewood tree.",
     "echocite_bricks": "Luminous masonry that matches the resonance palette.",
+    "storm_caller": "A spire that calls lightning during storms and banks the windfall as Light.",
 }
 
 
@@ -498,7 +511,10 @@ def slot(rid, depth, result=False, count=1):
         short = rid.split(":", 1)[1] if ":" in rid else rid
         inner = f'<a href="{"../"*depth}{short}.html">{img}</a>'
     else:
-        inner = img
+        # vanilla ingredient → link out to the Minecraft Wiki so every cell is clickable
+        page_title = name.replace(" ", "_")
+        inner = (f'<a class="ext" href="https://minecraft.wiki/w/{page_title}" '
+                 f'target="_blank" rel="noopener" title="{html.escape(name)} — Minecraft Wiki">{img}</a>')
     return f'<div class="{cls}">{inner}{badge}</div>'
 
 

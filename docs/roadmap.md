@@ -116,6 +116,20 @@ Russell's universe is Mind knowing itself; this is the control & information lay
 - ⬜ **Sound & particle pass** — a tonal hum on active machines; flight/charge FX.
 - ⬜ **Config** — tune generation/throughput/Hush-Cost without editing code.
 
+## Wiki & Identity (presentation)
+- ⬜ **Consolidate names & theme, internally and externally** — unify the dual naming
+  so internal ids and external display names line up (e.g. `echoes:resonator` shows as
+  "Generative Coil"). Today the namespace stays `echoes` and ids keep their original
+  names for save-compatibility while the display layer is the "Octaves of the One"
+  reskin. Decide one canonical identity and reconcile registry ids, lang, docs, and the
+  mod name — with a migration/remap plan so existing worlds still load.
+- ⬜ **In-game-style 3D renders on the wiki** — block/item icons that read like the real
+  Minecraft inventory render (correct dimetric projection + face shading/AO), replacing
+  flat icons. The earlier hand-rolled isometric looked off; needs a proper block-model
+  renderer (or a headless MC/Blockbench render step) and visual sign-off.
+- ✅ **All recipe ingredients clickable on the wiki** — every cell links out: mod items
+  to their own page, vanilla items to the Minecraft Wiki.
+
 ---
 
 *Working order:* Phase 0 fixes first (correctness gates a clean release), then the
