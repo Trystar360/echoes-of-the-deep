@@ -23,7 +23,7 @@ Names are grouped into consistent families so the tech tree reads as one system.
 | `tuning_conduit` | Wave Conduit | `wave_conduit` | **Wave Conduit** |
 | `dense_conduit` | Dense Wave Conduit | `dense_wave_conduit` | **Dense Wave Conduit** |
 | `crusher` | Compressor | `compressor` | **Compressor** |
-| `attunement_furnace` | Transmuter | `resonant_furnace` | **Resonant Furnace** |
+| `attunement_furnace` | Transmuter | `transmuter` | **Transmuter** |
 | `radiator` | Radiator | `growth_radiator` | **Growth Radiator** |
 | `resonant_relay` | Wave Relay | `wave_relay` | **Wave Relay** |
 | `resonant_amplifier` | Amplitude Coil | `wave_amplifier` | **Wave Amplifier** |
@@ -57,7 +57,15 @@ Names are grouped into consistent families so the tech tree reads as one system.
 - **Machines** process — Compressor (crush) · Resonant Furnace (smelt)
 - **Radiators & Fields** emit — Growth Radiator · Warmth Radiator · Polarity Field · Balancer
 
-## Open questions for you
-1. Storage: **"Resonance Cell"** vs keeping **"Accumulator"** (very clear already)?
-2. Machine: **"Resonant Furnace"** (clear) vs **"Transmuter"** (more thematic)?
-3. Wireless tools: fold into the **Wave** family (Wave Tuner/Atlas) or keep **Octave** Tuner/Atlas?
+## Decisions (locked)
+1. Storage → **Resonance Cell** / **Greater Resonance Cell** (cohesive "Cell" family).
+2. Smelter → **Transmuter** (keep the thematic name; raising matter an octave).
+3. Wireless tools → **Wave Tuner** / **Wave Atlas** (folded into the Wave family).
+
+## Implementation checklist (runs only after you approve the doc)
+- [ ] Rename registry ids in code (block/item registration) per the table
+- [ ] Move + rename asset files: models, blockstates, textures, recipes, loot tables, tags, advancements
+- [ ] Update `lang/en_us.json` so each `*.name` matches the new display name
+- [ ] Sweep for hardcoded id references (data-gen, JEI/REI compat, code lookups)
+- [ ] Regenerate the wiki from the new ids/names
+- [ ] Verify: full `build` + dedicated-server load (recipe/tag/registry parse), then open PR
