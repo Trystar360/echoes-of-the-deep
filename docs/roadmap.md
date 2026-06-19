@@ -5,10 +5,21 @@ cosmology so every addition reinforces the same idea: a *two-way universe* of
 **rhythmic balanced interchange** — Light wound up from stillness (generation,
 compression) and unwound back into it (radiation, expansion), through the octaves.
 
-Status legend: ✅ done · 🔜 next · ⬜ planned. Each project notes its **concept**
-(the Russell tie) and **mechanic**.
+Status legend: ✅ done · 🔜 next · ⬜ planned · 🐞 bug to fix. Each project notes
+its **concept** (the Russell tie) and **mechanic**.
 
 ---
+
+## Phase 0 — Correctness & fixes
+Known issues to clear first; these gate a clean release before more content lands.
+
+- 🐞 **Inventory textures** — fix item/inventory sprites that render wrong (missing,
+  mismatched, or mis-scaled icons in the hotbar and GUIs).
+- 🐞 **Block breakability** — fix blocks that mine incorrectly: wrong harvest tool /
+  mining level, off break speed, or missing/incorrect drops.
+- ⬜ **Block descriptions** — a short lore + function tooltip on every block and item
+  (hover text, optionally an in-world guidebook), so each block explains itself and
+  the cosmology reads at a glance.
 
 ## Phase I — The Two-Way Universe (generation ↔ radiation)
 Make the charge/discharge duality a real, paired mechanic. *Today only generation
@@ -39,8 +50,13 @@ Russell builds matter in nine octaves of tones; give the tech tree the same spin
 The wave is the unit of the cosmos; lean into movement and area effects.
 
 - ✅ **Centrifugal Thrusters** — look-direction flight, fall immunity. *(done)*
-- ⬜ **Wearable thrusters** — chest-slot + jump-to-fly (client input + payload) for the
-  classic jetpack feel; sneak-dash / double-pulse.
+- 🔜 **Resonant Ring (worn flight)** — *shift the jetpack onto a worn ring.* Move
+  flight off the held item and onto a Trinkets/curio **ring** themed to the modpack
+  (a "Ring of Octaves"), so flight no longer occupies a hand or hotbar slot. Keeps
+  look-direction flight + fall immunity, recharged from the grid; Trinkets is already
+  a soft dependency. Supersedes the held Thrusters as the intended end form.
+- ⬜ **Wearable thrusters (jump-to-fly)** — optional chest-slot variant with the
+  classic jump-to-fly jetpack feel; sneak-dash / double-pulse.
 - ⬜ **Wave Walker** boots — walk on water/lava (surface tension of the wave).
 - ⬜ **Levity Field / Vortex Pad** — anti-gravity column and a launch/landing pad
   (the spiral vortex that winds bodies up and down).
@@ -71,6 +87,11 @@ Russell's universe is Mind knowing itself; this is the control & information lay
 - ⬜ **Hush Field** — a zone that silences mobs / dampens vibrations (sculk sensors).
 
 ## Phase VII — World & Exploration
+- ⬜ **Storm Caller** — *generation from the sky's discharge.* A tall conductive spire
+  that **increases nearby lightning-strike frequency** during thunderstorms and banks
+  the windfall — thunder is already the biggest ambient-capture source (2000 Light) —
+  charging the grid from each strike. Russell's high-potential discharge wound back
+  into Light. (Ties into [Ambient Capture](wiki/Ambient-Capture.md).)
 - ⬜ **Octave Geodes** — buried resonant geode structures (Silentite in the Deep Dark).
 - ⬜ **Sounding Chamber** — a small dungeon/altar with loot and a tuned puzzle.
 
@@ -82,6 +103,6 @@ Russell's universe is Mind knowing itself; this is the control & information lay
 
 ---
 
-*Working order:* Phase I first (it completes the core duality), then II (gives the
-mod long-term depth), then III–VIII as polish and breadth. Items are independent
-enough to reorder on request.
+*Working order:* Phase 0 fixes first (correctness gates a clean release), then the
+Resonant Ring (the intended flight end form), then Phase II for long-term depth, and
+III–VIII as polish and breadth. Items are independent enough to reorder on request.
