@@ -8,6 +8,7 @@ import com.echoes.block.entity.CrusherBlockEntity;
 import com.echoes.block.entity.DenseConduitBlockEntity;
 import com.echoes.block.entity.OctaveCoilBlockEntity;
 import com.echoes.block.entity.OctaveConduitBlockEntity;
+import com.echoes.block.entity.StormCallerBlockEntity;
 import com.echoes.block.entity.ResonanceCapacitorBlockEntity;
 import com.echoes.block.entity.BalancerBlockEntity;
 import com.echoes.block.entity.PolarityFieldBlockEntity;
@@ -81,6 +82,8 @@ public final class ModBlockEntities {
             register("octave_coil", OctaveCoilBlockEntity::new, ModBlocks.OCTAVE_COIL);
     public static final BlockEntityType<OctaveConduitBlockEntity> OCTAVE_CONDUIT =
             register("octave_conduit", OctaveConduitBlockEntity::new, ModBlocks.OCTAVE_CONDUIT);
+    public static final BlockEntityType<StormCallerBlockEntity> STORM_CALLER =
+            register("storm_caller", StormCallerBlockEntity::new, ModBlocks.STORM_CALLER);
 
     private static <T extends BlockEntity> BlockEntityType<T> register(
             String name, FabricBlockEntityTypeBuilder.Factory<T> factory, Block... blocks) {

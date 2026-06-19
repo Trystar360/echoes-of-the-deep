@@ -101,11 +101,12 @@ Russell's universe is Mind knowing itself; this is the control & information lay
 - ⬜ **Hush Field** — a zone that silences mobs / dampens vibrations (sculk sensors).
 
 ## Phase VII — World & Exploration
-- ⬜ **Storm Caller** — *generation from the sky's discharge.* A tall conductive spire
-  that **increases nearby lightning-strike frequency** during thunderstorms and banks
-  the windfall — thunder is already the biggest ambient-capture source (2000 Light) —
-  charging the grid from each strike. Russell's high-potential discharge wound back
-  into Light. (Ties into [Ambient Capture](wiki/Ambient-Capture.md).)
+- ✅ **Storm Caller** — *generation from the sky's discharge.* A conductive spire that,
+  during thunderstorms, calls lightning to itself far more often than nature would and
+  banks the windfall (40,000 Light/strike into a 400,000 buffer; PROVIDER + STORAGE,
+  comparator output). Needs open sky; the self-struck bolts are **cosmetic** so it
+  never ignites a build; tunable strike rate via the config GUI. Russell's high-potential
+  discharge wound back into Light. (Ties into [Ambient Capture](wiki/Ambient-Capture.md).)
 - ⬜ **Octave Geodes** — buried resonant geode structures (Silentite in the Deep Dark).
 - ⬜ **Sounding Chamber** — a small dungeon/altar with loot and a tuned puzzle.
 

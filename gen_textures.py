@@ -1136,6 +1136,22 @@ def build_octave_conduit():
     return c
 emit_block("octave_conduit", build_octave_conduit)
 
+# ---- Storm Caller (lightning-fed generator)
+def build_storm_caller():
+    c = C(); bezel(c, BRONZE, TEAL)
+    face_inset(c)
+    # A jagged lightning bolt forking down the face.
+    bolt = [(8, 2), (7, 4), (8, 5), (7, 7), (8, 8), (6, 10), (7, 11), (6, 13)]
+    for (x, y) in bolt:
+        c.set(x, y, (255, 255, 255)); c.over(x - 1, y, AMETH[4]); c.over(x + 1, y, AMETH[4])
+    # A few forking sparks.
+    for (x, y) in [(9, 6), (5, 9), (9, 12)]:
+        c.over(x, y, lerp(AMETH[3], (255, 255, 255), GLOW))
+    core(c, 8, 8, AMETH, r=1)
+    bloom(c, AMETH, alpha=92, reach=2); vignette(c, 30)
+    return c
+emit_block("storm_caller", build_storm_caller)
+
 # ---- Phase II items
 def octave_seed():
     c = C(); cx, cy = 8, 8

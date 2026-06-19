@@ -47,6 +47,7 @@ blocks=["echocite_ore","deepslate_echocite_ore","drumstone_ore","silentite_ore",
         "crusher","attunement_furnace","radiator","warmth_radiator","polarity_field","balancer","resonant_relay","resonant_amplifier",
         "harmonic_filter","resonant_splitter","echo_repeater","conduit_coupler",
         "resonant_chest","note_relay","greater_accumulator","octave_coil","octave_conduit",
+        "storm_caller",
         "lumewood_log","lumewood_log_top","lumewood_planks","lumewood_leaves",
         "lumewood_sapling","lumewood_trapdoor","lumebloom","lume_lantern",
         "verdant_loam","echocite_bricks"]

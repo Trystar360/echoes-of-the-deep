@@ -17,6 +17,7 @@ import com.echoes.block.HarmonicFilterBlock;
 import com.echoes.block.NoteRelayBlock;
 import com.echoes.block.OctaveCoilBlock;
 import com.echoes.block.OctaveConduitBlock;
+import com.echoes.block.StormCallerBlock;
 import com.echoes.block.ResonantAmplifierBlock;
 import com.echoes.block.ResonantChestBlock;
 import com.echoes.block.ResonantRelayBlock;
@@ -188,6 +189,11 @@ public final class ModBlocks {
     public static final Block OCTAVE_CONDUIT = register("octave_conduit",
             OctaveConduitBlock::new, AbstractBlock.Settings.create().strength(2.5f).requiresTool()
                     .nonOpaque().luminance(s -> 4));
+
+    // Phase VII — Storm Caller (lightning generation)
+    public static final Block STORM_CALLER = register("storm_caller",
+            StormCallerBlock::new, AbstractBlock.Settings.create().strength(4.5f).requiresTool()
+                    .nonOpaque().luminance(s -> 6));
 
     public static Block register(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Identifier id = Identifier.of(EchoesMod.MOD_ID, name);
