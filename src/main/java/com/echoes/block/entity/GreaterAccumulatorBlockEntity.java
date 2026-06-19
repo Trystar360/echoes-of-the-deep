@@ -15,7 +15,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * Octave II of the Accumulator: a much larger Light bank than the Resonance
+ * Octave II of the Resonance Cell: a much larger Light bank than the Resonance
  * Capacitor. Pure STORAGE node, comparator-readable by fill.
  */
 public class GreaterAccumulatorBlockEntity extends BlockEntity implements ResonanceNode, Configurable {

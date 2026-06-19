@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "iei",
+    "ece",
+    "iei"
+  ],
+  "key": {
+    "i": "minecraft:iron_ingot",
+    "e": "echoes:echocite_dust",
+    "c": "echoes:drum_core"
+  },
+  "result": {
+    "id": "echoes:resonant_coil",
+    "count": 1
+  }
+}

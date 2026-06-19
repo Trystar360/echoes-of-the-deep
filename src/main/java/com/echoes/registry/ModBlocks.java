@@ -68,17 +68,17 @@ public final class ModBlocks {
             Block::new, AbstractBlock.Settings.create().strength(5.0f).requiresTool().sounds(BlockSoundGroup.AMETHYST_BLOCK));
 
     // Machines / grid
-    public static final Block RESONATOR = register("resonator",
+    public static final Block RESONATOR = register("resonant_coil",
             ResonatorBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool().nonOpaque());
-    public static final Block TUNING_CONDUIT = register("tuning_conduit",
+    public static final Block TUNING_CONDUIT = register("wave_conduit",
             ConduitBlock::new, AbstractBlock.Settings.create().strength(1.5f).nonOpaque());
-    public static final Block DENSE_CONDUIT = register("dense_conduit",
+    public static final Block DENSE_CONDUIT = register("dense_wave_conduit",
             DenseConduitBlock::new, AbstractBlock.Settings.create().strength(2.0f).requiresTool().nonOpaque());
-    public static final Block RESONANCE_CAPACITOR = register("resonance_capacitor",
+    public static final Block RESONANCE_CAPACITOR = register("resonance_cell",
             ResonanceCapacitorBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque());
     public static final Block STILLNESS_CORE = register("stillness_core",
             StillnessCoreBlock::new, AbstractBlock.Settings.create().strength(4.0f).requiresTool().nonOpaque());
-    public static final Block RADIATOR = register("radiator",
+    public static final Block RADIATOR = register("growth_radiator",
             RadiatorBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque()
                     .luminance(s -> s.get(Properties.LIT) ? 12 : 2));
     public static final Block WARMTH_RADIATOR = register("warmth_radiator",
@@ -89,27 +89,27 @@ public final class ModBlocks {
                     .luminance(s -> s.get(Properties.LIT) ? 8 : 2));
     public static final Block BALANCER = register("balancer",
             BalancerBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque());
-    public static final Block CRUSHER = register("crusher",
+    public static final Block CRUSHER = register("compressor",
             CrusherBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool());
-    public static final Block ATTUNEMENT_FURNACE = register("attunement_furnace",
+    public static final Block ATTUNEMENT_FURNACE = register("transmuter",
             AttunementFurnaceBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool());
-    public static final Block RESONANT_RELAY = register("resonant_relay",
+    public static final Block RESONANT_RELAY = register("wave_relay",
             ResonantRelayBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
 
     // Wireless transport family
-    public static final Block RESONANT_AMPLIFIER = register("resonant_amplifier",
+    public static final Block RESONANT_AMPLIFIER = register("wave_amplifier",
             ResonantAmplifierBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
-    public static final Block HARMONIC_FILTER = register("harmonic_filter",
+    public static final Block HARMONIC_FILTER = register("wave_filter",
             HarmonicFilterBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
-    public static final Block RESONANT_SPLITTER = register("resonant_splitter",
+    public static final Block RESONANT_SPLITTER = register("wave_splitter",
             ResonantSplitterBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
-    public static final Block ECHO_REPEATER = register("echo_repeater",
+    public static final Block ECHO_REPEATER = register("wave_repeater",
             EchoRepeaterBlock::new, AbstractBlock.Settings.create().strength(2.5f).requiresTool().nonOpaque());
-    public static final Block CONDUIT_COUPLER = register("conduit_coupler",
+    public static final Block CONDUIT_COUPLER = register("wave_coupler",
             ConduitCouplerBlock::new, AbstractBlock.Settings.create().strength(2.5f).requiresTool().nonOpaque());
-    public static final Block RESONANT_CHEST = register("resonant_chest",
+    public static final Block RESONANT_CHEST = register("wave_chest",
             ResonantChestBlock::new, AbstractBlock.Settings.create().strength(2.5f).nonOpaque());
-    public static final Block NOTE_RELAY = register("note_relay",
+    public static final Block NOTE_RELAY = register("signal_relay",
             NoteRelayBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
 
     // ============================================================ Phase II — The Octave Grove
@@ -177,8 +177,8 @@ public final class ModBlocks {
             SlabBlock::new, AbstractBlock.Settings.create().strength(2.0f, 6.0f).requiresTool()
                     .sounds(BlockSoundGroup.STONE).luminance(s -> 3));
 
-    // Octave II — Greater Accumulator (tiered storage)
-    public static final Block GREATER_ACCUMULATOR = register("greater_accumulator",
+    // Octave II — Greater Resonance Cell (tiered storage)
+    public static final Block GREATER_ACCUMULATOR = register("greater_resonance_cell",
             GreaterAccumulatorBlock::new, AbstractBlock.Settings.create().strength(3.5f)
                     .requiresTool().nonOpaque());
 

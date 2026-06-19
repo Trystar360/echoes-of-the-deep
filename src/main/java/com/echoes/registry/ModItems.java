@@ -44,13 +44,13 @@ public final class ModItems {
     public static final Item RADIANT_INGOT  = register("radiant_ingot", Item::new, new Item.Settings());
 
     // Wireless transport tools
-    public static final Item FREQUENCY_TUNER = register("frequency_tuner",
+    public static final Item FREQUENCY_TUNER = register("wave_tuner",
             FrequencyTunerItem::new, new Item.Settings().maxCount(1));
-    public static final Item CHANNEL_ATLAS   = register("channel_atlas",
+    public static final Item CHANNEL_ATLAS   = register("wave_atlas",
             ChannelAtlasItem::new, new Item.Settings().maxCount(1));
-    public static final Item RESONANCE_METER = register("resonance_meter",
+    public static final Item RESONANCE_METER = register("light_meter",
             ResonanceMeterItem::new, new Item.Settings().maxCount(1));
-    public static final Item RESONANCE_THRUSTERS = register("resonance_thrusters",
+    public static final Item RESONANCE_THRUSTERS = register("resonant_thrusters",
             ResonanceThrustersItem::new, new Item.Settings().maxCount(1));
 
     // Resonant tools — deliberately strong: faster than netherite, tougher, highly

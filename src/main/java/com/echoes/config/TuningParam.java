@@ -2,7 +2,7 @@ package com.echoes.config;
 
 /**
  * One block-specific integer dial shown in the configuration screen — e.g. a
- * Radiator's effect radius or Verdant Loam's growth rate. The label is a
+ * Growth Radiator's effect radius or Verdant Loam's growth rate. The label is a
  * translation key; the value is clamped to [min, max] and stepped by {@code step}.
  */
 public record TuningParam(String labelKey, int min, int max, int step, int def) {

@@ -37,17 +37,17 @@ public final class ModBlockEntities {
     private ModBlockEntities() {}
 
     public static final BlockEntityType<ResonatorBlockEntity> RESONATOR =
-            register("resonator", ResonatorBlockEntity::new, ModBlocks.RESONATOR);
+            register("resonant_coil", ResonatorBlockEntity::new, ModBlocks.RESONATOR);
     public static final BlockEntityType<ConduitBlockEntity> CONDUIT =
-            register("tuning_conduit", ConduitBlockEntity::new, ModBlocks.TUNING_CONDUIT);
+            register("wave_conduit", ConduitBlockEntity::new, ModBlocks.TUNING_CONDUIT);
     public static final BlockEntityType<DenseConduitBlockEntity> DENSE_CONDUIT =
-            register("dense_conduit", DenseConduitBlockEntity::new, ModBlocks.DENSE_CONDUIT);
+            register("dense_wave_conduit", DenseConduitBlockEntity::new, ModBlocks.DENSE_CONDUIT);
     public static final BlockEntityType<ResonanceCapacitorBlockEntity> RESONANCE_CAPACITOR =
-            register("resonance_capacitor", ResonanceCapacitorBlockEntity::new, ModBlocks.RESONANCE_CAPACITOR);
+            register("resonance_cell", ResonanceCapacitorBlockEntity::new, ModBlocks.RESONANCE_CAPACITOR);
     public static final BlockEntityType<StillnessCoreBlockEntity> STILLNESS_CORE =
             register("stillness_core", StillnessCoreBlockEntity::new, ModBlocks.STILLNESS_CORE);
     public static final BlockEntityType<RadiatorBlockEntity> RADIATOR =
-            register("radiator", RadiatorBlockEntity::new, ModBlocks.RADIATOR);
+            register("growth_radiator", RadiatorBlockEntity::new, ModBlocks.RADIATOR);
     public static final BlockEntityType<WarmthRadiatorBlockEntity> WARMTH_RADIATOR =
             register("warmth_radiator", WarmthRadiatorBlockEntity::new, ModBlocks.WARMTH_RADIATOR);
     public static final BlockEntityType<PolarityFieldBlockEntity> POLARITY_FIELD =
@@ -55,29 +55,29 @@ public final class ModBlockEntities {
     public static final BlockEntityType<BalancerBlockEntity> BALANCER =
             register("balancer", BalancerBlockEntity::new, ModBlocks.BALANCER);
     public static final BlockEntityType<CrusherBlockEntity> CRUSHER =
-            register("crusher", CrusherBlockEntity::new, ModBlocks.CRUSHER);
+            register("compressor", CrusherBlockEntity::new, ModBlocks.CRUSHER);
     public static final BlockEntityType<AttunementFurnaceBlockEntity> ATTUNEMENT_FURNACE =
-            register("attunement_furnace", AttunementFurnaceBlockEntity::new, ModBlocks.ATTUNEMENT_FURNACE);
+            register("transmuter", AttunementFurnaceBlockEntity::new, ModBlocks.ATTUNEMENT_FURNACE);
     public static final BlockEntityType<ResonantRelayBlockEntity> RESONANT_RELAY =
-            register("resonant_relay", ResonantRelayBlockEntity::new, ModBlocks.RESONANT_RELAY);
+            register("wave_relay", ResonantRelayBlockEntity::new, ModBlocks.RESONANT_RELAY);
     public static final BlockEntityType<ResonantAmplifierBlockEntity> RESONANT_AMPLIFIER =
-            register("resonant_amplifier", ResonantAmplifierBlockEntity::new, ModBlocks.RESONANT_AMPLIFIER);
+            register("wave_amplifier", ResonantAmplifierBlockEntity::new, ModBlocks.RESONANT_AMPLIFIER);
     public static final BlockEntityType<HarmonicFilterBlockEntity> HARMONIC_FILTER =
-            register("harmonic_filter", HarmonicFilterBlockEntity::new, ModBlocks.HARMONIC_FILTER);
+            register("wave_filter", HarmonicFilterBlockEntity::new, ModBlocks.HARMONIC_FILTER);
     public static final BlockEntityType<ResonantSplitterBlockEntity> RESONANT_SPLITTER =
-            register("resonant_splitter", ResonantSplitterBlockEntity::new, ModBlocks.RESONANT_SPLITTER);
+            register("wave_splitter", ResonantSplitterBlockEntity::new, ModBlocks.RESONANT_SPLITTER);
     public static final BlockEntityType<EchoRepeaterBlockEntity> ECHO_REPEATER =
-            register("echo_repeater", EchoRepeaterBlockEntity::new, ModBlocks.ECHO_REPEATER);
+            register("wave_repeater", EchoRepeaterBlockEntity::new, ModBlocks.ECHO_REPEATER);
     public static final BlockEntityType<ConduitCouplerBlockEntity> CONDUIT_COUPLER =
-            register("conduit_coupler", ConduitCouplerBlockEntity::new, ModBlocks.CONDUIT_COUPLER);
+            register("wave_coupler", ConduitCouplerBlockEntity::new, ModBlocks.CONDUIT_COUPLER);
     public static final BlockEntityType<ResonantChestBlockEntity> RESONANT_CHEST =
-            register("resonant_chest", ResonantChestBlockEntity::new, ModBlocks.RESONANT_CHEST);
+            register("wave_chest", ResonantChestBlockEntity::new, ModBlocks.RESONANT_CHEST);
     public static final BlockEntityType<NoteRelayBlockEntity> NOTE_RELAY =
-            register("note_relay", NoteRelayBlockEntity::new, ModBlocks.NOTE_RELAY);
+            register("signal_relay", NoteRelayBlockEntity::new, ModBlocks.NOTE_RELAY);
     public static final BlockEntityType<VerdantLoamBlockEntity> VERDANT_LOAM =
             register("verdant_loam", VerdantLoamBlockEntity::new, ModBlocks.VERDANT_LOAM);
     public static final BlockEntityType<GreaterAccumulatorBlockEntity> GREATER_ACCUMULATOR =
-            register("greater_accumulator", GreaterAccumulatorBlockEntity::new, ModBlocks.GREATER_ACCUMULATOR);
+            register("greater_resonance_cell", GreaterAccumulatorBlockEntity::new, ModBlocks.GREATER_ACCUMULATOR);
     public static final BlockEntityType<OctaveCoilBlockEntity> OCTAVE_COIL =
             register("octave_coil", OctaveCoilBlockEntity::new, ModBlocks.OCTAVE_COIL);
     public static final BlockEntityType<OctaveConduitBlockEntity> OCTAVE_CONDUIT =

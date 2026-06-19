@@ -37,7 +37,7 @@ Shard** → **Drum Core** (an alternate Coil membrane, and the Thrusters ingredi
 
 The rarest tier, the "silence / unstruck tone" line. Generates **only in the Deep
 Dark** and drops **Silentite Crystal** (for the **Stillness Core** and an
-alternate **Octave Repeater**).
+alternate **Wave Repeater**).
 
 | Property | Value |
 | --- | --- |

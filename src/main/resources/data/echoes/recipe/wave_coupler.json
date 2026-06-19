@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "echoes:wave_relay",
+    "echoes:wave_conduit",
+    "echoes:echo_ingot"
+  ],
+  "result": {
+    "id": "echoes:wave_coupler",
+    "count": 1
+  }
+}

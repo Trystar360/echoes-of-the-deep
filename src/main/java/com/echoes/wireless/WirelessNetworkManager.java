@@ -223,7 +223,7 @@ public final class WirelessNetworkManager {
             Storage<FluidVariant> t = d.wirelessFluids();
             if (t != null && t.supportsInsertion()) targets.add(t);
         }
-        // A Harmonic Filter constrains fluids only when it whitelists fluid containers:
+        // A Wave Filter constrains fluids only when it whitelists fluid containers:
         // match each fluid by its bucket item. An item-only whitelist leaves fluids free.
         Predicate<FluidVariant> filter = v -> true;
         if (whitelist != null) {

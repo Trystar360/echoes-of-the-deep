@@ -108,13 +108,13 @@ def render(name, front, side, top):
 
 
 # Directional machines: glowing front + shared bronze casing.
-MACHINES = ["stillness_core", "resonator", "radiator", "warmth_radiator",
-            "polarity_field", "balancer", "attunement_furnace", "crusher",
-            "resonant_relay", "echo_repeater", "conduit_coupler", "resonant_chest",
-            "note_relay", "resonant_amplifier", "harmonic_filter", "resonant_splitter"]
+MACHINES = ["stillness_core", "resonant_coil", "growth_radiator", "warmth_radiator",
+            "polarity_field", "balancer", "transmuter", "compressor",
+            "wave_relay", "wave_repeater", "wave_coupler", "wave_chest",
+            "signal_relay", "wave_amplifier", "wave_filter", "wave_splitter"]
 # Uniform blocks: one texture on every face.
 UNIFORM = ["echocite_ore", "deepslate_echocite_ore", "drumstone_ore", "silentite_ore",
-           "tuning_conduit", "dense_conduit", "resonance_capacitor"]
+           "wave_conduit", "dense_wave_conduit", "resonance_cell"]
 
 
 def main():

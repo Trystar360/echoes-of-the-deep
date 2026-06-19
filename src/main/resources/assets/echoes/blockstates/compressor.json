@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "echoes:block/compressor"
+    },
+    "facing=east": {
+      "model": "echoes:block/compressor",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "echoes:block/compressor",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "echoes:block/compressor",
+      "y": 270
+    }
+  }
+}

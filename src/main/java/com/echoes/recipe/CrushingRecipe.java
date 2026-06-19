@@ -19,7 +19,7 @@ import net.minecraft.recipe.book.RecipeBookCategory;
  * provides matches/craft/ingredient placement for single-input recipes; we add
  * {@code energy} (RU consumed) and {@code processingTime} (ticks).
  *
- * <p>Data-driven (data/echoes/recipe/crusher/*.json) with vanilla Ingredient
+ * <p>Data-driven (data/echoes/recipe/compressor/*.json) with vanilla Ingredient
  * syntax, so recipes accept item tags from other mods.
  */
 public class CrushingRecipe extends SingleStackRecipe {

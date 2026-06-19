@@ -35,12 +35,12 @@ def write_png(path, w, h, px):
 
 OUT="src/main/resources/assets/echoes/textures"
 blocks=["echocite_ore","deepslate_echocite_ore","drumstone_ore","silentite_ore",
-        "resonator","tuning_conduit","crusher","resonant_relay","resonant_amplifier",
-        "harmonic_filter","resonant_splitter","echo_repeater","conduit_coupler",
-        "resonant_chest","note_relay"]
+        "resonant_coil","wave_conduit","compressor","wave_relay","wave_amplifier",
+        "wave_filter","wave_splitter","wave_repeater","wave_coupler",
+        "wave_chest","signal_relay"]
 items=["raw_echocite","echocite_dust","echo_ingot","dull_ingot","resonant_slag",
        "drumstone_shard","drum_core","silentite_crystal","echo_dust",
-       "frequency_tuner","channel_atlas"]
+       "wave_tuner","wave_atlas"]
 tiles=[("block",b) for b in blocks]+[("item",it) for it in items]
 
 SCALE=12; TILE=16*SCALE; GAP=10; COLS=4
@@ -69,7 +69,7 @@ for idx,(d,name) in enumerate(tiles):
 write_png("/tmp/echoes_tiles.png", MW, MH, mont)
 
 # GUI at 3x
-w,h,px=read_png(f"{OUT}/gui/crusher.png")
+w,h,px=read_png(f"{OUT}/gui/compressor.png")
 S=3; gw,gh=176*S,166*S
 g=[(46,46,52,255) for _ in range(gw*gh)]
 for y in range(166):

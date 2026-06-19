@@ -25,14 +25,14 @@ Known issues to clear first; these gate a clean release before more content land
 Make the charge/discharge duality a real, paired mechanic. *Today only generation
 (Coils, Stillness Core) exists; radiation is the missing half.*
 
-- ✅ **Radiator** — *radiation / centrifugal outpouring.* Consumes Light and pours it
+- ✅ **Growth Radiator** — *radiation / centrifugal outpouring.* Consumes Light and pours it
   back into the world as **life**: accelerates crops & saplings in a radius, and glows.
 - ✅ **Warmth Radiator** — radiates heat: cooks dropped items (vanilla smelting), melts
   snow & ice nearby, glows brightly (a powered campfire-of-Light).
 - ✅ **Polarity Field** — *the two poles of one device.* Right-click toggles **Attract**
   (centripetal — pulls in items & XP) and **Repel** (centrifugal — throws mobs outward).
 - ✅ **Balancer** — *rhythmic balanced interchange.* Nudges all storage on its network
-  toward the same fill ratio so no Accumulator hoards; the grid breathes evenly.
+  toward the same fill ratio so no Resonance Cell hoards; the grid breathes evenly.
 
 *Phase I complete — the generation↔radiation duality is now a full, paired mechanic.*
 
@@ -44,8 +44,8 @@ and a botanical octave the player can build, light, and tend.
   Drum Core + Echo Dust) is the catalyst that opens the transmutation chain.
 - ✅ **Transmutation chain** — the Seed feeds **Radiant Dust → Radiant Ingot** (smelt /
   blast), the charged matter that builds the higher-octave bank.
-- ✅ **Greater Accumulator** — block-of-light tier storage (2,000,000 Light), built from
-  a ring of Radiant Ingots around an Accumulator; full config GUI + comparator output.
+- ✅ **Greater Resonance Cell** — block-of-light tier storage (2,000,000 Light), built from
+  a ring of Radiant Ingots around an Resonance Cell; full config GUI + comparator output.
 - ✅ **Lumewood set** — a glowing custom tree (log/wood, planks, stairs, slab, fence,
   fence gate, trapdoor, luminous leaves, sapling) that grows from the **Octave Grove**
   feature in forests — a full building-material family that emits Light.
@@ -62,7 +62,7 @@ and a botanical octave the player can build, light, and tend.
 ## Phase III — The Wave (motion & fields)
 The wave is the unit of the cosmos; lean into movement and area effects.
 
-- ✅ **Centrifugal Thrusters** — look-direction flight, fall immunity. *(done)*
+- ✅ **Resonant Thrusters** — look-direction flight, fall immunity. *(done)*
 - 🔜 **Resonant Ring (worn flight)** — *shift the jetpack onto a worn ring.* Move
   flight off the held item and onto a Trinkets/curio **ring** themed to the modpack
   (a "Ring of Octaves"), so flight no longer occupies a hand or hotbar slot. Keeps
@@ -77,11 +77,11 @@ The wave is the unit of the cosmos; lean into movement and area effects.
 ## Phase IV — Mind & Light (knowledge, automation, readout)
 Russell's universe is Mind knowing itself; this is the control & information layer.
 
-- ✅ **Light Meter / Octave Atlas** — diagnostics. *(done)*
+- ✅ **Light Meter / Wave Atlas** — diagnostics. *(done)*
 - ✅ **Device Configuration GUI** — right-click any functional device with the
   Frequency Tuner to open a shared config screen: wireless **channel/octave**,
   **redstone** behaviour (always / needs-signal / off-on-signal), **per-face I/O**,
-  and block-specific **tuning** (Radiator & Polarity radius, Balancer rate). Wired
+  and block-specific **tuning** (Growth Radiator & Polarity radius, Balancer rate). Wired
   effects today: channel (wireless), redstone gating, and tuning; per-face I/O is
   persisted and surfaced for the network layer to honour next.
 - ⬜ **Seer** — a screen/handheld that visualizes a whole network: nodes, flow, fill.
@@ -91,7 +91,7 @@ Russell's universe is Mind knowing itself; this is the control & information lay
 
 ## Phase V — Stillness & Balance (storage & endgame)
 - ✅ **Stillness Core** — baseline Light from the still centre. *(done)*
-- ✅ **Greater Accumulator** — high-octave bank (2,000,000 Light) from Radiant Ingots.
+- ✅ **Greater Resonance Cell** — high-octave bank (2,000,000 Light) from Radiant Ingots.
   *(see Phase II)*
 - ⬜ **Zero-Point Well** — endgame: stronger generation tied to a rare structure/cost.
 
@@ -118,8 +118,8 @@ Russell's universe is Mind knowing itself; this is the control & information lay
 
 ## Wiki & Identity (presentation)
 - ⬜ **Consolidate names & theme, internally and externally** — unify the dual naming
-  so internal ids and external display names line up (e.g. `echoes:resonator` shows as
-  "Generative Coil"). Today the namespace stays `echoes` and ids keep their original
+  so internal ids and external display names line up (e.g. `echoes:resonant_coil` shows as
+  "Resonant Coil"). Today the namespace stays `echoes` and ids keep their original
   names for save-compatibility while the display layer is the "Octaves of the One"
   reskin. Decide one canonical identity and reconcile registry ids, lang, docs, and the
   mod name — with a migration/remap plan so existing worlds still load.

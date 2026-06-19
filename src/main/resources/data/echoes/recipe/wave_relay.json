@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    " R ",
+    "eIe",
+    " R "
+  ],
+  "key": {
+    "R": "minecraft:redstone",
+    "e": "echoes:echocite_dust",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "echoes:wave_relay",
+    "count": 2
+  }
+}

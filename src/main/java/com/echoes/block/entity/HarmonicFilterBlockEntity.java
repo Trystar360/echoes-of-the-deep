@@ -50,7 +50,7 @@ public class HarmonicFilterBlockEntity extends AbstractChannelDeviceBlockEntity
     @Override public boolean canExtract(int slot, ItemStack stack, Direction dir) { return false; }
 
     // --- screen ---
-    @Override public Text getDisplayName() { return Text.translatable("block.echoes.harmonic_filter"); }
+    @Override public Text getDisplayName() { return Text.translatable("block.echoes.wave_filter"); }
 
     @Override public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         return new HarmonicFilterScreenHandler(syncId, inv, this);

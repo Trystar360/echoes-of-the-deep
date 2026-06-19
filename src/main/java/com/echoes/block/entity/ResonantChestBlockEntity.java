@@ -52,7 +52,7 @@ public class ResonantChestBlockEntity extends AbstractChannelDeviceBlockEntity
     @Override public boolean canExtract(int slot, ItemStack stack, Direction dir) { return true; }
 
     // --- screen ---
-    @Override public Text getDisplayName() { return Text.translatable("block.echoes.resonant_chest"); }
+    @Override public Text getDisplayName() { return Text.translatable("block.echoes.wave_chest"); }
 
     @Override public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         return GenericContainerScreenHandler.createGeneric9x3(syncId, inv, this);

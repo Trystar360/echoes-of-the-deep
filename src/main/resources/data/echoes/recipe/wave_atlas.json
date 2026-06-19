@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "tools",
+  "ingredients": [
+    "minecraft:book",
+    "echoes:echo_dust"
+  ],
+  "result": {
+    "id": "echoes:wave_atlas",
+    "count": 1
+  }
+}

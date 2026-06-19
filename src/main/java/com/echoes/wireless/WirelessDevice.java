@@ -59,7 +59,7 @@ public interface WirelessDevice {
     /** Resonant Splitter (enabled): switch the channel to even round-robin sharing. */
     default boolean roundRobin() { return false; }
 
-    /** Harmonic Filter: item types this device whitelists (empty/null = no constraint). */
+    /** Wave Filter: item types this device whitelists (empty/null = no constraint). */
     @Nullable default Set<Item> itemWhitelist() { return null; }
 
     // --- wireless redstone (Note Relay) ---

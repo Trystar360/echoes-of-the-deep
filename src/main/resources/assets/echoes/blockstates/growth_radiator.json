@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "echoes:block/growth_radiator"
+    },
+    "lit=true": {
+      "model": "echoes:block/growth_radiator"
+    }
+  }
+}

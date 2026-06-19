@@ -552,14 +552,14 @@ device_top()
 
 # Render the breathing fronts as vertical animation strips + .mcmeta.
 ANIMATED = {
-    "resonator": build_resonator, "resonant_relay": build_resonant_relay,
-    "resonant_amplifier": build_resonant_amplifier, "echo_repeater": build_echo_repeater,
-    "tuning_conduit": build_tuning_conduit, "harmonic_filter": build_harmonic_filter,
-    "resonant_splitter": build_resonant_splitter, "conduit_coupler": build_conduit_coupler,
-    "note_relay": build_note_relay, "resonant_chest": build_resonant_chest, "crusher": build_crusher,
-    "attunement_furnace": build_attunement_furnace,
-    "dense_conduit": build_dense_conduit, "resonance_capacitor": build_resonance_capacitor,
-    "stillness_core": build_stillness_core, "radiator": build_radiator,
+    "resonant_coil": build_resonator, "wave_relay": build_resonant_relay,
+    "wave_amplifier": build_resonant_amplifier, "wave_repeater": build_echo_repeater,
+    "wave_conduit": build_tuning_conduit, "wave_filter": build_harmonic_filter,
+    "wave_splitter": build_resonant_splitter, "wave_coupler": build_conduit_coupler,
+    "signal_relay": build_note_relay, "wave_chest": build_resonant_chest, "compressor": build_crusher,
+    "transmuter": build_attunement_furnace,
+    "dense_wave_conduit": build_dense_conduit, "resonance_cell": build_resonance_capacitor,
+    "stillness_core": build_stillness_core, "growth_radiator": build_radiator,
     "warmth_radiator": build_warmth_radiator, "polarity_field": build_polarity_field,
     "balancer": build_balancer,
 }
@@ -701,7 +701,7 @@ def drum_core():
     write_png(f"{OUT}/item/drum_core.png", 16, 16, c.px)
 drum_core()
 
-def frequency_tuner():
+def wave_tuner():
     c = C(); r = BRONZE
     c.rect(5, 2, 5, 8, r[3]); c.rect(10, 2, 10, 8, r[3])   # prongs
     c.rect(5, 8, 10, 9, r[2])                              # bridge
@@ -712,10 +712,10 @@ def frequency_tuner():
     c.set(7, 11, TEAL[3])                                  # rune on the grip
     bloom(c, TEAL, alpha=55, reach=2, thresh=150)
     outline(c, thresh=150)
-    write_png(f"{OUT}/item/frequency_tuner.png", 16, 16, c.px)
-frequency_tuner()
+    write_png(f"{OUT}/item/wave_tuner.png", 16, 16, c.px)
+wave_tuner()
 
-def channel_atlas():
+def wave_atlas():
     c = C()
     c.rect(3, 2, 12, 14, DEEP[2])                          # dark tome cover
     c.rect(3, 2, 4, 14, DEEP[0])                           # spine
@@ -725,10 +725,10 @@ def channel_atlas():
     c.set(6, 6, TEAL[2]); c.set(9, 9, TEAL[2])
     bloom(c, TEAL, alpha=50, reach=2, thresh=150)
     outline(c, thresh=150)
-    write_png(f"{OUT}/item/channel_atlas.png", 16, 16, c.px)
-channel_atlas()
+    write_png(f"{OUT}/item/wave_atlas.png", 16, 16, c.px)
+wave_atlas()
 
-def resonance_meter():
+def light_meter():
     c = C(); r = BRONZE
     cx, cy = 8, 7
     for y in range(16):                                    # round bronze dial
@@ -745,10 +745,10 @@ def resonance_meter():
     c.rect(7, 12, 8, 15, r[3])                              # handle
     bloom(c, TEAL, alpha=48, reach=1, thresh=150)
     outline(c, thresh=150)
-    write_png(f"{OUT}/item/resonance_meter.png", 16, 16, c.px)
-resonance_meter()
+    write_png(f"{OUT}/item/light_meter.png", 16, 16, c.px)
+light_meter()
 
-def resonance_thrusters():
+def resonant_thrusters():
     c = C(); r = BRONZE
     for bx in (5, 9):                                  # twin thruster bodies
         c.rect(bx, 3, bx + 1, 11, r[2])
@@ -764,8 +764,8 @@ def resonance_thrusters():
         c.over(bx, 15, (TEAL[2][0], TEAL[2][1], TEAL[2][2], 110))
     bloom(c, TEAL, alpha=55, reach=2, thresh=150)
     outline(c, thresh=150)
-    write_png(f"{OUT}/item/resonance_thrusters.png", 16, 16, c.px)
-resonance_thrusters()
+    write_png(f"{OUT}/item/resonant_thrusters.png", 16, 16, c.px)
+resonant_thrusters()
 
 # ---------------- Resonant tools (echo-metal heads on a haft) ----------------
 EMET = [(22, 50, 52), (44, 96, 94), (78, 150, 144), (132, 212, 202), (212, 255, 250)]
@@ -841,7 +841,7 @@ def gui():
             for yy in range(oy + 2 + k, oy + 14 - k): s(ox + 14 + k, yy, lerp(TEAL[3], TEAL[2], k / 8))
         for xx in range(ox, ox + 15): s(xx, oy + 5, TEAL[4])
     sprite_arrow(176, 0)
-    write_png(f"{OUT}/gui/crusher.png", W, H, px)
+    write_png(f"{OUT}/gui/compressor.png", W, H, px)
 gui()
 
 def gui_furnace():
@@ -878,7 +878,7 @@ def gui_furnace():
             for yy in range(oy + 2 + k, oy + 14 - k): s(ox + 14 + k, yy, lerp(TEAL[3], TEAL[2], k / 8))
         for xx in range(ox, ox + 15): s(xx, oy + 5, TEAL[4])
     sprite_arrow(176, 0)
-    write_png(f"{OUT}/gui/attunement_furnace.png", W, H, px)
+    write_png(f"{OUT}/gui/transmuter.png", W, H, px)
 gui_furnace()
 
 # ================================================================ HARMONIC FILTER GUI (256x256)
@@ -909,7 +909,7 @@ def gui_filter():
     for r in range(3):
         for c in range(9): slot(8 + c * 18, 84 + r * 18)
     for c in range(9): slot(8 + c * 18, 142)
-    write_png(f"{OUT}/gui/harmonic_filter.png", W, H, px)
+    write_png(f"{OUT}/gui/wave_filter.png", W, H, px)
 gui_filter()
 
 # ================================================================ PHASE II — THE OCTAVE GROVE
@@ -1096,7 +1096,7 @@ def lumebloom():
     write_png(f"{OUT}/block/lumebloom.png", 16, 16, c.px)
 lumebloom()
 
-# ---- Greater Accumulator: an animated machine face (octave II of the capacitor)
+# ---- Greater Resonance Cell: an animated machine face (octave II of the capacitor)
 def build_greater_accumulator():
     c = C(); bezel(c, BRONZE, TEAL)
     emitter_face(c, TEAL, rmax=6.0)
@@ -1105,7 +1105,7 @@ def build_greater_accumulator():
     core(c, 8, 8, TEAL, r=2)
     glyph(c, AMBER, [(7, 2), (8, 2), (7, 13), (8, 13)])
     return c
-emit_block("greater_accumulator", build_greater_accumulator)
+emit_block("greater_resonance_cell", build_greater_accumulator)
 
 # ---- Octave tiers (Radiant-tier generation & throughput) — amber-wound versions
 def build_octave_coil():

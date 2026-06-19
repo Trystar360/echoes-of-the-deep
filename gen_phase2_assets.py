@@ -268,8 +268,8 @@ cube_all("echocite_bricks")
 stairs("echocite_brick_stairs", "echocite_bricks")
 slab("echocite_brick_slab", "echocite_bricks", "echocite_bricks")
 
-# Greater Accumulator (animated like the capacitor; cube_all)
-cube_all("greater_accumulator")
+# Greater Resonance Cell (animated like the capacitor; cube_all)
+cube_all("greater_resonance_cell")
 
 # Simple item models for new items
 for it in ("octave_seed", "radiant_dust", "radiant_ingot"):
@@ -321,9 +321,9 @@ shapeless("radiant_dust", [f"{MC}:echocite_dust", f"{MC}:echocite_dust",
                            f"{MC}:octave_seed"], "radiant_dust", 4)
 smelt("radiant_ingot_from_smelting", f"{MC}:radiant_dust", "radiant_ingot")
 smelt("radiant_ingot_from_blasting", f"{MC}:radiant_dust", "radiant_ingot", blasting=True)
-# Tier II Accumulator: charge a Capacitor with radiant ingots (block-of-light tier)
-shaped("greater_accumulator", ["###", "#C#", "###"],
-       {"#": f"{MC}:radiant_ingot", "C": f"{MC}:resonance_capacitor"}, "greater_accumulator", 1)
+# Tier II Resonance Cell: charge a Capacitor with radiant ingots (block-of-light tier)
+shaped("greater_resonance_cell", ["###", "#C#", "###"],
+       {"#": f"{MC}:radiant_ingot", "C": f"{MC}:resonance_cell"}, "greater_resonance_cell", 1)
 
 # Octave tiers — higher-octave generation & throughput (Radiant-tier)
 cube_all("octave_coil")
@@ -333,13 +333,13 @@ shaped("octave_coil", ["RRR", "RSR", "RRR"],
        {"R": f"{MC}:radiant_ingot", "S": f"{MC}:stillness_core"}, "octave_coil", 1)
 # Octave Conduit: charge a Dense Conduit with Radiant Ingots.
 shaped("octave_conduit", ["RDR"],
-       {"R": f"{MC}:radiant_ingot", "D": f"{MC}:dense_conduit"}, "octave_conduit", 2)
+       {"R": f"{MC}:radiant_ingot", "D": f"{MC}:dense_wave_conduit"}, "octave_conduit", 2)
 
 # Phase VII — Storm Caller (lightning generation)
 cube_all("storm_caller")
-# A lightning rod atop an Accumulator core, framed in Echo Ingots.
+# A lightning rod atop an Resonance Cell core, framed in Echo Ingots.
 shaped("storm_caller", [" L ", "ECE", "EEE"],
-       {"L": "minecraft:lightning_rod", "C": f"{MC}:resonance_capacitor",
+       {"L": "minecraft:lightning_rod", "C": f"{MC}:resonance_cell",
         "E": f"{MC}:echo_ingot"}, "storm_caller", 1)
 
 print("Phase II assets generated.")

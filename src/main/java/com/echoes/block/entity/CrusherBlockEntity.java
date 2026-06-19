@@ -158,7 +158,7 @@ public class CrusherBlockEntity extends BlockEntity
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
     // --- screen ---
-    @Override public Text getDisplayName() { return Text.translatable("block.echoes.crusher"); }
+    @Override public Text getDisplayName() { return Text.translatable("block.echoes.compressor"); }
     @Override public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         return new CrusherScreenHandler(syncId, inv, this, props);
     }

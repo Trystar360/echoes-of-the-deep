@@ -71,14 +71,14 @@ def icon(name, kind):
 
 
 BLOCKS = ["echocite_ore", "deepslate_echocite_ore", "drumstone_ore", "silentite_ore",
-          "stillness_core", "resonator", "tuning_conduit", "dense_conduit",
-          "resonance_capacitor", "crusher", "attunement_furnace", "radiator",
-          "warmth_radiator", "polarity_field", "balancer", "resonant_relay",
-          "resonant_amplifier", "harmonic_filter", "resonant_splitter",
-          "echo_repeater", "conduit_coupler", "resonant_chest", "note_relay"]
+          "stillness_core", "resonant_coil", "wave_conduit", "dense_wave_conduit",
+          "resonance_cell", "compressor", "transmuter", "growth_radiator",
+          "warmth_radiator", "polarity_field", "balancer", "wave_relay",
+          "wave_amplifier", "wave_filter", "wave_splitter",
+          "wave_repeater", "wave_coupler", "wave_chest", "signal_relay"]
 ITEMS = ["raw_echocite", "echocite_dust", "echo_ingot", "dull_ingot", "resonant_slag",
          "drumstone_shard", "drum_core", "silentite_crystal", "echo_dust",
-         "frequency_tuner", "channel_atlas", "resonance_meter", "resonance_thrusters",
+         "wave_tuner", "wave_atlas", "light_meter", "resonant_thrusters",
          "resonant_pickaxe", "resonant_axe", "resonant_shovel", "resonant_sword",
          "resonant_hoe"]
 

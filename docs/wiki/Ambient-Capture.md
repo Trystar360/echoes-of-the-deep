@@ -2,7 +2,7 @@
 
 [← Home](Home.md)
 
-A **Generative Coil** doesn't burn fuel — it **winds ambient sound into Light**.
+A **Resonant Coil** doesn't burn fuel — it **winds ambient sound into Light**.
 Two sources feed it, both implemented as mixins that find the **nearest Coil** and
 charge it.
 

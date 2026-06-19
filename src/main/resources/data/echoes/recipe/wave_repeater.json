@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "epe",
+    "pRp",
+    "epe"
+  ],
+  "key": {
+    "e": "echoes:echo_ingot",
+    "p": "minecraft:ender_pearl",
+    "R": "echoes:wave_relay"
+  },
+  "result": {
+    "id": "echoes:wave_repeater",
+    "count": 1
+  }
+}

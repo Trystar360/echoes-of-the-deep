@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 /**
  * Rhythmic balanced interchange made a block: every few ticks it nudges all storage
  * on the adjacent network toward the same fill ratio, so the grid breathes evenly
- * and no Accumulator hoards. Place it against a Wave Conduit.
+ * and no Resonance Cell hoards. Place it against a Wave Conduit.
  */
 public class BalancerBlockEntity extends BlockEntity implements Configurable {
     private static final int INTERVAL = 10;

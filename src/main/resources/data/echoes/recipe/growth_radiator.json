@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "ege",
+    "gRg",
+    "ege"
+  ],
+  "key": {
+    "e": "echoes:echo_ingot",
+    "g": "minecraft:glowstone",
+    "R": "minecraft:redstone_block"
+  },
+  "result": {
+    "id": "echoes:growth_radiator",
+    "count": 1
+  }
+}
