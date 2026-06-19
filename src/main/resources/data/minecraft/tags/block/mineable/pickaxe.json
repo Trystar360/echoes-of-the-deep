@@ -1,0 +1,28 @@
+{
+  "replace": false,
+  "values": [
+    "echoes:echocite_ore",
+    "echoes:deepslate_echocite_ore",
+    "echoes:drumstone_ore",
+    "echoes:silentite_ore",
+    "echoes:stillness_core",
+    "echoes:resonator",
+    "echoes:tuning_conduit",
+    "echoes:dense_conduit",
+    "echoes:resonance_capacitor",
+    "echoes:crusher",
+    "echoes:attunement_furnace",
+    "echoes:radiator",
+    "echoes:warmth_radiator",
+    "echoes:polarity_field",
+    "echoes:balancer",
+    "echoes:resonant_relay",
+    "echoes:resonant_amplifier",
+    "echoes:harmonic_filter",
+    "echoes:resonant_splitter",
+    "echoes:echo_repeater",
+    "echoes:conduit_coupler",
+    "echoes:resonant_chest",
+    "echoes:note_relay"
+  ]
+}
