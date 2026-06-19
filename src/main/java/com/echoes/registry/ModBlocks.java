@@ -15,6 +15,8 @@ import com.echoes.block.WarmthRadiatorBlock;
 import com.echoes.block.EchoRepeaterBlock;
 import com.echoes.block.HarmonicFilterBlock;
 import com.echoes.block.NoteRelayBlock;
+import com.echoes.block.OctaveCoilBlock;
+import com.echoes.block.OctaveConduitBlock;
 import com.echoes.block.ResonantAmplifierBlock;
 import com.echoes.block.ResonantChestBlock;
 import com.echoes.block.ResonantRelayBlock;
@@ -178,6 +180,14 @@ public final class ModBlocks {
     public static final Block GREATER_ACCUMULATOR = register("greater_accumulator",
             GreaterAccumulatorBlock::new, AbstractBlock.Settings.create().strength(3.5f)
                     .requiresTool().nonOpaque());
+
+    // Octave II — higher-octave generation & throughput (Radiant-tier)
+    public static final Block OCTAVE_COIL = register("octave_coil",
+            OctaveCoilBlock::new, AbstractBlock.Settings.create().strength(4.0f).requiresTool()
+                    .nonOpaque().luminance(s -> 7));
+    public static final Block OCTAVE_CONDUIT = register("octave_conduit",
+            OctaveConduitBlock::new, AbstractBlock.Settings.create().strength(2.5f).requiresTool()
+                    .nonOpaque().luminance(s -> 4));
 
     public static Block register(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Identifier id = Identifier.of(EchoesMod.MOD_ID, name);

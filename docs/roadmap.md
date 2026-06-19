@@ -54,8 +54,10 @@ and a botanical octave the player can build, light, and tend.
 - ✅ **Garden flora & décor** — **Lumebloom** (glowing flower, grants Glowing), **Lume
   Lantern** (full-bright décor block), and **Echocite Bricks** (+ stairs & slab) for a
   matching luminous masonry set.
-- 🔜 **Octave coil/conduit tiers** — Coil / Conduit in higher octaves (II, III) with
-  larger generation & throughput, gated by Radiant-tier material (extends the chain).
+- ✅ **Octave coil/conduit tiers** — the **Octave Coil** (a strong baseline generator,
+  300,000-Light buffer, tunable generation rate, comparator output) and **Octave
+  Conduit** (64,000 Light/t — 4× the Dense Conduit), both crafted from Radiant Ingots
+  so the transmutation chain feeds directly into higher generation & throughput.
 
 ## Phase III — The Wave (motion & fields)
 The wave is the unit of the cosmos; lean into movement and area effects.
