@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "echoes:block/lumewood_slab"
+    },
+    "type=top": {
+      "model": "echoes:block/lumewood_slab_top"
+    },
+    "type=double": {
+      "model": "echoes:block/lumewood_planks"
+    }
+  }
+}

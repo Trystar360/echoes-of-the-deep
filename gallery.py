@@ -46,9 +46,13 @@ blocks=["echocite_ore","deepslate_echocite_ore","drumstone_ore","silentite_ore",
         "stillness_core","resonator","tuning_conduit","dense_conduit","resonance_capacitor",
         "crusher","attunement_furnace","radiator","warmth_radiator","polarity_field","balancer","resonant_relay","resonant_amplifier",
         "harmonic_filter","resonant_splitter","echo_repeater","conduit_coupler",
-        "resonant_chest","note_relay"]
+        "resonant_chest","note_relay","greater_accumulator",
+        "lumewood_log","lumewood_log_top","lumewood_planks","lumewood_leaves",
+        "lumewood_sapling","lumewood_trapdoor","lumebloom","lume_lantern",
+        "verdant_loam","echocite_bricks"]
 items=["raw_echocite","echocite_dust","echo_ingot","dull_ingot","resonant_slag",
        "drumstone_shard","drum_core","silentite_crystal","echo_dust",
+       "octave_seed","radiant_dust","radiant_ingot",
        "frequency_tuner","channel_atlas","resonance_meter","resonance_thrusters",
        "resonant_pickaxe","resonant_axe","resonant_shovel","resonant_sword","resonant_hoe"]
 tiles=[("block",b) for b in blocks]+[("item",i) for i in items]

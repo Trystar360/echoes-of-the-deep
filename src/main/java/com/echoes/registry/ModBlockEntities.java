@@ -20,6 +20,8 @@ import com.echoes.block.entity.ResonantChestBlockEntity;
 import com.echoes.block.entity.ResonantRelayBlockEntity;
 import com.echoes.block.entity.ResonantSplitterBlockEntity;
 import com.echoes.block.entity.ResonatorBlockEntity;
+import com.echoes.block.entity.GreaterAccumulatorBlockEntity;
+import com.echoes.block.entity.VerdantLoamBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
@@ -69,6 +71,10 @@ public final class ModBlockEntities {
             register("resonant_chest", ResonantChestBlockEntity::new, ModBlocks.RESONANT_CHEST);
     public static final BlockEntityType<NoteRelayBlockEntity> NOTE_RELAY =
             register("note_relay", NoteRelayBlockEntity::new, ModBlocks.NOTE_RELAY);
+    public static final BlockEntityType<VerdantLoamBlockEntity> VERDANT_LOAM =
+            register("verdant_loam", VerdantLoamBlockEntity::new, ModBlocks.VERDANT_LOAM);
+    public static final BlockEntityType<GreaterAccumulatorBlockEntity> GREATER_ACCUMULATOR =
+            register("greater_accumulator", GreaterAccumulatorBlockEntity::new, ModBlocks.GREATER_ACCUMULATOR);
 
     private static <T extends BlockEntity> BlockEntityType<T> register(
             String name, FabricBlockEntityTypeBuilder.Factory<T> factory, Block... blocks) {

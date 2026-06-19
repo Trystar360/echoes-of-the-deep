@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "echoes:block/lumewood_planks",
+    "top": "echoes:block/lumewood_planks",
+    "side": "echoes:block/lumewood_planks"
+  }
+}

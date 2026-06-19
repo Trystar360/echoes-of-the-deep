@@ -20,9 +20,24 @@ import com.echoes.block.ResonantChestBlock;
 import com.echoes.block.ResonantRelayBlock;
 import com.echoes.block.ResonantSplitterBlock;
 import com.echoes.block.ResonatorBlock;
+import com.echoes.block.GreaterAccumulatorBlock;
+import com.echoes.block.VerdantLoamBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSetType;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FenceBlock;
+import net.minecraft.block.FenceGateBlock;
+import net.minecraft.block.FlowerBlock;
+import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.PillarBlock;
+import net.minecraft.block.SaplingBlock;
+import net.minecraft.block.SaplingGenerator;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.StairsBlock;
+import net.minecraft.block.TrapdoorBlock;
+import net.minecraft.block.WoodType;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -33,6 +48,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public final class ModBlocks {
@@ -92,6 +108,76 @@ public final class ModBlocks {
             ResonantChestBlock::new, AbstractBlock.Settings.create().strength(2.5f).nonOpaque());
     public static final Block NOTE_RELAY = register("note_relay",
             NoteRelayBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
+
+    // ============================================================ Phase II — The Octave Grove
+    // Wood / block set types for Lumewood (custom tree). Names are plain strings (no signs).
+    public static final BlockSetType LUMEWOOD_SET = new BlockSetType("echoes_lumewood");
+    public static final WoodType LUMEWOOD_WOOD_TYPE = new WoodType("echoes_lumewood", LUMEWOOD_SET);
+
+    /** Simple tree: a single regular variant points at the Lumewood configured feature. */
+    public static final SaplingGenerator LUMEWOOD_TREE_GEN = new SaplingGenerator(
+            "echoes_lumewood", 0.0f,
+            Optional.empty(), Optional.empty(),
+            Optional.of(ModWorldGen.LUMEWOOD_TREE), Optional.empty(),
+            Optional.empty(), Optional.empty());
+
+    private static AbstractBlock.Settings wood() {
+        return AbstractBlock.Settings.create().strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD).burnable();
+    }
+
+    // Lumewood building set
+    public static final Block LUMEWOOD_LOG = register("lumewood_log",
+            PillarBlock::new, AbstractBlock.Settings.create().strength(2.0f).sounds(BlockSoundGroup.WOOD)
+                    .burnable().luminance(s -> 4));
+    public static final Block LUMEWOOD_WOOD = register("lumewood_wood",
+            PillarBlock::new, AbstractBlock.Settings.create().strength(2.0f).sounds(BlockSoundGroup.WOOD)
+                    .burnable().luminance(s -> 4));
+    public static final Block LUMEWOOD_PLANKS = register("lumewood_planks", Block::new, wood());
+    public static final Block LUMEWOOD_STAIRS = register("lumewood_stairs",
+            s -> new StairsBlock(LUMEWOOD_PLANKS.getDefaultState(), s) {}, wood());
+    public static final Block LUMEWOOD_SLAB = register("lumewood_slab", SlabBlock::new, wood());
+    public static final Block LUMEWOOD_FENCE = register("lumewood_fence", FenceBlock::new, wood());
+    public static final Block LUMEWOOD_FENCE_GATE = register("lumewood_fence_gate",
+            s -> new FenceGateBlock(LUMEWOOD_WOOD_TYPE, s), wood());
+    public static final Block LUMEWOOD_TRAPDOOR = register("lumewood_trapdoor",
+            s -> new TrapdoorBlock(LUMEWOOD_SET, s) {},
+            AbstractBlock.Settings.create().strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque());
+    public static final Block LUMEWOOD_LEAVES = register("lumewood_leaves",
+            LeavesBlock::new, AbstractBlock.Settings.create().strength(0.2f).ticksRandomly()
+                    .sounds(BlockSoundGroup.GRASS).nonOpaque().burnable().luminance(s -> 6));
+    public static final Block LUMEWOOD_SAPLING = register("lumewood_sapling",
+            s -> new SaplingBlock(LUMEWOOD_TREE_GEN, s) {},
+            AbstractBlock.Settings.create().noCollision().ticksRandomly().breakInstantly()
+                    .sounds(BlockSoundGroup.GRASS).luminance(s -> 4));
+
+    // Garden
+    public static final Block LUMEBLOOM = register("lumebloom",
+            s -> new FlowerBlock(StatusEffects.GLOWING, 5.0f, s),
+            AbstractBlock.Settings.create().noCollision().breakInstantly()
+                    .sounds(BlockSoundGroup.GRASS).luminance(s -> 7));
+    public static final Block LUME_LANTERN = register("lume_lantern",
+            Block::new, AbstractBlock.Settings.create().strength(0.4f).sounds(BlockSoundGroup.GLASS)
+                    .nonOpaque().luminance(s -> 15));
+    public static final Block VERDANT_LOAM = register("verdant_loam",
+            VerdantLoamBlock::new, AbstractBlock.Settings.create().strength(0.6f)
+                    .sounds(BlockSoundGroup.ROOTED_DIRT));
+
+    // Stone building materials
+    public static final Block ECHOCITE_BRICKS = register("echocite_bricks",
+            Block::new, AbstractBlock.Settings.create().strength(2.0f, 6.0f).requiresTool()
+                    .sounds(BlockSoundGroup.STONE).luminance(s -> 3));
+    public static final Block ECHOCITE_BRICK_STAIRS = register("echocite_brick_stairs",
+            s -> new StairsBlock(ECHOCITE_BRICKS.getDefaultState(), s) {},
+            AbstractBlock.Settings.create().strength(2.0f, 6.0f).requiresTool()
+                    .sounds(BlockSoundGroup.STONE).luminance(s -> 3));
+    public static final Block ECHOCITE_BRICK_SLAB = register("echocite_brick_slab",
+            SlabBlock::new, AbstractBlock.Settings.create().strength(2.0f, 6.0f).requiresTool()
+                    .sounds(BlockSoundGroup.STONE).luminance(s -> 3));
+
+    // Octave II — Greater Accumulator (tiered storage)
+    public static final Block GREATER_ACCUMULATOR = register("greater_accumulator",
+            GreaterAccumulatorBlock::new, AbstractBlock.Settings.create().strength(3.5f)
+                    .requiresTool().nonOpaque());
 
     public static Block register(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Identifier id = Identifier.of(EchoesMod.MOD_ID, name);

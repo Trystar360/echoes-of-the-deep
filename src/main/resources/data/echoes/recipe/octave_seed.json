@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "echoes:silentite_crystal",
+    "echoes:drum_core",
+    "echoes:echo_dust"
+  ],
+  "result": {
+    "id": "echoes:octave_seed",
+    "count": 1
+  }
+}

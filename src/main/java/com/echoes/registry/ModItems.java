@@ -38,6 +38,11 @@ public final class ModItems {
     public static final Item DRUM_CORE      = register("drum_core", Item::new, new Item.Settings());
     public static final Item ECHO_DUST      = register("echo_dust", Item::new, new Item.Settings());
 
+    // Phase II — inert-gas Seed (progression catalyst) + transmutation chain
+    public static final Item OCTAVE_SEED    = register("octave_seed", Item::new, new Item.Settings());
+    public static final Item RADIANT_DUST   = register("radiant_dust", Item::new, new Item.Settings());
+    public static final Item RADIANT_INGOT  = register("radiant_ingot", Item::new, new Item.Settings());
+
     // Wireless transport tools
     public static final Item FREQUENCY_TUNER = register("frequency_tuner",
             FrequencyTunerItem::new, new Item.Settings().maxCount(1));

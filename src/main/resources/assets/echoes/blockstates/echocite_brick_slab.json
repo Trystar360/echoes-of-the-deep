@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "echoes:block/echocite_brick_slab"
+    },
+    "type=top": {
+      "model": "echoes:block/echocite_brick_slab_top"
+    },
+    "type=double": {
+      "model": "echoes:block/echocite_bricks"
+    }
+  }
+}

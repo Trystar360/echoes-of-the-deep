@@ -44,6 +44,24 @@ public final class ModItemGroups {
                     entries.add(ModBlocks.CONDUIT_COUPLER);
                     entries.add(ModBlocks.RESONANT_CHEST);
                     entries.add(ModBlocks.NOTE_RELAY);
+                    entries.add(ModBlocks.GREATER_ACCUMULATOR);
+                    // Phase II — The Octave Grove
+                    entries.add(ModBlocks.LUMEWOOD_LOG);
+                    entries.add(ModBlocks.LUMEWOOD_WOOD);
+                    entries.add(ModBlocks.LUMEWOOD_PLANKS);
+                    entries.add(ModBlocks.LUMEWOOD_STAIRS);
+                    entries.add(ModBlocks.LUMEWOOD_SLAB);
+                    entries.add(ModBlocks.LUMEWOOD_FENCE);
+                    entries.add(ModBlocks.LUMEWOOD_FENCE_GATE);
+                    entries.add(ModBlocks.LUMEWOOD_TRAPDOOR);
+                    entries.add(ModBlocks.LUMEWOOD_LEAVES);
+                    entries.add(ModBlocks.LUMEWOOD_SAPLING);
+                    entries.add(ModBlocks.LUMEBLOOM);
+                    entries.add(ModBlocks.LUME_LANTERN);
+                    entries.add(ModBlocks.VERDANT_LOAM);
+                    entries.add(ModBlocks.ECHOCITE_BRICKS);
+                    entries.add(ModBlocks.ECHOCITE_BRICK_STAIRS);
+                    entries.add(ModBlocks.ECHOCITE_BRICK_SLAB);
                     entries.add(ModItems.FREQUENCY_TUNER);
                     entries.add(ModItems.CHANNEL_ATLAS);
                     entries.add(ModItems.RESONANCE_METER);
@@ -62,6 +80,9 @@ public final class ModItemGroups {
                     entries.add(ModItems.RESONANT_SLAG);
                     entries.add(ModItems.DRUM_CORE);
                     entries.add(ModItems.ECHO_DUST);
+                    entries.add(ModItems.OCTAVE_SEED);
+                    entries.add(ModItems.RADIANT_DUST);
+                    entries.add(ModItems.RADIANT_INGOT);
                 })
                 .build());
     }

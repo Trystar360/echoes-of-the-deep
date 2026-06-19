@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "echoes:block/echocite_bricks",
+    "top": "echoes:block/echocite_bricks",
+    "side": "echoes:block/echocite_bricks"
+  }
+}
