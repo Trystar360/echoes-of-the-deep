@@ -2,85 +2,71 @@
 
 [← Home](Home.md)
 
-This page takes you from zero to a working **Light** grid powering your first
-machine.
+This page takes you from a fresh world to your first self-running Light grid. The in-game
+**[Great Work](The-Great-Work.md)** advancement tree mirrors these steps, so you can also
+open your advancements (`L`) and just follow the toasts.
 
-## Installing
+## Install
 
-Drop the built jar into a 1.21.4 instance alongside **Fabric Loader** and
-**Fabric API**:
+1. Install **Fabric Loader** (≥ 0.16.0) and **Fabric API** for Minecraft **1.21.4**.
+2. Drop `echoes-of-the-deep-0.1.0.jar` into `.minecraft/mods/`.
+3. Launch. Everything is in the **Octaves of the One** creative tab, but you never need
+   creative — it's all survival-craftable.
 
-```
-.minecraft/mods/
-  fabric-api-*.jar
-  echoes-of-the-deep-0.1.0.jar
-```
-
-No client-side mod is required — the mod runs on dedicated servers and in
-single-player alike (`"environment": "*"`).
-
-## Building from source
-
-Requires **JDK 21**.
-
-```bash
-export JAVA_HOME=/path/to/jdk-21      # the build needs a JDK 21
-./gradlew build                       # → build/libs/echoes-of-the-deep-0.1.0.jar
-./gradlew runClient                   # playtest in single-player
-./gradlew runServer                   # headless smoke test (accept run/eula.txt)
-```
-
-Or use the bundled `./run.sh <task>` wrapper, which sets `JAVA_HOME` for you.
-The Gradle wrapper is pinned to 8.12.
+Building from source instead? See the
+[README](https://github.com/Trystar360/echoes-of-the-deep#build--run): `./gradlew build`
+(JDK 21).
 
 ## Your first hour
 
-### 1. Mine Echocite
-
-**Echocite Ore** generates throughout the Overworld (stone and deepslate
-variants), roughly **y −20 to 60**. Mining it drops **Raw Echocite**
-(Fortune-affected). See [Ores & Worldgen](Ores-and-Worldgen.md).
+### 1. Find Echocite
+**Echocite Ore** generates throughout the Overworld (deepslate variant lower down). Mine
+it with a stone pickaxe or better for **Raw Echocite** — the base of the entire mod.
+→ *advancement: "Octaves of the One"*
 
 ### 2. Make Echo Ingots
+Smelt or blast **Raw Echocite** into an **Echo Ingot**, the core crafting material. *(Once
+your grid runs, crush Raw Echocite in a Compressor for doubled dust, then smelt the dust —
+free ore-doubling.)* → *"The First Tone"*
 
-You have two routes from **Raw Echocite**:
+### 3. Generate Light
+Craft a **Resonant Coil** (iron + Echocite Dust + Echo Ingot). It **winds nearby sound into
+stored Light** — place it near anything noisy (a mob farm, note blocks, an anvil) and it
+charges. → *"A Winding Engine"*
 
-- **Smelt / blast** it directly → **Echo Ingot** (1:1).
-- **Crush** it in a Compressor → **2× Echocite Dust** (ore-doubling, plus a
-  ~15% **Resonant Slag** byproduct), then smelt the dust → **Echo Ingot**.
+For a passive trickle that needs no sound, the **Stillness Core** makes 4 Light/t from rest
+(needs Silentite from the Deep Dark).
 
-**Echo Ingot** is the backbone crafting material for nearly everything.
+### 4. Carry and bank it
+- **Wave Conduit** carries Light on a wired network (1,000/t). Run a line from your Coil to
+  a machine. → *"Carried, Not Consumed"*
+- **Resonance Cell** banks up to 250,000 Light so surplus isn't wasted. → *"Banked Light"*
 
-### 3. Build the energy core
+A network shares Light **fairly** — under scarcity every machine gets a proportional share
+and no one starves. See [Energy System](Energy-System.md).
 
-Craft these three blocks (recipes on [Crafting & Progression](Crafting-and-Progression.md)):
+### 5. Spend it
+Place a machine beside your conduit line:
+- **Compressor** — doubles ore into dust (then smelt it). → *"Doubling Down"*
+- **Transmuter** — runs *any* furnace recipe with Light and **no fuel**. → *"Fuelless Fire"*
+- **Growth Radiator** — pours Light back into the world as life, growing nearby crops. The
+  **radiation** half of the cosmology. → *"Light as Life"*
 
-1. **Resonant Coil** (`echoes:resonant_coil`) — generates + stores Light.
-2. **Wave Conduit** (`echoes:wave_conduit`) — carries Light between blocks (×4 per craft).
-3. **Compressor** (`echoes:compressor`) — your first Light **consumer** (ore-doubling).
-
-Place the Coil, run a line of Conduit from it to the Compressor, and they form a
-single **network**. The Coil charges from **ambient sound** (see below); the
-Compressor draws from the grid to crush ore.
-
-### 4. Feed the Coil with sound
-
-A **Resonant Coil** charges itself from nearby world sound — note blocks,
-bells, anvils landing, explosions, and (rarely, hugely) thunder. Mob deaths
-within 8 blocks also add Light. Park a Coil near a note-block contraption or an
-anvil to keep it topped up. Full table on [Ambient Capture](Ambient-Capture.md).
-
-### 5. Read your grid
-
-Craft a **Light Meter** (`echoes:light_meter`) and right-click any device to
-print its role, stored/capacity Light, demand, and conduit throughput — Light is
-otherwise invisible.
+### 6. Read the grid
+Light is invisible. Craft the **Light Meter** and right-click any device to read its role,
+stored Light, demand, and throughput. The **Frequency Tuner** (sneak-right-click a device)
+opens its configuration GUI — channel, redstone behaviour, per-face I/O, and tuning.
 
 ## Where to go next
 
-- Bank surplus in an **Resonance Cell** (250k Light) and add a **Stillness Core**
-  for steady passive generation — see [Blocks](Blocks.md).
-- Skip conduits entirely with the **Wave Relay** wireless system — see
-  [Wireless Transport](Wireless-Transport.md).
-- Craft **Resonant Thrusters** for sound-powered flight, and a set of
-  **Resonant tools** — see [Items & Gear](Items-and-Gear.md).
+- **Fly:** the **Resonant Thrusters** — hold *use* to fly where you look, with fall
+  immunity. Recharge on a Coil or Cell. → *"Where You Look"*
+- **Go wireless:** the **Wave Relay** beams items, fluids, and Light over a channel with no
+  conduit. See [Wireless Transport](Wireless-Transport.md). → *"Cut the Cord"*
+- **Climb the octaves:** the **Octave Seed → Radiant Ingot** chain unlocks the high-octave
+  tier (Greater Resonance Cell, Octave Coil/Conduit, Storm Caller). See
+  [Crafting & Progression](Crafting-and-Progression.md).
+- **Transmute matter:** the **Transmutation Table** turns the Light economy into a
+  conversion-and-duplication system. See [Transmutation & Light Values](Transmutation.md).
+
+See [Blocks](Blocks.md) and [Items & Gear](Items-and-Gear.md) for the full catalogue.

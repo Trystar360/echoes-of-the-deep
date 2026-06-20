@@ -1,0 +1,38 @@
+{
+  "display": {
+    "icon": {
+      "id": "echoes:storm_caller"
+    },
+    "title": {
+      "translate": "advancement.echoes.storm_caller.title"
+    },
+    "description": {
+      "translate": "advancement.echoes.storm_caller.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes:storm_caller"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "parent": "echoes:great_work/resonance_cell",
+  "rewards": {
+    "experience": 50
+  }
+}

@@ -2,92 +2,82 @@
 
 [← Home](Home.md)
 
-**Light** is the mod's energy. Internally it is tracked as **RU** (Resonance
-Units) on the `ResonanceNode` capability; the UI always shows it as Light. This
-page covers the **wired** grid. For the wireless side, see
-[Wireless Transport](Wireless-Transport.md).
+**Light** (tracked internally as **RU**, Resonance Units) is the mod's energy. It moves on
+a **wired** network of conduits and, separately, over **wireless** channels (see
+[Wireless Transport](Wireless-Transport.md)). This page covers the wired grid.
 
 ## Node roles
 
-Every Light-aware block exposes a `ResonanceNode` with one or more **roles**
-(a bitmask, so a block can be several at once):
+Every energy block is a `ResonanceNode` with one or more roles:
 
 | Role | Meaning | Examples |
 | --- | --- | --- |
-| **PROVIDER** | supplies Light to the network | Resonant Coil, Stillness Core |
-| **CONSUMER** | draws Light from the network | Compressor, Transmuter, Radiators, Polarity Field |
-| **STORAGE** | banks Light | Resonance Cell, Coil, Stillness Core, Coupler |
-| **CONDUIT** | carries Light, no buffer | Wave Conduit, Dense Wave Conduit |
+| **Provider** | makes or sources Light | Resonant Coil, Stillness Core, Octave Coil, Storm Caller |
+| **Storage** | banks Light (gives and takes) | Resonance Cell, Greater Resonance Cell |
+| **Consumer** | draws Light to do work | Compressor, Transmuter, Radiators, Polarity Field |
+| **Carrier** | moves Light between nodes | Wave / Dense / Octave Conduit |
 
-(`com.echoes.energy.NodeRole`, bit values PROVIDER=1, CONSUMER=2, STORAGE=4,
-CONDUIT=8.)
-
-## Storage
-
-`ResonanceStorage` is a simple bounded buffer (clamped to `[0, capacity]`). Any
-storage node is **comparator-readable**: the comparator output is the fill ratio
-scaled to **0–15**. Default capacities:
-
-| Block | Capacity |
-| --- | --- |
-| Resonant Coil (Resonator) | 10,000 RU |
-| Stillness Core | 50,000 RU |
-| Resonance Cell (Capacitor) | 250,000 RU |
-| Compressor / Transmuter (buffer) | 1,000 RU each |
-| Growth Radiator / Warmth Radiator / Polarity Field (buffer) | 3,000 RU each |
+Light is **carried, not consumed** in the cosmology sense — but a consumer's buffer does
+drain as it works, and the network refills it.
 
 ## The wired network
 
-A **network** is the set of nodes joined by Wave Conduits (and the blocks those
-conduits touch). Each tick the network does a single balanced distribution:
+Conduits form a **network** (a connected component). Each network, every tick:
 
-1. **Pull** available Light from PROVIDERs, then from STORAGE on any shortfall.
-2. **Share** it among CONSUMERs by **demand**. Under scarcity this is a
-   **largest-remainder fair distribution**: each consumer gets a proportional
-   share `(demand / totalDemand)`, and leftover whole units go to the most-starved
-   consumers first. No consumer starves while another is overfilled.
-3. **Top up** STORAGE with any surplus, filling the **lowest-fill** storage first
-   so banks charge evenly.
+1. Sums available **supply** (providers first, then storage).
+2. Gathers **demand** from consumers that have work to do.
+3. Distributes supply up to a **throughput budget** (the sum of its conduits' caps) using a
+   **largest-remainder proportional allocation**.
 
-### Throughput
+That allocation is the important part: under scarcity, **every consumer gets a share
+proportional to its demand**, and the leftover from rounding goes to the **most-starved**
+consumers first — so nothing starves and nothing is wasted. When there's surplus and no
+demand, it **tops up storage, emptiest bank first**, so cells fill evenly.
 
-Light moves only as fast as the conduits allow:
+### Throughput tiers
 
 | Conduit | Throughput |
 | --- | --- |
-| **Wave Conduit** (`wave_conduit`) | 1,000 RU/t |
-| **Dense Wave Conduit** (`dense_wave_conduit`) | 16,000 RU/t (×16) |
+| **Wave Conduit** | 1,000 Light/t |
+| **Dense Wave Conduit** | 16,000 Light/t (×16) |
+| **Octave Conduit** | 64,000 Light/t (×64) |
 
-Use Dense conduit to feed many or hungry consumers without huge conduit bundles.
+A network's total budget is the sum of its conduits' caps, so longer/denser lines move more.
 
-### Performance
+## Generation & storage at a glance
 
-The network is maintained **incrementally** by `ResonanceNetworkManager`:
-placing or breaking a conduit **merges** or **splits** networks on the spot —
-there is **no per-tick flood fill**. The only expensive path is a connectivity
-re-check when a conduit is removed (it might split one network into two).
+| Block | Role | Number |
+| --- | --- | --- |
+| **Resonant Coil** | Provider + Storage | 10,000 buffer; charges from ambient sound |
+| **Stillness Core** | Provider | 4 Light/t passive; 50,000 buffer |
+| **Octave Coil** | Provider | 24 Light/t (tunable); 300,000 buffer |
+| **Storm Caller** | Provider + Storage | 40,000 per lightning strike; 400,000 buffer |
+| **Resonance Cell** | Storage | 250,000 |
+| **Greater Resonance Cell** | Storage | 2,000,000 |
 
-Large networks are **staggered**: a network with more than **256** conduits
-ticks its distribution every **4 ticks** instead of every tick, so big builds
-never threaten the server tick.
+The **Balancer** nudges every storage node on its network toward the same fill ratio, so no
+cell hoards — the grid "breathes evenly."
 
-### Persistence
+## Reading & tuning the grid
 
-The grid's conduit topology is saved to a `PersistentState`
-(`ResonanceNetworkState`), so **networks survive a server restart** rather than
-going dark until a conduit is replaced.
+Light is invisible, so:
 
-## Special network blocks
+- **Light Meter** (handheld) — right-click any device to read its role, stored / capacity
+  Light, demand, and conduit throughput.
+- **Frequency Tuner** (sneak-right-click) — opens the device **configuration GUI**:
+  wireless channel, **redstone** behaviour (always / needs-signal / off-on-signal), **per-face
+  I/O**, and block-specific **tuning** (e.g. generation rate, radius). Storage and
+  generator blocks also emit a **comparator** signal scaled to their fill.
 
-- **Balancer** — nudges every STORAGE node on its network toward the **same fill
-  ratio** (≈2,000 RU/t, every 10 ticks) so no Resonance Cell hoards; the grid
-  "breathes" evenly.
-- **Wave Coupler** (Conduit Coupler) — joins the wired grid as a STORAGE node
-  while its buffer doubles as a **wireless RU endpoint**, formally bridging the
-  wired and wireless transport systems. See [Wireless Transport](Wireless-Transport.md).
+## Persistence & performance
 
-## Reading the grid
+- Network **topology persists** across restarts (saved to a `PersistentState`); the manager
+  merges/splits networks **incrementally** on conduit place/break — no per-tick flood fill.
+- Large networks **stagger** their tick so they don't all compute on the same tick.
+- The wireless side **self-heals**: every device carries its channel/mode in NBT and
+  re-registers on load.
 
-Craft a **Light Meter** and right-click a device for a live readout: role,
-stored / capacity Light, current demand, and conduit throughput. Comparators give
-a coarse (0–15) fill signal off any storage node.
+## Cross-mod energy
+
+An optional **Team Reborn Energy** bridge exposes RU buffers as `EnergyStorage` (1 RU = 1
+E) so other tech mods can read and feed the grid. See [Compatibility](Compatibility.md).

@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "id": "echoes:resonance_cell"
+    },
+    "title": {
+      "translate": "advancement.echoes.resonance_cell.title"
+    },
+    "description": {
+      "translate": "advancement.echoes.resonance_cell.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes:resonance_cell"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "parent": "echoes:great_work/resonant_coil"
+}

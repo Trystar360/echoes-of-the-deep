@@ -2,119 +2,92 @@
 
 [← Home](Home.md)
 
-## Mod identity
+## Constants
 
-| Field | Value |
+### Generation & storage
+
+| Block | Role | Number |
+| --- | --- | --- |
+| Resonant Coil | Provider + Storage | 10,000 buffer; charges from sound |
+| Stillness Core | Provider | 4 Light/t; 50,000 buffer |
+| Octave Coil | Provider | 24 Light/t (tunable); 300,000 buffer |
+| Storm Caller | Provider + Storage | 40,000/strike; 400,000 buffer |
+| Resonance Cell | Storage | 250,000 |
+| Greater Resonance Cell | Storage | 2,000,000 |
+
+### Throughput
+
+| Conduit | Light/t |
 | --- | --- |
-| Display name | Octaves of the One |
-| Mod id | `echoes` |
-| Archive | `echoes-of-the-deep` |
-| Maven group | `com.echoes` |
-| Version | 0.1.0 |
-| Minecraft | 1.21.4 |
-| Loader | Fabric ≥ 0.16.0 |
-| Yarn mappings | 1.21.4+build.8 |
-| Java | 21 |
-| License | MIT |
-| Author | Trystar360 |
+| Wave Conduit | 1,000 |
+| Dense Wave Conduit | 16,000 |
+| Octave Conduit | 64,000 |
 
-## Constants cheat-sheet
+### Wireless (per channel, before Amplifiers)
 
-> In-code defaults; a pack author can re-tune them. RU is shown in-game as Light.
-
-### Storage capacities
-| Block | RU |
-| --- | --- |
-| Resonant Coil | 10,000 |
-| Stillness Core | 50,000 |
-| Resonance Cell | 250,000 |
-| Compressor / Transmuter buffer | 1,000 |
-| Growth Radiator / Warmth Radiator / Polarity Field buffer | 3,000 |
-| Resonant Thrusters (item) | 1,000,000 |
-
-### Rates
-| Thing | Value |
-| --- | --- |
-| Stillness Core generation | +4 RU/t |
-| Wave Conduit throughput | 1,000 RU/t |
-| Dense Wave Conduit throughput | 16,000 RU/t |
-| Thrusters flight cost | ~8 RU/t |
-| Mob death capture | 25 RU (≤ 8 blocks) |
-| Balancer | ~2,000 RU/t every 10t |
-| Growth Radiator | ~300 RU/grow, ~8 tries / 10t, 4×2 radius |
-| Warmth Radiator | ~60 RU/cook, ~4 radius |
-| Polarity Field | ~20 RU/action / 5t, radius 6 |
-| Network stagger threshold | >256 conduits → tick every 4t |
-
-### Wireless budget (per channel, per tick)
-| Cargo | Per sender | Base cap | × amplifiers |
+| Cargo | Per sender | Cap | Amplify |
 | --- | --- | --- | --- |
-| Items | 8 | 64 | up to ×16 |
-| Fluids | 1,000 mB | 8,000 mB | up to ×16 |
-| Light | 1,000 RU | 16,000 RU | up to ×16 |
+| Items | 8/t | 64/t | ×2 each, ×16 max |
+| Fluids | 1 bucket/t | 8 buckets/t | ×2 each, ×16 max |
+| Light | 1,000/t | 16,000/t | ×2 each, ×16 max |
 
-Channels: **16** (dye colours). Min devices to tick: **2**. Hush Cost: **off by
-default**.
+Channels: **16** (one per dye colour).
 
-### Echo tool material
-Mining speed 12.0 · durability 4,000 · mines anything · enchantability 22 ·
-repaired with Echo Ingot (`#echoes:resonant_repair`).
+### Ambient capture
 
-## Block / item id list
+| Source | RU |
+| --- | --- |
+| Mob death | 25 |
+| Note block / bell / anvil / explosion / beacon / thunder | data-driven (8 / 12 / 40 / 40 / 100 / 2,000) |
 
-**Blocks:** `echocite_ore`, `deepslate_echocite_ore`, `drumstone_ore`,
-`silentite_ore`, `stillness_core`, `resonant_coil`, `wave_conduit`,
-`dense_wave_conduit`, `resonance_cell`, `compressor`, `transmuter`,
-`growth_radiator`, `warmth_radiator`, `polarity_field`, `balancer`, `wave_relay`,
-`wave_amplifier`, `wave_filter`, `wave_splitter`, `wave_repeater`,
-`wave_coupler`, `wave_chest`, `signal_relay`.
+Capture radius: **8 blocks** to the nearest Resonant Coil.
 
-**Items:** `raw_echocite`, `echocite_dust`, `echo_ingot`, `echo_dust`,
-`dull_ingot`, `resonant_slag`, `drumstone_shard`, `drum_core`,
-`silentite_crystal`, `wave_tuner`, `wave_atlas`, `light_meter`,
-`resonant_thrusters`, `resonant_pickaxe`, `resonant_axe`, `resonant_shovel`,
-`resonant_sword`, `resonant_hoe`.
+### Light Values (Bound Light)
+
+| Mote | Value | Octave Star | Capacity |
+| --- | --- | --- | --- |
+| Light | 64 | Star I | 100,000 |
+| Tonic | 256 | Star II | 400,000 |
+| Mediant | 1,024 | Star III | 1,600,000 |
+| Dominant | 4,096 | Star IV | 6,400,000 |
+| Harmonic | 16,384 | Star V | 25,600,000 |
+| | | Star VI | 102,400,000 |
 
 ## FAQ
 
-**My Resonant Coil isn't charging.**
-It needs **sound**. Put it within 8 blocks of mob deaths, or near note blocks,
-anvils, bells, or explosions. See [Ambient Capture](Ambient-Capture.md). Check
-the level with a **Light Meter**.
+**My Resonant Coil isn't charging.** It needs **sound** within 8 blocks (note blocks, mob
+deaths, anvils…). For passive Light, use a **Stillness Core**. See
+[Ambient Capture](Ambient-Capture.md).
 
-**How do I see how much Light something holds?**
-Craft a **Light Meter** and right-click the device. Storage nodes also emit a
-comparator signal (0–15) for their fill ratio.
+**A machine isn't running even though I have power.** Check the conduit line actually
+connects, and read the machine with the **Light Meter** — it shows stored Light and demand.
+Under scarcity, Light is split fairly across all consumers. Also check the device's
+**redstone** mode in its Frequency Tuner config.
 
-**My machine isn't getting power even though my Coil is full.**
-Confirm they're on the **same network** (an unbroken Wave Conduit path) and that
-the conduit throughput is enough — swap to **Dense Wave Conduit** for hungry
-consumers. The Light Meter shows demand vs. throughput.
+**How do I see how much Light something holds?** The **Light Meter** (right-click), or a
+**comparator** next to any storage/generator block.
 
-**Do the wireless relays need power?**
-No, not by default — the base relay is intentionally cheap. The optional **Hush
-Cost** would add a small Light tax per sender, but it's off by default.
+**Two relays won't talk.** They must share the same **channel** (dye colour) and be in the
+**same dimension** (or have a **Wave Repeater** on the channel). One must **Send**, the
+other **Receive**. Check the **Channel Atlas**.
 
-**Two relays on the same colour aren't talking.**
-Both must be on the same **channel** (dye colour) and in compatible **modes**
-(one Send, one Receive). Cross-dimension channels need an **Wave Repeater**.
+**I lost my shulker box / enchanted tool in the Transmutation Table.** Dissolving values an
+item at its **base** Light Value — container contents and enchantments aren't counted. Don't
+dissolve full containers. See [Transmutation](Transmutation.md).
 
-**Can other tech mods use my Light?**
-Yes, if **Team Reborn Energy** is installed — the Resonant Coil and Polarity
-Coupler bridge at 1 RU = 1 E. See [Compatibility](Compatibility.md).
+**Are my saves safe across updates?** Yes — the namespace stays `echoes` and energy is
+tracked internally as RU; the "Octaves of the One" names are a display reskin.
 
-**Will my world break if I update names?**
-No. The "Octaves of the One" reskin is display-only; internal ids stay `echoes:*`,
-so saves remain compatible.
+**Where are the recipes?** The [HTML wiki](https://trystar360.github.io/echoes-of-the-deep/)
+shows every recipe as a clickable grid; [Crafting & Progression](Crafting-and-Progression.md)
+gives the flow; in-game, follow the [Great Work](The-Great-Work.md) advancements.
 
-**Where's the crushing recipe in JEI/EMI?**
-Recipe-viewer support for the custom `crushing` type isn't added yet (on the
-roadmap). Crafting/smelting/blasting recipes show up normally.
+## Identifiers
 
-## Roadmap
+Mod id: **`echoes`**. Block/item ids are `echoes:<snake_case>` of the display name (e.g.
+*Resonant Coil* → `echoes:resonant_coil`). The creative tab is **Octaves of the One**.
 
-The project's forward plan lives in [`docs/roadmap.md`](../roadmap.md), organized
-by Russell's cosmology (Phase I generation↔radiation, II the octaves, III the
-wave, …). Highlights still open: octave tiers, wearable thrusters, a network
-visualizer, advancements, a Great Resonance Cell multiblock, the Silentite "silence"
-path, and true emissive textures.
+## Links
+
+- [HTML wiki](https://trystar360.github.io/echoes-of-the-deep/) · [Repository](https://github.com/Trystar360/echoes-of-the-deep)
+- Design docs: [`cosmology.md`](../cosmology.md) · [`wireless_transport.md`](../wireless_transport.md) · [`roadmap.md`](../roadmap.md)

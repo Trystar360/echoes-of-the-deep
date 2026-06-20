@@ -1,0 +1,38 @@
+{
+  "display": {
+    "icon": {
+      "id": "echoes:wave_relay"
+    },
+    "title": {
+      "translate": "advancement.echoes.wave_relay.title"
+    },
+    "description": {
+      "translate": "advancement.echoes.wave_relay.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes:wave_relay"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "parent": "echoes:great_work/wave_conduit",
+  "rewards": {
+    "experience": 50
+  }
+}

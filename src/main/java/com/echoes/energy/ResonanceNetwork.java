@@ -154,8 +154,8 @@ public class ResonanceNetwork {
 
     private void topUpStorage(long surplus) {
         if (surplus <= 0 || storages.isEmpty()) return;
-        // lowest fill-ratio first so banks charge evenly
-        storages.sort(Comparator.comparingLong(s -> s.insert(Long.MAX_VALUE, true)));
+        // lowest fill-ratio first so banks charge evenly (the emptiest cell fills first)
+        storages.sort(Comparator.comparingDouble(s -> (double) s.storedRu() / Math.max(1L, s.capacityRu())));
         // pull the surplus out of providers and stash it
         long pulled = 0;
         for (ResonanceNode p : providers) {

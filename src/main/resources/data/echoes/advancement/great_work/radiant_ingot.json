@@ -1,0 +1,38 @@
+{
+  "display": {
+    "icon": {
+      "id": "echoes:radiant_ingot"
+    },
+    "title": {
+      "translate": "advancement.echoes.radiant_ingot.title"
+    },
+    "description": {
+      "translate": "advancement.echoes.radiant_ingot.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes:radiant_ingot"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "parent": "echoes:great_work/octave_seed",
+  "rewards": {
+    "experience": 50
+  }
+}

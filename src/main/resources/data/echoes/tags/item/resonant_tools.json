@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "echoes:resonant_pickaxe",
+    "echoes:resonant_axe",
+    "echoes:resonant_shovel",
+    "echoes:resonant_sword",
+    "echoes:resonant_hoe"
+  ]
+}

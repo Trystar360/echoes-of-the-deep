@@ -27,16 +27,23 @@ public final class ResonanceEvents {
 
     private static Optional<ResonatorBlockEntity> nearestResonator(ServerWorld world, Vec3d pos, int radius) {
         BlockPos origin = BlockPos.ofFloored(pos);
+        double r2 = (double) radius * radius;
         ResonatorBlockEntity best = null;
         double bestDist = Double.MAX_VALUE;
-        BlockPos.Mutable m = new BlockPos.Mutable();
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dy = -radius; dy <= radius; dy++) {
-                for (int dz = -radius; dz <= radius; dz++) {
-                    m.set(origin.getX() + dx, origin.getY() + dy, origin.getZ() + dz);
-                    if (world.getBlockEntity(m) instanceof ResonatorBlockEntity res) {
-                        double d = m.getSquaredDistance(pos.x, pos.y, pos.z);
-                        if (d < bestDist) { bestDist = d; best = res; }
+
+        // Iterate only the block entities of the loaded chunks overlapping the radius
+        // (at most a 2×2–3×3 chunk patch), instead of probing every block in a 17³ box.
+        // Ambient sounds fire often, so this keeps the hot path cheap on busy servers.
+        int minCx = (origin.getX() - radius) >> 4, maxCx = (origin.getX() + radius) >> 4;
+        int minCz = (origin.getZ() - radius) >> 4, maxCz = (origin.getZ() + radius) >> 4;
+        for (int cx = minCx; cx <= maxCx; cx++) {
+            for (int cz = minCz; cz <= maxCz; cz++) {
+                var chunk = world.getChunkManager().getWorldChunk(cx, cz);
+                if (chunk == null) continue; // don't force-load chunks
+                for (var entry : chunk.getBlockEntities().entrySet()) {
+                    if (entry.getValue() instanceof ResonatorBlockEntity res) {
+                        double d = entry.getKey().getSquaredDistance(pos.x, pos.y, pos.z);
+                        if (d <= r2 && d < bestDist) { bestDist = d; best = res; }
                     }
                 }
             }

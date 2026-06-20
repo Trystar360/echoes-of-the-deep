@@ -1,0 +1,38 @@
+{
+  "display": {
+    "icon": {
+      "id": "echoes:octave_star_3"
+    },
+    "title": {
+      "translate": "advancement.echoes.octave_star.title"
+    },
+    "description": {
+      "translate": "advancement.echoes.octave_star.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#echoes:octave_stars"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "parent": "echoes:great_work/transmutation_table",
+  "rewards": {
+    "experience": 100
+  }
+}

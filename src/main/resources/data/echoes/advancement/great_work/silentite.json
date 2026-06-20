@@ -1,0 +1,38 @@
+{
+  "display": {
+    "icon": {
+      "id": "echoes:silentite_crystal"
+    },
+    "title": {
+      "translate": "advancement.echoes.silentite.title"
+    },
+    "description": {
+      "translate": "advancement.echoes.silentite.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes:silentite_crystal"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "parent": "echoes:great_work/root",
+  "rewards": {
+    "experience": 50
+  }
+}
