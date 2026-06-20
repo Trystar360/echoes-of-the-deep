@@ -1,0 +1,51 @@
+name: Publish GitHub Wiki
+
+# Mirrors docs/wiki/ into the repo's Wiki tab automatically. Regenerates the wiki
+# images from the mod's own textures/recipes/lang first, so the Wiki tab is always
+# current with whatever was just pushed to main.
+#
+# One-time setup (the wiki repo only exists after its first page is created):
+#   1. Settings -> Features -> enable "Wikis".
+#   2. Open the Wiki tab and click "Create the first page" (any content), save.
+#   3. Settings -> Actions -> General -> Workflow permissions: "Read and write".
+# After that this workflow keeps the wiki in sync on every push (and on manual run).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/wiki/**'
+      - 'src/main/resources/assets/echoes/lang/en_us.json'
+      - 'src/main/resources/assets/echoes/textures/**'
+      - 'src/main/resources/data/echoes/recipe/**'
+      - 'scripts/gen_wiki_icons.py'
+      - 'scripts/gen_wiki_recipes.py'
+      - 'scripts/publish-wiki.sh'
+      - '.github/workflows/wiki.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wiki
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Regenerate wiki images from source
+        run: |
+          python3 scripts/gen_wiki_icons.py
+          python3 scripts/gen_wiki_recipes.py
+      - name: Mirror docs/wiki -> GitHub Wiki tab
+        env:
+          WIKI_REMOTE: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.wiki.git
+          GIT_AUTHOR_NAME: 'github-actions[bot]'
+          GIT_AUTHOR_EMAIL: '41898282+github-actions[bot]@users.noreply.github.com'
+        run: bash scripts/publish-wiki.sh

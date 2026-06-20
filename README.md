@@ -20,14 +20,18 @@ with **clickable crafting grids** (every ingredient links to its own page):
 
 It's generated from the mod's own textures, recipes, and lang file by
 [`scripts/build_wiki_site.py`](scripts/build_wiki_site.py) into
-[`docs/site/`](docs/site/), and published by the
-[Pages workflow](.github/workflows/pages.yml). To preview locally, open
-`docs/site/index.html` in a browser. *(One-time: in **Settings → Pages**, set the
+[`docs/site/`](docs/site/), and the [Pages workflow](.github/workflows/pages.yml)
+**rebuilds and publishes it automatically** on every push to `main` (it re-runs the
+generator in CI, so the live site is always current with source). To preview locally,
+open `docs/site/index.html` in a browser. *(One-time: in **Settings → Pages**, set the
 source to **GitHub Actions** to make the URL above go live.)*
 
-<sub>Older long-form Markdown reference still lives in [`docs/wiki/`](docs/wiki/Home.md)
-and can be mirrored to the repo's Wiki tab with
-[`scripts/publish-wiki.sh`](scripts/publish-wiki.sh).</sub>
+<sub>The long-form Markdown reference in [`docs/wiki/`](docs/wiki/Home.md) is mirrored to
+the repo's **Wiki tab automatically** by the
+[Wiki workflow](.github/workflows/wiki.yml) on every push to `main` (it regenerates the
+wiki images and runs [`scripts/publish-wiki.sh`](scripts/publish-wiki.sh)). One-time
+setup: enable **Settings → Features → Wikis**, create the first wiki page in the UI, and
+set **Settings → Actions → General → Workflow permissions** to **Read and write**.</sub>
 
 ## What's inside
 
