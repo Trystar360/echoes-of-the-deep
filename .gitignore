@@ -1,22 +1,8 @@
-# Gradle / Loom
-.gradle/
-build/
-out/
-run/
-*.log
-
-# IDE
-.idea/
-*.iml
-.vscode/
-.settings/
-.classpath
-.project
-bin/
-
-# Python (asset/wiki/promo generators)
+# Gradle / build (repo root only)
+/.gradle/
+/build/
+# Dev server run directory (worlds, logs, configs)
+/run/
+# Python
 __pycache__/
 *.pyc
-
-# OS
-.DS_Store
