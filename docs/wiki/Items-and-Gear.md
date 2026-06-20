@@ -2,119 +2,64 @@
 
 [← Home](Home.md)
 
-Materials, tools, flight, and handheld diagnostics. Handheld wireless tools (the
-**Wave Tuner** and **Wave Atlas**) are documented on
-[Wireless Transport](Wireless-Transport.md).
+Materials, tools, flight, the transmutation coins, and the handheld diagnostics. For
+recipes see [Crafting & Progression](Crafting-and-Progression.md).
 
-## Materials
+## Materials & intermediates
 
-| | In-world name | Id | Source | Use |
-| :-: | --- | --- | --- | --- |
-| <img src="images/icons/raw_echocite.png" width="28"> | Raw Echocite | `raw_echocite` | mining Echocite Ore | smelt → Echo Ingot, or crush → dust |
-| <img src="images/icons/echocite_dust.png" width="28"> | Echocite Dust | `echocite_dust` | crushing raw echocite (×2) | smelt → Echo Ingot; crafting |
-| <img src="images/icons/echo_ingot.png" width="28"> | **Echo Ingot** | `echo_ingot` | smelt raw echocite **or** dust | **the core crafting material** |
-| <img src="images/icons/echo_dust.png" width="28"> | Echo Dust | `echo_dust` | Echocite Dust + Glowstone Dust | crafts the Wave Atlas |
-| <img src="images/icons/resonant_slag.png" width="28"> | Resonant Slag | `resonant_slag` | ~15% byproduct of crushing | smelt → Dull Ingot |
-| <img src="images/icons/dull_ingot.png" width="28"> | Dull Ingot | `dull_ingot` | smelt Resonant Slag | cheap alternate conduit material |
-| <img src="images/icons/drumstone_shard.png" width="28"> | Drumstone Shard | `drumstone_shard` | mining Drumstone Ore | crafts the Drum Core |
-| <img src="images/icons/drum_core.png" width="28"> | Drum Core | `drum_core` | 4 shards + iron | alt Coil membrane; **Thrusters** |
-| <img src="images/icons/silentite_crystal.png" width="28"> | Silentite Crystal | `silentite_crystal` | mining Silentite Ore (Deep Dark) | Stillness Core; alt Wave Repeater |
-
-**Echo Ingot** is the spine of the tech tree — nearly every machine, conduit,
-tool, and wireless device needs it. The **Dull Ingot** and **Drum Core** lines
-are cheaper/alternate paths so the loop has redundancy. See
-[Crafting & Progression](Crafting-and-Progression.md).
-
-## The transmutation economy — Bound Light (EMC)
-
-Russell's premise is that **all matter is condensed Light**, so the mod has a native
-EMC: every item carries a **Light Value** (its *Bound Light*). Each player has a personal
-**Bound-Light account** — a pool of banked Light plus the set of *attuned* tones they've
-learned — and two terminals open it:
-
-- the **[Transmutation Table](Blocks.md)** (block), and
-- the <img src="images/icons/transmutation_tablet.png" width="20" align="top">
-  **Transmutation Tablet** (`transmutation_tablet`) — the portable version; right-click to
-  open the same account anywhere.
-
-At either terminal you can **Dissolve** an item (banks its Light Value and *attunes* it),
-**Withdraw** Mote coins, or **Condense** an attuned item — set it in the ghost template
-slot and spend Bound Light to re-create it (×1 or a stack). The Mote ladder is the
-denomination scale — each tone is Light wound one octave higher (×4 per octave):
-
-| | In-world name | Id | Light Value | Tone |
-| :-: | --- | --- | --: | --- |
-| <img src="images/icons/light_mote.png" width="28"> | Light Mote | `light_mote` | 64 | O0 — raw Light, the universal One |
-| <img src="images/icons/tonic_mote.png" width="28"> | Tonic Mote | `tonic_mote` | 256 | O1 — the tonic |
-| <img src="images/icons/mediant_mote.png" width="28"> | Mediant Mote | `mediant_mote` | 1,024 | O2 — the mediant |
-| <img src="images/icons/dominant_mote.png" width="28"> | Dominant Mote | `dominant_mote` | 4,096 | O3 — the dominant |
-| <img src="images/icons/harmonic_mote.png" width="28"> | Harmonic Mote | `harmonic_mote` | 16,384 | O4 — the resolved crest (balance) |
-
-**Every item gets a weighted value — vanilla and modded.** `light_values.json` only holds
-the **seeds**: the primitives that aren't craftable from anything cheaper (ores, mob
-drops, plants, logs, base colorants) plus explicit overrides. At server start the mod then
-**derives** a value for everything else by propagating those seeds through the *entire*
-recipe graph — an item's value is the cheapest `sum(inputs) / output count` over all
-recipes that make it, iterated to a fixed point. So a modpack's items get sensible values
-for free (wherever their recipes bottom out in seeded items), and a pack can extend or
-override the seeds with its own datapack copy of the file. Items with no value — or set to
-`0`, or on the blacklist — can't be dissolved, keeping unique/exploit items out.
-
-### <img src="images/icons/octave_star_3.png" width="24" align="top"> Octave Stars — portable Bound-Light batteries
-
-Six tiers (I–VI, ×4 capacity each, up to 102,400,000). **Right-click** to charge a Star
-from your account; **sneak + right-click** to pour it back. Carry Light between bases — or
-hand a charged Star to another player, whose sneak-use banks it into *their* account.
-
-## <img src="images/icons/resonant_thrusters.png" width="28" align="top"> Resonant Thrusters — `echoes:resonant_thrusters`
-
-*Centrifugal radiation = expansion.* **Sound-powered flight** with no client mod
-— fully server-side. Portable Light lives on the item via a `stored_ru` data
-component.
-
-- **Capacity:** 1,000,000 RU (a huge reserve).
-- **Flight:** hold *use* to fly in the direction you look. **Sprint** = faster,
-  **sneak** = hover / brake. Costs only **~8 RU/t** to fly, so the reserve lasts.
-- **Fall-damage immunity** while you carry a charged set.
-- **Recharge:** right-click a **Resonant Coil**, **Resonance Cell**, or **Polarity
-  Coupler** to pull Light into the thrusters.
-- Tooltip shows current charge (`Light: x / y`).
-
-Crafted from **Echo Ingots**, a **Redstone Block**, and two **Drum Cores**.
+| Item | What it's for |
+| --- | --- |
+| **Raw Echocite** | Smelt into an Echo Ingot, or crush for doubled dust. |
+| **Echocite Dust** | Smelt into an Echo Ingot (crushed from raw echocite). |
+| **Echo Ingot** | The core crafting material of the mod. |
+| **Echo Dust** | Echocite + glowstone dust — crafts the Wave Atlas. |
+| **Resonant Slag** | ~15% Compressor byproduct — smelt into a Dull Ingot. |
+| **Dull Ingot** | A cheap alternate conduit material. |
+| **Drumstone Shard** | Four make a Drum Core. |
+| **Drum Core** | An alternate Coil membrane; also powers the Thrusters. |
+| **Silentite Crystal** | Silent crystal of the Deep Dark — for the Stillness Core. |
+| **Octave Seed** | The octave's inert rest point — the catalyst that opens transmutation. |
+| **Radiant Dust** → **Radiant Ingot** | Charged matter, a full octave higher; builds the high-octave tier. |
 
 ## Resonant tools
 
-<img src="images/icons/resonant_pickaxe.png" width="40"> <img src="images/icons/resonant_axe.png" width="40"> <img src="images/icons/resonant_shovel.png" width="40"> <img src="images/icons/resonant_sword.png" width="40"> <img src="images/icons/resonant_hoe.png" width="40">
+A full set — **pickaxe, axe, shovel, sword, hoe** — on the **Echo** tool material.
+Deliberately over-tuned: **4,000 durability**, mining speed **12** (faster than netherite),
+high enchantability (**22**), and it mines anything. Repair with **Echo Ingots**. Framed
+in-world as gear "tuned to the octave — rhythmic balanced interchange."
 
-A full set — **Pickaxe, Axe, Shovel, Sword, Hoe** — on the custom **Echo** tool
-material (`ModItems.ECHO_MATERIAL`). Deliberately over-tuned (the cosmology
-justifies it):
+## Resonant Thrusters
 
-| Property | Value |
+Look-direction flight, powered by Light:
+
+- **Hold *use*** to fly the way you look; **sprint** = faster, **sneak** = hover/brake.
+- **Fall-damage immunity** while you carry a charged set.
+- Cheap to fly off a big reserve. **Recharge** by right-clicking a **Resonant Coil**,
+  **Resonance Cell**, or **Wave Coupler**.
+- Portable Light lives on the item itself (a `stored_ru` data component) — fully
+  server-side, no client mod needed.
+
+→ advancement *"Where You Look."* See [Getting Started](Getting-Started.md).
+
+## Transmutation items
+
+| Item | What it does |
 | --- | --- |
-| Mining speed | **12.0** (faster than netherite) |
-| Mining level | mines **anything** |
-| Durability | **4,000** |
-| Enchantability | **22** (very high) |
-| Repair material | `#echoes:resonant_repair` tag (Echo Ingot) |
+| **Transmutation Tablet** | The portable terminal — opens your Bound-Light account anywhere (maxes at one). |
+| **Light / Tonic / Mediant / Dominant / Harmonic Mote** | Bound-Light coins (64 → 16,384, ×4 per octave). |
+| **Octave Star I–VI** | Portable Bound-Light batteries (100,000 → 102,400,000, ×4 per tier). |
 
-Each tool adds its usual attack-damage/speed profile on top. The constants live
-in `ModItems.ECHO_MATERIAL` and the individual `Resonant*Item` classes for easy
-re-balancing. Crafted from **Echo Ingots + sticks** in the vanilla tool shapes.
+Full details in [Transmutation & Light Values](Transmutation.md).
 
-## Diagnostics & tuning (handheld)
+## Handheld diagnostics & tools
 
-### <img src="images/icons/light_meter.png" width="28" align="top"> Light Meter — `echoes:light_meter`
-Right-click any Light device to print its **role, stored / capacity Light,
-demand, and conduit throughput** in chat. Light is otherwise invisible, so this is
-your primary debugging tool. Crafted from an Echo Ingot + redstone + comparator.
+| Item | What it does |
+| --- | --- |
+| **Light Meter** | Right-click a device to read its role, stored / capacity Light, demand, and throughput. |
+| **Frequency Tuner** | Copy/paste a wireless channel between devices; **sneak-use** opens the device configuration GUI. |
+| **Channel Atlas** | Lists the devices active on each channel (octave). |
 
-### <img src="images/icons/wave_tuner.png" width="28" align="top"> Wave Tuner — `echoes:wave_tuner`
-Copy/paste a wireless **channel** between devices: sneak + right-click a device to
-copy its octave, right-click another to paste. Batch-tune without dyes.
-
-### <img src="images/icons/wave_atlas.png" width="28" align="top"> Wave Atlas — `echoes:wave_atlas`
-Right-click a device to print its channel roster (device / give / regive / shaper
-counts); right-click the air for an overview of every active channel.
-
-Both wireless tools are detailed on [Wireless Transport](Wireless-Transport.md).
+> **Design note.** The gear is intentionally strong. In-world that's justified by *Light is
+> carried, not consumed* — a device tuned to its octave gives back as freely as the grid
+> pours in. Tune the constants in `ResonanceThrustersItem` / `ModItems.ECHO_MATERIAL` to
+> taste.

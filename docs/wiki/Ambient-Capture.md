@@ -2,54 +2,46 @@
 
 [← Home](Home.md)
 
-A **Resonant Coil** doesn't burn fuel — it **winds ambient sound into Light**.
-Two sources feed it, both implemented as mixins that find the **nearest Coil** and
-charge it.
+The **Resonant Coil** doesn't burn fuel — it **winds world sound into Light**. When
+something noisy happens near a Coil, the nearest one captures a little Light.
 
-## Mob deaths
+## How it works
 
-A `LivingEntity#onDeath` mixin adds **25 RU** to the nearest Coil within **8
-blocks** of the death. A mob farm next to a Coil is a steady trickle of Light.
+Two hooks feed Light to the nearest **Resonant Coil** within **8 blocks**:
 
-## World sound
+1. **Mob deaths** — any living entity dying grants **25 RU** to the nearest Coil.
+2. **World sounds** — when the server plays a sound listed in the **sound→RU table**, its
+   value charges the nearest Coil.
 
-A `ServerWorld#playSound` mixin charges the nearest Coil whenever a mapped sound
-plays. The mapping is **data-driven** and **reloadable** —
-`data/echoes/resonance_sources.json`, read through a reload listener
-(`ResonanceSources`), so **modpack authors can override or extend it** without
-code.
+Only the single nearest Coil claims each event, so stacking Coils around one sound source
+doesn't multiply the yield — spread them across multiple sources instead.
 
-### Default sound → Light table
+## The sound table
 
-| Sound | Light (RU) |
+The table is **data-driven** and lives in
+[`data/echoes/resonance_sources.json`](https://github.com/Trystar360/echoes-of-the-deep/blob/main/src/main/resources/data/echoes/resonance_sources.json),
+read by a reload listener (so `/reload` picks up edits). The defaults:
+
+| Sound | RU |
 | --- | --- |
-| Note block — harp | 8 |
-| Note block — bass | 8 |
-| Note block — bell | 12 |
+| Note block (harp / bass) | 8 |
+| Note block (bell) | 12 |
 | Bell use | 10 |
 | Anvil land | 40 |
 | Explosion | 40 |
 | Beacon activate | 100 |
-| **Thunder** | **2,000** |
+| Thunder | 2,000 |
 
-Louder, rarer events pay far more — a thunderstorm near an exposed Coil is a
-windfall, while a note-block loop is a reliable drip. Park Coils near anvils,
-note-block contraptions, or automated bells for hands-off charging.
+## Build ideas
 
-## Extending it
+- A wall of **note blocks** on a redstone clock next to a Coil is a clean, quiet generator.
+- A **mob farm** drop zone over a Coil turns kills into Light.
+- **Anvils** falling on a loop, or a TNT/explosion farm, give bigger bursts.
+- **Thunderstorms** are huge but rare — for reliable storm power, build the **Storm Caller**
+  instead (see [Blocks](Blocks.md)).
 
-To add or rebalance sources, ship a datapack that overrides
-`data/echoes/resonance_sources.json`:
+## For modpack makers
 
-```json
-{
-  "sources": {
-    "minecraft:block.note_block.harp": 8,
-    "minecraft:entity.lightning_bolt.thunder": 2000,
-    "yourmod:some.custom.sound": 50
-  }
-}
-```
-
-Keys are `SoundEvent` ids; values are RU added to the nearest Coil when that sound
-plays. Reload with `/reload`.
+Add or retune entries — including **other mods'** sound events — by overriding the JSON in a
+datapack. The key is the sound event id; the value is RU per occurrence. This is the
+intended way to balance ambient generation for a pack.

@@ -2,56 +2,32 @@
 
 [← Home](Home.md)
 
-Three ores feed the tech tree. Worldgen is attached via Fabric
-`BiomeModifications` (`ModWorldGen`); all three drop their material with a
-standard Fortune bonus.
+Three ores and one tree, attached to vanilla biomes via `BiomeModifications`.
 
-## <img src="images/blocks3d/echocite_ore.png" width="46" align="top"> <img src="images/blocks3d/deepslate_echocite_ore.png" width="46" align="top"> Echocite Ore — `echoes:echocite_ore` (+ `deepslate_echocite_ore`)
+## Ores
 
-The backbone resource. Generates throughout the **Overworld** in both stone and
-deepslate, dropping **Raw Echocite**.
+| Ore | Drops | Where | Generation |
+| --- | --- | --- | --- |
+| **Echocite Ore** (+ deepslate) | Raw Echocite | Overworld, most biomes | vein size 8, ~12 tries/chunk, **Y −20…60** (trapezoid — densest in the middle) |
+| **Drumstone Ore** | Drumstone Shard | Overworld | vein size 6, ~5 tries/chunk, **Y −48…24** (trapezoid) |
+| **Silentite Ore** | Silentite Crystal | **Deep Dark only** | vein size 4, ~4 tries/chunk, **Y −58…−8** (uniform) — rare |
 
-| Property | Value |
-| --- | --- |
-| Where | Overworld (all standard biomes) |
-| Drops | Raw Echocite (Fortune-affected) |
-| Vein size | 8 |
-| Veins / chunk | 12 |
-| Height | trapezoid distribution, **y −20 → 60** |
-| Targets | `stone_ore_replaceables` (→ echocite) and `deepslate_ore_replaceables` (→ deepslate variant) |
+- **Echocite** is the base of the entire mod — you'll have plenty from ordinary mining. Mine
+  with a stone pickaxe or better.
+- **Drumstone** opens the percussive branch (Drum Core → alternate Coil, Thrusters).
+- **Silentite** is intentionally scarce and gated behind reaching the **Deep Dark**; it's
+  the silence the high-octave tier is built on (Stillness Core, Octave Seed).
 
-## <img src="images/blocks3d/drumstone_ore.png" width="46" align="top"> Drumstone Ore — `echoes:drumstone_ore`
+## The Lumewood Grove
 
-A percussive tier. Generates **deeper** in the Overworld and drops **Drumstone
-Shard** → **Drum Core** (an alternate Coil membrane, and the Thrusters ingredient).
+A custom **glowing tree** generates as small groves in forest biomes. It drops a
+**Lumewood Sapling** (plant it on grass or **Verdant Loam** to grow more) and yields the
+full **Lumewood** building set — log, wood, planks, stairs, slab, fence, gate, trapdoor,
+glowing leaves — plus the **Lumebloom** flower for décor. See [Blocks](Blocks.md).
 
-| Property | Value |
-| --- | --- |
-| Where | Overworld |
-| Drops | Drumstone Shard (Fortune-affected) |
-| Vein size | 6 |
-| Veins / chunk | 5 |
-| Height | trapezoid, **y −48 → 24** |
+## For modpack makers
 
-## <img src="images/blocks3d/silentite_ore.png" width="46" align="top"> Silentite Ore — `echoes:silentite_ore`
-
-The rarest tier, the "silence / unstruck tone" line. Generates **only in the Deep
-Dark** and drops **Silentite Crystal** (for the **Stillness Core** and an
-alternate **Wave Repeater**).
-
-| Property | Value |
-| --- | --- |
-| Where | **Deep Dark only** |
-| Drops | Silentite Crystal (Fortune-affected) |
-| Vein size | 4 |
-| Veins / chunk | 4 |
-| Height | uniform, **y −58 → −8** |
-| Targets | `deepslate_ore_replaceables` |
-
-## Notes
-
-- Worldgen is data-driven under
-  `data/echoes/worldgen/{configured_feature,placed_feature}/` — a pack author can
-  override spawn rates without touching code.
-- On a fresh world load the server logs the biome modifications being applied
-  (e.g. *"Applied 54 biome modifications"*), confirming the ores attached.
+Worldgen is standard data — configured/placed features under
+`data/echoes/worldgen/` — wired to biomes in `ModWorldGen` via Fabric `BiomeModifications`.
+Override the JSON in a datapack to retune spawn rate, height, or biome targeting; disable an
+ore by removing its biome modification or emptying the placed feature.

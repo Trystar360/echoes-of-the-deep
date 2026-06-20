@@ -1,0 +1,38 @@
+{
+  "display": {
+    "icon": {
+      "id": "echoes:harmonic_mote"
+    },
+    "title": {
+      "translate": "advancement.echoes.harmonic_mote.title"
+    },
+    "description": {
+      "translate": "advancement.echoes.harmonic_mote.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes:harmonic_mote"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "parent": "echoes:great_work/transmutation_table",
+  "rewards": {
+    "experience": 100
+  }
+}

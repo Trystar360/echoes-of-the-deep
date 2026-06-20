@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "id": "echoes:growth_radiator"
+    },
+    "title": {
+      "translate": "advancement.echoes.growth_radiator.title"
+    },
+    "description": {
+      "translate": "advancement.echoes.growth_radiator.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes:growth_radiator"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "parent": "echoes:great_work/resonant_coil"
+}

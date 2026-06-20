@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "id": "echoes:balancer"
+    },
+    "title": {
+      "translate": "advancement.echoes.balancer.title"
+    },
+    "description": {
+      "translate": "advancement.echoes.balancer.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes:balancer"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "parent": "echoes:great_work/growth_radiator"
+}

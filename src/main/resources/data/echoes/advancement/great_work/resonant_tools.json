@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "id": "echoes:resonant_pickaxe"
+    },
+    "title": {
+      "translate": "advancement.echoes.resonant_tools.title"
+    },
+    "description": {
+      "translate": "advancement.echoes.resonant_tools.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#echoes:resonant_tools"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "parent": "echoes:great_work/echo_ingot"
+}

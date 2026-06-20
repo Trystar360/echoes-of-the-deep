@@ -1,0 +1,38 @@
+{
+  "display": {
+    "icon": {
+      "id": "echoes:resonant_thrusters"
+    },
+    "title": {
+      "translate": "advancement.echoes.resonant_thrusters.title"
+    },
+    "description": {
+      "translate": "advancement.echoes.resonant_thrusters.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes:resonant_thrusters"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "parent": "echoes:great_work/resonant_tools",
+  "rewards": {
+    "experience": 100
+  }
+}

@@ -2,37 +2,46 @@
 
 [← Home](Home.md)
 
-Both integrations are **optional soft dependencies** (`"suggests"` in
-`fabric.mod.json`). The mod runs fully standalone; these only activate when the
-other mod is present.
+The mod is standalone — it needs only **Fabric API**. Two optional integrations activate
+when their mod is present and are completely inert otherwise.
 
-## Team Reborn Energy (RU ↔ E bridge)
+## Team Reborn Energy (active when installed)
 
-An optional bridge exposes the mod's Light buffers to other tech mods as Team
-Reborn `EnergyStorage`, at **1 RU = 1 E**.
+An optional bridge exposes the mod's Light buffers as Team Reborn **`EnergyStorage`** at
+**1 RU = 1 E**, so other tech mods can read and feed the Resonance grid:
 
-- **Bridged blocks:** the **Resonant Coil** (`resonant_coil`) and the **Polarity
-  Coupler** (`wave_coupler`) expose their RU buffers, so other tech mods can
-  both **read and feed** the grid.
-- **Soft dependency:** compiled against the TR Energy API as `modCompileOnly` and
-  gated by `FabricLoader.isModLoaded(...)`, so it activates only when a
-  1.21.x-compatible Team Reborn Energy is installed and is **completely inert
-  otherwise**.
-- **Implementation:** `com.echoes.compat.TeamRebornEnergyCompat` /
-  `ResonanceEnergyBridge`. Version pinned via `tr_energy_version` in
-  `gradle.properties` (currently 4.0.1).
+- Bridged blocks: the **Resonant Coil** and the **Wave Coupler**.
+- Transaction-safe (a `SnapshotParticipant`), registered on `EnergyStorage.SIDED`.
+- Gated by `FabricLoader.isModLoaded("team_reborn_energy")` and compiled as a
+  `modCompileOnly` soft dependency, so the class is never touched unless a 1.21.x-compatible
+  Team Reborn Energy is installed.
 
-This lets the Coupler act as a two-way gateway between this mod's grid and any
-other Reborn-Energy-compatible system, in addition to its wired↔wireless role.
+This is the recommended way to connect Octaves of the One to other Fabric tech mods: run a
+cable from their machine into a **Wave Coupler**, and the wired Light grid feeds it.
 
-## Trinkets
+## Trinkets (suggested — planned)
 
-Listed as a suggested dependency for planned wearable gear (e.g. a future
-**Silence Cloak** trinket — see [`roadmap.md`](../roadmap.md)). Nothing in the
-current build requires it; it is forward-looking.
+Trinkets is listed as a **suggested** dependency for the planned **Resonant Ring** (a worn
+flight item that moves the Thrusters off the hotbar). That feature isn't implemented yet, so
+Trinkets currently has **no effect** if installed — it's a forward-looking soft dep, not a
+live integration. Flight today is the held **Resonant Thrusters**; see
+[Items & Gear](Items-and-Gear.md).
 
 ## Recipe viewers (JEI / EMI)
 
-Not yet integrated. The custom **`crushing`** recipe type won't appear in JEI/EMI
-recipe lookups until dedicated plugin support is added (tracked on the roadmap).
-Standard crafting, smelting, and blasting recipes show up normally.
+Vanilla-style crafting and smelting recipes show in any recipe viewer automatically. The
+custom **Compressor** (`crushing`) recipes don't yet register a viewer category, so they
+aren't browsable in JEI/EMI — a known limitation. Until then, the
+[Crafting & Progression](Crafting-and-Progression.md) page and the
+[HTML wiki](https://trystar360.github.io/echoes-of-the-deep/) document them.
+
+## Modpacks & datapacks
+
+Several systems are intentionally **data-driven** so packs can retune them without code:
+
+- **Light Values** — `data/echoes/light_values.json` (seeds + blacklist; the rest is derived).
+- **Ambient sound → Light** — `data/echoes/resonance_sources.json`.
+- **Worldgen** — `data/echoes/worldgen/` + biome modifications.
+- **Advancements** — `data/echoes/advancement/great_work/` (parent onto `echoes:great_work/<node>`).
+
+Override any of them in a datapack.
