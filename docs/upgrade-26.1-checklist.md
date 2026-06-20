@@ -5,6 +5,27 @@ they land. Order matters: **Phase A** (Mojmap on 1.21.4) is verifiable in the cu
 Java 21 / Loom 1.9.2 environment; **Phase B** (jump to 26.1.2) needs Java 25 + the 26.1
 toolchain and may be gated by dependency/runtime availability here.
 
+## Environment reconnaissance (confirmed)
+
+A trial run on this repo established the real scope:
+
+- ✅ **Mojmap resolves** — `mappings loom.officialMojangMappings()` downloads and the build
+  runs on the current Loom 1.9.2 / Java 21 toolchain (so Phase A is doable in-repo).
+- 📏 **Rename surface:** **110 Java files**, **130 unique `net.minecraft` imports**, 25
+  Fabric-API imports. Switching to Mojmap with no source changes produced **100+**
+  `cannot find symbol` errors (Java caps the report at 100) — package/class renames
+  (`net.minecraft.util.math.BlockPos`→`net.minecraft.core.BlockPos`, `Text`→`Component`,
+  `PlayerEntity`→`Player`, `ScreenHandler`→`AbstractContainerMenu`, …) **plus**
+  signature-sensitive method renames (`writeNbt`→`saveAdditional`, `getCachedState`→
+  `getBlockState`, `markDirty`→`setChanged`, …) and `Mixin has no targets`.
+- ⚠️ **No safe auto-route:** Loom's `migrateMappings` task exists but reliably targets
+  Yarn→Yarn, not official Mojmap. The rename is therefore manual and **all-or-nothing**
+  (the source set won't compile until every file is converted) — best done with the
+  IntelliJ "migrate to official mappings" map or a careful scripted pass + iteration.
+- ⛔ **Phase B can't be built here:** only **Java 21** is installed; 26.1 needs **Java 25**.
+  Phase B code can be written but must be compiled/run where Java 25 + the 26.1 toolchain
+  (Loom 1.15, Fabric API 26.1.2) are available.
+
 ## Phase A — migrate Yarn → Mojang official mappings (still on 1.21.4)
 
 - [ ] `build.gradle`: `mappings "net.fabricmc:yarn:…:v2"` → `mappings loom.officialMojangMappings()`
