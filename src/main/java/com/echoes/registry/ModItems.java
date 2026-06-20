@@ -57,6 +57,10 @@ public final class ModItems {
     /** Light Value of each Mote (×4 per octave): Light=64 … Harmonic=16384. */
     public static final long[] MOTE_VALUES = { 64L, 256L, 1024L, 4096L, 16384L };
 
+    // The portable transmutation terminal (per-player Bound-Light account).
+    public static final Item TRANSMUTATION_TABLET = register("transmutation_tablet",
+            com.echoes.item.TransmutationTabletItem::new, new Item.Settings().maxCount(1));
+
     // Wireless transport tools
     public static final Item FREQUENCY_TUNER = register("wave_tuner",
             FrequencyTunerItem::new, new Item.Settings().maxCount(1));

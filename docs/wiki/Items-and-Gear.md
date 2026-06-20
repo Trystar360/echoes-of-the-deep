@@ -28,10 +28,19 @@ are cheaper/alternate paths so the loop has redundancy. See
 ## The transmutation economy — Bound Light (EMC)
 
 Russell's premise is that **all matter is condensed Light**, so the mod has a native
-EMC: every item carries a **Light Value** (its *Bound Light*). The
-**[Transmutation Table](Blocks.md)** dissolves matter into a banked Bound-Light pool and
-pays it back out as **Mote coins**. The Mote ladder is the denomination scale — each tone
-is Light wound one octave higher (×4 per octave):
+EMC: every item carries a **Light Value** (its *Bound Light*). Each player has a personal
+**Bound-Light account** — a pool of banked Light plus the set of *attuned* tones they've
+learned — and two terminals open it:
+
+- the **[Transmutation Table](Blocks.md)** (block), and
+- the <img src="images/icons/transmutation_tablet.png" width="20" align="top">
+  **Transmutation Tablet** (`transmutation_tablet`) — the portable version; right-click to
+  open the same account anywhere.
+
+At either terminal you can **Dissolve** an item (banks its Light Value and *attunes* it),
+**Withdraw** Mote coins, or **Condense** an attuned item — set it in the ghost template
+slot and spend Bound Light to re-create it (×1 or a stack). The Mote ladder is the
+denomination scale — each tone is Light wound one octave higher (×4 per octave):
 
 | | In-world name | Id | Light Value | Tone |
 | :-: | --- | --- | --: | --- |

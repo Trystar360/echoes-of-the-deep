@@ -60,10 +60,6 @@ public class EchoesMod implements ModInitializer {
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.ATTUNEMENT_FURNACE);
 
-        // Transmutation Table: top face feeds the dissolve slot, sides extract output.
-        ItemStorage.SIDED.registerForBlockEntity(
-                (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.TRANSMUTATION_TABLE);
-
         // Optional cross-mod energy bridge — only when Team Reborn Energy is present.
         // Isolated in a separate class so its TR Energy references aren't loaded otherwise.
         if (FabricLoader.getInstance().isModLoaded("team_reborn_energy")) {
