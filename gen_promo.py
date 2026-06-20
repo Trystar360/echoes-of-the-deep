@@ -11,6 +11,7 @@ Run:  python3 gen_promo.py   ->   promo/*.png
 """
 from __future__ import annotations
 
+import math
 import os
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 
@@ -203,6 +204,28 @@ def divider(d, y):
     d.ellipse([W // 2 - 5, y - 5, W // 2 + 5, y + 5], outline=TEAL, width=2)
 
 
+def arrow(img, x0, y0, x1, y1, color=BRONZE, width=5, label=None, lfnt=None, lcolor=None):
+    d = ImageDraw.Draw(img)
+    d.line([(x0, y0), (x1, y1)], fill=(*color, 235), width=width)
+    ang = math.atan2(y1 - y0, x1 - x0); L = 16
+    for da in (math.radians(152), math.radians(-152)):
+        d.line([(x1, y1), (x1 + L * math.cos(ang + da), y1 + L * math.sin(ang + da))],
+               fill=(*color, 235), width=width)
+    if label:
+        mx, my = (x0 + x1) // 2, (y0 + y1) // 2
+        text(d, (mx, my - 22), label, lfnt or F_MONO(18), fill=lcolor or color, anchor="ma")
+
+
+def orb(img, cx, cy, r=58, caption="BOUND LIGHT", inner="light_mote"):
+    g = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    ImageDraw.Draw(g).ellipse([cx - r - 14, cy - r - 14, cx + r + 14, cy + r + 14], fill=(*TEAL, 80))
+    img.alpha_composite(g.filter(ImageFilter.GaussianBlur(12)))
+    d = ImageDraw.Draw(img)
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(13, 38, 40, 240), outline=(*TEAL, 255), width=3)
+    paste(img, render_item(inner, 44), cx, cy - 8)
+    text(d, (cx, cy + r - 24), caption, F_MONO(15), fill=TEAL, anchor="ma")
+
+
 def header(img, title, sub, cy=None):
     d = ImageDraw.Draw(img)
     text(d, (W // 2, 52), title, F_TITLE(56), anchor="ma")
@@ -288,29 +311,84 @@ def wireless():
     save(img, "03_wireless.png")
 
 
-def transmutation():
-    img = background(); header(img, "THE LIGHT ECONOMY", "matter is condensed Light — dissolve it, bank it, condense it back")
-    paste(img, render_block("transmutation_table", 152), 250, 330)
-    d = ImageDraw.Draw(img)
-    text(d, (250, 432), "Transmutation Table", F_BODY(24), anchor="ma")
-    text(d, (250, 462), "your Bound-Light account", F_BODY(20), fill=MUTE, anchor="ma")
-    motes = [("light_mote", "Light", "64"), ("tonic_mote", "Tonic", "256"), ("mediant_mote", "Mediant", "1,024"),
-             ("dominant_mote", "Dominant", "4,096"), ("harmonic_mote", "Harmonic", "16,384")]
-    rounded(img, [470, 230, W - 70, 470], radius=18); dd = ImageDraw.Draw(img)
-    text(dd, (490, 248), "THE MOTE LADDER", F_TITLE(24), fill=AMBER)
-    text(dd, (W - 90, 254), "×4 per octave", F_MONO(18), fill=MUTE, anchor="ra")
-    span = (W - 70 - 510); n = len(motes)
+def values():
+    img = background(); header(img, "EVERY ITEM IS CONDENSED LIGHT",
+                               "vanilla or modded — everything carries a Light Value")
+    # item strip: a diverse row, each tagged as carrying value
+    rounded(img, [70, 200, W - 70, 332], radius=18); dd = ImageDraw.Draw(img)
+    text(dd, (W // 2, 214), "EVERY ITEM  →  A LIGHT VALUE", F_TITLE(24), fill=TEAL, anchor="ma")
+    strip = ["raw_echocite", "echocite_dust", "echo_ingot", "drum_core",
+             "silentite_crystal", "radiant_ingot", "octave_seed", "echo_dust"]
+    gap = (W - 200) // len(strip)
+    for i, nm in enumerate(strip):
+        cx = 100 + gap // 2 + i * gap
+        paste(img, render_item(nm, 52), cx, 282)
+        ImageDraw.Draw(img).text((cx, 308), "≈ Light", font=F_MONO(13), fill=MUTE, anchor="ma")
+
+    # how values are set (left) + the Mote scale (right)
+    rounded(img, [70, 354, 624, 624], radius=18); dd = ImageDraw.Draw(img)
+    text(dd, (96, 370), "HOW VALUES ARE SET", F_TITLE(22), fill=AMBER)
+    for j, ln in enumerate([
+        "A small seed set of primitives — ores, mob",
+        "drops, plants — is authoritative. Every other",
+        "item, vanilla or modded, is derived across the",
+        "whole recipe graph: the cheapest sum(inputs)",
+        "÷ output, to a fixed point.",
+        "",
+        "Min + floor means you can never craft UP in",
+        "value, so ore progression stays safe — and",
+        "modpacks get sensible values for free.",
+    ]):
+        text(dd, (96, 406 + j * 24), ln, F_BODY(19), fill=CREAM)
+
+    motes = [("light_mote", "Light", "64"), ("tonic_mote", "Tonic", "256"),
+             ("mediant_mote", "Mediant", "1,024"), ("dominant_mote", "Dominant", "4,096"),
+             ("harmonic_mote", "Harmonic", "16,384")]
+    rounded(img, [668, 354, W - 70, 624], radius=18); dd = ImageDraw.Draw(img)
+    text(dd, ((668 + W - 70) // 2, 370), "THE MOTE LADDER — the value scale", F_TITLE(21), fill=AMBER, anchor="ma")
+    text(dd, ((668 + W - 70) // 2, 400), "Bound-Light coins · ×4 per octave", F_BODY(18), fill=MUTE, anchor="ma")
+    span = (W - 70 - 668); n = len(motes)
     for i, (nm, lab, val) in enumerate(motes):
-        cx = 510 + span // (2 * n) + i * (span // n)
-        paste(img, render_item(nm, 64), cx, 360)
-        text(dd, (cx, 404), lab, F_BODY(19), anchor="ma")
-        text(dd, (cx, 428), val, F_MONO(17), fill=TEAL, anchor="ma")
-    rounded(img, [70, 504, W - 70, 624], radius=18); dd = ImageDraw.Draw(img)
-    text(dd, (96, 520), "OCTAVE STARS — carry Bound Light in your pocket (×4 capacity per tier)", F_BODY(22))
-    for i in range(6):
-        paste(img, render_item(f"octave_star_{i+1}", 60), 150 + i * ((W - 300) // 5), 588)
-    text(ImageDraw.Draw(img), (W // 2, 664), "Values derived across the whole recipe graph — you can never craft up in value.", F_BODY(23), fill=MUTE, anchor="ma")
-    save(img, "04_transmutation.png")
+        cx = 668 + span // (2 * n) + i * (span // n)
+        paste(img, render_item(nm, 58), cx, 470)
+        text(dd, (cx, 512), lab, F_BODY(18), anchor="ma")
+        text(dd, (cx, 536), val, F_MONO(16), fill=TEAL, anchor="ma")
+    text(dd, ((668 + W - 70) // 2, 584), "withdraw & re-dissolve are exact inverses", F_BODY(18), fill=MUTE, anchor="ma")
+    save(img, "04_values.png")
+
+
+def tablet_table():
+    img = background(); header(img, "THE TABLE & THE TABLET",
+                               "your personal Bound-Light account — dissolve · withdraw · condense")
+    cy = 322
+    orb(img, W // 2, cy, r=60)
+    # DISSOLVE — item into the account
+    paste(img, render_item("radiant_ingot", 72), 250, cy)
+    arrow(img, 300, cy, W // 2 - 70, cy, color=TEAL, label="DISSOLVE", lcolor=TEAL)
+    d = ImageDraw.Draw(img)
+    text(d, (250, cy + 56), "any item", F_BODY(19), fill=CREAM, anchor="ma")
+    text(d, ((250 + W // 2) // 2, cy + 40), "bank its value · attune its tone", F_BODY(17), fill=MUTE, anchor="ma")
+    # WITHDRAW — out to motes
+    for k, nm in enumerate(["light_mote", "tonic_mote", "harmonic_mote"]):
+        paste(img, render_item(nm, 46), 980 + k * 52, cy - 70)
+    arrow(img, W // 2 + 60, cy - 24, 950, cy - 70, color=AMBER, label="WITHDRAW", lcolor=AMBER)
+    text(d, (1030, cy - 28), "pay out as Mote coins", F_BODY(17), fill=MUTE, anchor="ma")
+    # CONDENSE — out to an attuned item
+    paste(img, render_item("radiant_ingot", 56), 1000, cy + 74)
+    arrow(img, W // 2 + 60, cy + 24, 968, cy + 74, color=GREEN, label="CONDENSE", lcolor=GREEN)
+    text(d, (1030, cy + 116), "re-create an attuned item · ×1 or ×64", F_BODY(17), fill=MUTE, anchor="ma")
+
+    # one shared account: table + tablet
+    rounded(img, [70, 470, W - 70, 624], radius=18)
+    paste(img, render_block("transmutation_table", 118), 230, 547)
+    paste(img, render_item("transmutation_tablet", 92), W - 230, 547)
+    dd = ImageDraw.Draw(img)
+    text(dd, (230, 612), "Transmutation Table", F_BODY(19), fill=CREAM, anchor="ma")
+    text(dd, (W - 230, 612), "Transmutation Tablet", F_BODY(19), fill=CREAM, anchor="ma")
+    text(dd, (W // 2, 506), "ONE SHARED ACCOUNT", F_TITLE(26), fill=TEAL, anchor="ma")
+    wrap(dd, W // 2, 544, "Per-player Bound Light and the tones you've learned — at the block or in your pocket. Your Light and knowledge follow you.",
+         F_BODY(21), CREAM, 440, 28)
+    save(img, "05_transmutation.png")
 
 
 def grove():
@@ -342,7 +420,7 @@ def grove():
         paste(img, im, cx, 580)
         text(dd, (cx + 70, 580), lab, F_BODY(20), fill=CREAM, anchor="lm")
     text(ImageDraw.Draw(img), (W // 2, 664), "Glowing wood, masonry, flowers, and living soil — utilitarian and pretty.", F_BODY(23), fill=MUTE, anchor="ma")
-    save(img, "05_grove.png")
+    save(img, "06_grove.png")
 
 
 def gear():
@@ -362,7 +440,7 @@ def gear():
     wrap(dd, (668 + W - 70) // 2, 446, "A full set on the Echo material — faster than netherite, tough, and highly enchantable.", F_BODY(21), CREAM, 520, 28)
     text(ImageDraw.Draw(img), (W // 2, 588), "Deliberately strong — a device tuned to its octave gives back as freely as the grid pours in.", F_BODY(24), fill=MUTE, anchor="ma")
     text(ImageDraw.Draw(img), (W // 2, 648), "( flavour, not physics )", F_ITAL(22), fill=BRONZE, anchor="ma")
-    save(img, "06_gear.png")
+    save(img, "07_gear.png")
 
 
 def great_work():
@@ -385,11 +463,11 @@ def great_work():
     text(dd, (W // 2, 548), "24 connected advancements — goals & challenges with XP rewards", F_BODY(25), anchor="ma")
     text(dd, (W // 2, 582), "open your advancements (L) and follow the toasts", F_BODY(23), fill=MUTE, anchor="ma")
     text(ImageDraw.Draw(img), (W // 2, 664), "From the still centre of zero to the resolved crest.", F_ITAL(24), fill=BRONZE, anchor="ma")
-    save(img, "07_great_work.png")
+    save(img, "08_great_work.png")
 
 
 def main():
-    hero(); energy(); wireless(); transmutation(); grove(); gear(); great_work()
+    hero(); energy(); wireless(); values(); tablet_table(); grove(); gear(); great_work()
     print("done — promo/")
 
 
