@@ -1,0 +1,64 @@
+name: Release
+
+# Builds the mod and publishes a GitHub Release with the jar attached, whenever a
+# version tag (v*) is pushed. Run it by tagging a commit:
+#   git tag v0.1.0 && git push origin v0.1.0
+# or trigger manually from the Actions tab (workflow_dispatch).
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build --no-daemon
+
+      - name: Collect artifacts
+        id: artifacts
+        run: |
+          ls -la build/libs
+          echo "main_jar=$(ls build/libs/echoes-of-the-deep-*.jar | grep -v -- '-sources.jar' | head -1)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Octaves of the One ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            build/libs/echoes-of-the-deep-*.jar
+          body: |
+            **Octaves of the One** — a Fabric tech mod for Minecraft **1.21.4**, themed on
+            Walter Russell's two-way universe of rhythmic balanced interchange.
+
+            ### Install
+            Drop the jar into `.minecraft/mods/` alongside **Fabric Loader** (≥ 0.16.0) and
+            **Fabric API** for **1.21.4**. Requires Java 21.
+
+            ### Highlights
+            - A complete, survival-craftable **energy + logistics + transmutation** loop:
+              generate Light, carry and bank it on a wired grid, broadcast it wirelessly,
+              and spend it on machines, flight, and a personal matter-transmutation economy.
+            - The in-game **Great Work** advancement tree guides the whole progression.
+            - Procedurally generated art, an auto-published wiki, and data-driven systems
+              (Light Values, ambient sound→Light, worldgen, advancements) for modpacks.
+
+            See the [wiki](https://trystar360.github.io/echoes-of-the-deep/) for the full
+            reference.
