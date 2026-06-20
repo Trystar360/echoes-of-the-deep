@@ -1,49 +1,37 @@
 #!/usr/bin/env python3
 """Generate promotional gallery graphics for Octaves of the One.
 
-Composes the mod's own 3D block renders and item icons onto styled
-"deep resonance" backgrounds (sculk-dark gradients, teal sound-wave ripples,
-bronze panels) into 16:9 cards suitable for the Modrinth / CurseForge gallery.
+Renders the mod's blocks as proper isometric cubes straight from the real
+16x16 textures (machines show their glowing front over the bronze device
+casing), and items from their real sprites — composed onto styled
+"deep resonance" backgrounds into 16:9 gallery cards. Headless (Pillow only),
+so a GPU-less box can produce them.
 
-These are promo/diagram images, not in-game screenshots — they're produced
-headlessly so a GPU-less CI box can make them. Run:  python3 gen_promo.py
-Outputs to promo/*.png.
-
-Requires Pillow (pip install Pillow).
+Run:  python3 gen_promo.py   ->   promo/*.png
 """
 from __future__ import annotations
 
 import os
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-BLOCKS3D = os.path.join(ROOT, "docs/wiki/images/blocks3d")
-ICONS = os.path.join(ROOT, "docs/wiki/images/icons")
+TEX = os.path.join(ROOT, "src/main/resources/assets/echoes/textures")
+TB = os.path.join(TEX, "block")
+TI = os.path.join(TEX, "item")
 OUT = os.path.join(ROOT, "promo")
 
 W, H = 1280, 720
 
-# Palette — the "deep resonance" identity.
-BG_TOP = (8, 12, 16)
-BG_BOT = (10, 26, 30)
-TEAL = (52, 211, 192)
-TEAL_DIM = (28, 120, 110)
-BRONZE = (184, 138, 74)
-AMBER = (240, 165, 0)
-AMETHYST = (168, 85, 247)
-CREAM = (232, 230, 223)
-MUTE = (138, 160, 160)
-PANEL = (17, 24, 29)
-
+BG_TOP = (8, 12, 16); BG_BOT = (10, 26, 30)
+TEAL = (52, 211, 192); BRONZE = (184, 138, 74); AMBER = (240, 165, 0)
+AMETHYST = (168, 85, 247); CREAM = (232, 230, 223); MUTE = (138, 160, 160)
+GREEN = (122, 200, 96); PANEL = (17, 24, 29)
 FONTS = "/usr/share/fonts/truetype/liberation"
 
 
 def font(name, size):
-    for cand in (name, "LiberationSans-Regular.ttf"):
-        p = os.path.join(FONTS, cand)
-        if os.path.exists(p):
-            return ImageFont.truetype(p, size)
-    return ImageFont.load_default()
+    p = os.path.join(FONTS, name)
+    return ImageFont.truetype(p, size) if os.path.exists(p) else ImageFont.load_default()
 
 
 F_TITLE = lambda s: font("LiberationSans-Bold.ttf", s)
@@ -51,303 +39,357 @@ F_BODY = lambda s: font("LiberationSans-Regular.ttf", s)
 F_ITAL = lambda s: font("LiberationSerif-Italic.ttf", s)
 F_MONO = lambda s: font("LiberationMono-Bold.ttf", s)
 
+# ───────────────────── texture loading ─────────────────────
+MACHINES = set()  # filled lazily: blocks whose texture is an animated front strip
 
-def background(cx=None, cy=None):
-    """Vertical gradient + concentric sound-wave rings + vignette."""
-    img = Image.new("RGB", (W, H))
-    px = img.load()
+
+def _raw(path):
+    return Image.open(path).convert("RGBA") if os.path.exists(path) else None
+
+
+def block_tex(name):
+    """Return (16x16 RGBA brightest frame, is_machine) for a block texture, or (None, False)."""
+    im = _raw(os.path.join(TB, name + ".png"))
+    if im is None:
+        return None, False
+    if im.height > im.width:  # animated vertical strip -> machine front; pick brightest frame
+        n = im.height // im.width
+        frames = [im.crop((0, i * im.width, im.width, (i + 1) * im.width)) for i in range(n)]
+        best = max(frames, key=lambda f: sum(f.convert("L").tobytes()))
+        return best, True
+    return im, False
+
+
+def item_tex(name):
+    im = _raw(os.path.join(TI, name + ".png"))
+    if im is None:
+        im = _raw(os.path.join(TB, name + ".png"))
+        if im is not None and im.height > im.width:
+            im = im.crop((0, 0, im.width, im.width))
+    return im
+
+# ───────────────────── isometric cube ─────────────────────
+def _solve3(p, q, r, tx):
+    """Affine coeffs (a,b,c) with t = a*x + b*y + c through 3 points p,q,r -> tx[0..2]."""
+    (x0, y0), (x1, y1), (x2, y2) = p, q, r
+    det = (x0 * (y1 - y2) - y0 * (x1 - x2) + (x1 * y2 - x2 * y1))
+    if abs(det) < 1e-9:
+        return (0, 0, tx[0])
+    a = (tx[0] * (y1 - y2) - y0 * (tx[1] - tx[2]) + (tx[1] * y2 - tx[2] * y1)) / det
+    b = (x0 * (tx[1] - tx[2]) - tx[0] * (x1 - x2) + (x1 * tx[2] - x2 * tx[1])) / det
+    c = (x0 * (y1 * tx[2] - y2 * tx[1]) - y0 * (x1 * tx[2] - x2 * tx[1]) + tx[0] * (x1 * y2 - x2 * y1)) / det
+    return (a, b, c)
+
+
+def _face(canvas, tex, d0, d1, d2, bright):
+    """Map tex corners (0,0),(16,0),(0,16) -> output d0,d1,d2 (a parallelogram) and composite."""
+    S = canvas.size
+    ax, bx, cx = _solve3(d0, d1, d2, (0, 0, 16))           # output->src x
+    ay, by, cy = _solve3(d0, d1, d2, (0, 16, 0))           # output->src y
+    warped = tex.transform(S, Image.AFFINE, (ax, bx, cx, ay, by, cy), resample=Image.NEAREST)
+    warped = ImageEnhance.Brightness(warped).enhance(bright)
+    mask = Image.new("L", S, 0)
+    d4 = (d1[0] + d2[0] - d0[0], d1[1] + d2[1] - d0[1])
+    ImageDraw.Draw(mask).polygon([d0, d1, d4, d2], fill=255)
+    canvas.paste(warped, (0, 0), Image.composite(warped.split()[3], Image.new("L", S, 0), mask))
+
+
+def render_block(name, target_h):
+    """A pixel-art isometric cube of the block, ~target_h px tall, with a soft contact shadow."""
+    base, machine = block_tex(name)
+    if base is None:
+        it = item_tex(name)              # fallback billboard
+        return render_item_img(it, target_h) if it else None
+    top, left, right = base, base, base
+    if machine:
+        dt, _ = block_tex("device_top"); ds, _ = block_tex("device_side")
+        if dt is not None: top = dt
+        if ds is not None: right = ds      # front (bright) stays on the left face
+    elif name == "lumewood_log":
+        lt, _ = block_tex("lumewood_log_top")
+        if lt is not None: top = lt
+
+    s = max(24, int(target_h * 0.5))
+    pad = int(s * 0.5)
+    S = (2 * s + 2 * pad, 2 * s + 2 * pad)
+    cx, cy = S[0] // 2, S[1] // 2
+    canvas = Image.new("RGBA", S, (0, 0, 0, 0))
+
+    # contact shadow
+    sh = Image.new("RGBA", S, (0, 0, 0, 0))
+    ImageDraw.Draw(sh).ellipse([cx - s, cy + s - s // 4, cx + s, cy + s + s // 4],
+                               fill=(0, 0, 0, 120))
+    canvas.alpha_composite(sh.filter(ImageFilter.GaussianBlur(6)))
+
+    T_top = (cx, cy - s); T_right = (cx + s, cy - s // 2)
+    T_front = (cx, cy); T_left = (cx - s, cy - s // 2)
+    L_blb = (cx - s, cy + s // 2); R_bf = (cx, cy + s)
+    _face(canvas, top, T_left, T_top, T_front, 1.0)        # top
+    _face(canvas, left, T_left, T_front, L_blb, 0.78)      # left / front
+    _face(canvas, right, T_front, T_right, R_bf, 0.60)     # right
+    # crisp edge highlight
+    ImageDraw.Draw(canvas).line([T_top, T_left, T_front, T_right, T_top],
+                                fill=(255, 255, 255, 30), width=1)
+    return canvas
+
+
+def render_item_img(im, target_h):
+    if im is None:
+        return None
+    scale = max(1, round(target_h / im.height))
+    return im.resize((im.width * scale, im.height * scale), Image.NEAREST)
+
+
+def render_item(name, target_h):
+    return render_item_img(item_tex(name), target_h)
+
+# ───────────────────── scene helpers ─────────────────────
+def background(cy=None):
+    img = Image.new("RGB", (W, H)); px = img.load()
     for y in range(H):
         t = y / (H - 1)
-        r = int(BG_TOP[0] + (BG_BOT[0] - BG_TOP[0]) * t)
-        g = int(BG_TOP[1] + (BG_BOT[1] - BG_TOP[1]) * t)
-        b = int(BG_TOP[2] + (BG_BOT[2] - BG_TOP[2]) * t)
+        px_row = tuple(int(BG_TOP[i] + (BG_BOT[i] - BG_TOP[i]) * t) for i in range(3))
         for x in range(W):
-            px[x, y] = (r, g, b)
+            px[x, y] = px_row
     img = img.convert("RGBA")
-
-    cx = W // 2 if cx is None else cx
-    cy = H // 2 if cy is None else cy
-    rings = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    rd = ImageDraw.Draw(rings)
+    ccx, ccy = W // 2, (H // 2 if cy is None else cy)
+    rings = Image.new("RGBA", (W, H), (0, 0, 0, 0)); rd = ImageDraw.Draw(rings)
     for i in range(1, 26):
-        rad = i * 46
-        a = max(0, 42 - i * 2)
-        rd.ellipse([cx - rad, cy - rad, cx + rad, cy + rad],
-                   outline=(TEAL[0], TEAL[1], TEAL[2], a), width=2)
-    rings = rings.filter(ImageFilter.GaussianBlur(0.6))
-    img = Image.alpha_composite(img, rings)
-
-    # vignette
+        rad = i * 46; a = max(0, 40 - i * 2)
+        rd.ellipse([ccx - rad, ccy - rad, ccx + rad, ccy + rad], outline=(*TEAL, a), width=2)
+    img = Image.alpha_composite(img, rings.filter(ImageFilter.GaussianBlur(0.6)))
     vig = Image.new("L", (W, H), 0)
-    vd = ImageDraw.Draw(vig)
-    vd.ellipse([-W * 0.3, -H * 0.3, W * 1.3, H * 1.3], fill=255)
+    ImageDraw.Draw(vig).ellipse([-W * 0.3, -H * 0.3, W * 1.3, H * 1.3], fill=255)
     vig = vig.filter(ImageFilter.GaussianBlur(180))
-    dark = Image.new("RGBA", (W, H), (0, 0, 0, 130))
-    img = Image.composite(img, Image.alpha_composite(img, dark), vig)
+    img = Image.composite(img, Image.alpha_composite(img, Image.new("RGBA", (W, H), (0, 0, 0, 130))), vig)
     return img
 
 
-def load_render(name, h):
-    """Load a 3D block render (preferred) or flat icon, upscaled to height h (nearest)."""
-    for base in (BLOCKS3D, ICONS):
-        p = os.path.join(base, name + ".png")
-        if os.path.exists(p):
-            im = Image.open(p).convert("RGBA")
-            scale = max(1, round(h / im.height))
-            return im.resize((im.width * scale, im.height * scale), Image.NEAREST)
-    return None
-
-
-def paste_render(canvas, im, cx, cy):
-    """Paste centered at (cx,cy) with a soft drop shadow + teal glow."""
+def paste(canvas, im, cx, cy):
     if im is None:
         return
-    x, y = cx - im.width // 2, cy - im.height // 2
-    shadow = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    sm = im.split()[3].point(lambda a: int(a * 0.55))
-    blk = Image.new("RGBA", im.size, (0, 0, 0, 255))
-    shadow.paste(blk, (x + 6, y + 8), sm)
-    shadow = shadow.filter(ImageFilter.GaussianBlur(7))
-    canvas.alpha_composite(shadow)
-    canvas.alpha_composite(im, (x, y))
+    canvas.alpha_composite(im, (cx - im.width // 2, cy - im.height // 2))
 
 
 def rounded(canvas, box, fill=PANEL, outline=BRONZE, glow=TEAL, width=2, radius=16):
-    overlay = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    d = ImageDraw.Draw(overlay)
-    d.rounded_rectangle(box, radius=radius, fill=(fill[0], fill[1], fill[2], 205))
-    canvas.alpha_composite(overlay)
+    ov = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    ImageDraw.Draw(ov).rounded_rectangle(box, radius=radius, fill=(*fill, 205))
+    canvas.alpha_composite(ov)
     g = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    gd = ImageDraw.Draw(g)
-    gd.rounded_rectangle(box, radius=radius, outline=(glow[0], glow[1], glow[2], 70), width=width + 4)
-    g = g.filter(ImageFilter.GaussianBlur(5))
-    canvas.alpha_composite(g)
-    d2 = ImageDraw.Draw(canvas)
-    d2.rounded_rectangle(box, radius=radius, outline=(outline[0], outline[1], outline[2], 255), width=width)
+    ImageDraw.Draw(g).rounded_rectangle(box, radius=radius, outline=(*glow, 70), width=width + 4)
+    canvas.alpha_composite(g.filter(ImageFilter.GaussianBlur(5)))
+    ImageDraw.Draw(canvas).rounded_rectangle(box, radius=radius, outline=(*outline, 255), width=width)
 
 
-def text(d, xy, s, fnt, fill=CREAM, anchor="la", glow=None, shadow=True):
-    x, y = xy
+def text(d, xy, s, fnt, fill=CREAM, anchor="la", shadow=True):
     if shadow:
-        d.text((x + 2, y + 2), s, font=fnt, fill=(0, 0, 0, 180), anchor=anchor)
-    if glow:
-        d.text(xy, s, font=fnt, fill=glow, anchor=anchor, stroke_width=2, stroke_fill=glow)
+        d.text((xy[0] + 2, xy[1] + 2), s, font=fnt, fill=(0, 0, 0, 180), anchor=anchor)
     d.text(xy, s, font=fnt, fill=fill, anchor=anchor)
 
 
-def wave_divider(d, y, x0=120, x1=W - 120, color=BRONZE):
-    d.line([(x0, y), (x1, y)], fill=(color[0], color[1], color[2], 160), width=2)
+def wrap(d, cx, y, s, fnt, color, maxw, lh):
+    line = ""
+    for w in s.split():
+        if d.textlength((line + " " + w).strip(), font=fnt) > maxw:
+            text(d, (cx, y), line, fnt, fill=color, anchor="ma"); line = w; y += lh
+        else:
+            line = (line + " " + w).strip()
+    if line:
+        text(d, (cx, y), line, fnt, fill=color, anchor="ma")
+
+
+def divider(d, y):
+    d.line([(120, y), (W - 120, y)], fill=(*BRONZE, 160), width=2)
     d.ellipse([W // 2 - 5, y - 5, W // 2 + 5, y + 5], outline=TEAL, width=2)
+
+
+def header(img, title, sub, cy=None):
+    d = ImageDraw.Draw(img)
+    text(d, (W // 2, 52), title, F_TITLE(56), anchor="ma")
+    text(d, (W // 2, 126), sub, F_ITAL(27), fill=TEAL, anchor="ma")
+    divider(d, 174)
+    return d
 
 
 def save(img, name):
     os.makedirs(OUT, exist_ok=True)
     img.convert("RGB").save(os.path.join(OUT, name), "PNG")
-    print("wrote", os.path.join("promo", name))
+    print("wrote promo/" + name)
 
 
-# ───────────────────────── 1. hero ─────────────────────────
+# ───────────────────── cards ─────────────────────
 def hero():
-    img = background(cy=300)
-    d = ImageDraw.Draw(img)
-    text(d, (W // 2, 92), "OCTAVES OF THE ONE", F_TITLE(74), fill=CREAM, anchor="ma", glow=None)
-    text(d, (W // 2, 178), "a two-way universe of rhythmic balanced interchange",
-         F_ITAL(30), fill=TEAL, anchor="ma")
-    wave_divider(d, 232)
-
+    img = background(cy=300); d = ImageDraw.Draw(img)
+    text(d, (W // 2, 84), "OCTAVES OF THE ONE", F_TITLE(76), anchor="ma")
+    text(d, (W // 2, 172), "a two-way universe of rhythmic balanced interchange", F_ITAL(30), fill=TEAL, anchor="ma")
+    divider(d, 228)
     row = ["resonant_coil", "resonance_cell", "wave_conduit", "transmuter", "growth_radiator", "wave_relay"]
-    n = len(row)
-    gap = (W - 160) // n
-    for i, name in enumerate(row):
-        cx = 80 + gap // 2 + i * gap
-        paste_render(img, load_render(name, 150), cx, 360)
+    gap = (W - 160) // len(row)
+    for i, n in enumerate(row):
+        paste(img, render_block(n, 150), 80 + gap // 2 + i * gap, 360)
     d = ImageDraw.Draw(img)
-
-    labels = "Generate  ·  Bank  ·  Carry  ·  Transmute  ·  Radiate  ·  Broadcast"
-    text(d, (W // 2, 470), labels, F_BODY(26), fill=MUTE, anchor="ma")
-
-    rounded(img, [W // 2 - 430, 540, W // 2 + 430, 626], radius=20)
+    text(d, (W // 2, 470), "Generate · Bank · Carry · Transmute · Radiate · Broadcast", F_BODY(26), fill=MUTE, anchor="ma")
+    rounded(img, [W // 2 - 440, 536, W // 2 + 440, 626], radius=20)
     d = ImageDraw.Draw(img)
-    text(d, (W // 2, 566), "Draw Light from stillness, wind it through the octaves, spend it",
-         F_BODY(25), fill=CREAM, anchor="ma")
-    text(d, (W // 2, 596), "across a wired & wireless grid.", F_BODY(25), fill=CREAM, anchor="ma")
-    text(d, (W // 2, 666), "FABRIC  ·  MINECRAFT 1.21.4  ·  LIGHT IS CARRIED, NOT CONSUMED",
-         F_MONO(20), fill=BRONZE, anchor="ma")
+    text(d, (W // 2, 562), "Draw Light from stillness, wind it up through the octaves,", F_BODY(25), anchor="ma")
+    text(d, (W // 2, 594), "and spend it across a wired & wireless grid.", F_BODY(25), anchor="ma")
+    text(d, (W // 2, 668), "FABRIC · MINECRAFT 1.21.4 · LIGHT IS CARRIED, NOT CONSUMED", F_MONO(20), fill=BRONZE, anchor="ma")
     save(img, "01_hero.png")
 
 
-# ───────────────────────── 2. energy grid ─────────────────────────
-def energy():
-    img = background()
-    d = ImageDraw.Draw(img)
-    text(d, (W // 2, 56), "THE TWO-WAY GRID", F_TITLE(56), anchor="ma")
-    text(d, (W // 2, 128), "generation winds Light up · radiation pours it back out",
-         F_ITAL(27), fill=TEAL, anchor="ma")
-    wave_divider(d, 176)
-
-    cards = [
-        ("GENERATE", "resonant_coil", "Wind ambient sound into stored Light."),
-        ("BANK", "resonance_cell", "Store surplus — up to 2,000,000 Light."),
-        ("SPEND", "compressor", "Double ore, smelt with no fuel."),
-        ("RADIATE", "growth_radiator", "Pour Light back into the world as life."),
-    ]
-    cw, ch, gap = 264, 360, 24
+def card_row(img, y0, cards, accent_for=lambda t: TEAL, kind="block"):
+    cw, ch, gap = 264, 348, 24
     total = len(cards) * cw + (len(cards) - 1) * gap
     x0 = (W - total) // 2
     for i, (title, name, cap) in enumerate(cards):
         bx = x0 + i * (cw + gap)
-        rounded(img, [bx, 220, bx + cw, 220 + ch], radius=18)
-        paste_render(img, load_render(name, 150), bx + cw // 2, 330)
-        dd = ImageDraw.Draw(img)
-        text(dd, (bx + cw // 2, 440), title, F_TITLE(30), fill=AMBER if title in ("SPEND", "RADIATE") else TEAL, anchor="ma")
-        # wrap caption
-        words, line, yy = cap.split(), "", 484
-        for w in words:
-            test = (line + " " + w).strip()
-            if dd.textlength(test, font=F_BODY(20)) > cw - 36:
-                text(dd, (bx + cw // 2, yy), line, F_BODY(20), fill=CREAM, anchor="ma")
-                line, yy = w, yy + 26
-            else:
-                line = test
-        if line:
-            text(dd, (bx + cw // 2, yy), line, F_BODY(20), fill=CREAM, anchor="ma")
+        rounded(img, [bx, y0, bx + cw, y0 + ch])
+        im = render_block(name, 148) if kind == "block" else render_item(name, 120)
+        paste(img, im, bx + cw // 2, y0 + 110)
+        d = ImageDraw.Draw(img)
+        text(d, (bx + cw // 2, y0 + 216), title, F_TITLE(29), fill=accent_for(title), anchor="ma")
+        wrap(d, bx + cw // 2, y0 + 262, cap, F_BODY(20), CREAM, cw - 36, 26)
+
+
+def energy():
+    img = background(); header(img, "THE TWO-WAY GRID", "generation winds Light up · radiation pours it back out")
+    card_row(img, 214, [
+        ("GENERATE", "resonant_coil", "Wind ambient sound into stored Light."),
+        ("BANK", "resonance_cell", "Bank surplus — up to 2,000,000 Light."),
+        ("SPEND", "compressor", "Double ore; smelt with no fuel."),
+        ("RADIATE", "growth_radiator", "Pour Light back into the world as life."),
+    ], accent_for=lambda t: AMBER if t in ("SPEND", "RADIATE") else TEAL)
     d = ImageDraw.Draw(img)
-    text(d, (W // 2, 632), "Conduits share Light fairly — proportional under scarcity, no starvation.",
-         F_BODY(24), fill=MUTE, anchor="ma")
+    text(d, (W // 2, 632), "Conduits share Light fairly — proportional under scarcity, no starvation.", F_BODY(24), fill=MUTE, anchor="ma")
     save(img, "02_energy.png")
 
 
-# ───────────────────────── 3. wireless ─────────────────────────
 def wireless():
-    img = background()
-    d = ImageDraw.Draw(img)
-    text(d, (W // 2, 56), "WIRELESS TRANSPORT", F_TITLE(56), anchor="ma")
-    text(d, (W // 2, 128), "tune devices to a shared octave — they resonate",
-         F_ITAL(27), fill=TEAL, anchor="ma")
-    wave_divider(d, 176)
-
-    # two relays beaming across a gap
-    paste_render(img, load_render("wave_relay", 150), 300, 300)
-    paste_render(img, load_render("wave_chest", 150), 980, 300)
+    img = background(); header(img, "WIRELESS TRANSPORT", "tune devices to a shared octave — they resonate")
+    paste(img, render_block("wave_relay", 150), 300, 304)
+    paste(img, render_block("wave_chest", 150), 980, 304)
     d = ImageDraw.Draw(img)
     for i in range(7):
-        x = 430 + i * 60
-        a = 210 - i * 12
-        d.ellipse([x - 6, 296 - 6, x + 6, 296 + 6], outline=(TEAL[0], TEAL[1], TEAL[2], a), width=3)
+        x = 432 + i * 60
+        d.ellipse([x - 6, 290, x + 6, 302], outline=(*TEAL, 210 - i * 12), width=3)
     text(d, (300, 392), "SEND", F_MONO(22), fill=AMBER, anchor="ma")
     text(d, (980, 392), "RECEIVE", F_MONO(22), fill=TEAL, anchor="ma")
-    text(d, (W // 2, 288), "items · fluids · Light", F_BODY(22), fill=CREAM, anchor="ma")
-
-    fam = ["wave_amplifier", "wave_filter", "wave_splitter", "wave_repeater", "wave_coupler", "signal_relay"]
-    names = ["Amplifier", "Filter", "Splitter", "Repeater", "Coupler", "Signal"]
-    n = len(fam)
-    gap = (W - 160) // n
-    rounded(img, [70, 452, W - 70, 624], radius=18)
-    for i, (nm, lab) in enumerate(zip(fam, names)):
+    text(d, (W // 2, 250), "items · fluids · Light", F_BODY(22), anchor="ma")
+    fam = [("wave_amplifier", "Amplifier"), ("wave_filter", "Filter"), ("wave_splitter", "Splitter"),
+           ("wave_repeater", "Repeater"), ("wave_coupler", "Coupler"), ("signal_relay", "Signal")]
+    rounded(img, [70, 446, W - 70, 624], radius=18)
+    gap = (W - 160) // len(fam)
+    for i, (nm, lab) in enumerate(fam):
         cx = 80 + gap // 2 + i * gap
-        paste_render(img, load_render(nm, 92), cx, 520)
-        dd = ImageDraw.Draw(img)
-        text(dd, (cx, 576), lab, F_BODY(21), fill=CREAM, anchor="ma")
+        paste(img, render_block(nm, 96), cx, 518)
+        text(ImageDraw.Draw(img), (cx, 578), lab, F_BODY(21), anchor="ma")
     d = ImageDraw.Draw(img)
-    text(d, (W // 2, 664), "16 octave channels · one per dye colour · spans dimensions with a Repeater",
-         F_BODY(23), fill=MUTE, anchor="ma")
+    text(d, (W // 2, 664), "16 octave channels · one per dye colour · spans dimensions with a Repeater", F_BODY(23), fill=MUTE, anchor="ma")
     save(img, "03_wireless.png")
 
 
-# ───────────────────────── 4. transmutation ─────────────────────────
 def transmutation():
-    img = background()
+    img = background(); header(img, "THE LIGHT ECONOMY", "matter is condensed Light — dissolve it, bank it, condense it back")
+    paste(img, render_block("transmutation_table", 152), 250, 330)
     d = ImageDraw.Draw(img)
-    text(d, (W // 2, 56), "THE LIGHT ECONOMY", F_TITLE(56), anchor="ma")
-    text(d, (W // 2, 128), "matter is condensed Light — dissolve it, bank it, condense it back",
-         F_ITAL(26), fill=TEAL, anchor="ma")
-    wave_divider(d, 176)
-
-    paste_render(img, load_render("transmutation_table", 150), 250, 330)
-    d = ImageDraw.Draw(img)
-    text(d, (250, 430), "Transmutation Table", F_BODY(24), fill=CREAM, anchor="ma")
+    text(d, (250, 432), "Transmutation Table", F_BODY(24), anchor="ma")
     text(d, (250, 462), "your Bound-Light account", F_BODY(20), fill=MUTE, anchor="ma")
-
-    motes = [("light_mote", "Light", "64"), ("tonic_mote", "Tonic", "256"),
-             ("mediant_mote", "Mediant", "1,024"), ("dominant_mote", "Dominant", "4,096"),
-             ("harmonic_mote", "Harmonic", "16,384")]
-    rounded(img, [470, 232, W - 70, 470], radius=18)
-    dd = ImageDraw.Draw(img)
-    text(dd, (490, 250), "THE MOTE LADDER", F_TITLE(24), fill=AMBER, anchor="la")
-    text(dd, (W - 90, 256), "×4 per octave", F_MONO(18), fill=MUTE, anchor="ra")
-    n = len(motes)
-    span = (W - 70 - 510)
+    motes = [("light_mote", "Light", "64"), ("tonic_mote", "Tonic", "256"), ("mediant_mote", "Mediant", "1,024"),
+             ("dominant_mote", "Dominant", "4,096"), ("harmonic_mote", "Harmonic", "16,384")]
+    rounded(img, [470, 230, W - 70, 470], radius=18); dd = ImageDraw.Draw(img)
+    text(dd, (490, 248), "THE MOTE LADDER", F_TITLE(24), fill=AMBER)
+    text(dd, (W - 90, 254), "×4 per octave", F_MONO(18), fill=MUTE, anchor="ra")
+    span = (W - 70 - 510); n = len(motes)
     for i, (nm, lab, val) in enumerate(motes):
         cx = 510 + span // (2 * n) + i * (span // n)
-        paste_render(img, load_render(nm, 64), cx, 360)
-        text(dd, (cx, 404), lab, F_BODY(19), fill=CREAM, anchor="ma")
+        paste(img, render_item(nm, 64), cx, 360)
+        text(dd, (cx, 404), lab, F_BODY(19), anchor="ma")
         text(dd, (cx, 428), val, F_MONO(17), fill=TEAL, anchor="ma")
-
-    # octave stars row
-    rounded(img, [70, 504, W - 70, 624], radius=18)
-    dd = ImageDraw.Draw(img)
-    text(dd, (96, 520), "OCTAVE STARS — carry Bound Light in your pocket (×4 capacity per tier)",
-         F_BODY(22), fill=CREAM, anchor="la")
+    rounded(img, [70, 504, W - 70, 624], radius=18); dd = ImageDraw.Draw(img)
+    text(dd, (96, 520), "OCTAVE STARS — carry Bound Light in your pocket (×4 capacity per tier)", F_BODY(22))
     for i in range(6):
-        cx = 150 + i * ((W - 300) // 5)
-        paste_render(img, load_render(f"octave_star_{i+1}", 60), cx, 588)
-    d = ImageDraw.Draw(img)
-    text(d, (W // 2, 664),
-         "Values derived across the whole recipe graph — you can never craft up in value.",
-         F_BODY(23), fill=MUTE, anchor="ma")
+        paste(img, render_item(f"octave_star_{i+1}", 60), 150 + i * ((W - 300) // 5), 588)
+    text(ImageDraw.Draw(img), (W // 2, 664), "Values derived across the whole recipe graph — you can never craft up in value.", F_BODY(23), fill=MUTE, anchor="ma")
     save(img, "04_transmutation.png")
 
 
-# ───────────────────────── 5. the great work ─────────────────────────
-def great_work():
-    img = background(cy=360)
+def grove():
+    img = background(); header(img, "THE OCTAVE GROVE", "a living, glowing garden — Light poured back as growth")
+    # left: growth story
+    rounded(img, [70, 214, 612, 470], radius=18)
+    paste(img, render_block("verdant_loam", 130), 200, 312)
+    paste(img, render_block("growth_radiator", 130), 470, 312)
     d = ImageDraw.Draw(img)
-    text(d, (W // 2, 56), "THE GREAT WORK", F_TITLE(56), anchor="ma")
-    text(d, (W // 2, 128), "a guided in-game advancement tree walks the whole progression",
-         F_ITAL(26), fill=TEAL, anchor="ma")
-    wave_divider(d, 176)
+    text(d, (200, 392), "Verdant Loam", F_BODY(22), anchor="ma")
+    text(d, (470, 392), "Growth Radiator", F_BODY(22), anchor="ma")
+    text(d, (341, 430), "pulse Light upward to grow crops & saplings", F_BODY(20), fill=GREEN, anchor="ma")
+    # right: building set
+    rounded(img, [668, 214, W - 70, 470], radius=18)
+    bs = [("lumewood_planks", "Lumewood"), ("echocite_bricks", "Bricks"), ("lume_lantern", "Lantern")]
+    for i, (nm, lab) in enumerate(bs):
+        cx = 740 + i * 158
+        paste(img, render_block(nm, 120), cx, 312)
+        text(ImageDraw.Draw(img), (cx, 392), lab, F_BODY(21), anchor="ma")
+    text(ImageDraw.Draw(img), ((668 + W - 70) // 2, 430), "a full glowing building palette", F_BODY(20), fill=AMBER, anchor="ma")
+    # flora strip
+    rounded(img, [70, 504, W - 70, 624], radius=18); dd = ImageDraw.Draw(img)
+    text(dd, (96, 520), "GROVE FLORA — grown from the Lumewood tree", F_BODY(22), fill=GREEN)
+    flora = [("lumebloom", "Lumebloom"), ("lumewood_sapling", "Sapling"), ("lumewood_log", "Lumewood Log"), ("lumewood_leaves", "Leaves")]
+    gap = (W - 360) // len(flora)
+    for i, (nm, lab) in enumerate(flora):
+        cx = 360 + gap // 2 + i * gap
+        im = render_block(nm, 78) if nm in ("lumewood_log",) else render_item(nm, 56)
+        paste(img, im, cx, 580)
+        text(dd, (cx + 70, 580), lab, F_BODY(20), fill=CREAM, anchor="lm")
+    text(ImageDraw.Draw(img), (W // 2, 664), "Glowing wood, masonry, flowers, and living soil — utilitarian and pretty.", F_BODY(23), fill=MUTE, anchor="ma")
+    save(img, "05_grove.png")
 
-    steps = [
-        ("echocite_ore", "Refine", "Echocite → Echo Ingot"),
-        ("resonant_coil", "Generate", "Coil · Core · Storm"),
-        ("wave_conduit", "Carry & Bank", "Conduits · Cells"),
-        ("growth_radiator", "Radiate", "the other half"),
-        ("wave_relay", "Broadcast", "wireless octaves"),
-        ("transmutation_table", "Transmute", "the Light economy"),
-    ]
-    n = len(steps)
-    gap = (W - 140) // n
-    y = 330
-    for i, (name, title, cap) in enumerate(steps):
-        cx = 70 + gap // 2 + i * gap
-        if i < n - 1:
-            nx = 70 + gap // 2 + (i + 1) * gap
-            d.line([(cx + 50, y), (nx - 50, y)], fill=(BRONZE[0], BRONZE[1], BRONZE[2], 200), width=3)
-            d.polygon([(nx - 50, y - 6), (nx - 50, y + 6), (nx - 38, y)], fill=TEAL)
-    for i, (name, title, cap) in enumerate(steps):
-        cx = 70 + gap // 2 + i * gap
-        paste_render(img, load_render(name, 96), cx, y)
-        dd = ImageDraw.Draw(img)
-        text(dd, (cx, y + 70), title, F_TITLE(23), fill=TEAL, anchor="ma")
-        text(dd, (cx, y + 100), cap, F_BODY(17), fill=MUTE, anchor="ma")
+
+def gear():
+    img = background(); header(img, "FLIGHT & OVER-TUNED GEAR", "Light spent on motion — the body thrown outward from centre")
+    rounded(img, [70, 214, 612, 520], radius=18)
+    paste(img, render_item("resonant_thrusters", 150), 341, 312)
     d = ImageDraw.Draw(img)
-    rounded(img, [W // 2 - 440, 520, W // 2 + 440, 614], radius=18)
+    text(d, (341, 408), "RESONANT THRUSTERS", F_TITLE(26), fill=TEAL, anchor="ma")
+    wrap(d, 341, 446, "Hold use to fly where you look, with fall immunity. Recharge on any Coil or Cell.", F_BODY(21), CREAM, 500, 28)
+    rounded(img, [668, 214, W - 70, 520], radius=18)
+    tools = ["resonant_pickaxe", "resonant_axe", "resonant_sword", "resonant_shovel", "resonant_hoe"]
+    gap = (W - 70 - 668 - 40) // len(tools)
+    for i, nm in enumerate(tools):
+        paste(img, render_item(nm, 96), 668 + 40 + gap // 2 + i * gap, 320)
     dd = ImageDraw.Draw(img)
-    text(dd, (W // 2, 548), "24 connected advancements — goals & challenges with XP rewards",
-         F_BODY(25), fill=CREAM, anchor="ma")
-    text(dd, (W // 2, 582), "open your advancements (L) and follow the toasts",
-         F_BODY(23), fill=MUTE, anchor="ma")
-    text(dd, (W // 2, 664), "From the still centre of zero to the resolved crest.",
-         F_ITAL(24), fill=BRONZE, anchor="ma")
-    save(img, "05_great_work.png")
+    text(dd, ((668 + W - 70) // 2, 408), "RESONANT TOOLS", F_TITLE(26), fill=AMBER, anchor="ma")
+    wrap(dd, (668 + W - 70) // 2, 446, "A full set on the Echo material — faster than netherite, tough, and highly enchantable.", F_BODY(21), CREAM, 520, 28)
+    text(ImageDraw.Draw(img), (W // 2, 588), "Deliberately strong — a device tuned to its octave gives back as freely as the grid pours in.", F_BODY(24), fill=MUTE, anchor="ma")
+    text(ImageDraw.Draw(img), (W // 2, 648), "( flavour, not physics )", F_ITAL(22), fill=BRONZE, anchor="ma")
+    save(img, "06_gear.png")
+
+
+def great_work():
+    img = background(cy=360); header(img, "THE GREAT WORK", "a guided in-game advancement tree walks the whole progression")
+    steps = [("echocite_ore", "Refine", "ore → ingot"), ("resonant_coil", "Generate", "coil · core · storm"),
+             ("wave_conduit", "Carry & Bank", "conduits · cells"), ("growth_radiator", "Radiate", "the other half"),
+             ("wave_relay", "Broadcast", "wireless octaves"), ("transmutation_table", "Transmute", "the Light economy")]
+    n = len(steps); gap = (W - 140) // n; y = 332; d = ImageDraw.Draw(img)
+    for i in range(n - 1):
+        cx = 70 + gap // 2 + i * gap; nx = 70 + gap // 2 + (i + 1) * gap
+        d.line([(cx + 52, y), (nx - 52, y)], fill=(*BRONZE, 200), width=3)
+        d.polygon([(nx - 52, y - 6), (nx - 52, y + 6), (nx - 40, y)], fill=TEAL)
+    for i, (name, title, cap) in enumerate(steps):
+        cx = 70 + gap // 2 + i * gap
+        paste(img, render_block(name, 100), cx, y)
+        dd = ImageDraw.Draw(img)
+        text(dd, (cx, y + 78), title, F_TITLE(23), fill=TEAL, anchor="ma")
+        text(dd, (cx, y + 108), cap, F_BODY(17), fill=MUTE, anchor="ma")
+    rounded(img, [W // 2 - 440, 520, W // 2 + 440, 616], radius=18); dd = ImageDraw.Draw(img)
+    text(dd, (W // 2, 548), "24 connected advancements — goals & challenges with XP rewards", F_BODY(25), anchor="ma")
+    text(dd, (W // 2, 582), "open your advancements (L) and follow the toasts", F_BODY(23), fill=MUTE, anchor="ma")
+    text(ImageDraw.Draw(img), (W // 2, 664), "From the still centre of zero to the resolved crest.", F_ITAL(24), fill=BRONZE, anchor="ma")
+    save(img, "07_great_work.png")
 
 
 def main():
-    hero()
-    energy()
-    wireless()
-    transmutation()
-    great_work()
+    hero(); energy(); wireless(); transmutation(); grove(); gear(); great_work()
     print("done — promo/")
 
 
