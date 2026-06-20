@@ -1246,6 +1246,27 @@ def mote(name, ramp, radius, corecol, ticks):
     bloom(c, ramp, alpha=72, reach=2, thresh=140)
     outline(c, thresh=150)
     write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
+def transmutation_tablet():
+    # A handheld slate: bronze frame, a teal→amber interchange face, central rune.
+    c = C(); r = BRONZE
+    c.rect(4, 1, 11, 14, r[2])                       # frame
+    c.rect(4, 1, 11, 1, r[3]); c.rect(4, 14, 11, 14, r[1])
+    c.rect(5, 3, 10, 12, (14, 20, 22))               # inset face
+    for y in range(3, 13):                            # interchange wash teal -> amber
+        for x in range(5, 11):
+            t = (y - 3) / 9.0
+            col = lerp(TEAL[2], AMBER[2], t)
+            c.over(x, y, (col[0], col[1], col[2], 95))
+    for y in range(16):                              # central rune orb
+        for x in range(16):
+            if math.hypot(x - 7.5, y - 7.5) < 2.2:
+                c.over(x, y, (TEAL[4][0], TEAL[4][1], TEAL[4][2], 210))
+    c.set(7, 7, (245, 255, 250)); c.set(8, 8, (245, 255, 250))
+    bloom(c, TEAL, alpha=58, reach=2, thresh=150)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/transmutation_tablet.png", 16, 16, c.px)
+transmutation_tablet()
+
 mote("light_mote",    TEAL,  3.0, (225, 255, 250), 0)
 mote("tonic_mote",    TEAL,  3.4, (240, 255, 250), 1)
 mote("mediant_mote",  AMBER, 3.8, (255, 240, 200), 2)

@@ -61,13 +61,14 @@ vanilla furnace recipe with no fuel**, drawing from the grid (~4 RU/t over a
 ## Transmutation (EMC = Bound Light)
 
 ### <img src="images/icons/transmutation_table.png" width="40" align="top"> Transmutation Table — `echoes:transmutation_table`
-*The balanced-interchange altar.* All matter is condensed Light, so every item carries a
-**Light Value** (*Bound Light*). Drop matter in the dissolve slot and the Table banks its
-Light Value (one item every ~10 ticks); the five tone buttons withdraw that pool back out
-as **Mote coins** (Light → Tonic → Mediant → Dominant → Harmonic, ×4 per octave). Values
-are data-driven (`data/echoes/light_values.json`); blacklisted/absent items can't be
-dissolved. Pickaxe-mineable; its own screen; top face feeds the dissolve slot for hoppers.
-See [the Mote ladder](Items-and-Gear.md#the-transmutation-economy--bound-light-emc).
+*The balanced-interchange altar* and a terminal into your personal **Bound-Light account**
+(pool + attuned tones — the portable **Transmutation Tablet** opens the same account).
+**Dissolve** an item to bank its **Light Value** and attune it; **withdraw** Mote coins
+(Light → Tonic → Mediant → Dominant → Harmonic, ×4 per octave); or **condense** an attuned
+item from the ghost template slot (×1 or a stack). Values are data-driven
+(`data/echoes/light_values.json`); blacklisted/absent items can't be dissolved.
+Pickaxe-mineable; its own screen. See
+[the Mote ladder & the Tablet](Items-and-Gear.md#the-transmutation-economy--bound-light-emc).
 
 ## Radiation (the discharge half)
 

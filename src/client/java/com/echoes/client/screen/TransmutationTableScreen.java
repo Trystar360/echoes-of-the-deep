@@ -7,13 +7,12 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
 /**
- * The Transmutation Table screen. Drawn programmatically (no GUI sheet): a dark panel,
- * the dissolve/extract slots, the banked Bound-Light readout, and a row of five
- * withdraw buttons — one per Mote tone — that pay the pool out as currency.
+ * The transmutation terminal screen (Table and Tablet share it). Drawn programmatically:
+ * a dark panel, the dissolve / template / output slots, the banked Bound-Light readout,
+ * a row of five Mote-withdraw buttons, and Dissolve / Condense / Condense-stack actions.
  */
 public class TransmutationTableScreen extends HandledScreen<TransmutationTableScreenHandler> {
     private static final int PANEL = 0xF0202830, BORDER = 0xFF3A4A52, SLOT = 0xFF101418;
@@ -21,52 +20,64 @@ public class TransmutationTableScreen extends HandledScreen<TransmutationTableSc
 
     public TransmutationTableScreen(TransmutationTableScreenHandler handler, PlayerInventory inv, Text title) {
         super(handler, inv, title);
-        this.backgroundHeight = 166;
+        this.backgroundHeight = 200;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
     }
 
     @Override
     protected void init() {
         super.init();
-        int n = ModItems.MOTES.length;
-        int bw = 30, gap = 2, total = n * bw + (n - 1) * gap;
-        int x0 = x + (backgroundWidth - total) / 2;
-        int by = y + 56;
+        // Five Mote-withdraw buttons.
+        int n = ModItems.MOTES.length, bw = 30, gap = 2, total = n * bw + (n - 1) * gap;
+        int x0 = x + (backgroundWidth - total) / 2, by = y + 60;
         for (int i = 0; i < n; i++) {
             final int tier = i;
-            ButtonWidget b = ButtonWidget.builder(Text.literal(LABELS[i]),
-                            btn -> {
-                                if (client != null && client.interactionManager != null) {
-                                    client.interactionManager.clickButton(handler.syncId, tier);
-                                }
-                            })
+            addDrawableChild(ButtonWidget.builder(Text.literal(LABELS[i]),
+                            b -> click(tier))
                     .dimensions(x0 + i * (bw + gap), by, bw, 18)
                     .tooltip(Tooltip.of(Text.translatable(ModItems.MOTES[tier].getTranslationKey())
-                            .append(Text.literal(" — " + TransmutationTableScreenHandler.moteValue(tier) + " LV"))))
-                    .build();
-            addDrawableChild(b);
+                            .append(Text.literal(" — withdraw (" + TransmutationTableScreenHandler.moteValue(tier) + " LV)"))))
+                    .build());
+        }
+        // Action row: Dissolve / Condense / Condense ×64.
+        int ay = y + 86;
+        addDrawableChild(ButtonWidget.builder(Text.translatable("screen.echoes.dissolve"),
+                        b -> click(TransmutationTableScreenHandler.BTN_DISSOLVE))
+                .dimensions(x + 8, ay, 50, 18)
+                .tooltip(Tooltip.of(Text.translatable("screen.echoes.dissolve.tip"))).build());
+        addDrawableChild(ButtonWidget.builder(Text.translatable("screen.echoes.condense"),
+                        b -> click(TransmutationTableScreenHandler.BTN_CONDENSE_1))
+                .dimensions(x + 62, ay, 52, 18)
+                .tooltip(Tooltip.of(Text.translatable("screen.echoes.condense.tip"))).build());
+        addDrawableChild(ButtonWidget.builder(Text.literal("×64"),
+                        b -> click(TransmutationTableScreenHandler.BTN_CONDENSE_STACK))
+                .dimensions(x + 118, ay, 50, 18)
+                .tooltip(Tooltip.of(Text.translatable("screen.echoes.condense.tip"))).build());
+    }
+
+    private void click(int id) {
+        if (client != null && client.interactionManager != null) {
+            client.interactionManager.clickButton(handler.syncId, id);
         }
     }
 
     @Override
     protected void drawBackground(DrawContext ctx, float delta, int mouseX, int mouseY) {
-        int x = (width - backgroundWidth) / 2;
-        int y = (height - backgroundHeight) / 2;
         ctx.fill(x, y, x + backgroundWidth, y + backgroundHeight, PANEL);
         ctx.drawBorder(x, y, backgroundWidth, backgroundHeight, BORDER);
-        // dissolve + extract slot backgrounds (match handler slot positions)
-        ctx.fill(x + 43, y + 34, x + 43 + 18, y + 34 + 18, SLOT);
-        ctx.fill(x + 115, y + 34, x + 115 + 18, y + 34 + 18, SLOT);
+        int sy = TransmutationTableScreenHandler.SLOT_Y - 1;
+        for (int sx : new int[]{TransmutationTableScreenHandler.INPUT_X,
+                TransmutationTableScreenHandler.TEMPLATE_X, TransmutationTableScreenHandler.OUTPUT_X}) {
+            ctx.fill(x + sx - 1, y + sy, x + sx + 17, y + sy + 18, SLOT);
+        }
     }
 
     @Override
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
         super.render(ctx, mouseX, mouseY, delta);
         drawMouseoverTooltip(ctx, mouseX, mouseY);
-        int x = (width - backgroundWidth) / 2;
-        int y = (height - backgroundHeight) / 2;
         ctx.drawText(textRenderer, Text.translatable("screen.echoes.bound_light", handler.boundLight()),
-                x + 8, y + 20, 0xE0E8EC, false);
+                x + 8, y + 24, 0xE0E8EC, false);
     }
 
     @Override

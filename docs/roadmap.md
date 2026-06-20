@@ -88,10 +88,13 @@ proposal's "Decisions (locked)" section.
     modpack-overridable + blacklist), loaded via a reload listener.
   - ✅ **The Mote ladder** — Light → Tonic → Mediant → Dominant → Harmonic Mote, the
     Bound-Light denomination coins (×4/octave).
-  - ✅ **Transmutation Table** — the balanced-interchange altar: dissolve matter → banked
-    Bound Light, withdraw it as Mote coins. Directional block, screen, hopper I/O.
-  - ⬜ **Transmutation Tablet** — the portable Table (per-player pool + attuned ledger).
-  - ⬜ **Condense any *attuned* item** — the learn-then-create grid (per-player knowledge).
+  - ✅ **Per-player Bound-Light account** — a `TransmutationState` ledger (pool + attuned
+    tones) that both the Table and Tablet share, so your Light and knowledge follow you.
+  - ✅ **Transmutation Table** — the balanced-interchange terminal: dissolve matter → bank
+    Bound Light, withdraw Motes, or condense an attuned item. Directional block + screen.
+  - ✅ **Transmutation Tablet** — the portable terminal: opens the same account anywhere.
+  - ✅ **Condense an *attuned* item** — ghost-template slot + Condense / ×64 (learn by
+    dissolving, then re-create from the pool).
   - ⬜ **Octave Stars** (portable Bound-Light batteries), **Tone Collector** (winds ambient
     light into Bound Light), **Condenser** (auto-duplicate), **Codex of Tones** (attune-all),
     and the **Interchange Coil** (free⇄bound Light bridge — steep, hard-capped).

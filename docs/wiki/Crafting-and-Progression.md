@@ -137,11 +137,25 @@ R b R     S = octave seed
 ```
 </details>
 
-The **EMC economy** (*Bound Light*): drop matter in the Table's dissolve slot and it banks
-that item's **Light Value**; the tone buttons withdraw the pool back out as **Mote coins**
-(`Light → Tonic → Mediant → Dominant → Harmonic`, ×4 per octave). Values are data-driven
+### Transmutation Tablet
+<img src="images/recipes/transmutation_tablet.png" width="230">
+
+<details><summary>▸ layout</summary>
+
+```
+b R b     R = radiant ingot
+R L R     b = echocite bricks
+b R b     L = light meter
+```
+</details>
+
+The **EMC economy** (*Bound Light*): each player has a personal account (banked Light +
+attuned tones). At a Table **or** the portable Tablet you **Dissolve** matter (bank its
+**Light Value** + attune it), **Withdraw** Mote coins
+(`Light → Tonic → Mediant → Dominant → Harmonic`, ×4 per octave), or **Condense** an
+attuned item from the ghost template slot. Values are data-driven
 (`data/echoes/light_values.json`). See
-[the Mote ladder](Items-and-Gear.md#the-transmutation-economy--bound-light-emc).
+[the Mote ladder & the Tablet](Items-and-Gear.md#the-transmutation-economy--bound-light-emc).
 
 ## Radiation & field blocks
 

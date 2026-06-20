@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "bRb",
+    "RLR",
+    "bRb"
+  ],
+  "key": {
+    "R": "echoes:radiant_ingot",
+    "b": "echoes:echocite_bricks",
+    "L": "echoes:light_meter"
+  },
+  "result": { "id": "echoes:transmutation_tablet", "count": 1 }
+}
