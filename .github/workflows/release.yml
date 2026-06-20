@@ -49,6 +49,7 @@ jobs:
           files: |
             build/libs/echoes-of-the-deep-*.jar
             !build/libs/*-sources.jar
+            showcase/dist/Octaves-of-the-One-Showcase.zip
           body: |
             **Octaves of the One** — a Fabric tech mod for Minecraft **1.21.4**, themed on
             Walter Russell's two-way universe of rhythmic balanced interchange.
@@ -59,6 +60,10 @@ jobs:
             A complete, survival-craftable energy + logistics + transmutation loop, with an
             in-game Great Work advancement tree to guide it. Wiki:
             https://trystar360.github.io/echoes-of-the-deep/
+
+            **Showcase world** — `Octaves-of-the-One-Showcase.zip` is a guided tutorial
+            world: unzip into `.minecraft/saves/`, open in Creative (with the mod installed),
+            and walk east through the wings.
 
       # Modrinth — only runs once a MODRINTH_ID variable + MODRINTH_TOKEN secret are set in
       # repo Settings (gated so an unconfigured repo doesn't fail the release). Mirrors the
