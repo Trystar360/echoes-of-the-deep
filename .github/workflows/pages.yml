@@ -1,9 +1,17 @@
 name: Deploy wiki to GitHub Pages
 
+# Rebuilds the HTML wiki site from the mod's own textures, recipes, and lang at deploy
+# time, so the published site is always current with main — even if a commit changed a
+# source file without re-running the generators locally.
+
 on:
   push:
     branches: [main]
     paths:
+      - 'src/main/resources/assets/echoes/lang/en_us.json'
+      - 'src/main/resources/assets/echoes/textures/**'
+      - 'src/main/resources/data/echoes/recipe/**'
+      - 'scripts/build_wiki_site.py'
       - 'docs/site/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
@@ -25,6 +33,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Rebuild the site from source
+        run: python3 scripts/build_wiki_site.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
