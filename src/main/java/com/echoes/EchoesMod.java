@@ -43,8 +43,14 @@ public class EchoesMod implements ModInitializer {
         // Data-driven sound -> RU table for the ambient-capture mixin.
         ResonanceSources.register();
 
-        // Data-driven Light Value table (EMC = Bound Light) for the Transmutation Table.
+        // Data-driven Light Value table (EMC = Bound Light) for the transmutation economy.
+        // Seeds load with datapacks; the full table is derived from the recipe graph once
+        // recipes are available (server start) and after every /reload.
         com.echoes.transmute.LightValues.register();
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(
+                com.echoes.transmute.LightValues::derive);
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(
+                (server, resourceManager, success) -> com.echoes.transmute.LightValues.derive(server));
 
         // Expose the Crusher's inventory to hoppers/pipes via the Transfer API.
         // Top face inserts to input, other faces extract from output (see

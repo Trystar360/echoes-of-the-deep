@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["RHR","HCH","RHR"],
+  "key": {
+    "R": "echoes:radiant_ingot",
+    "H": "echoes:harmonic_mote",
+    "C": "echoes:resonance_cell"
+  },
+  "result": { "id": "echoes:octave_star_1", "count": 1 }
+}

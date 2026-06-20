@@ -1267,6 +1267,32 @@ def transmutation_tablet():
     write_png(f"{OUT}/item/transmutation_tablet.png", 16, 16, c.px)
 transmutation_tablet()
 
+def octave_star(name, tier):
+    # A four-point star that brightens and warms with tier, ringed by `tier` pips.
+    c = C(); cx, cy = 8, 8
+    ramp = TEAL if tier <= 2 else AMBER if tier <= 4 else GOLD
+    reach = 4.0 + tier * 0.45
+    for y in range(16):
+        for x in range(16):
+            dx, dy = x - cx, y - cy
+            axis = min(abs(dx), abs(dy)); d = abs(dx) + abs(dy)
+            if d <= reach and axis <= 1.6:
+                t = max(0.0, 1 - d / reach)
+                c.set(x, y, lerp(ramp[2], ramp[4], t))
+    for y in range(16):                              # bright core
+        for x in range(16):
+            if math.hypot(x - cx, y - cy) < 2.0 + tier * 0.12:
+                c.over(x, y, (245, 255, 250, 230))
+    for k in range(tier):                            # tier pips around the rim
+        ang = math.radians(45 + k * (360.0 / max(1, tier)))
+        px = int(round(cx + 6.2 * math.cos(ang))); py = int(round(cy + 6.2 * math.sin(ang)))
+        c.set(px, py, ramp[4]); c.over(px, py + 1, (ramp[3][0], ramp[3][1], ramp[3][2], 150))
+    bloom(c, ramp, alpha=60 + tier * 6, reach=2, thresh=140)
+    outline(c, thresh=150)
+    write_png(f"{OUT}/item/{name}.png", 16, 16, c.px)
+for _t in range(1, 7):
+    octave_star(f"octave_star_{_t}", _t)
+
 mote("light_mote",    TEAL,  3.0, (225, 255, 250), 0)
 mote("tonic_mote",    TEAL,  3.4, (240, 255, 250), 1)
 mote("mediant_mote",  AMBER, 3.8, (255, 240, 200), 2)

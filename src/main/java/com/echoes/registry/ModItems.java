@@ -61,6 +61,22 @@ public final class ModItems {
     public static final Item TRANSMUTATION_TABLET = register("transmutation_tablet",
             com.echoes.item.TransmutationTabletItem::new, new Item.Settings().maxCount(1));
 
+    // Octave Stars — portable Bound-Light batteries, six tiers (×4 capacity per tier).
+    public static final Item OCTAVE_STAR_1 = register("octave_star_1",
+            s -> new com.echoes.item.OctaveStarItem(1, 100_000L, s), new Item.Settings().maxCount(1));
+    public static final Item OCTAVE_STAR_2 = register("octave_star_2",
+            s -> new com.echoes.item.OctaveStarItem(2, 400_000L, s), new Item.Settings().maxCount(1));
+    public static final Item OCTAVE_STAR_3 = register("octave_star_3",
+            s -> new com.echoes.item.OctaveStarItem(3, 1_600_000L, s), new Item.Settings().maxCount(1));
+    public static final Item OCTAVE_STAR_4 = register("octave_star_4",
+            s -> new com.echoes.item.OctaveStarItem(4, 6_400_000L, s), new Item.Settings().maxCount(1));
+    public static final Item OCTAVE_STAR_5 = register("octave_star_5",
+            s -> new com.echoes.item.OctaveStarItem(5, 25_600_000L, s), new Item.Settings().maxCount(1));
+    public static final Item OCTAVE_STAR_6 = register("octave_star_6",
+            s -> new com.echoes.item.OctaveStarItem(6, 102_400_000L, s), new Item.Settings().maxCount(1));
+    public static final Item[] OCTAVE_STARS = {
+            OCTAVE_STAR_1, OCTAVE_STAR_2, OCTAVE_STAR_3, OCTAVE_STAR_4, OCTAVE_STAR_5, OCTAVE_STAR_6 };
+
     // Wireless transport tools
     public static final Item FREQUENCY_TUNER = register("wave_tuner",
             FrequencyTunerItem::new, new Item.Settings().maxCount(1));

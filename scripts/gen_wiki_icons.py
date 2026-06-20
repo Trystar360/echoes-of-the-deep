@@ -75,12 +75,17 @@ BLOCKS = ["echocite_ore", "deepslate_echocite_ore", "drumstone_ore", "silentite_
           "resonance_cell", "compressor", "transmuter", "growth_radiator",
           "warmth_radiator", "polarity_field", "balancer", "wave_relay",
           "wave_amplifier", "wave_filter", "wave_splitter",
-          "wave_repeater", "wave_coupler", "wave_chest", "signal_relay"]
+          "wave_repeater", "wave_coupler", "wave_chest", "signal_relay",
+          "transmutation_table"]
 ITEMS = ["raw_echocite", "echocite_dust", "echo_ingot", "dull_ingot", "resonant_slag",
          "drumstone_shard", "drum_core", "silentite_crystal", "echo_dust",
          "wave_tuner", "wave_atlas", "light_meter", "resonant_thrusters",
          "resonant_pickaxe", "resonant_axe", "resonant_shovel", "resonant_sword",
-         "resonant_hoe"]
+         "resonant_hoe",
+         "transmutation_tablet", "light_mote", "tonic_mote", "mediant_mote",
+         "dominant_mote", "harmonic_mote",
+         "octave_star_1", "octave_star_2", "octave_star_3",
+         "octave_star_4", "octave_star_5", "octave_star_6"]
 
 
 def main():

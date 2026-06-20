@@ -95,9 +95,16 @@ proposal's "Decisions (locked)" section.
   - ✅ **Transmutation Tablet** — the portable terminal: opens the same account anywhere.
   - ✅ **Condense an *attuned* item** — ghost-template slot + Condense / ×64 (learn by
     dissolving, then re-create from the pool).
-  - ⬜ **Octave Stars** (portable Bound-Light batteries), **Tone Collector** (winds ambient
-    light into Bound Light), **Condenser** (auto-duplicate), **Codex of Tones** (attune-all),
-    and the **Interchange Coil** (free⇄bound Light bridge — steep, hard-capped).
+  - ✅ **Light Values for everything (vanilla + modded)** — JSON holds only the *seeds*
+    (non-craftable primitives + overrides + blacklist); the full table is **derived** by
+    propagating them through the whole recipe graph (cheapest `sum(inputs)/output`, to a
+    fixed point) at server start and after `/reload`. Modpacks get values for free and can
+    override via datapack.
+  - ✅ **Octave Stars** — portable Bound-Light batteries, six tiers (I–VI, ×4 capacity;
+    use to charge from your account, sneak-use to pour back; tradeable between players).
+  - ⬜ **Tone Collector** (winds ambient light into Bound Light), **Condenser**
+    (auto-duplicate), **Codex of Tones** (attune-all), and the **Interchange Coil**
+    (free⇄bound Light bridge — steep, hard-capped).
   - Balance: gate the condense/duplication side to the Harmonic tier with attune-from-
     sample + capped sources to protect ore progression.
 - ⬜ **Later passes** — **food crops** (Resonant Grain→Bread, Glowgourd, Stillmint→Still
