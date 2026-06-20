@@ -349,6 +349,14 @@ STATS.update({
     "lumewood_log": [("Type", "Log"), ("From", "the Octave Grove feature in forests")],
     "storm_caller": [("Role", "Provider · Storage"), ("Capacity", "400,000 Light"),
                      ("Per strike", "40,000 Light"), ("Needs", "open sky during storms")],
+    "transmutation_table": [("Role", "Transmutation"), ("Stores", "Bound Light (EMC)"),
+                            ("Dissolve", "matter → Light Value (1 / ~10 ticks)"),
+                            ("Withdraw", "Mote coins (×4 per octave)")],
+    "light_mote": [("Light Value", "64"), ("Octave", "O0 — the still source"), ("Source", "Transmutation Table")],
+    "tonic_mote": [("Light Value", "256"), ("Octave", "O1 — the tonic"), ("Source", "Transmutation Table")],
+    "mediant_mote": [("Light Value", "1,024"), ("Octave", "O2 — the mediant"), ("Source", "Transmutation Table")],
+    "dominant_mote": [("Light Value", "4,096"), ("Octave", "O3 — the dominant"), ("Source", "Transmutation Table")],
+    "harmonic_mote": [("Light Value", "16,384"), ("Octave", "O4 — the crest (balance)"), ("Source", "Transmutation Table")],
 })
 
 DESC_EXTRA = {
@@ -368,6 +376,16 @@ DESC_EXTRA = {
     "lumewood_sapling": "Plant and grow it into a glowing Lumewood tree.",
     "echocite_bricks": "Luminous masonry that matches the resonance palette.",
     "storm_caller": "A spire that calls lightning during storms and banks the windfall as Light.",
+}
+
+# For items with no crafting recipe, an accurate "how to obtain" note that overrides
+# the generic "mined or found" fallback.
+_MOTE_SOURCE = ('<p class="muted">Withdrawn from a '
+                '<a href="transmutation_table.html">Transmutation Table</a> '
+                'by spending its banked Bound Light (Light Value).</p>')
+SOURCE_NOTE = {
+    "light_mote": _MOTE_SOURCE, "tonic_mote": _MOTE_SOURCE, "mediant_mote": _MOTE_SOURCE,
+    "dominant_mote": _MOTE_SOURCE, "harmonic_mote": _MOTE_SOURCE,
 }
 
 
@@ -553,7 +571,7 @@ def entry_page(rid, by_result, uses):
     statrows = "".join(f'<tr><th>{html.escape(k)}</th><td>{html.escape(v)}</td></tr>' for k, v in stats)
     recs = by_result.get(rid, [])
     recipe_html = "".join(f'<div class="recipe-wrap">{render_recipe(r, 0)}</div>' for r in recs) \
-        or '<p class="muted">Obtained from the world (mined or found), not crafted.</p>'
+        or SOURCE_NOTE.get(rid, '<p class="muted">Obtained from the world (mined or found), not crafted.</p>')
     used = sorted(uses.get(rid, []))
     used_html = ""
     if used:

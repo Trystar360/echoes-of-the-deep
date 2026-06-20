@@ -125,6 +125,24 @@ e F e     F = furnace
 ```
 </details>
 
+### Transmutation Table
+<img src="images/recipes/transmutation_table.png" width="230">
+
+<details><summary>▸ layout</summary>
+
+```
+R b R     R = radiant ingot
+b S b     b = echocite bricks
+R b R     S = octave seed
+```
+</details>
+
+The **EMC economy** (*Bound Light*): drop matter in the Table's dissolve slot and it banks
+that item's **Light Value**; the tone buttons withdraw the pool back out as **Mote coins**
+(`Light → Tonic → Mediant → Dominant → Harmonic`, ×4 per octave). Values are data-driven
+(`data/echoes/light_values.json`). See
+[the Mote ladder](Items-and-Gear.md#the-transmutation-economy--bound-light-emc).
+
 ## Radiation & field blocks
 
 ### Growth Radiator
