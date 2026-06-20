@@ -50,9 +50,21 @@ denomination scale — each tone is Light wound one octave higher (×4 per octav
 | <img src="images/icons/dominant_mote.png" width="28"> | Dominant Mote | `dominant_mote` | 4,096 | O3 — the dominant |
 | <img src="images/icons/harmonic_mote.png" width="28"> | Harmonic Mote | `harmonic_mote` | 16,384 | O4 — the resolved crest (balance) |
 
-Light Values are **data-driven** (`data/echoes/light_values.json`, modpack-overridable);
-items absent from the table — or set to `0` — cannot be dissolved, which keeps unique and
-exploit items out of the economy.
+**Every item gets a weighted value — vanilla and modded.** `light_values.json` only holds
+the **seeds**: the primitives that aren't craftable from anything cheaper (ores, mob
+drops, plants, logs, base colorants) plus explicit overrides. At server start the mod then
+**derives** a value for everything else by propagating those seeds through the *entire*
+recipe graph — an item's value is the cheapest `sum(inputs) / output count` over all
+recipes that make it, iterated to a fixed point. So a modpack's items get sensible values
+for free (wherever their recipes bottom out in seeded items), and a pack can extend or
+override the seeds with its own datapack copy of the file. Items with no value — or set to
+`0`, or on the blacklist — can't be dissolved, keeping unique/exploit items out.
+
+### <img src="images/icons/octave_star_3.png" width="24" align="top"> Octave Stars — portable Bound-Light batteries
+
+Six tiers (I–VI, ×4 capacity each, up to 102,400,000). **Right-click** to charge a Star
+from your account; **sneak + right-click** to pour it back. Carry Light between bases — or
+hand a charged Star to another player, whose sneak-use banks it into *their* account.
 
 ## <img src="images/icons/resonant_thrusters.png" width="28" align="top"> Resonant Thrusters — `echoes:resonant_thrusters`
 

@@ -190,5 +190,22 @@
   "tooltip.echoes.desc.tonic_mote": "Light wound an octave — the tonic (256 Light Value).",
   "tooltip.echoes.desc.mediant_mote": "The chord's middle tone (1,024 Light Value).",
   "tooltip.echoes.desc.dominant_mote": "The strong tone, nearing the crest (4,096 Light Value).",
-  "tooltip.echoes.desc.harmonic_mote": "The resolved crest — balance (16,384 Light Value)."
+  "tooltip.echoes.desc.harmonic_mote": "The resolved crest — balance (16,384 Light Value).",
+
+  "item.echoes.octave_star_1": "Octave Star I",
+  "item.echoes.octave_star_2": "Octave Star II",
+  "item.echoes.octave_star_3": "Octave Star III",
+  "item.echoes.octave_star_4": "Octave Star IV",
+  "item.echoes.octave_star_5": "Octave Star V",
+  "item.echoes.octave_star_6": "Octave Star VI",
+  "tooltip.echoes.star.stored": "Bound Light: %s / %s",
+  "tooltip.echoes.star.hint": "Use: charge from your account · Sneak-use: pour it back",
+  "message.echoes.star.charged": "Star charged — %s / %s Bound Light",
+  "message.echoes.star.emptied": "Poured %s Bound Light into your account",
+  "tooltip.echoes.desc.octave_star_1": "Portable Bound-Light battery (100,000). Charge it from your account and carry it.",
+  "tooltip.echoes.desc.octave_star_2": "Portable Bound-Light battery (400,000). Charge it from your account and carry it.",
+  "tooltip.echoes.desc.octave_star_3": "Portable Bound-Light battery (1,600,000). Charge it from your account and carry it.",
+  "tooltip.echoes.desc.octave_star_4": "Portable Bound-Light battery (6,400,000). Charge it from your account and carry it.",
+  "tooltip.echoes.desc.octave_star_5": "Portable Bound-Light battery (25,600,000). Charge it from your account and carry it.",
+  "tooltip.echoes.desc.octave_star_6": "Portable Bound-Light battery (102,400,000). Charge it from your account and carry it."
 }

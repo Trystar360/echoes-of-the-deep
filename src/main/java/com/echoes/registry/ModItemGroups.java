@@ -94,6 +94,12 @@ public final class ModItemGroups {
                     entries.add(ModItems.MEDIANT_MOTE);
                     entries.add(ModItems.DOMINANT_MOTE);
                     entries.add(ModItems.HARMONIC_MOTE);
+                    entries.add(ModItems.OCTAVE_STAR_1);
+                    entries.add(ModItems.OCTAVE_STAR_2);
+                    entries.add(ModItems.OCTAVE_STAR_3);
+                    entries.add(ModItems.OCTAVE_STAR_4);
+                    entries.add(ModItems.OCTAVE_STAR_5);
+                    entries.add(ModItems.OCTAVE_STAR_6);
                 })
                 .build());
     }
