@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.Level;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,27 +19,31 @@ import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeBookCategories;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * One ore → dust crushing recipe. Single input, single primary output, plus an
  * optional rolled byproduct; carries {@code energy} (RU consumed) and
  * {@code processingTime} (ticks).
  *
- * <p>26.1: implements {@link Recipe} directly (the old {@code SingleItemRecipe}
- * base now uses {@code ItemStackTemplate}/{@code CommonInfo}). Data-driven
- * (data/echoes/recipe/compressor/*.json) with vanilla Ingredient syntax, so recipes
- * accept item tags from other mods.
+ * <p>26.1: the result and byproduct are stored as {@link ItemStackTemplate}s (deferred
+ * item blueprints) like vanilla single-item recipes — decoding them with {@link
+ * ItemStack#CODEC} eagerly resolves item components and fails for items whose components
+ * aren't ready yet during a parallel data reload. {@link #result()} / {@link #secondary()}
+ * materialise a fresh {@link ItemStack} on demand. Data-driven
+ * (data/echoes/recipe/compressor/*.json) with vanilla Ingredient syntax.
  */
 public class CrushingRecipe implements Recipe<SingleRecipeInput> {
     private final Ingredient input;
-    private final ItemStack result;
+    private final ItemStackTemplate result;
     private final int energy;
     private final int processingTime;
-    private final ItemStack secondary;        // optional byproduct (EMPTY if none)
-    private final float secondaryChance;       // 0..1 roll per craft
+    private final Optional<ItemStackTemplate> secondary;  // absent when there is no byproduct
+    private final float secondaryChance;                   // 0..1 roll per craft
     @Nullable private PlacementInfo placementInfo;
 
-    public CrushingRecipe(Ingredient input, ItemStack result, int energy, int processingTime,
-                          ItemStack secondary, float secondaryChance) {
+    public CrushingRecipe(Ingredient input, ItemStackTemplate result, int energy, int processingTime,
+                          Optional<ItemStackTemplate> secondary, float secondaryChance) {
         this.input = input;
         this.result = result;
         this.energy = energy;
@@ -48,14 +53,20 @@ public class CrushingRecipe implements Recipe<SingleRecipeInput> {
     }
 
     public Ingredient ingredient() { return input; }
-    public ItemStack result() { return result; }
+    /** A fresh copy of the primary output. */
+    public ItemStack result() { return result.create(); }
+    /** A fresh copy of the byproduct, or an empty stack when there is none. */
+    public ItemStack secondary() { return secondary.map(ItemStackTemplate::create).orElse(ItemStack.EMPTY); }
     public int energy() { return energy; }
     public int processingTime() { return processingTime; }
-    public ItemStack secondary() { return secondary; }
     public float secondaryChance() { return secondaryChance; }
 
+    // Codec getters expose the underlying templates.
+    private ItemStackTemplate resultTemplate() { return result; }
+    private Optional<ItemStackTemplate> secondaryTemplate() { return secondary; }
+
     @Override public boolean matches(SingleRecipeInput in, Level level) { return input.test(in.item()); }
-    @Override public ItemStack assemble(SingleRecipeInput in) { return result.copy(); }
+    @Override public ItemStack assemble(SingleRecipeInput in) { return result.create(); }
     @Override public String group() { return ""; }
     @Override public boolean showNotification() { return false; }
     @Override public RecipeBookCategory recipeBookCategory() { return RecipeBookCategories.CRAFTING_MISC; }
@@ -70,19 +81,19 @@ public class CrushingRecipe implements Recipe<SingleRecipeInput> {
 
     public static final MapCodec<CrushingRecipe> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
             Ingredient.CODEC.fieldOf("ingredient").forGetter(CrushingRecipe::ingredient),
-            ItemStack.CODEC.fieldOf("result").forGetter(CrushingRecipe::result),
+            ItemStackTemplate.CODEC.fieldOf("result").forGetter(CrushingRecipe::resultTemplate),
             Codec.INT.optionalFieldOf("energy", 200).forGetter(CrushingRecipe::energy),
             Codec.INT.optionalFieldOf("processingTime", 120).forGetter(CrushingRecipe::processingTime),
-            ItemStack.OPTIONAL_CODEC.optionalFieldOf("secondary", ItemStack.EMPTY).forGetter(CrushingRecipe::secondary),
+            ItemStackTemplate.CODEC.optionalFieldOf("secondary").forGetter(CrushingRecipe::secondaryTemplate),
             Codec.FLOAT.optionalFieldOf("secondaryChance", 0.0f).forGetter(CrushingRecipe::secondaryChance)
     ).apply(b, CrushingRecipe::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CrushingRecipe> STREAM_CODEC = StreamCodec.composite(
             Ingredient.CONTENTS_STREAM_CODEC, CrushingRecipe::ingredient,
-            ItemStack.STREAM_CODEC, CrushingRecipe::result,
+            ItemStackTemplate.STREAM_CODEC, CrushingRecipe::resultTemplate,
             ByteBufCodecs.VAR_INT, CrushingRecipe::energy,
             ByteBufCodecs.VAR_INT, CrushingRecipe::processingTime,
-            ItemStack.OPTIONAL_STREAM_CODEC, CrushingRecipe::secondary,
+            ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC), CrushingRecipe::secondaryTemplate,
             ByteBufCodecs.FLOAT, CrushingRecipe::secondaryChance,
             CrushingRecipe::new);
 }
