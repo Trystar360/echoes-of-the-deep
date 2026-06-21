@@ -2,7 +2,7 @@ package com.echoes.client.screen;
 
 import com.echoes.registry.ModItems;
 import com.echoes.screen.TransmutationTableScreenHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.Button;
@@ -19,9 +19,8 @@ public class TransmutationTableScreen extends AbstractContainerScreen<Transmutat
     private static final String[] LABELS = {"L", "T", "M", "D", "H"};
 
     public TransmutationTableScreen(TransmutationTableScreenHandler handler, Inventory inv, Component title) {
-        super(handler, inv, title);
-        this.backgroundHeight = 200;
-        this.playerInventoryTitleY = this.backgroundHeight - 94;
+        super(handler, inv, title, 176, 200);
+        this.inventoryLabelY = this.imageHeight - 94;
     }
 
     @Override
@@ -29,61 +28,59 @@ public class TransmutationTableScreen extends AbstractContainerScreen<Transmutat
         super.init();
         // Five Mote-withdraw buttons.
         int n = ModItems.MOTES.length, bw = 30, gap = 2, total = n * bw + (n - 1) * gap;
-        int x0 = x + (backgroundWidth - total) / 2, by = y + 60;
+        int x0 = leftPos + (imageWidth - total) / 2, by = topPos + 60;
         for (int i = 0; i < n; i++) {
             final int tier = i;
-            addDrawableChild(Button.builder(Component.literal(LABELS[i]),
+            addRenderableWidget(Button.builder(Component.literal(LABELS[i]),
                             b -> click(tier))
-                    .dimensions(x0 + i * (bw + gap), by, bw, 18)
-                    .tooltip(Tooltip.of(Component.translatable(ModItems.MOTES[tier].getTranslationKey())
+                    .bounds(x0 + i * (bw + gap), by, bw, 18)
+                    .tooltip(Tooltip.create(Component.translatable(ModItems.MOTES[tier].getDescriptionId())
                             .append(Component.literal(" — withdraw (" + TransmutationTableScreenHandler.moteValue(tier) + " LV)"))))
                     .build());
         }
         // Action row: Dissolve / Condense / Condense ×64.
-        int ay = y + 86;
-        addDrawableChild(Button.builder(Component.translatable("screen.echoes.dissolve"),
+        int ay = topPos + 86;
+        addRenderableWidget(Button.builder(Component.translatable("screen.echoes.dissolve"),
                         b -> click(TransmutationTableScreenHandler.BTN_DISSOLVE))
-                .dimensions(x + 8, ay, 50, 18)
-                .tooltip(Tooltip.of(Component.translatable("screen.echoes.dissolve.tip"))).build());
-        addDrawableChild(Button.builder(Component.translatable("screen.echoes.condense"),
+                .bounds(leftPos + 8, ay, 50, 18)
+                .tooltip(Tooltip.create(Component.translatable("screen.echoes.dissolve.tip"))).build());
+        addRenderableWidget(Button.builder(Component.translatable("screen.echoes.condense"),
                         b -> click(TransmutationTableScreenHandler.BTN_CONDENSE_1))
-                .dimensions(x + 62, ay, 52, 18)
-                .tooltip(Tooltip.of(Component.translatable("screen.echoes.condense.tip"))).build());
-        addDrawableChild(Button.builder(Component.literal("×64"),
+                .bounds(leftPos + 62, ay, 52, 18)
+                .tooltip(Tooltip.create(Component.translatable("screen.echoes.condense.tip"))).build());
+        addRenderableWidget(Button.builder(Component.literal("×64"),
                         b -> click(TransmutationTableScreenHandler.BTN_CONDENSE_STACK))
-                .dimensions(x + 118, ay, 50, 18)
-                .tooltip(Tooltip.of(Component.translatable("screen.echoes.condense.tip"))).build());
+                .bounds(leftPos + 118, ay, 50, 18)
+                .tooltip(Tooltip.create(Component.translatable("screen.echoes.condense.tip"))).build());
     }
 
     private void click(int id) {
-        if (client != null && client.interactionManager != null) {
-            client.interactionManager.clickButton(handler.syncId, id);
+        if (minecraft != null && minecraft.gameMode != null) {
+            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id);
         }
     }
 
     @Override
-    protected void drawBackground(GuiGraphics ctx, float delta, int mouseX, int mouseY) {
-        ctx.fill(x, y, x + backgroundWidth, y + backgroundHeight, PANEL);
-        ctx.drawBorder(x, y, backgroundWidth, backgroundHeight, BORDER);
+    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(g, mouseX, mouseY, partialTick);
+        g.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, PANEL);
+        // border (4 edges — GuiGraphicsExtractor has no drawBorder helper)
+        g.fill(leftPos, topPos, leftPos + imageWidth, topPos + 1, BORDER);
+        g.fill(leftPos, topPos + imageHeight - 1, leftPos + imageWidth, topPos + imageHeight, BORDER);
+        g.fill(leftPos, topPos, leftPos + 1, topPos + imageHeight, BORDER);
+        g.fill(leftPos + imageWidth - 1, topPos, leftPos + imageWidth, topPos + imageHeight, BORDER);
         int sy = TransmutationTableScreenHandler.SLOT_Y - 1;
         for (int sx : new int[]{TransmutationTableScreenHandler.INPUT_X,
                 TransmutationTableScreenHandler.TEMPLATE_X, TransmutationTableScreenHandler.OUTPUT_X}) {
-            ctx.fill(x + sx - 1, y + sy, x + sx + 17, y + sy + 18, SLOT);
+            g.fill(leftPos + sx - 1, topPos + sy, leftPos + sx + 17, topPos + sy + 18, SLOT);
         }
     }
 
     @Override
-    public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-        super.render(ctx, mouseX, mouseY, delta);
-        drawMouseoverTooltip(ctx, mouseX, mouseY);
-        ctx.drawText(textRenderer, Component.translatable("screen.echoes.bound_light", handler.boundLight()),
-                x + 8, y + 24, 0xE0E8EC, false);
-    }
-
-    @Override
-    protected void drawForeground(GuiGraphics ctx, int mouseX, int mouseY) {
-        ctx.drawText(textRenderer, title, this.titleX, this.titleY, 0xE0E8EC, false);
-        ctx.drawText(textRenderer, playerInventoryTitle, this.playerInventoryTitleX, this.playerInventoryTitleY,
-                0xC0C8CC, false);
+    protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        super.extractLabels(g, mouseX, mouseY);
+        // Banked Bound-Light readout (panel-relative coordinates).
+        g.text(font, Component.translatable("screen.echoes.bound_light", menu.boundLight()),
+                8, 24, 0xE0E8EC, false);
     }
 }

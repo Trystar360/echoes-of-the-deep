@@ -2,9 +2,9 @@ package com.echoes.client.screen;
 
 import com.echoes.EchoesMod;
 import com.echoes.screen.CrusherScreenHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -18,26 +18,19 @@ public class CrusherScreen extends AbstractContainerScreen<CrusherScreenHandler>
     }
 
     @Override
-    protected void drawBackground(GuiGraphics ctx, float delta, int mouseX, int mouseY) {
-        int x = (width - backgroundWidth) / 2;
-        int y = (height - backgroundHeight) / 2;
-        ctx.drawTexture(RenderType::getGuiTextured, TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight, 256, 256);
-
-        // progress arrow (sprite at u=176,v=0, 24x16 in the sheet)
-        int max = handler.maxProgress();
+    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(g, mouseX, mouseY, partialTick);
+        g.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
+        int max = menu.maxProgress();
         if (max > 0) {
-            int w = handler.progress() * 24 / max;
-            ctx.drawTexture(RenderType::getGuiTextured, TEXTURE, x + 79, y + 34, 176, 0, w, 16, 256, 256);
+            int w = menu.progress() * 24 / max;
+            g.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + 79, topPos + 34, 176, 0, w, 16, 256, 256);
         }
     }
 
     @Override
-    public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-        super.render(ctx, mouseX, mouseY, delta);
-        drawMouseoverTooltip(ctx, mouseX, mouseY);
-        // RU readout
-        ctx.drawText(textRenderer, Component.literal(handler.storedRu() + " Light"),
-                (width - backgroundWidth) / 2 + 8, (height - backgroundHeight) / 2 + 6,
-                0x404040, false);
+    protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        super.extractLabels(g, mouseX, mouseY);
+        g.text(font, Component.literal(menu.storedRu() + " Light"), 8, 6, 0x404040, false);
     }
 }

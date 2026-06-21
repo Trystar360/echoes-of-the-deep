@@ -5,13 +5,10 @@ import com.echoes.client.screen.ConfigScreen;
 import com.echoes.client.screen.CrusherScreen;
 import com.echoes.client.screen.HarmonicFilterScreen;
 import com.echoes.client.screen.TransmutationTableScreen;
-import com.echoes.registry.ModBlocks;
 import com.echoes.registry.ModScreens;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -28,25 +25,21 @@ public class EchoesClient implements ClientModInitializer {
         MenuScreens.register(ModScreens.TRANSMUTATION_TABLE, TransmutationTableScreen::new);
 
         // Append a one-line description to every Echoes block/item that defines one
-        // (lang key "tooltip.echoes.desc.<path>"). Guarded by hasTranslation so any
+        // (lang key "tooltip.echoes.desc.<path>"). Guarded by I18n#exists so any
         // item without a description simply gets no extra line.
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
-            Identifier id = BuiltInRegistries.ITEM.getId(stack.getItem());
+            Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
             if (!"echoes".equals(id.getNamespace())) {
                 return;
             }
             String key = "tooltip.echoes.desc." + id.getPath();
-            if (I18n.hasTranslation(key)) {
-                lines.add(Component.translatable(key).formatted(ChatFormatting.GRAY));
+            if (I18n.exists(key)) {
+                lines.add(Component.translatable(key).withStyle(ChatFormatting.GRAY));
             }
         });
 
-        // Cutout flora + trapdoor; mipped cutout for leaves.
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.getCutout(),
-                ModBlocks.LUMEWOOD_SAPLING, ModBlocks.LUMEBLOOM,
-                ModBlocks.LUMEWOOD_TRAPDOOR, ModBlocks.LUME_LANTERN,
-                ModBlocks.GREATER_ACCUMULATOR);
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.getCutoutMipped(),
-                ModBlocks.LUMEWOOD_LEAVES);
+        // 26.1: cutout / cutout-mipped render layers are declared per-model via the
+        // model JSON "render_type" field (the Fabric BlockRenderLayerMap was removed),
+        // so flora, trapdoor, lantern and leaves carry it in their models.
     }
 }
