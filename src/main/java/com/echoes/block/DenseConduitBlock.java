@@ -1,9 +1,9 @@
 package com.echoes.block;
 
 import com.echoes.block.entity.DenseConduitBlockEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -12,12 +12,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public class DenseConduitBlock extends ConduitBlock {
 
-    public DenseConduitBlock(Settings settings) {
+    public DenseConduitBlock(Properties settings) {
         super(settings);
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new DenseConduitBlockEntity(pos, state);
     }
 }

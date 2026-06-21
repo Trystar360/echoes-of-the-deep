@@ -10,12 +10,12 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.minecraft.item.Item;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.World;
+import net.minecraft.world.item.Item;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,13 +101,13 @@ public final class WirelessNetworkManager {
         holder.channel = channel;
     }
 
-    public static void unregister(ServerWorld world, BlockPos pos) {
-        Holder holder = DEVICES.remove(GlobalPos.create(world.getRegistryKey(), pos.toImmutable()));
+    public static void unregister(ServerLevel world, BlockPos pos) {
+        Holder holder = DEVICES.remove(GlobalPos.of(world.dimension(), pos.immutable()));
         if (holder != null) BY_CHANNEL.get(holder.channel).remove(holder.device);
     }
 
     private static GlobalPos keyOf(WirelessDevice d) {
-        return GlobalPos.create(d.wirelessWorld().getRegistryKey(), d.wirelessPos().toImmutable());
+        return GlobalPos.of(d.wirelessWorld().dimension(), d.wirelessPos().immutable());
     }
 
     // --- tick ---
@@ -124,9 +124,9 @@ public final class WirelessNetworkManager {
                 process(new ArrayList<>(all));
             } else {
                 // Split by dimension: a channel only spans dimensions via a repeater.
-                Map<RegistryKey<World>, List<WirelessDevice>> byDim = new HashMap<>();
+                Map<ResourceKey<Level>, List<WirelessDevice>> byDim = new HashMap<>();
                 for (WirelessDevice d : all) {
-                    byDim.computeIfAbsent(d.wirelessWorld().getRegistryKey(), k -> new ArrayList<>()).add(d);
+                    byDim.computeIfAbsent(d.wirelessWorld().dimension(), k -> new ArrayList<>()).add(d);
                 }
                 for (List<WirelessDevice> group : byDim.values()) {
                     if (group.size() >= 2) process(group);
@@ -186,7 +186,7 @@ public final class WirelessNetworkManager {
         long budget = Math.min(MAX_ITEMS * mult, givers * ITEMS_PER_SENDER * mult);
         List<Storage<ItemVariant>> sendSources = collectItems(senders, true);
         List<Storage<ItemVariant>> recvTargets = collectItems(receivers, false);
-        List<Storage<ItemVariant>> stores = collectItems(passive, false); // InventoryStorage does both
+        List<Storage<ItemVariant>> stores = collectItems(passive, false); // ContainerStorage does both
 
         final Set<Item> wl = whitelist;
         Predicate<ItemVariant> filter = wl == null ? v -> true : v -> wl.contains(v.getItem());
@@ -228,10 +228,10 @@ public final class WirelessNetworkManager {
         Predicate<FluidVariant> filter = v -> true;
         if (whitelist != null) {
             boolean anyFluid = false;
-            for (Item it : whitelist) { if (it instanceof net.minecraft.item.BucketItem) { anyFluid = true; break; } }
+            for (Item it : whitelist) { if (it instanceof net.minecraft.world.item.BucketItem) { anyFluid = true; break; } }
             if (anyFluid) {
                 final Set<Item> wl = whitelist;
-                filter = v -> wl.contains(v.getFluid().getBucketItem());
+                filter = v -> wl.contains(v.getFluid().getBucket());
             }
         }
         moveAll(sources, targets, budget, filter, roundRobin);

@@ -1,12 +1,13 @@
 package com.echoes.block.entity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.wireless.RelayMode;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.core.BlockPos;
 
 /**
  * A wireless redstone bus. SEND broadcasts the redstone power it receives onto
@@ -35,34 +36,34 @@ public class NoteRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
 
     // --- WirelessDevice (redstone) ---
     @Override public int redstoneOut() {
-        return mode == RelayMode.SEND && world != null ? world.getReceivedRedstonePower(getPos()) : -1;
+        return mode == RelayMode.SEND && level != null ? level.getBestNeighborSignal(getBlockPos()) : -1;
     }
 
-    @Override public void acceptRedstone(int level) {
-        if (mode == RelayMode.RECEIVE) setOutput(level);
+    @Override public void acceptRedstone(int power) {
+        if (mode == RelayMode.RECEIVE) setOutput(power);
     }
 
-    private void setOutput(int level) {
-        if (level == output || world == null) return;
-        output = level;
-        markDirty();
-        BlockState state = getCachedState();
+    private void setOutput(int power) {
+        if (power == output) return;
+        output = power;
+        setChanged();
+        BlockState state = getBlockState();
         boolean powered = output > 0;
-        if (state.contains(Properties.POWERED) && state.get(Properties.POWERED) != powered) {
-            world.setBlockState(getPos(), state.with(Properties.POWERED, powered));
+        if (state.hasProperty(BlockStateProperties.POWERED) && state.getValue(BlockStateProperties.POWERED) != powered) {
+            level.setBlockAndUpdate(getBlockPos(), state.setValue(BlockStateProperties.POWERED, powered));
         }
-        world.updateNeighborsAlways(getPos(), state.getBlock());
+        level.updateNeighborsAt(getBlockPos(), state.getBlock());
     }
 
     @Override
-    protected void writeExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeExtra(ValueOutput nbt) {
         nbt.putInt("mode", mode.ordinal());
         nbt.putInt("output", output);
     }
 
     @Override
-    protected void readExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        mode = RelayMode.byId(nbt.getInt("mode"));
-        output = nbt.getInt("output");
+    protected void readExtra(ValueInput nbt) {
+        mode = RelayMode.byId(nbt.getIntOr("mode", 0));
+        output = nbt.getIntOr("output", 0);
     }
 }

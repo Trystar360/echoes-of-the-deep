@@ -1,9 +1,9 @@
 # === Octaves of the One — the Great Work showcase ===
-gamerule doDaylightCycle false
-gamerule doWeatherCycle false
-gamerule doMobSpawning false
-gamerule doTileDrops false
-gamerule keepInventory true
+gamerule advance_time false
+gamerule advance_weather false
+gamerule spawn_mobs false
+gamerule block_drops false
+gamerule keep_inventory true
 weather clear 1000000
 time set 2000
 difficulty peaceful

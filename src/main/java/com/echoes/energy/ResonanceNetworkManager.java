@@ -1,8 +1,8 @@
 package com.echoes.energy;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -14,32 +14,32 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Owns all conduit networks for a single {@link ServerWorld}. Networks are
+ * Owns all conduit networks for a single {@link ServerLevel}. Networks are
  * persistent objects mutated incrementally on topology changes — we never
  * flood-fill on the tick path. The only expensive operation is a split check
  * when a conduit is removed, which is rare (player-driven).
  *
  * <p>One instance per world, held in a static map keyed by world. (For a
  * shipping mod, attach this to the world via a Cardinal Components world
- * component or a PersistentState; kept simple here.)
+ * component or a SavedData; kept simple here.)
  */
 public class ResonanceNetworkManager {
-    private static final Map<ServerWorld, ResonanceNetworkManager> INSTANCES = new HashMap<>();
+    private static final Map<ServerLevel, ResonanceNetworkManager> INSTANCES = new HashMap<>();
 
-    private final ServerWorld world;
+    private final ServerLevel world;
     private final Map<Integer, ResonanceNetwork> networks = new HashMap<>();
     private final Map<BlockPos, Integer> posToNetwork = new HashMap<>();
     private int nextId = 1;
     private ResonanceNetworkState state;
 
-    private ResonanceNetworkManager(ServerWorld world) {
+    private ResonanceNetworkManager(ServerLevel world) {
         this.world = world;
         load();
     }
 
     /** Restore persisted network topology (conduit sets) on first access per world. */
     private void load() {
-        state = world.getPersistentStateManager().getOrCreate(ResonanceNetworkState.TYPE, ResonanceNetworkState.KEY);
+        state = world.getDataStorage().computeIfAbsent(ResonanceNetworkState.TYPE);
         nextId = Math.max(nextId, state.nextId);
         for (Map.Entry<Integer, java.util.Set<BlockPos>> e : state.networks.entrySet()) {
             ResonanceNetwork net = new ResonanceNetwork(e.getKey());
@@ -51,7 +51,7 @@ public class ResonanceNetworkManager {
         }
     }
 
-    /** Mirror the live topology into the PersistentState. Called after every change. */
+    /** Mirror the live topology into the SavedData. Called after every change. */
     private void syncState() {
         if (state == null) return;
         state.networks.clear();
@@ -59,15 +59,15 @@ public class ResonanceNetworkManager {
             state.networks.put(net.id, new java.util.HashSet<>(net.conduits));
         }
         state.nextId = nextId;
-        state.markDirty();
+        state.setDirty();
     }
 
-    public static ResonanceNetworkManager get(ServerWorld world) {
+    public static ResonanceNetworkManager get(ServerLevel world) {
         return INSTANCES.computeIfAbsent(world, ResonanceNetworkManager::new);
     }
 
     public static void init() {
-        ServerTickEvents.END_WORLD_TICK.register(world -> get(world).tick());
+        ServerTickEvents.END_LEVEL_TICK.register(world -> get(world).tick());
     }
 
     private void tick() {

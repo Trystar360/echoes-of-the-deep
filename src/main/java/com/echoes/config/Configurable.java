@@ -12,7 +12,7 @@ public interface Configurable {
     ConfigSpec getConfigSpec();
 
     /** Display name shown at the top of the configuration screen. */
-    net.minecraft.text.Text configTitle();
+    net.minecraft.network.chat.Component configTitle();
 
     /** Hook fired server-side after any value changes (re-sync networks, mark dirty…). */
     default void onConfigChanged() {}

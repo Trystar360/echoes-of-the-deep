@@ -1,20 +1,20 @@
 package com.echoes.block;
 
 import com.echoes.block.entity.ResonantAmplifierBlockEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 /** Widens the per-tick transfer budget of its channel. Each one doubles it (capped). */
 public class ResonantAmplifierBlock extends AbstractHorizontalDeviceBlock {
 
-    public ResonantAmplifierBlock(Settings settings) {
+    public ResonantAmplifierBlock(Properties settings) {
         super(settings);
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ResonantAmplifierBlockEntity(pos, state);
     }
 }

@@ -3,14 +3,16 @@ package com.echoes.compat;
 import com.echoes.energy.ResonanceStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import team.reborn.energy.api.EnergyStorage;
 
 /**
  * Exposes a {@link ResonanceStorage} (RU buffer) as a Team Reborn
  * {@link EnergyStorage}, 1 RU = 1 E. Lets other tech mods read and feed the
- * Resonance grid through a Resonator or Conduit Coupler. Transaction-safe via
- * {@link SnapshotParticipant}.
+ * Resonance grid through a Resonator, Conduit Coupler, or Resonance Cell.
+ * Transaction-safe via {@link SnapshotParticipant}.
+ *
+ * <p>26.1: {@code BlockEntity#markDirty} is now {@code setChanged}.
  */
 public class ResonanceEnergyBridge extends SnapshotParticipant<Long> implements EnergyStorage {
     private final ResonanceStorage storage;
@@ -46,5 +48,5 @@ public class ResonanceEnergyBridge extends SnapshotParticipant<Long> implements 
 
     @Override protected Long createSnapshot() { return storage.getAmount(); }
     @Override protected void readSnapshot(Long snapshot) { storage.setAmount(snapshot); }
-    @Override protected void onFinalCommit() { be.markDirty(); }
+    @Override protected void onFinalCommit() { be.setChanged(); }
 }

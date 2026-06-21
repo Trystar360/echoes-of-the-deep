@@ -2,15 +2,16 @@ package com.echoes.block;
 
 import com.echoes.block.entity.AbstractChannelDeviceBlockEntity;
 import com.echoes.block.entity.ResonantChestBlockEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.Containers;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -20,31 +21,29 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ResonantChestBlock extends AbstractHorizontalDeviceBlock {
 
-    public ResonantChestBlock(Settings settings) {
+    public ResonantChestBlock(Properties settings) {
         super(settings);
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ResonantChestBlockEntity(pos, state);
     }
 
     @Override
-    protected ActionResult onConfigure(World world, BlockPos pos, PlayerEntity player,
+    protected InteractionResult onConfigure(Level world, BlockPos pos, Player player,
                                        AbstractChannelDeviceBlockEntity device, ItemStack held) {
-        if (device instanceof NamedScreenHandlerFactory factory) {
-            player.openHandledScreen(factory);
+        if (device instanceof MenuProvider factory) {
+            player.openMenu(factory);
         }
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            if (world.getBlockEntity(pos) instanceof ResonantChestBlockEntity be) {
-                ItemScatterer.spawn(world, pos, be.getItems());
-            }
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
+        if (world.getBlockEntity(pos) instanceof ResonantChestBlockEntity be) {
+            Containers.dropContents(world, pos, be.getItems());
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
+        super.affectNeighborsAfterRemoval(state, world, pos, moved);
     }
 }

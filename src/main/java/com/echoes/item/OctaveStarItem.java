@@ -2,18 +2,19 @@ package com.echoes.item;
 
 import com.echoes.registry.ModComponents;
 import com.echoes.transmute.TransmutationState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A portable <b>Bound Light</b> battery (the "Klein Star" of this economy). Right-click to
@@ -25,7 +26,7 @@ public class OctaveStarItem extends Item {
     private final int tier;
     private final long capacity;
 
-    public OctaveStarItem(int tier, long capacity, Settings settings) {
+    public OctaveStarItem(int tier, long capacity, Properties settings) {
         super(settings);
         this.tier = tier;
         this.capacity = capacity;
@@ -40,43 +41,44 @@ public class OctaveStarItem extends Item {
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
-        if (world.isClient || !(world instanceof ServerWorld sw)) return ActionResult.SUCCESS;
+    public InteractionResult use(Level world, Player user, InteractionHand hand) {
+        ItemStack stack = user.getItemInHand(hand);
+        if (world.isClientSide() || !(world instanceof ServerLevel sw)) return InteractionResult.SUCCESS;
 
         TransmutationState state = TransmutationState.get(sw);
-        TransmutationState.Account account = state.of(user.getUuid());
+        TransmutationState.Account account = state.of(user.getUUID());
         long cur = stored(stack);
 
-        if (user.isSneaking()) {
-            if (cur <= 0) return ActionResult.PASS;       // discharge → account
+        if (user.isShiftKeyDown()) {
+            if (cur <= 0) return InteractionResult.PASS;       // discharge → account
             account.light += cur;
             setStored(stack, 0);
-            state.markDirty();
-            user.sendMessage(Text.translatable("message.echoes.star.emptied", fmt(cur)), true);
+            state.setDirty();
+            user.sendOverlayMessage(Component.translatable("message.echoes.star.emptied", fmt(cur)));
         } else {
             long move = Math.min(capacity - cur, account.light); // charge ← account
-            if (move <= 0) return ActionResult.PASS;
+            if (move <= 0) return InteractionResult.PASS;
             account.light -= move;
             setStored(stack, cur + move);
-            state.markDirty();
-            user.sendMessage(Text.translatable("message.echoes.star.charged", fmt(cur + move), fmt(capacity)), true);
+            state.setDirty();
+            user.sendOverlayMessage(Component.translatable("message.echoes.star.charged", fmt(cur + move), fmt(capacity)));
         }
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("tooltip.echoes.star.stored", fmt(stored(stack)), fmt(capacity))
-                .formatted(Formatting.AQUA));
-        tooltip.add(Text.translatable("tooltip.echoes.star.hint").formatted(Formatting.DARK_GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag type) {
+        tooltip.accept(Component.translatable("tooltip.echoes.star.stored", fmt(stored(stack)), fmt(capacity))
+                .withStyle(ChatFormatting.AQUA));
+        tooltip.accept(Component.translatable("tooltip.echoes.star.hint").withStyle(ChatFormatting.DARK_GRAY));
     }
 
-    @Override public boolean isItemBarVisible(ItemStack stack) { return stored(stack) > 0; }
-    @Override public int getItemBarStep(ItemStack stack) {
+    @Override public boolean isBarVisible(ItemStack stack) { return stored(stack) > 0; }
+    @Override public int getBarWidth(ItemStack stack) {
         return (int) Math.round(13.0 * stored(stack) / capacity);
     }
-    @Override public int getItemBarColor(ItemStack stack) { return 0x36E2D4; } // resonance teal
+    @Override public int getBarColor(ItemStack stack) { return 0x36E2D4; } // resonance teal
 
     private static String fmt(long value) { return String.format("%,d", value); }
 }

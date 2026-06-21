@@ -27,12 +27,12 @@ import com.echoes.block.entity.ResonatorBlockEntity;
 import com.echoes.block.entity.GreaterAccumulatorBlockEntity;
 import com.echoes.block.entity.VerdantLoamBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 
 public final class ModBlockEntities {
     private ModBlockEntities() {}
@@ -90,8 +90,8 @@ public final class ModBlockEntities {
 
     private static <T extends BlockEntity> BlockEntityType<T> register(
             String name, FabricBlockEntityTypeBuilder.Factory<T> factory, Block... blocks) {
-        return Registry.register(Registries.BLOCK_ENTITY_TYPE,
-                Identifier.of(EchoesMod.MOD_ID, name),
+        return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name),
                 FabricBlockEntityTypeBuilder.create(factory, blocks).build());
     }
 

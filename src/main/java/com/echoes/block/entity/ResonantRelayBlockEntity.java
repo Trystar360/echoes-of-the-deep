@@ -1,4 +1,6 @@
 package com.echoes.block.entity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import com.echoes.energy.ResonanceNode;
 import com.echoes.registry.ModBlockEntities;
@@ -8,12 +10,11 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -38,11 +39,11 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     }
 
     public Direction facing() {
-        return getCachedState().getOrEmpty(Properties.FACING).orElse(Direction.NORTH);
+        return getBlockState().getOptionalValue(BlockStateProperties.FACING).orElse(Direction.NORTH);
     }
 
     /** The block this relay reads from / writes to. */
-    private BlockPos attachedPos() { return getPos().offset(facing()); }
+    private BlockPos attachedPos() { return getBlockPos().relative(facing()); }
 
     /** 0 when disabled, otherwise a rough channel indicator (1–15) for comparators. */
     public int comparatorOutput() {
@@ -53,24 +54,24 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     @Override public RelayMode transportMode() { return mode; }
 
     @Override public @Nullable Storage<ItemVariant> wirelessItems() {
-        return ItemStorage.SIDED.find(world, attachedPos(), facing().getOpposite());
+        return ItemStorage.SIDED.find(level, attachedPos(), facing().getOpposite());
     }
 
     @Override public @Nullable Storage<FluidVariant> wirelessFluids() {
-        return FluidStorage.SIDED.find(world, attachedPos(), facing().getOpposite());
+        return FluidStorage.SIDED.find(level, attachedPos(), facing().getOpposite());
     }
 
     @Override public @Nullable ResonanceNode wirelessEnergy() {
-        return world.getBlockEntity(attachedPos()) instanceof ResonanceNode n ? n : null;
+        return level.getBlockEntity(attachedPos()) instanceof ResonanceNode n ? n : null;
     }
 
     @Override
-    protected void writeExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeExtra(ValueOutput nbt) {
         nbt.putInt("mode", mode.ordinal());
     }
 
     @Override
-    protected void readExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        mode = RelayMode.byId(nbt.getInt("mode"));
+    protected void readExtra(ValueInput nbt) {
+        mode = RelayMode.byId(nbt.getIntOr("mode", 0));
     }
 }

@@ -3,13 +3,13 @@ package com.echoes.registry;
 import com.echoes.EchoesMod;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.PlacedFeature;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 /**
  * Attaches placed features to biomes. Echocite and Drumstone generate throughout
@@ -18,40 +18,40 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 public final class ModWorldGen {
     private ModWorldGen() {}
 
-    private static RegistryKey<PlacedFeature> placed(String name) {
-        return RegistryKey.of(RegistryKeys.PLACED_FEATURE, Identifier.of(EchoesMod.MOD_ID, name));
+    private static ResourceKey<PlacedFeature> placed(String name) {
+        return ResourceKey.create(Registries.PLACED_FEATURE, Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name));
     }
 
-    private static RegistryKey<ConfiguredFeature<?, ?>> configured(String name) {
-        return RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, Identifier.of(EchoesMod.MOD_ID, name));
+    private static ResourceKey<ConfiguredFeature<?, ?>> configured(String name) {
+        return ResourceKey.create(Registries.CONFIGURED_FEATURE, Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name));
     }
 
-    public static final RegistryKey<PlacedFeature> ECHOCITE_ORE = placed("echocite_ore");
-    public static final RegistryKey<PlacedFeature> DRUMSTONE_ORE = placed("drumstone_ore");
-    public static final RegistryKey<PlacedFeature> SILENTITE_ORE = placed("silentite_ore");
+    public static final ResourceKey<PlacedFeature> ECHOCITE_ORE = placed("echocite_ore");
+    public static final ResourceKey<PlacedFeature> DRUMSTONE_ORE = placed("drumstone_ore");
+    public static final ResourceKey<PlacedFeature> SILENTITE_ORE = placed("silentite_ore");
 
     /** Lumewood tree — referenced by the sapling generator and by natural placement. */
-    public static final RegistryKey<ConfiguredFeature<?, ?>> LUMEWOOD_TREE = configured("lumewood_tree");
-    public static final RegistryKey<PlacedFeature> LUMEWOOD_TREE_PLACED = placed("lumewood_tree");
+    public static final ResourceKey<ConfiguredFeature<?, ?>> LUMEWOOD_TREE = configured("lumewood_tree");
+    public static final ResourceKey<PlacedFeature> LUMEWOOD_TREE_PLACED = placed("lumewood_tree");
 
     public static void register() {
         BiomeModifications.addFeature(
                 BiomeSelectors.foundInOverworld(),
-                GenerationStep.Feature.UNDERGROUND_ORES,
+                GenerationStep.Decoration.UNDERGROUND_ORES,
                 ECHOCITE_ORE);
         BiomeModifications.addFeature(
                 BiomeSelectors.foundInOverworld(),
-                GenerationStep.Feature.UNDERGROUND_ORES,
+                GenerationStep.Decoration.UNDERGROUND_ORES,
                 DRUMSTONE_ORE);
         // Silentite only seeds the Deep Dark — silence pooled in the deepest places.
         BiomeModifications.addFeature(
-                BiomeSelectors.includeByKey(BiomeKeys.DEEP_DARK),
-                GenerationStep.Feature.UNDERGROUND_ORES,
+                BiomeSelectors.includeByKey(Biomes.DEEP_DARK),
+                GenerationStep.Decoration.UNDERGROUND_ORES,
                 SILENTITE_ORE);
         // Lumewood seeds itself sparsely through forested biomes.
         BiomeModifications.addFeature(
-                BiomeSelectors.tag(net.minecraft.registry.tag.BiomeTags.IS_FOREST),
-                GenerationStep.Feature.VEGETAL_DECORATION,
+                BiomeSelectors.tag(net.minecraft.tags.BiomeTags.IS_FOREST),
+                GenerationStep.Decoration.VEGETAL_DECORATION,
                 LUMEWOOD_TREE_PLACED);
     }
 }

@@ -4,19 +4,19 @@ import com.echoes.registry.ModItems;
 import com.echoes.registry.ModScreens;
 import com.echoes.transmute.LightValues;
 import com.echoes.transmute.TransmutationState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  *       from the pool (×1 or a stack).</li>
  * </ul>
  */
-public class TransmutationTableScreenHandler extends ScreenHandler {
+public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     public static final int INPUT = 0, OUTPUT = 1, TEMPLATE = 2;
     private static final int MACHINE_SLOTS = 3;
     private static final long DIGIT = 32768L;
@@ -43,20 +43,20 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
     public static final int SLOT_Y = 40, INPUT_X = 26, TEMPLATE_X = 80, OUTPUT_X = 134;
     private static final int INV_Y = 118, HOTBAR_Y = 176;
 
-    private final SimpleInventory inv = new SimpleInventory(MACHINE_SLOTS);
-    private final PropertyDelegate props;
-    private final PlayerEntity player;
+    private final SimpleContainer inv = new SimpleContainer(MACHINE_SLOTS);
+    private final ContainerData props;
+    private final Player player;
     private final @Nullable TransmutationState state;       // server only
     private final TransmutationState.@Nullable Account account; // server only
 
-    public TransmutationTableScreenHandler(int syncId, PlayerInventory playerInv) {
+    public TransmutationTableScreenHandler(int syncId, Inventory playerInv) {
         super(ModScreens.TRANSMUTATION_TABLE, syncId);
         this.player = playerInv.player;
 
-        if (player.getWorld() instanceof ServerWorld sw) {
+        if (player.level() instanceof ServerLevel sw) {
             this.state = TransmutationState.get(sw);
-            this.account = state.of(player.getUuid());
-            this.props = new PropertyDelegate() {
+            this.account = state.of(player.getUUID());
+            this.props = new ContainerData() {
                 @Override public int get(int i) {
                     long bl = account.light;
                     return switch (i) {
@@ -67,22 +67,22 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
                     };
                 }
                 @Override public void set(int i, int v) { }
-                @Override public int size() { return 3; }
+                @Override public int getCount() { return 3; }
             };
         } else {
             this.state = null;
             this.account = null;
-            this.props = new ArrayPropertyDelegate(3);
+            this.props = new SimpleContainerData(3);
         }
 
         this.addSlot(new Slot(inv, INPUT, INPUT_X, SLOT_Y));         // dissolve
         this.addSlot(new Slot(inv, OUTPUT, OUTPUT_X, SLOT_Y) {       // extract-only
-            @Override public boolean canInsert(ItemStack stack) { return false; }
+            @Override public boolean mayPlace(ItemStack stack) { return false; }
         });
         this.addSlot(new Slot(inv, TEMPLATE, TEMPLATE_X, SLOT_Y) {   // ghost target
-            @Override public boolean canInsert(ItemStack stack) { return false; }
-            @Override public boolean canTakeItems(PlayerEntity p) { return false; }
-            @Override public int getMaxItemCount() { return 1; }
+            @Override public boolean mayPlace(ItemStack stack) { return false; }
+            @Override public boolean mayPickup(Player p) { return false; }
+            @Override public int getMaxStackSize() { return 1; }
         });
 
         for (int row = 0; row < 3; row++)
@@ -91,7 +91,7 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
         for (int col = 0; col < 9; col++)
             this.addSlot(new Slot(playerInv, col, 8 + col * 18, HOTBAR_Y));
 
-        this.addProperties(props);
+        this.addDataSlots(props);
     }
 
     /** Banked Bound Light, reconstructed from the 3×15-bit property delegate (client). */
@@ -101,10 +101,10 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
 
     public static long moteValue(int tier) { return ModItems.MOTE_VALUES[tier]; }
 
-    private static Identifier id(Item item) { return Registries.ITEM.getId(item); }
+    private static Identifier id(Item item) { return BuiltInRegistries.ITEM.getKey(item); }
 
     @Override
-    public boolean onButtonClick(PlayerEntity p, int btn) {
+    public boolean clickMenuButton(Player p, int btn) {
         if (account == null) return false; // server-authoritative
         boolean changed;
         if (btn >= 0 && btn < ModItems.MOTES.length) {
@@ -116,21 +116,21 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
         } else if (btn == BTN_CONDENSE_STACK) {
             changed = condense(64);
         } else {
-            return super.onButtonClick(p, btn);
+            return super.clickMenuButton(p, btn);
         }
-        if (changed) state.markDirty();
+        if (changed) state.setDirty();
         return true;
     }
 
     /** Dissolve the input stack into banked Light and attune its tone. */
     private boolean dissolve() {
-        ItemStack in = inv.getStack(INPUT);
+        ItemStack in = inv.getItem(INPUT);
         if (in.isEmpty()) return false;
         long unit = LightValues.get(in.getItem());
         if (unit <= 0) return false; // no value / blacklisted
         account.light += unit * in.getCount();
         account.attuned.add(id(in.getItem()));
-        inv.setStack(INPUT, ItemStack.EMPTY);
+        inv.setItem(INPUT, ItemStack.EMPTY);
         return true;
     }
 
@@ -145,7 +145,7 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
 
     /** Re-create the (attuned) template item from the pool, up to {@code max} copies. */
     private boolean condense(int max) {
-        ItemStack tmpl = inv.getStack(TEMPLATE);
+        ItemStack tmpl = inv.getItem(TEMPLATE);
         if (tmpl.isEmpty()) return false;
         Item item = tmpl.getItem();
         if (!account.attuned.contains(id(item))) return false;
@@ -161,79 +161,79 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
 
     /** Add one of {@code item} to the output slot if it can stack there. */
     private boolean addToOutput(Item item) {
-        ItemStack out = inv.getStack(OUTPUT);
-        if (out.isEmpty()) { inv.setStack(OUTPUT, new ItemStack(item)); return true; }
-        if (out.getItem() == item && out.getCount() < out.getMaxCount()) { out.increment(1); return true; }
+        ItemStack out = inv.getItem(OUTPUT);
+        if (out.isEmpty()) { inv.setItem(OUTPUT, new ItemStack(item)); return true; }
+        if (out.getItem() == item && out.getCount() < out.getMaxStackSize()) { out.grow(1); return true; }
         return false;
     }
 
     /** Output slot first (so hoppers can pull), else the player's inventory. */
     private boolean outputInsert(ItemStack stack) {
-        ItemStack out = inv.getStack(OUTPUT);
-        if (out.isEmpty()) { inv.setStack(OUTPUT, stack); return true; }
-        if (ItemStack.areItemsAndComponentsEqual(out, stack) && out.getCount() < out.getMaxCount()) {
-            out.increment(1); return true;
+        ItemStack out = inv.getItem(OUTPUT);
+        if (out.isEmpty()) { inv.setItem(OUTPUT, stack); return true; }
+        if (ItemStack.isSameItemSameComponents(out, stack) && out.getCount() < out.getMaxStackSize()) {
+            out.grow(1); return true;
         }
-        return player.getInventory().insertStack(stack);
+        return player.getInventory().add(stack);
     }
 
     @Override
-    public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity p) {
+    public void clicked(int slotIndex, int button, ContainerInput actionType, Player p) {
         if (slotIndex == TEMPLATE) {
             // Ghost slot: set/clear the condense target from the cursor without consuming it.
-            if (actionType == SlotActionType.PICKUP || actionType == SlotActionType.PICKUP_ALL) {
-                ItemStack cursor = getCursorStack();
+            if (actionType == ContainerInput.PICKUP || actionType == ContainerInput.PICKUP_ALL) {
+                ItemStack cursor = getCarried();
                 if (cursor.isEmpty()) {
-                    inv.setStack(TEMPLATE, ItemStack.EMPTY);
+                    inv.setItem(TEMPLATE, ItemStack.EMPTY);
                 } else {
                     ItemStack ghost = cursor.copy();
                     ghost.setCount(1);
-                    inv.setStack(TEMPLATE, ghost);
+                    inv.setItem(TEMPLATE, ghost);
                 }
             }
             return;
         }
-        super.onSlotClick(slotIndex, button, actionType, p);
+        super.clicked(slotIndex, button, actionType, p);
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity p, int slotIndex) {
+    public ItemStack quickMoveStack(Player p, int slotIndex) {
         ItemStack moved = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
-        if (slot != null && slot.hasStack()) {
+        if (slot != null && slot.hasItem()) {
             if (slotIndex == TEMPLATE) return ItemStack.EMPTY; // ghost
-            ItemStack original = slot.getStack();
+            ItemStack original = slot.getItem();
             moved = original.copy();
             if (slotIndex < MACHINE_SLOTS) {
-                if (!this.insertItem(original, MACHINE_SLOTS, this.slots.size(), true)) return ItemStack.EMPTY;
-            } else if (!this.insertItem(original, INPUT, INPUT + 1, false)) { // player -> input only
+                if (!this.moveItemStackTo(original, MACHINE_SLOTS, this.slots.size(), true)) return ItemStack.EMPTY;
+            } else if (!this.moveItemStackTo(original, INPUT, INPUT + 1, false)) { // player -> input only
                 return ItemStack.EMPTY;
             }
-            if (original.isEmpty()) slot.setStack(ItemStack.EMPTY);
-            else slot.markDirty();
+            if (original.isEmpty()) slot.set(ItemStack.EMPTY);
+            else slot.setChanged();
         }
         return moved;
     }
 
     @Override
-    public void onClosed(PlayerEntity p) {
-        super.onClosed(p);
+    public void removed(Player p) {
+        super.removed(p);
         // Return real held items; the ghost template is a phantom and is simply dropped.
-        if (!p.getWorld().isClient) {
+        if (!p.level().isClientSide()) {
             returnStack(p, INPUT);
             returnStack(p, OUTPUT);
         }
-        inv.setStack(TEMPLATE, ItemStack.EMPTY);
+        inv.setItem(TEMPLATE, ItemStack.EMPTY);
     }
 
-    private void returnStack(PlayerEntity p, int slot) {
-        ItemStack s = inv.getStack(slot);
+    private void returnStack(Player p, int slot) {
+        ItemStack s = inv.getItem(slot);
         if (!s.isEmpty()) {
-            p.getInventory().offerOrDrop(s);
-            inv.setStack(slot, ItemStack.EMPTY);
+            p.getInventory().placeItemBackInInventory(s);
+            inv.setItem(slot, ItemStack.EMPTY);
         }
     }
 
     @Override
-    public boolean canUse(PlayerEntity p) { return true; }
+    public boolean stillValid(Player p) { return true; }
 }

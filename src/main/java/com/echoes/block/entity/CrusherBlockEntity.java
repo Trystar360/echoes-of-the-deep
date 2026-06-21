@@ -7,23 +7,25 @@ import com.echoes.recipe.CrushingRecipe;
 import com.echoes.recipe.ModRecipes;
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.screen.CrusherScreenHandler;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.recipe.input.SingleStackRecipeInput;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
@@ -35,7 +37,7 @@ import java.util.Optional;
  * briefly dips; it pulls its per-tick energy need from the network via demand().
  */
 public class CrusherBlockEntity extends BlockEntity
-        implements ImplementedInventory, ResonanceNode, NamedScreenHandlerFactory,
+        implements ImplementedInventory, ResonanceNode, MenuProvider,
         com.echoes.config.Configurable {
 
     private static final int INPUT = 0, OUTPUT = 1, BYPRODUCT = 2;
@@ -45,7 +47,7 @@ public class CrusherBlockEntity extends BlockEntity
     public static final com.echoes.config.ConfigSpec SPEC =
             com.echoes.config.ConfigSpec.builder().redstone().sides().build();
 
-    private final DefaultedList<ItemStack> items = DefaultedList.ofSize(3, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
     private final ResonanceStorage buffer = new ResonanceStorage(INTERNAL_BUFFER);
     private final com.echoes.config.BlockConfig config = new com.echoes.config.BlockConfig();
 
@@ -53,7 +55,7 @@ public class CrusherBlockEntity extends BlockEntity
     private int maxProgress;    // recipe.processingTime, cached
     private long energyPerTick; // recipe.energy / maxProgress, cached
 
-    private final PropertyDelegate props = new PropertyDelegate() {
+    private final ContainerData props = new ContainerData() {
         @Override public int get(int i) {
             return switch (i) {
                 case 0 -> progress;
@@ -65,22 +67,22 @@ public class CrusherBlockEntity extends BlockEntity
         @Override public void set(int i, int v) {
             switch (i) { case 0 -> progress = v; case 1 -> maxProgress = v; }
         }
-        @Override public int size() { return 3; }
+        @Override public int getCount() { return 3; }
     };
 
     public CrusherBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CRUSHER, pos, state);
     }
 
-    @Override public DefaultedList<ItemStack> getItems() { return items; }
+    @Override public NonNullList<ItemStack> getItems() { return items; }
 
     // --- tick (registered as a BlockEntityTicker) ---
-    public static void tick(World world, BlockPos pos, BlockState state, CrusherBlockEntity be) {
-        if (world.isClient) return;
+    public static void tick(Level level, BlockPos pos, BlockState state, CrusherBlockEntity be) {
+        if (level.isClientSide()) return;
 
-        Optional<RecipeEntry<CrushingRecipe>> match = be.currentRecipe();
+        Optional<RecipeHolder<CrushingRecipe>> match = be.currentRecipe();
         if (match.isEmpty() || !be.hasOutputRoom(match.get().value())) {
-            if (be.progress != 0) { be.progress = 0; be.markDirty(); }
+            if (be.progress != 0) { be.progress = 0; be.setChanged(); }
             return;
         }
 
@@ -92,7 +94,7 @@ public class CrusherBlockEntity extends BlockEntity
         if (be.buffer.extract(be.energyPerTick, true) >= be.energyPerTick) {
             be.buffer.extract(be.energyPerTick, false);
             be.progress++;
-            be.markDirty();
+            be.setChanged();
             if (be.progress >= be.maxProgress) {
                 be.craft(recipe);
                 be.progress = 0;
@@ -100,48 +102,48 @@ public class CrusherBlockEntity extends BlockEntity
         }
     }
 
-    private Optional<RecipeEntry<CrushingRecipe>> currentRecipe() {
-        if (getStack(INPUT).isEmpty()) return Optional.empty();
-        if (!(world instanceof net.minecraft.server.world.ServerWorld sw)) return Optional.empty();
-        return sw.getRecipeManager().getFirstMatch(
-                ModRecipes.CRUSHING_TYPE, new SingleStackRecipeInput(getStack(INPUT)), world);
+    private Optional<RecipeHolder<CrushingRecipe>> currentRecipe() {
+        if (getItem(INPUT).isEmpty()) return Optional.empty();
+        if (!(level instanceof net.minecraft.server.level.ServerLevel sw)) return Optional.empty();
+        return sw.recipeAccess().getRecipeFor(
+                ModRecipes.CRUSHING_TYPE, new SingleRecipeInput(getItem(INPUT)), level);
     }
 
     private boolean hasOutputRoom(CrushingRecipe recipe) {
-        ItemStack out = getStack(OUTPUT);
+        ItemStack out = getItem(OUTPUT);
         ItemStack result = recipe.result();
         if (out.isEmpty()) return true;
-        if (!ItemStack.areItemsAndComponentsEqual(out, result)) return false;
-        return out.getCount() + result.getCount() <= out.getMaxCount();
+        if (!ItemStack.isSameItemSameComponents(out, result)) return false;
+        return out.getCount() + result.getCount() <= out.getMaxStackSize();
     }
 
     private void craft(CrushingRecipe recipe) {
-        getStack(INPUT).decrement(1);
+        getItem(INPUT).shrink(1);
         ItemStack result = recipe.result();
-        if (getStack(OUTPUT).isEmpty()) setStack(OUTPUT, result.copy());
-        else getStack(OUTPUT).increment(result.getCount());
+        if (getItem(OUTPUT).isEmpty()) setItem(OUTPUT, result.copy());
+        else getItem(OUTPUT).grow(result.getCount());
 
         // Roll the optional byproduct (e.g. resonant slag) into the third slot.
         ItemStack sec = recipe.secondary();
-        if (!sec.isEmpty() && world != null && world.getRandom().nextFloat() < recipe.secondaryChance()) {
-            ItemStack slot = getStack(BYPRODUCT);
+        if (!sec.isEmpty() && level != null && level.getRandom().nextFloat() < recipe.secondaryChance()) {
+            ItemStack slot = getItem(BYPRODUCT);
             if (slot.isEmpty()) {
-                setStack(BYPRODUCT, sec.copy());
-            } else if (ItemStack.areItemsAndComponentsEqual(slot, sec)
-                    && slot.getCount() + sec.getCount() <= slot.getMaxCount()) {
-                slot.increment(sec.getCount());
+                setItem(BYPRODUCT, sec.copy());
+            } else if (ItemStack.isSameItemSameComponents(slot, sec)
+                    && slot.getCount() + sec.getCount() <= slot.getMaxStackSize()) {
+                slot.grow(sec.getCount());
             }
             // else: byproduct slot is full/mismatched — the roll is forfeited, machine keeps running.
         }
-        markDirty();
+        setChanged();
     }
 
     // --- sided access: top inserts input; other faces extract output + byproduct ---
-    @Override public int[] getAvailableSlots(Direction side) {
+    @Override public int[] getSlotsForFace(Direction side) {
         return side == Direction.UP ? new int[]{INPUT} : new int[]{OUTPUT, BYPRODUCT};
     }
-    @Override public boolean canInsert(int slot, ItemStack stack, Direction dir) { return slot == INPUT; }
-    @Override public boolean canExtract(int slot, ItemStack stack, Direction dir) { return slot == OUTPUT || slot == BYPRODUCT; }
+    @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == INPUT; }
+    @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == OUTPUT || slot == BYPRODUCT; }
 
     // --- ResonanceNode (CONSUMER) ---
     @Override public int roleMask() { return NodeRole.of(NodeRole.CONSUMER); }
@@ -149,43 +151,43 @@ public class CrusherBlockEntity extends BlockEntity
     @Override public long insert(long max, boolean simulate) { return buffer.insert(max, simulate); }
     @Override public long demand() {
         // Want enough to top the internal buffer, but only when there's work to do.
-        if (world == null || currentRecipe().isEmpty()) return 0;
+        if (level == null || currentRecipe().isEmpty()) return 0;
         return buffer.getCapacity() - buffer.getAmount();
     }
     @Override public int transferCap() { return 0; }
-    @Override public BlockPos pos() { return getPos(); }
+    @Override public BlockPos pos() { return getBlockPos(); }
     @Override public long storedRu() { return buffer.getAmount(); }
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
     // --- screen ---
-    @Override public Text getDisplayName() { return Text.translatable("block.echoes.compressor"); }
-    @Override public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+    @Override public Component getDisplayName() { return Component.translatable("block.echoes.compressor"); }
+    @Override public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
         return new CrusherScreenHandler(syncId, inv, this, props);
     }
 
-    @Override public void markDirty() { super.markDirty(); }
+    @Override public void setChanged() { super.setChanged(); }
 
     // --- Configurable ---
     @Override public com.echoes.config.BlockConfig getConfig() { return config; }
     @Override public com.echoes.config.ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
-    @Override public void onConfigChanged() { markDirty(); }
+    @Override public Component configTitle() { return getBlockState().getBlock().getName(); }
+    @Override public void onConfigChanged() { setChanged(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        super.writeNbt(nbt, lookup);
-        net.minecraft.inventory.Inventories.writeNbt(nbt, items, lookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
+        net.minecraft.world.ContainerHelper.saveAllItems(nbt, items);
         buffer.writeNbt(nbt);
         config.writeNbt(nbt);
         nbt.putInt("progress", progress);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        super.readNbt(nbt, lookup);
-        net.minecraft.inventory.Inventories.readNbt(nbt, items, lookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
+        net.minecraft.world.ContainerHelper.loadAllItems(nbt, items);
         buffer.readNbt(nbt);
         config.readNbt(nbt);
-        progress = nbt.getInt("progress");
+        progress = nbt.getIntOr("progress", 0);
     }
 }

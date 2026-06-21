@@ -1,20 +1,20 @@
 package com.echoes.block;
 
 import com.echoes.block.entity.EchoRepeaterBlockEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 /** Pools its channel across every dimension it appears in (cross-dimension transport). */
 public class EchoRepeaterBlock extends AbstractHorizontalDeviceBlock {
 
-    public EchoRepeaterBlock(Settings settings) {
+    public EchoRepeaterBlock(Properties settings) {
         super(settings);
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new EchoRepeaterBlockEntity(pos, state);
     }
 }

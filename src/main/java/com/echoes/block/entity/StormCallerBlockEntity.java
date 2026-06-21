@@ -7,16 +7,18 @@ import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Russell's high-potential discharge wound back into Light. A tall conductive
@@ -45,26 +47,26 @@ public class StormCallerBlockEntity extends BlockEntity implements ResonanceNode
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, StormCallerBlockEntity be) {
-        if (world.isClient || !(world instanceof ServerWorld sw)) return;
-        if (!world.isThundering()) { be.counter = 0; return; }
+    public static void tick(Level level, BlockPos pos, BlockState state, StormCallerBlockEntity be) {
+        if (level.isClientSide() || !(level instanceof ServerLevel sw)) return;
+        if (!level.isThundering()) { be.counter = 0; return; }
         if (be.storage.isFull()) return;
-        if (!be.config.redstone().allows(sw.isReceivingRedstonePower(pos))) return;
+        if (!be.config.redstone().allows(sw.hasNeighborSignal(pos))) return;
         // Must see open sky to draw a bolt down onto the spire.
-        if (!world.isSkyVisibleAllowingSea(pos.up())) return;
+        if (!level.canSeeSkyFromBelowWater(pos.above())) return;
 
         // Tuning "rate" 1..4 sets how often the spire calls a strike (~9s .. ~2s).
         int period = 220 - be.config.tuningA() * 50;
         if (++be.counter < period) return;
         be.counter = 0;
 
-        LightningEntity bolt = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
-        bolt.refreshPositionAfterTeleport(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
-        bolt.setCosmetic(true);   // visual + sound only — the spire grounds the charge
-        sw.spawnEntity(bolt);
+        LightningBolt bolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
+        bolt.snapTo(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
+        bolt.setVisualOnly(true);   // visual + sound only — the spire grounds the charge
+        sw.addFreshEntity(bolt);
 
         be.storage.absorb(STRIKE_LIGHT);
-        be.markDirty();
+        be.setChanged();
     }
 
     public ResonanceStorage storage() { return storage; }
@@ -74,26 +76,26 @@ public class StormCallerBlockEntity extends BlockEntity implements ResonanceNode
     @Override public long insert(long max, boolean simulate) { return storage.insert(max, simulate); }
     @Override public long demand() { return 0; }
     @Override public int transferCap() { return 0; }
-    @Override public BlockPos pos() { return getPos(); }
+    @Override public BlockPos pos() { return getBlockPos(); }
     @Override public long storedRu() { return storage.getAmount(); }
     @Override public long capacityRu() { return storage.getCapacity(); }
 
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
-    @Override public void onConfigChanged() { markDirty(); }
+    @Override public Component configTitle() { return getBlockState().getBlock().getName(); }
+    @Override public void onConfigChanged() { setChanged(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        super.writeNbt(nbt, lookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         storage.writeNbt(nbt);
         config.writeNbt(nbt);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        super.readNbt(nbt, lookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         storage.readNbt(nbt);
         config.readNbt(nbt);
     }

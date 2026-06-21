@@ -6,42 +6,42 @@ import com.echoes.screen.ConfigScreenHandler;
 import com.echoes.screen.CrusherScreenHandler;
 import com.echoes.screen.HarmonicFilterScreenHandler;
 import com.echoes.screen.TransmutationTableScreenHandler;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.BlockPos;
 
 public final class ModScreens {
     private ModScreens() {}
 
-    public static final ScreenHandlerType<CrusherScreenHandler> CRUSHER =
-            Registry.register(Registries.SCREEN_HANDLER,
-                    Identifier.of(EchoesMod.MOD_ID, "compressor"),
-                    new ScreenHandlerType<>(CrusherScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
+    public static final MenuType<CrusherScreenHandler> CRUSHER =
+            Registry.register(BuiltInRegistries.MENU,
+                    Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "compressor"),
+                    new MenuType<>(CrusherScreenHandler::new, FeatureFlags.VANILLA_SET));
 
-    public static final ScreenHandlerType<AttunementFurnaceScreenHandler> ATTUNEMENT_FURNACE =
-            Registry.register(Registries.SCREEN_HANDLER,
-                    Identifier.of(EchoesMod.MOD_ID, "transmuter"),
-                    new ScreenHandlerType<>(AttunementFurnaceScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
+    public static final MenuType<AttunementFurnaceScreenHandler> ATTUNEMENT_FURNACE =
+            Registry.register(BuiltInRegistries.MENU,
+                    Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "transmuter"),
+                    new MenuType<>(AttunementFurnaceScreenHandler::new, FeatureFlags.VANILLA_SET));
 
-    public static final ScreenHandlerType<HarmonicFilterScreenHandler> HARMONIC_FILTER =
-            Registry.register(Registries.SCREEN_HANDLER,
-                    Identifier.of(EchoesMod.MOD_ID, "wave_filter"),
-                    new ScreenHandlerType<>(HarmonicFilterScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
+    public static final MenuType<HarmonicFilterScreenHandler> HARMONIC_FILTER =
+            Registry.register(BuiltInRegistries.MENU,
+                    Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "wave_filter"),
+                    new MenuType<>(HarmonicFilterScreenHandler::new, FeatureFlags.VANILLA_SET));
 
-    public static final ScreenHandlerType<TransmutationTableScreenHandler> TRANSMUTATION_TABLE =
-            Registry.register(Registries.SCREEN_HANDLER,
-                    Identifier.of(EchoesMod.MOD_ID, "transmutation_table"),
-                    new ScreenHandlerType<>(TransmutationTableScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
+    public static final MenuType<TransmutationTableScreenHandler> TRANSMUTATION_TABLE =
+            Registry.register(BuiltInRegistries.MENU,
+                    Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "transmutation_table"),
+                    new MenuType<>(TransmutationTableScreenHandler::new, FeatureFlags.VANILLA_SET));
 
     /** Shared configuration screen for every Configurable device. */
-    public static final ExtendedScreenHandlerType<ConfigScreenHandler, BlockPos> CONFIG =
-            Registry.register(Registries.SCREEN_HANDLER,
-                    Identifier.of(EchoesMod.MOD_ID, "config"),
-                    new ExtendedScreenHandlerType<>(ConfigScreenHandler::new, BlockPos.PACKET_CODEC));
+    public static final ExtendedMenuType<ConfigScreenHandler, BlockPos> CONFIG =
+            Registry.register(BuiltInRegistries.MENU,
+                    Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "config"),
+                    new ExtendedMenuType<>(ConfigScreenHandler::new, BlockPos.STREAM_CODEC));
 
     public static void register() {
         EchoesMod.LOGGER.info("Registering screen handlers for {}", EchoesMod.MOD_ID);

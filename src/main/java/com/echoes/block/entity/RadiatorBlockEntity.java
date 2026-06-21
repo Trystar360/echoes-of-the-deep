@@ -7,22 +7,24 @@ import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Fertilizable;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 
 /**
  * Radiation — the centrifugal, expansive half of the two-way universe. Draws Light
- * from the grid and pours it back into the world as life, accelerating nearby crops
+ * from the grid and pours it back into the level as life, accelerating nearby crops
  * and saplings (a powered bonemeal aura) and glowing while charged. The discharge
  * counterpart to the Resonant Coil.
  */
@@ -47,31 +49,31 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, C
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, RadiatorBlockEntity be) {
-        if (!(world instanceof ServerWorld sw)) return;
+    public static void tick(Level level, BlockPos pos, BlockState state, RadiatorBlockEntity be) {
+        if (!(level instanceof ServerLevel sw)) return;
 
-        boolean powered = sw.isReceivingRedstonePower(pos);
+        boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         int hRadius = be.config.tuningA();
-        if (state.contains(Properties.LIT) && state.get(Properties.LIT) != active) {
-            sw.setBlockState(pos, state.with(Properties.LIT, active), Block.NOTIFY_ALL);
+        if (state.hasProperty(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT) != active) {
+            sw.setBlock(pos, state.setValue(BlockStateProperties.LIT, active), Block.UPDATE_ALL);
         }
         if (++be.timer < INTERVAL) return;
         be.timer = 0;
         if (!active) return;
 
-        Random rng = sw.getRandom();
+        RandomSource rng = sw.getRandom();
         for (int i = 0; i < TRIES; i++) {
-            BlockPos p = pos.add(rng.nextInt(hRadius * 2 + 1) - hRadius,
+            BlockPos p = pos.offset(rng.nextInt(hRadius * 2 + 1) - hRadius,
                     rng.nextInt(V_RADIUS * 2 + 1) - V_RADIUS,
                     rng.nextInt(hRadius * 2 + 1) - hRadius);
             BlockState s = sw.getBlockState(p);
-            if (s.getBlock() instanceof Fertilizable f
-                    && f.isFertilizable(sw, p, s) && f.canGrow(sw, rng, p, s)) {
-                f.grow(sw, rng, p, s);
-                sw.syncWorldEvent(2005, p, 0); // bonemeal particles
+            if (s.getBlock() instanceof BonemealableBlock f
+                    && f.isValidBonemealTarget(sw, p, s) && f.isBonemealSuccess(sw, rng, p, s)) {
+                f.performBonemeal(sw, rng, p, s);
+                sw.levelEvent(2005, p, 0); // bonemeal particles
                 be.buffer.extract(COST, false);
-                be.markDirty();
+                be.setChanged();
                 break;
             }
         }
@@ -83,26 +85,26 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, C
     @Override public long insert(long max, boolean simulate) { return buffer.insert(max, simulate); }
     @Override public long demand() { return buffer.getCapacity() - buffer.getAmount(); }
     @Override public int transferCap() { return 0; }
-    @Override public BlockPos pos() { return getPos(); }
+    @Override public BlockPos pos() { return getBlockPos(); }
     @Override public long storedRu() { return buffer.getAmount(); }
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
-    @Override public void onConfigChanged() { markDirty(); }
+    @Override public Component configTitle() { return getBlockState().getBlock().getName(); }
+    @Override public void onConfigChanged() { setChanged(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        super.writeNbt(nbt, lookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         buffer.writeNbt(nbt);
         config.writeNbt(nbt);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        super.readNbt(nbt, lookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         buffer.readNbt(nbt);
         config.readNbt(nbt);
     }

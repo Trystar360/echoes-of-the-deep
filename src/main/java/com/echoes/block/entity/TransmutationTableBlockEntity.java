@@ -2,14 +2,16 @@ package com.echoes.block.entity;
 
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.registry.ModItems;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.Containers;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * The Transmutation Table is now a terminal into the per-player Bound-Light account
@@ -31,12 +33,12 @@ public class TransmutationTableBlockEntity extends BlockEntity {
     public long drainLegacyLight() {
         long l = legacyLight;
         legacyLight = 0;
-        markDirty();
+        setChanged();
         return l;
     }
 
     /** On break, scatter any legacy banked Light as Mote coins (largest tone first). */
-    public void dropBankedLight(World world, BlockPos pos) {
+    public void dropBankedLight(Level level, BlockPos pos) {
         long remaining = legacyLight;
         legacyLight = 0;
         for (int t = ModItems.MOTES.length - 1; t >= 0 && remaining > 0; t--) {
@@ -46,21 +48,21 @@ public class TransmutationTableBlockEntity extends BlockEntity {
             while (count > 0) {
                 int batch = (int) Math.min(64, count);
                 count -= batch;
-                ItemScatterer.spawn(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         new ItemStack(ModItems.MOTES[t], batch));
             }
         }
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        super.writeNbt(nbt, lookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         if (legacyLight > 0) nbt.putLong("bound_light", legacyLight);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        super.readNbt(nbt, lookup);
-        legacyLight = nbt.getLong("bound_light");
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
+        legacyLight = nbt.getLongOr("bound_light", 0L);
     }
 }

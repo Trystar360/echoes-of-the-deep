@@ -2,19 +2,19 @@ package com.echoes.block;
 
 import com.echoes.block.entity.AbstractChannelDeviceBlockEntity;
 import com.echoes.block.entity.NoteRelayBlockEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -24,42 +24,42 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NoteRelayBlock extends AbstractHorizontalDeviceBlock {
 
-    public NoteRelayBlock(Settings settings) {
+    public NoteRelayBlock(Properties settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState()
-                .with(Properties.HORIZONTAL_FACING, net.minecraft.util.math.Direction.NORTH)
-                .with(Properties.POWERED, false));
+        registerDefaultState(getStateDefinition().any()
+                .setValue(BlockStateProperties.HORIZONTAL_FACING, net.minecraft.core.Direction.NORTH)
+                .setValue(BlockStateProperties.POWERED, false));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
-        builder.add(Properties.POWERED);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(BlockStateProperties.POWERED);
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new NoteRelayBlockEntity(pos, state);
     }
 
     @Override
-    protected ActionResult onConfigure(World world, BlockPos pos, PlayerEntity player,
+    protected InteractionResult onConfigure(Level world, BlockPos pos, Player player,
                                        AbstractChannelDeviceBlockEntity device, ItemStack held) {
         if (device instanceof NoteRelayBlockEntity note) {
             note.cycleMode();
             sendStatus(player, "message.echoes.relay.mode",
-                    Text.translatable("message.echoes.relay.mode." + note.mode().name().toLowerCase()));
+                    Component.translatable("message.echoes.relay.mode." + note.mode().name().toLowerCase()));
         }
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    protected boolean emitsRedstonePower(BlockState state) {
+    protected boolean isSignalSource(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    protected int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
         return world.getBlockEntity(pos) instanceof NoteRelayBlockEntity note ? note.redstonePower() : 0;
     }
 }
