@@ -64,8 +64,8 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
         return attract;
     }
 
-    public static void tick(Level world, BlockPos pos, BlockState state, PolarityFieldBlockEntity be) {
-        if (!(world instanceof ServerLevel sw)) return;
+    public static void tick(Level level, BlockPos pos, BlockState state, PolarityFieldBlockEntity be) {
+        if (!(level instanceof ServerLevel sw)) return;
         boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         if (state.contains(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT) != active) {
@@ -132,6 +132,6 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
         super.loadAdditional(nbt);
         buffer.readNbt(nbt);
         config.readNbt(nbt);
-        attract = nbt.getBoolean("attract");
+        attract = nbt.getBooleanOr("attract", false);
     }
 }

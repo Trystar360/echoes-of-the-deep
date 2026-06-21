@@ -55,15 +55,15 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     @Override public RelayMode transportMode() { return mode; }
 
     @Override public @Nullable Storage<ItemVariant> wirelessItems() {
-        return ItemStorage.SIDED.find(world, attachedPos(), facing().getOpposite());
+        return ItemStorage.SIDED.find(level, attachedPos(), facing().getOpposite());
     }
 
     @Override public @Nullable Storage<FluidVariant> wirelessFluids() {
-        return FluidStorage.SIDED.find(world, attachedPos(), facing().getOpposite());
+        return FluidStorage.SIDED.find(level, attachedPos(), facing().getOpposite());
     }
 
     @Override public @Nullable ResonanceNode wirelessEnergy() {
-        return world.getBlockEntity(attachedPos()) instanceof ResonanceNode n ? n : null;
+        return level.getBlockEntity(attachedPos()) instanceof ResonanceNode n ? n : null;
     }
 
     @Override
@@ -73,6 +73,6 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
 
     @Override
     protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
-        mode = RelayMode.byId(nbt.getInt("mode"));
+        mode = RelayMode.byId(nbt.getIntOr("mode", 0));
     }
 }

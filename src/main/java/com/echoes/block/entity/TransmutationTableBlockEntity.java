@@ -38,7 +38,7 @@ public class TransmutationTableBlockEntity extends BlockEntity {
     }
 
     /** On break, scatter any legacy banked Light as Mote coins (largest tone first). */
-    public void dropBankedLight(Level world, BlockPos pos) {
+    public void dropBankedLight(Level level, BlockPos pos) {
         long remaining = legacyLight;
         legacyLight = 0;
         for (int t = ModItems.MOTES.length - 1; t >= 0 && remaining > 0; t--) {
@@ -48,7 +48,7 @@ public class TransmutationTableBlockEntity extends BlockEntity {
             while (count > 0) {
                 int batch = (int) Math.min(64, count);
                 count -= batch;
-                Containers.dropContents(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                Containers.dropContents(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         new ItemStack(ModItems.MOTES[t], batch));
             }
         }
@@ -63,6 +63,6 @@ public class TransmutationTableBlockEntity extends BlockEntity {
     @Override
     protected void loadAdditional(ValueInput nbt) {
         super.loadAdditional(nbt);
-        legacyLight = nbt.getLong("bound_light");
+        legacyLight = nbt.getLongOr("bound_light", 0L);
     }
 }

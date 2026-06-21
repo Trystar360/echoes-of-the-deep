@@ -48,7 +48,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     public static final com.echoes.config.ConfigSpec SPEC =
             com.echoes.config.ConfigSpec.builder().redstone().sides().build();
 
-    private final NonNullList<ItemStack> items = NonNullList.ofSize(2, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(2, ItemStack.EMPTY);
     private final ResonanceStorage buffer = new ResonanceStorage(INTERNAL_BUFFER);
     private final com.echoes.config.BlockConfig config = new com.echoes.config.BlockConfig();
     private int progress;
@@ -66,7 +66,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
         @Override public void set(int i, int v) {
             switch (i) { case 0 -> progress = v; case 1 -> maxProgress = v; }
         }
-        @Override public int size() { return 3; }
+        @Override public int getCount() { return 3; }
     };
 
     public AttunementFurnaceBlockEntity(BlockPos pos, BlockState state) {
@@ -75,8 +75,8 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
 
     @Override public NonNullList<ItemStack> getItems() { return items; }
 
-    public static void tick(Level world, BlockPos pos, BlockState state, AttunementFurnaceBlockEntity be) {
-        if (world.isClientSide()) return;
+    public static void tick(Level level, BlockPos pos, BlockState state, AttunementFurnaceBlockEntity be) {
+        if (level.isClientSide()) return;
 
         Optional<RecipeHolder<SmeltingRecipe>> match = be.currentRecipe();
         ItemStack result = match.map(m -> be.resultOf(m)).orElse(ItemStack.EMPTY);
@@ -98,13 +98,13 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     }
 
     private Optional<RecipeHolder<SmeltingRecipe>> currentRecipe() {
-        if (getItem(INPUT).isEmpty() || !(world instanceof ServerLevel sw)) return Optional.empty();
-        return sw.recipeAccess().getFirstMatch(
-                RecipeType.SMELTING, new SingleRecipeInput(getItem(INPUT)), world);
+        if (getItem(INPUT).isEmpty() || !(level instanceof ServerLevel sw)) return Optional.empty();
+        return sw.recipeAccess().getRecipeFor(
+                RecipeType.SMELTING, new SingleRecipeInput(getItem(INPUT)), level);
     }
 
     private ItemStack resultOf(RecipeHolder<SmeltingRecipe> entry) {
-        if (!(world instanceof ServerLevel sw)) return ItemStack.EMPTY;
+        if (!(level instanceof ServerLevel sw)) return ItemStack.EMPTY;
         return entry.value().craft(new SingleRecipeInput(getItem(INPUT)), sw.registryAccess());
     }
 
@@ -126,15 +126,15 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     @Override public int[] getAvailableSlots(Direction side) {
         return side == Direction.UP ? new int[]{INPUT} : new int[]{OUTPUT};
     }
-    @Override public boolean canInsert(int slot, ItemStack stack, Direction dir) { return slot == INPUT; }
-    @Override public boolean canExtract(int slot, ItemStack stack, Direction dir) { return slot == OUTPUT; }
+    @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == INPUT; }
+    @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == OUTPUT; }
 
     // --- ResonanceNode (CONSUMER) ---
     @Override public int roleMask() { return NodeRole.of(NodeRole.CONSUMER); }
     @Override public long extract(long max, boolean simulate) { return 0; }
     @Override public long insert(long max, boolean simulate) { return buffer.insert(max, simulate); }
     @Override public long demand() {
-        if (world == null || currentRecipe().isEmpty()) return 0;
+        if (level == null || currentRecipe().isEmpty()) return 0;
         return buffer.getCapacity() - buffer.getAmount();
     }
     @Override public int transferCap() { return 0; }
@@ -157,7 +157,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     @Override
     protected void saveAdditional(ValueOutput nbt) {
         super.saveAdditional(nbt);
-        net.minecraft.world.ContainerHelper.writeNbt(nbt, items, lookup);
+        net.minecraft.world.ContainerHelper.saveAllItems(nbt, items);
         buffer.writeNbt(nbt);
         config.writeNbt(nbt);
         nbt.putInt("progress", progress);
@@ -166,9 +166,9 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     @Override
     protected void loadAdditional(ValueInput nbt) {
         super.loadAdditional(nbt);
-        net.minecraft.world.ContainerHelper.readNbt(nbt, items, lookup);
+        net.minecraft.world.ContainerHelper.loadAllItems(nbt, items);
         buffer.readNbt(nbt);
         config.readNbt(nbt);
-        progress = nbt.getInt("progress");
+        progress = nbt.getIntOr("progress", 0);
     }
 }

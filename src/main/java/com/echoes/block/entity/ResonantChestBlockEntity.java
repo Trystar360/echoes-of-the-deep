@@ -30,7 +30,7 @@ public class ResonantChestBlockEntity extends AbstractChannelDeviceBlockEntity
         implements ImplementedInventory, MenuProvider {
 
     public static final int SIZE = 27;
-    private final NonNullList<ItemStack> items = NonNullList.ofSize(SIZE, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 
     public ResonantChestBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.RESONANT_CHEST, pos, state);
@@ -50,8 +50,8 @@ public class ResonantChestBlockEntity extends AbstractChannelDeviceBlockEntity
         for (int i = 0; i < SIZE; i++) slots[i] = i;
         return slots;
     }
-    @Override public boolean canInsert(int slot, ItemStack stack, Direction dir) { return true; }
-    @Override public boolean canExtract(int slot, ItemStack stack, Direction dir) { return true; }
+    @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) { return true; }
+    @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) { return true; }
 
     // --- screen ---
     @Override public Component getDisplayName() { return Component.translatable("block.echoes.wave_chest"); }
@@ -62,11 +62,11 @@ public class ResonantChestBlockEntity extends AbstractChannelDeviceBlockEntity
 
     @Override
     protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
-        net.minecraft.world.ContainerHelper.writeNbt(nbt, items, lookup);
+        net.minecraft.world.ContainerHelper.saveAllItems(nbt, items);
     }
 
     @Override
     protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
-        net.minecraft.world.ContainerHelper.readNbt(nbt, items, lookup);
+        net.minecraft.world.ContainerHelper.loadAllItems(nbt, items);
     }
 }

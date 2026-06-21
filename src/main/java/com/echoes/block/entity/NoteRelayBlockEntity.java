@@ -37,7 +37,7 @@ public class NoteRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
 
     // --- WirelessDevice (redstone) ---
     @Override public int redstoneOut() {
-        return mode == RelayMode.SEND && world != null ? world.getReceivedRedstonePower(getBlockPos()) : -1;
+        return mode == RelayMode.SEND && level != null ? level.getReceivedRedstonePower(getBlockPos()) : -1;
     }
 
     @Override public void acceptRedstone(int level) {
@@ -45,15 +45,15 @@ public class NoteRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     }
 
     private void setOutput(int level) {
-        if (level == output || world == null) return;
+        if (level == output || level == null) return;
         output = level;
         setChanged();
         BlockState state = getBlockState();
         boolean powered = output > 0;
         if (state.contains(BlockStateProperties.POWERED) && state.getValue(BlockStateProperties.POWERED) != powered) {
-            world.setBlockAndUpdate(getBlockPos(), state.setValue(BlockStateProperties.POWERED, powered));
+            level.setBlockAndUpdate(getBlockPos(), state.setValue(BlockStateProperties.POWERED, powered));
         }
-        world.updateNeighborsAlways(getBlockPos(), state.getBlock());
+        level.updateNeighborsAlways(getBlockPos(), state.getBlock());
     }
 
     @Override
@@ -64,7 +64,7 @@ public class NoteRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
 
     @Override
     protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
-        mode = RelayMode.byId(nbt.getInt("mode"));
-        output = nbt.getInt("output");
+        mode = RelayMode.byId(nbt.getIntOr("mode", 0));
+        output = nbt.getIntOr("output", 0);
     }
 }

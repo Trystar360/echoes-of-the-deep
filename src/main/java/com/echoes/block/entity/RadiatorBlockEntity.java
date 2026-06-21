@@ -24,7 +24,7 @@ import net.minecraft.world.level.Level;
 
 /**
  * Radiation — the centrifugal, expansive half of the two-way universe. Draws Light
- * from the grid and pours it back into the world as life, accelerating nearby crops
+ * from the grid and pours it back into the level as life, accelerating nearby crops
  * and saplings (a powered bonemeal aura) and glowing while charged. The discharge
  * counterpart to the Resonant Coil.
  */
@@ -49,8 +49,8 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, C
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(Level world, BlockPos pos, BlockState state, RadiatorBlockEntity be) {
-        if (!(world instanceof ServerLevel sw)) return;
+    public static void tick(Level level, BlockPos pos, BlockState state, RadiatorBlockEntity be) {
+        if (!(level instanceof ServerLevel sw)) return;
 
         boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);

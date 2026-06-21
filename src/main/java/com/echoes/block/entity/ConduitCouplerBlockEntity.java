@@ -62,7 +62,7 @@ public class ConduitCouplerBlockEntity extends AbstractChannelDeviceBlockEntity 
 
     @Override
     protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
-        mode = RelayMode.byId(nbt.getInt("mode"));
+        mode = RelayMode.byId(nbt.getIntOr("mode", 0));
         buffer.readNbt(nbt);
     }
 }

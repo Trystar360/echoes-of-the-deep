@@ -47,7 +47,7 @@ public class CrusherBlockEntity extends BlockEntity
     public static final com.echoes.config.ConfigSpec SPEC =
             com.echoes.config.ConfigSpec.builder().redstone().sides().build();
 
-    private final NonNullList<ItemStack> items = NonNullList.ofSize(3, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
     private final ResonanceStorage buffer = new ResonanceStorage(INTERNAL_BUFFER);
     private final com.echoes.config.BlockConfig config = new com.echoes.config.BlockConfig();
 
@@ -67,7 +67,7 @@ public class CrusherBlockEntity extends BlockEntity
         @Override public void set(int i, int v) {
             switch (i) { case 0 -> progress = v; case 1 -> maxProgress = v; }
         }
-        @Override public int size() { return 3; }
+        @Override public int getCount() { return 3; }
     };
 
     public CrusherBlockEntity(BlockPos pos, BlockState state) {
@@ -77,8 +77,8 @@ public class CrusherBlockEntity extends BlockEntity
     @Override public NonNullList<ItemStack> getItems() { return items; }
 
     // --- tick (registered as a BlockEntityTicker) ---
-    public static void tick(Level world, BlockPos pos, BlockState state, CrusherBlockEntity be) {
-        if (world.isClientSide()) return;
+    public static void tick(Level level, BlockPos pos, BlockState state, CrusherBlockEntity be) {
+        if (level.isClientSide()) return;
 
         Optional<RecipeHolder<CrushingRecipe>> match = be.currentRecipe();
         if (match.isEmpty() || !be.hasOutputRoom(match.get().value())) {
@@ -104,9 +104,9 @@ public class CrusherBlockEntity extends BlockEntity
 
     private Optional<RecipeHolder<CrushingRecipe>> currentRecipe() {
         if (getItem(INPUT).isEmpty()) return Optional.empty();
-        if (!(world instanceof net.minecraft.server.level.ServerLevel sw)) return Optional.empty();
-        return sw.recipeAccess().getFirstMatch(
-                ModRecipes.CRUSHING_TYPE, new SingleRecipeInput(getItem(INPUT)), world);
+        if (!(level instanceof net.minecraft.server.level.ServerLevel sw)) return Optional.empty();
+        return sw.recipeAccess().getRecipeFor(
+                ModRecipes.CRUSHING_TYPE, new SingleRecipeInput(getItem(INPUT)), level);
     }
 
     private boolean hasOutputRoom(CrushingRecipe recipe) {
@@ -125,7 +125,7 @@ public class CrusherBlockEntity extends BlockEntity
 
         // Roll the optional byproduct (e.g. resonant slag) into the third slot.
         ItemStack sec = recipe.secondary();
-        if (!sec.isEmpty() && world != null && world.getRandom().nextFloat() < recipe.secondaryChance()) {
+        if (!sec.isEmpty() && level != null && level.getRandom().nextFloat() < recipe.secondaryChance()) {
             ItemStack slot = getItem(BYPRODUCT);
             if (slot.isEmpty()) {
                 setItem(BYPRODUCT, sec.copy());
@@ -142,8 +142,8 @@ public class CrusherBlockEntity extends BlockEntity
     @Override public int[] getAvailableSlots(Direction side) {
         return side == Direction.UP ? new int[]{INPUT} : new int[]{OUTPUT, BYPRODUCT};
     }
-    @Override public boolean canInsert(int slot, ItemStack stack, Direction dir) { return slot == INPUT; }
-    @Override public boolean canExtract(int slot, ItemStack stack, Direction dir) { return slot == OUTPUT || slot == BYPRODUCT; }
+    @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == INPUT; }
+    @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == OUTPUT || slot == BYPRODUCT; }
 
     // --- ResonanceNode (CONSUMER) ---
     @Override public int roleMask() { return NodeRole.of(NodeRole.CONSUMER); }
@@ -151,7 +151,7 @@ public class CrusherBlockEntity extends BlockEntity
     @Override public long insert(long max, boolean simulate) { return buffer.insert(max, simulate); }
     @Override public long demand() {
         // Want enough to top the internal buffer, but only when there's work to do.
-        if (world == null || currentRecipe().isEmpty()) return 0;
+        if (level == null || currentRecipe().isEmpty()) return 0;
         return buffer.getCapacity() - buffer.getAmount();
     }
     @Override public int transferCap() { return 0; }
@@ -176,7 +176,7 @@ public class CrusherBlockEntity extends BlockEntity
     @Override
     protected void saveAdditional(ValueOutput nbt) {
         super.saveAdditional(nbt);
-        net.minecraft.world.ContainerHelper.writeNbt(nbt, items, lookup);
+        net.minecraft.world.ContainerHelper.saveAllItems(nbt, items);
         buffer.writeNbt(nbt);
         config.writeNbt(nbt);
         nbt.putInt("progress", progress);
@@ -185,9 +185,9 @@ public class CrusherBlockEntity extends BlockEntity
     @Override
     protected void loadAdditional(ValueInput nbt) {
         super.loadAdditional(nbt);
-        net.minecraft.world.ContainerHelper.readNbt(nbt, items, lookup);
+        net.minecraft.world.ContainerHelper.loadAllItems(nbt, items);
         buffer.readNbt(nbt);
         config.readNbt(nbt);
-        progress = nbt.getInt("progress");
+        progress = nbt.getIntOr("progress", 0);
     }
 }

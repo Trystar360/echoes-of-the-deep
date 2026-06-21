@@ -32,7 +32,7 @@ public class HarmonicFilterBlockEntity extends AbstractChannelDeviceBlockEntity
         implements ImplementedInventory, MenuProvider {
 
     public static final int SIZE = 9;
-    private final NonNullList<ItemStack> samples = NonNullList.ofSize(SIZE, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> samples = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 
     public HarmonicFilterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.HARMONIC_FILTER, pos, state);
@@ -48,8 +48,8 @@ public class HarmonicFilterBlockEntity extends AbstractChannelDeviceBlockEntity
 
     // The ghost grid is configured via the screen only — keep hoppers/pipes out.
     @Override public int[] getAvailableSlots(Direction side) { return new int[0]; }
-    @Override public boolean canInsert(int slot, ItemStack stack, Direction dir) { return false; }
-    @Override public boolean canExtract(int slot, ItemStack stack, Direction dir) { return false; }
+    @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) { return false; }
+    @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) { return false; }
 
     // --- screen ---
     @Override public Component getDisplayName() { return Component.translatable("block.echoes.wave_filter"); }
@@ -60,11 +60,11 @@ public class HarmonicFilterBlockEntity extends AbstractChannelDeviceBlockEntity
 
     @Override
     protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
-        net.minecraft.world.ContainerHelper.writeNbt(nbt, samples, lookup);
+        net.minecraft.world.ContainerHelper.saveAllItems(nbt, samples);
     }
 
     @Override
     protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
-        net.minecraft.world.ContainerHelper.readNbt(nbt, samples, lookup);
+        net.minecraft.world.ContainerHelper.loadAllItems(nbt, samples);
     }
 }

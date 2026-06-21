@@ -55,8 +55,8 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(Level world, BlockPos pos, BlockState state, WarmthRadiatorBlockEntity be) {
-        if (!(world instanceof ServerLevel sw)) return;
+    public static void tick(Level level, BlockPos pos, BlockState state, WarmthRadiatorBlockEntity be) {
+        if (!(level instanceof ServerLevel sw)) return;
         boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         int radius = be.config.tuningA();
@@ -73,7 +73,7 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
         for (ItemEntity e : drops) {
             ItemStack stack = e.getItem();
             Optional<? extends net.minecraft.world.item.crafting.RecipeHolder<SmeltingRecipe>> m =
-                    sw.recipeAccess().getFirstMatch(RecipeType.SMELTING, new SingleRecipeInput(stack), sw);
+                    sw.recipeAccess().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), sw);
             if (m.isEmpty()) continue;
             ItemStack result = m.get().value().craft(new SingleRecipeInput(stack), sw.registryAccess());
             if (result.isEmpty()) continue;

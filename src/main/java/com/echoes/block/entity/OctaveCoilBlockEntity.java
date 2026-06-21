@@ -42,9 +42,9 @@ public class OctaveCoilBlockEntity extends BlockEntity implements ResonanceNode,
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(Level world, BlockPos pos, BlockState state, OctaveCoilBlockEntity be) {
-        if (world.isClientSide() || be.storage.isFull()) return;
-        if (world instanceof ServerLevel sw && !be.config.redstone().allows(sw.hasNeighborSignal(pos))) return;
+    public static void tick(Level level, BlockPos pos, BlockState state, OctaveCoilBlockEntity be) {
+        if (level.isClientSide() || be.storage.isFull()) return;
+        if (level instanceof ServerLevel sw && !be.config.redstone().allows(sw.hasNeighborSignal(pos))) return;
         // Tuning "rate" 1..4 scales the base generation.
         be.storage.absorb(BASE_GEN_PER_TICK * be.config.tuningA());
         be.setChanged();

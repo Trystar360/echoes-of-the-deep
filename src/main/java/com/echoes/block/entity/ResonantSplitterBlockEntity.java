@@ -35,6 +35,6 @@ public class ResonantSplitterBlockEntity extends AbstractChannelDeviceBlockEntit
 
     @Override
     protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
-        roundRobin = !nbt.contains("roundRobin") || nbt.getBoolean("roundRobin");
+        roundRobin = !nbt.contains("roundRobin") || nbt.getBooleanOr("roundRobin", false);
     }
 }

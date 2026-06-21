@@ -47,20 +47,20 @@ public class StormCallerBlockEntity extends BlockEntity implements ResonanceNode
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(Level world, BlockPos pos, BlockState state, StormCallerBlockEntity be) {
-        if (world.isClientSide() || !(world instanceof ServerLevel sw)) return;
-        if (!world.isThundering()) { be.counter = 0; return; }
+    public static void tick(Level level, BlockPos pos, BlockState state, StormCallerBlockEntity be) {
+        if (level.isClientSide() || !(level instanceof ServerLevel sw)) return;
+        if (!level.isThundering()) { be.counter = 0; return; }
         if (be.storage.isFull()) return;
         if (!be.config.redstone().allows(sw.hasNeighborSignal(pos))) return;
         // Must see open sky to draw a bolt down onto the spire.
-        if (!world.isSkyVisibleAllowingSea(pos.above())) return;
+        if (!level.isSkyVisibleAllowingSea(pos.above())) return;
 
         // Tuning "rate" 1..4 sets how often the spire calls a strike (~9s .. ~2s).
         int period = 220 - be.config.tuningA() * 50;
         if (++be.counter < period) return;
         be.counter = 0;
 
-        LightningBolt bolt = new LightningBolt(EntityType.LIGHTNING_BOLT, world);
+        LightningBolt bolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
         bolt.refreshPositionAfterTeleport(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
         bolt.setCosmetic(true);   // visual + sound only — the spire grounds the charge
         sw.addFreshEntity(bolt);

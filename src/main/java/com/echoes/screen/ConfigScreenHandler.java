@@ -126,7 +126,7 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
                     default -> { if (i >= P_SIDE0 && i < P_SIDE0 + 6) c.setSide(i - P_SIDE0, SideMode.byId(v)); }
                 }
             }
-            @Override public int size() { return SIZE; }
+            @Override public int getCount() { return SIZE; }
         };
     }
 

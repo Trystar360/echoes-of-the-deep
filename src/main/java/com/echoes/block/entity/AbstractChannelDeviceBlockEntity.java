@@ -39,8 +39,8 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
     }
 
     /** Lightweight ticker: guarantees the device is on the roster once loaded. */
-    public static void tick(Level world, BlockPos pos, BlockState state, AbstractChannelDeviceBlockEntity be) {
-        if (be.registered || !(world instanceof ServerLevel)) return;
+    public static void tick(Level level, BlockPos pos, BlockState state, AbstractChannelDeviceBlockEntity be) {
+        if (be.registered || !(level instanceof ServerLevel)) return;
         WirelessNetworkManager.register(be);
         be.registered = true;
     }
@@ -57,7 +57,7 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
     /** Re-register with the manager and persist. Call after any networked change. */
     protected void sync() {
         setChanged();
-        if (world instanceof ServerLevel) {
+        if (level instanceof ServerLevel) {
             WirelessNetworkManager.register(this);
             registered = true;
         }
@@ -71,12 +71,12 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
 
     // --- WirelessDevice ---
     @Override public BlockPos wirelessPos() { return getBlockPos(); }
-    @Override public ServerLevel wirelessWorld() { return (ServerLevel) world; }
+    @Override public ServerLevel wirelessWorld() { return (ServerLevel) level; }
     @Override public int wirelessChannel() { return config.channel(); }
 
     @Override
     public void markRemoved() {
-        if (world instanceof ServerLevel sw) WirelessNetworkManager.unregister(sw, getBlockPos());
+        if (level instanceof ServerLevel sw) WirelessNetworkManager.unregister(sw, getBlockPos());
         registered = false;
         super.markRemoved();
     }
@@ -92,8 +92,8 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
     protected void loadAdditional(ValueInput nbt) {
         super.loadAdditional(nbt);
         config.readNbt(nbt);
-        if (nbt.contains("channel")) config.setChannel(nbt.getInt("channel")); // legacy saves
-        registered = false; // re-register against the (possibly new) world roster
+        if (nbt.contains("channel")) config.setChannel(nbt.getIntOr("channel", 0)); // legacy saves
+        registered = false; // re-register against the (possibly new) level roster
         readExtra(nbt, lookup);
     }
 

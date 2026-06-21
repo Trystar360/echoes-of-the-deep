@@ -67,7 +67,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
                     };
                 }
                 @Override public void set(int i, int v) { }
-                @Override public int size() { return 3; }
+                @Override public int getCount() { return 3; }
             };
         } else {
             this.state = null;
