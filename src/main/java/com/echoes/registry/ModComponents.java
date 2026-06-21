@@ -16,7 +16,7 @@ public final class ModComponents {
     public static final DataComponentType<Integer> STORED_RU = Registry.register(
             BuiltInRegistries.DATA_COMPONENT_TYPE,
             Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "stored_ru"),
-            DataComponentType.<Integer>builder().codec(Codec.INT).packetCodec(ByteBufCodecs.INTEGER).build());
+            DataComponentType.<Integer>builder().codec(Codec.INT).packetCodec(ByteBufCodecs.VAR_INT).build());
 
     /** Bound Light stored on an item (the Octave Star's portable EMC buffer). */
     public static final DataComponentType<Long> STORED_LIGHT = Registry.register(

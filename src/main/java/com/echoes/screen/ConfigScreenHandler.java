@@ -135,6 +135,6 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
     @Override
     public boolean canUse(Player player) {
         return player.getWorld().getBlockEntity(pos) instanceof Configurable
-                && player.squaredDistanceTo(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64.0;
+                && player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64.0;
     }
 }

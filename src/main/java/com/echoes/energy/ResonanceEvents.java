@@ -42,7 +42,7 @@ public final class ResonanceEvents {
                 if (chunk == null) continue; // don't force-load chunks
                 for (var entry : chunk.getBlockEntities().entrySet()) {
                     if (entry.getValue() instanceof ResonatorBlockEntity res) {
-                        double d = entry.getKey().getSquaredDistance(pos.x, pos.y, pos.z);
+                        double d = entry.getKey().distSqr(pos.x, pos.y, pos.z);
                         if (d <= r2 && d < bestDist) { bestDist = d; best = res; }
                     }
                 }

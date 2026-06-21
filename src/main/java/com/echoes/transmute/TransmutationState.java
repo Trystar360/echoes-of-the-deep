@@ -57,7 +57,7 @@ public class TransmutationState extends SavedData {
                 Identifier id = Identifier.tryParse(e.asString());
                 if (id != null) acc.attuned.add(id);
             }
-            s.accounts.put(a.getUuid("id"), acc);
+            s.accounts.put(a.getUUID("id"), acc);
         }
         return s;
     }

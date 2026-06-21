@@ -102,12 +102,12 @@ public final class WirelessNetworkManager {
     }
 
     public static void unregister(ServerLevel world, BlockPos pos) {
-        Holder holder = DEVICES.remove(GlobalPos.create(world.getRegistryKey(), pos.toImmutable()));
+        Holder holder = DEVICES.remove(GlobalPos.create(world.getRegistryKey(), pos.immutable()));
         if (holder != null) BY_CHANNEL.get(holder.channel).remove(holder.device);
     }
 
     private static GlobalPos keyOf(WirelessDevice d) {
-        return GlobalPos.create(d.wirelessWorld().getRegistryKey(), d.wirelessPos().toImmutable());
+        return GlobalPos.create(d.wirelessWorld().getRegistryKey(), d.wirelessPos().immutable());
     }
 
     // --- tick ---

@@ -55,7 +55,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
 
         if (player.getWorld() instanceof ServerLevel sw) {
             this.state = TransmutationState.get(sw);
-            this.account = state.of(player.getUuid());
+            this.account = state.of(player.getUUID());
             this.props = new ContainerData() {
                 @Override public int get(int i) {
                     long bl = account.light;
@@ -91,7 +91,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
         for (int col = 0; col < 9; col++)
             this.addSlot(new Slot(playerInv, col, 8 + col * 18, HOTBAR_Y));
 
-        this.addProperties(props);
+        this.addDataSlots(props);
     }
 
     /** Banked Bound Light, reconstructed from the 3×15-bit property delegate (client). */

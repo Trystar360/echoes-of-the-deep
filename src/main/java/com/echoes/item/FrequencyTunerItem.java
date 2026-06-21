@@ -43,7 +43,7 @@ public class FrequencyTunerItem extends Item {
 
         // Otherwise, open the configuration screen for any configurable device.
         if (be instanceof Configurable cfg) {
-            player.openHandledScreen(new ConfigScreenFactory(cfg, context.getBlockPos().toImmutable()));
+            player.openHandledScreen(new ConfigScreenFactory(cfg, context.getBlockPos().immutable()));
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;

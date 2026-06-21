@@ -38,7 +38,7 @@ public class AttunementFurnaceScreenHandler extends AbstractContainerMenu {
         for (int col = 0; col < 9; col++)
             this.addSlot(new Slot(playerInv, col, 8 + col * 18, 142));
 
-        this.addProperties(props);
+        this.addDataSlots(props);
     }
 
     public int progress() { return props.get(0); }

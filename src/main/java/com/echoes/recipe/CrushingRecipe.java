@@ -63,8 +63,8 @@ public class CrushingRecipe extends SingleItemRecipe {
                 StreamCodec.tuple(
                         Ingredient.PACKET_CODEC, CrushingRecipe::ingredient,
                         ItemStack.PACKET_CODEC, CrushingRecipe::result,
-                        ByteBufCodecs.INTEGER, CrushingRecipe::energy,
-                        ByteBufCodecs.INTEGER, CrushingRecipe::processingTime,
+                        ByteBufCodecs.VAR_INT, CrushingRecipe::energy,
+                        ByteBufCodecs.VAR_INT, CrushingRecipe::processingTime,
                         ItemStack.OPTIONAL_PACKET_CODEC, CrushingRecipe::secondary,
                         ByteBufCodecs.FLOAT, CrushingRecipe::secondaryChance,
                         CrushingRecipe::new);

@@ -45,7 +45,7 @@ public class OctaveStarItem extends Item {
         if (world.isClient || !(world instanceof ServerLevel sw)) return InteractionResult.SUCCESS;
 
         TransmutationState state = TransmutationState.get(sw);
-        TransmutationState.Account account = state.of(user.getUuid());
+        TransmutationState.Account account = state.of(user.getUUID());
         long cur = stored(stack);
 
         if (user.isSneaking()) {

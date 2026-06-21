@@ -55,7 +55,7 @@ public class TransmutationTableBlock extends Block implements EntityBlock {
             // Migrate any Light banked by the pre-account version into the opening player.
             if (world.getBlockEntity(pos) instanceof TransmutationTableBlockEntity be && be.legacyLight() > 0
                     && world instanceof ServerLevel sw) {
-                TransmutationState.get(sw).of(player.getUuid()).light += be.drainLegacyLight();
+                TransmutationState.get(sw).of(player.getUUID()).light += be.drainLegacyLight();
                 TransmutationState.get(sw).markDirty();
             }
             player.openHandledScreen(new SimpleMenuProvider(

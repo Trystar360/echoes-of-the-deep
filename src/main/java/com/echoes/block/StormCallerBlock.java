@@ -36,14 +36,14 @@ public class StormCallerBlock extends Block implements EntityBlock {
     @Override
     public void onBlockAdded(BlockState state, Level world, BlockPos pos, BlockState old, boolean notify) {
         if (world instanceof ServerLevel sw && !old.isOf(this)) {
-            ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.toImmutable());
+            ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.immutable());
         }
     }
 
     @Override
     public void onStateReplaced(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock()) && world instanceof ServerLevel sw) {
-            ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.toImmutable());
+            ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.immutable());
         }
         super.onStateReplaced(state, world, pos, newState, moved);
     }
