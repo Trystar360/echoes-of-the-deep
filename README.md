@@ -1,6 +1,6 @@
 # Octaves of the One
 
-A Fabric tech mod for Minecraft **1.21.4**, themed on **Walter Russell's cosmology** —
+A Fabric tech mod for Minecraft **26.1.2**, themed on **Walter Russell's cosmology** —
 the *two-way universe* of **rhythmic balanced interchange**. Draw **Light** from the
 still centre of zero, wind it up through the octaves by **generation** (compression /
 charging), pour it back out by **radiation** (expansion / discharging), and spend it
@@ -103,18 +103,21 @@ grow nearby plants) make a luminous building palette that's useful *and* pretty.
 
 ## Build & run
 
-Requires **JDK 21**. Verified against Minecraft **1.21.4**, Yarn `1.21.4+build.8`, Fabric
-Loader `0.16.10`, Fabric API `0.119.2+1.21.4`, Gradle `8.12`.
+Requires **JDK 25** (Minecraft 26.1 needs Java 25). Built against Minecraft **26.1.2**
+with **Mojang official mappings** — 26.1 is the first unobfuscated Minecraft and Fabric
+dropped Yarn — using Fabric Loom `1.17`, Fabric Loader `0.19.3`, Fabric API
+`0.152.1+26.1.2`, Gradle `9.5`.
 
 ```bash
-./gradlew build        # → build/libs/echoes-of-the-deep-0.1.0.jar
-./gradlew runClient    # playtest in single-player
-./gradlew runServer    # headless smoke test (accept the EULA in run/eula.txt)
+./gradlew build              # → build/libs/echoes-of-the-deep-0.2.0.jar
+./gradlew runClient          # playtest in single-player
+./gradlew runServer          # headless smoke test (accept the EULA in run/eula.txt)
+./gradlew runClientGametest  # dev-only: screenshot every screen for a layout check
 ```
 
 `./run.sh <task>` is a thin wrapper that exports a `JAVA_HOME` for you if your system
-Java isn't 21. To install, drop the built jar into `.minecraft/mods/` alongside **Fabric
-Loader** and **Fabric API** for 1.21.4.
+Java isn't 25. To install, drop the built jar into `.minecraft/mods/` alongside **Fabric
+Loader** and **Fabric API** for 26.1.
 
 ## Art & generation
 
