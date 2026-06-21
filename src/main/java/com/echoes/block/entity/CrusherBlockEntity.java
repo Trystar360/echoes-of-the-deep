@@ -103,14 +103,14 @@ public class CrusherBlockEntity extends BlockEntity
     }
 
     private Optional<RecipeHolder<CrushingRecipe>> currentRecipe() {
-        if (getStack(INPUT).isEmpty()) return Optional.empty();
+        if (getItem(INPUT).isEmpty()) return Optional.empty();
         if (!(world instanceof net.minecraft.server.level.ServerLevel sw)) return Optional.empty();
         return sw.recipeAccess().getFirstMatch(
-                ModRecipes.CRUSHING_TYPE, new SingleRecipeInput(getStack(INPUT)), world);
+                ModRecipes.CRUSHING_TYPE, new SingleRecipeInput(getItem(INPUT)), world);
     }
 
     private boolean hasOutputRoom(CrushingRecipe recipe) {
-        ItemStack out = getStack(OUTPUT);
+        ItemStack out = getItem(OUTPUT);
         ItemStack result = recipe.result();
         if (out.isEmpty()) return true;
         if (!ItemStack.isSameItemSameComponents(out, result)) return false;
@@ -118,17 +118,17 @@ public class CrusherBlockEntity extends BlockEntity
     }
 
     private void craft(CrushingRecipe recipe) {
-        getStack(INPUT).shrink(1);
+        getItem(INPUT).shrink(1);
         ItemStack result = recipe.result();
-        if (getStack(OUTPUT).isEmpty()) setStack(OUTPUT, result.copy());
-        else getStack(OUTPUT).grow(result.getCount());
+        if (getItem(OUTPUT).isEmpty()) setItem(OUTPUT, result.copy());
+        else getItem(OUTPUT).grow(result.getCount());
 
         // Roll the optional byproduct (e.g. resonant slag) into the third slot.
         ItemStack sec = recipe.secondary();
         if (!sec.isEmpty() && world != null && world.getRandom().nextFloat() < recipe.secondaryChance()) {
-            ItemStack slot = getStack(BYPRODUCT);
+            ItemStack slot = getItem(BYPRODUCT);
             if (slot.isEmpty()) {
-                setStack(BYPRODUCT, sec.copy());
+                setItem(BYPRODUCT, sec.copy());
             } else if (ItemStack.isSameItemSameComponents(slot, sec)
                     && slot.getCount() + sec.getCount() <= slot.getMaxStackSize()) {
                 slot.grow(sec.getCount());

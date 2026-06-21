@@ -14,7 +14,7 @@ public final class ModItemGroups {
     private ModItemGroups() {}
 
     public static final ResourceKey<CreativeModeTab> ECHOES = ResourceKey.of(
-            Registries.ITEM_GROUP, Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "main"));
+            Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "main"));
 
     public static void register() {
         Registry.register(BuiltInRegistries.ITEM_GROUP, ECHOES, CreativeModeTab.create(CreativeModeTab.Row.TOP, 0)

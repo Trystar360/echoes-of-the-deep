@@ -61,7 +61,7 @@ public class ResonanceThrustersItem extends Item {
         if (!(world.getBlockEntity(ctx.getClickedPos()) instanceof ResonanceNode node) || node.storedRu() <= 0) {
             return InteractionResult.PASS;
         }
-        ItemStack stack = ctx.getStack();
+        ItemStack stack = ctx.getItemInHand();
         int space = CAPACITY - ru(stack);
         if (space <= 0) return InteractionResult.SUCCESS;
         long pulled = node.extract(Math.min(space, RECHARGE_PER_USE), false);

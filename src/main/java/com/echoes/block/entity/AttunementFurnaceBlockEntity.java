@@ -98,27 +98,27 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     }
 
     private Optional<RecipeHolder<SmeltingRecipe>> currentRecipe() {
-        if (getStack(INPUT).isEmpty() || !(world instanceof ServerLevel sw)) return Optional.empty();
+        if (getItem(INPUT).isEmpty() || !(world instanceof ServerLevel sw)) return Optional.empty();
         return sw.recipeAccess().getFirstMatch(
-                RecipeType.SMELTING, new SingleRecipeInput(getStack(INPUT)), world);
+                RecipeType.SMELTING, new SingleRecipeInput(getItem(INPUT)), world);
     }
 
     private ItemStack resultOf(RecipeHolder<SmeltingRecipe> entry) {
         if (!(world instanceof ServerLevel sw)) return ItemStack.EMPTY;
-        return entry.value().craft(new SingleRecipeInput(getStack(INPUT)), sw.registryAccess());
+        return entry.value().craft(new SingleRecipeInput(getItem(INPUT)), sw.registryAccess());
     }
 
     private boolean hasOutputRoom(ItemStack result) {
-        ItemStack out = getStack(OUTPUT);
+        ItemStack out = getItem(OUTPUT);
         if (out.isEmpty()) return true;
         if (!ItemStack.isSameItemSameComponents(out, result)) return false;
         return out.getCount() + result.getCount() <= out.getMaxStackSize();
     }
 
     private void craft(ItemStack result) {
-        getStack(INPUT).shrink(1);
-        if (getStack(OUTPUT).isEmpty()) setStack(OUTPUT, result.copy());
-        else getStack(OUTPUT).grow(result.getCount());
+        getItem(INPUT).shrink(1);
+        if (getItem(OUTPUT).isEmpty()) setItem(OUTPUT, result.copy());
+        else getItem(OUTPUT).grow(result.getCount());
         setChanged();
     }
 

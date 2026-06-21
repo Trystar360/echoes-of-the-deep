@@ -68,7 +68,7 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
         if (!(world instanceof ServerLevel sw)) return;
         boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
-        if (state.contains(BlockStateProperties.LIT) && state.get(BlockStateProperties.LIT) != active) {
+        if (state.contains(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT) != active) {
             sw.setBlock(pos, state.setValue(BlockStateProperties.LIT, active), Block.UPDATE_ALL);
         }
         if (++be.timer < INTERVAL) return;

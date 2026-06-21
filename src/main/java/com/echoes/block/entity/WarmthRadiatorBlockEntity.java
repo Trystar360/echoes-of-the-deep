@@ -60,7 +60,7 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
         boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         int radius = be.config.tuningA();
-        if (state.contains(BlockStateProperties.LIT) && state.get(BlockStateProperties.LIT) != active) {
+        if (state.contains(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT) != active) {
             sw.setBlock(pos, state.setValue(BlockStateProperties.LIT, active), Block.UPDATE_ALL);
         }
         if (++be.timer < INTERVAL) return;
@@ -69,9 +69,9 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
 
         // Cook one dropped stack that has a smelting recipe.
         AABB box = new AABB(pos).inflate(radius);
-        List<ItemEntity> drops = sw.getEntitiesOfClass(ItemEntity.class, box, e -> !e.getStack().isEmpty());
+        List<ItemEntity> drops = sw.getEntitiesOfClass(ItemEntity.class, box, e -> !e.getItem().isEmpty());
         for (ItemEntity e : drops) {
-            ItemStack stack = e.getStack();
+            ItemStack stack = e.getItem();
             Optional<? extends net.minecraft.world.item.crafting.RecipeHolder<SmeltingRecipe>> m =
                     sw.recipeAccess().getFirstMatch(RecipeType.SMELTING, new SingleRecipeInput(stack), sw);
             if (m.isEmpty()) continue;
@@ -79,7 +79,7 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
             if (result.isEmpty()) continue;
             ItemStack out = result.copy();
             out.setCount(stack.getCount() * result.getCount());
-            e.setStack(out);
+            e.setItem(out);
             be.buffer.extract(COST, false);
             be.setChanged();
             break;

@@ -32,7 +32,7 @@ public class FrequencyTunerItem extends Item {
         Player player = context.getPlayer();
         if (player == null) return InteractionResult.PASS;
         BlockEntity be = context.getLevel().getBlockEntity(context.getClickedPos());
-        ItemStack tuner = context.getStack();
+        ItemStack tuner = context.getItemInHand();
 
         // Sneak on a wireless device still does the quick channel-copy.
         if (player.isShiftKeyDown() && be instanceof AbstractChannelDeviceBlockEntity device) {

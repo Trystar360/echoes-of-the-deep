@@ -72,7 +72,7 @@ public class CrusherBlock extends Block implements EntityBlock {
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
         if (world.getBlockEntity(pos) instanceof CrusherBlockEntity be) {
-            Containers.spawn(world, pos, be.getItems());
+            Containers.dropContents(world, pos, be.getItems());
         }
         ResonanceNetworkManager.get(world).onAttachedNodeChanged(pos.immutable());
         super.affectNeighborsAfterRemoval(state, world, pos, moved);

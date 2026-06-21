@@ -174,7 +174,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
         if (ItemStack.isSameItemSameComponents(out, stack) && out.getCount() < out.getMaxStackSize()) {
             out.grow(1); return true;
         }
-        return player.getInventory().insertStack(stack);
+        return player.getInventory().add(stack);
     }
 
     @Override

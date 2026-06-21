@@ -81,13 +81,13 @@ public final class ModBlocks {
             StillnessCoreBlock::new, BlockBehaviour.Properties.of().strength(4.0f).requiresCorrectToolForDrops().noOcclusion());
     public static final Block RADIATOR = register("growth_radiator",
             RadiatorBlock::new, BlockBehaviour.Properties.of().strength(3.0f).requiresCorrectToolForDrops().noOcclusion()
-                    .luminance(s -> s.get(BlockStateProperties.LIT) ? 12 : 2));
+                    .lightLevel(s -> s.getValue(BlockStateProperties.LIT) ? 12 : 2));
     public static final Block WARMTH_RADIATOR = register("warmth_radiator",
             WarmthRadiatorBlock::new, BlockBehaviour.Properties.of().strength(3.0f).requiresCorrectToolForDrops().noOcclusion()
-                    .luminance(s -> s.get(BlockStateProperties.LIT) ? 14 : 2));
+                    .lightLevel(s -> s.getValue(BlockStateProperties.LIT) ? 14 : 2));
     public static final Block POLARITY_FIELD = register("polarity_field",
             PolarityFieldBlock::new, BlockBehaviour.Properties.of().strength(3.0f).requiresCorrectToolForDrops().noOcclusion()
-                    .luminance(s -> s.get(BlockStateProperties.LIT) ? 8 : 2));
+                    .lightLevel(s -> s.getValue(BlockStateProperties.LIT) ? 8 : 2));
     public static final Block BALANCER = register("balancer",
             BalancerBlock::new, BlockBehaviour.Properties.of().strength(3.0f).requiresCorrectToolForDrops().noOcclusion());
     public static final Block CRUSHER = register("compressor",
@@ -126,16 +126,16 @@ public final class ModBlocks {
             Optional.empty(), Optional.empty());
 
     private static BlockBehaviour.Properties wood() {
-        return BlockBehaviour.Properties.of().strength(2.0f, 3.0f).sound(SoundType.WOOD).burnable();
+        return BlockBehaviour.Properties.of().strength(2.0f, 3.0f).sound(SoundType.WOOD);
     }
 
     // Lumewood building set
     public static final Block LUMEWOOD_LOG = register("lumewood_log",
             RotatedPillarBlock::new, BlockBehaviour.Properties.of().strength(2.0f).sound(SoundType.WOOD)
-                    .burnable().luminance(s -> 4));
+                    .lightLevel(s -> 4));
     public static final Block LUMEWOOD_WOOD = register("lumewood_wood",
             RotatedPillarBlock::new, BlockBehaviour.Properties.of().strength(2.0f).sound(SoundType.WOOD)
-                    .burnable().luminance(s -> 4));
+                    .lightLevel(s -> 4));
     public static final Block LUMEWOOD_PLANKS = register("lumewood_planks", Block::new, wood());
     public static final Block LUMEWOOD_STAIRS = register("lumewood_stairs",
             s -> new StairBlock(LUMEWOOD_PLANKS.defaultBlockState(), s) {}, wood());
@@ -148,20 +148,20 @@ public final class ModBlocks {
             BlockBehaviour.Properties.of().strength(3.0f).sound(SoundType.WOOD).noOcclusion());
     public static final Block LUMEWOOD_LEAVES = register("lumewood_leaves",
             LeavesBlock::new, BlockBehaviour.Properties.of().strength(0.2f).randomTicks()
-                    .sound(SoundType.GRASS).noOcclusion().burnable().luminance(s -> 6));
+                    .sound(SoundType.GRASS).noOcclusion().lightLevel(s -> 6));
     public static final Block LUMEWOOD_SAPLING = register("lumewood_sapling",
             s -> new SaplingBlock(LUMEWOOD_TREE_GEN, s) {},
-            BlockBehaviour.Properties.of().noCollision().randomTicks().breakInstantly()
-                    .sound(SoundType.GRASS).luminance(s -> 4));
+            BlockBehaviour.Properties.of().noCollision().randomTicks().instabreak()
+                    .sound(SoundType.GRASS).lightLevel(s -> 4));
 
     // Garden
     public static final Block LUMEBLOOM = register("lumebloom",
             s -> new FlowerBlock(MobEffects.GLOWING, 5.0f, s),
-            BlockBehaviour.Properties.of().noCollision().breakInstantly()
-                    .sound(SoundType.GRASS).luminance(s -> 7));
+            BlockBehaviour.Properties.of().noCollision().instabreak()
+                    .sound(SoundType.GRASS).lightLevel(s -> 7));
     public static final Block LUME_LANTERN = register("lume_lantern",
             Block::new, BlockBehaviour.Properties.of().strength(0.4f).sound(SoundType.GLASS)
-                    .noOcclusion().luminance(s -> 15));
+                    .noOcclusion().lightLevel(s -> 15));
     public static final Block VERDANT_LOAM = register("verdant_loam",
             VerdantLoamBlock::new, BlockBehaviour.Properties.of().strength(0.6f)
                     .sound(SoundType.ROOTED_DIRT));
@@ -169,14 +169,14 @@ public final class ModBlocks {
     // Stone building materials
     public static final Block ECHOCITE_BRICKS = register("echocite_bricks",
             Block::new, BlockBehaviour.Properties.of().strength(2.0f, 6.0f).requiresCorrectToolForDrops()
-                    .sound(SoundType.STONE).luminance(s -> 3));
+                    .sound(SoundType.STONE).lightLevel(s -> 3));
     public static final Block ECHOCITE_BRICK_STAIRS = register("echocite_brick_stairs",
             s -> new StairBlock(ECHOCITE_BRICKS.defaultBlockState(), s) {},
             BlockBehaviour.Properties.of().strength(2.0f, 6.0f).requiresCorrectToolForDrops()
-                    .sound(SoundType.STONE).luminance(s -> 3));
+                    .sound(SoundType.STONE).lightLevel(s -> 3));
     public static final Block ECHOCITE_BRICK_SLAB = register("echocite_brick_slab",
             SlabBlock::new, BlockBehaviour.Properties.of().strength(2.0f, 6.0f).requiresCorrectToolForDrops()
-                    .sound(SoundType.STONE).luminance(s -> 3));
+                    .sound(SoundType.STONE).lightLevel(s -> 3));
 
     // Octave II — Greater Resonance Cell (tiered storage)
     public static final Block GREATER_ACCUMULATOR = register("greater_resonance_cell",
@@ -186,20 +186,20 @@ public final class ModBlocks {
     // Octave II — higher-octave generation & throughput (Radiant-tier)
     public static final Block OCTAVE_COIL = register("octave_coil",
             OctaveCoilBlock::new, BlockBehaviour.Properties.of().strength(4.0f).requiresCorrectToolForDrops()
-                    .noOcclusion().luminance(s -> 7));
+                    .noOcclusion().lightLevel(s -> 7));
     public static final Block OCTAVE_CONDUIT = register("octave_conduit",
             OctaveConduitBlock::new, BlockBehaviour.Properties.of().strength(2.5f).requiresCorrectToolForDrops()
-                    .noOcclusion().luminance(s -> 4));
+                    .noOcclusion().lightLevel(s -> 4));
 
     // The Verdant Octave — the transmutation economy (EMC = Bound Light)
     public static final Block TRANSMUTATION_TABLE = register("transmutation_table",
             TransmutationTableBlock::new, BlockBehaviour.Properties.of().strength(3.5f)
-                    .requiresCorrectToolForDrops().noOcclusion().luminance(s -> 6));
+                    .requiresCorrectToolForDrops().noOcclusion().lightLevel(s -> 6));
 
     // Phase VII — Storm Caller (lightning generation)
     public static final Block STORM_CALLER = register("storm_caller",
             StormCallerBlock::new, BlockBehaviour.Properties.of().strength(4.5f).requiresCorrectToolForDrops()
-                    .noOcclusion().luminance(s -> 6));
+                    .noOcclusion().lightLevel(s -> 6));
 
     public static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings) {
         Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);

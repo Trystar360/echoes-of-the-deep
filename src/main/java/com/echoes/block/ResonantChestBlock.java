@@ -42,7 +42,7 @@ public class ResonantChestBlock extends AbstractHorizontalDeviceBlock {
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
         if (world.getBlockEntity(pos) instanceof ResonantChestBlockEntity be) {
-            Containers.spawn(world, pos, be.getItems());
+            Containers.dropContents(world, pos, be.getItems());
         }
         super.affectNeighborsAfterRemoval(state, world, pos, moved);
     }
