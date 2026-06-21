@@ -7,12 +7,12 @@ import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
 
 /**
  * Octave II of the Resonance Cell: a much larger Light bank than the Resonance
@@ -46,18 +46,18 @@ public class GreaterAccumulatorBlockEntity extends BlockEntity implements Resona
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
     @Override public void onConfigChanged() { markDirty(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.writeNbt(nbt, lookup);
         storage.writeNbt(nbt);
         config.writeNbt(nbt);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.readNbt(nbt, lookup);
         storage.readNbt(nbt);
         config.readNbt(nbt);

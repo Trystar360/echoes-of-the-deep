@@ -5,26 +5,26 @@ import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.screen.AttunementFurnaceScreenHandler;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.SmeltingRecipe;
-import net.minecraft.recipe.input.SingleStackRecipeInput;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
@@ -34,7 +34,7 @@ import java.util.Optional;
  * a small internal buffer is refilled from the grid via {@link #demand()}.
  */
 public class AttunementFurnaceBlockEntity extends BlockEntity
-        implements ImplementedInventory, ResonanceNode, NamedScreenHandlerFactory,
+        implements ImplementedInventory, ResonanceNode, MenuProvider,
         com.echoes.config.Configurable {
 
     private static final int INPUT = 0, OUTPUT = 1;
@@ -46,13 +46,13 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     public static final com.echoes.config.ConfigSpec SPEC =
             com.echoes.config.ConfigSpec.builder().redstone().sides().build();
 
-    private final DefaultedList<ItemStack> items = DefaultedList.ofSize(2, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.ofSize(2, ItemStack.EMPTY);
     private final ResonanceStorage buffer = new ResonanceStorage(INTERNAL_BUFFER);
     private final com.echoes.config.BlockConfig config = new com.echoes.config.BlockConfig();
     private int progress;
     private int maxProgress = PROCESS_TICKS;
 
-    private final PropertyDelegate props = new PropertyDelegate() {
+    private final ContainerData props = new ContainerData() {
         @Override public int get(int i) {
             return switch (i) {
                 case 0 -> progress;
@@ -71,12 +71,12 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
         super(ModBlockEntities.ATTUNEMENT_FURNACE, pos, state);
     }
 
-    @Override public DefaultedList<ItemStack> getItems() { return items; }
+    @Override public NonNullList<ItemStack> getItems() { return items; }
 
-    public static void tick(World world, BlockPos pos, BlockState state, AttunementFurnaceBlockEntity be) {
+    public static void tick(Level world, BlockPos pos, BlockState state, AttunementFurnaceBlockEntity be) {
         if (world.isClient) return;
 
-        Optional<RecipeEntry<SmeltingRecipe>> match = be.currentRecipe();
+        Optional<RecipeHolder<SmeltingRecipe>> match = be.currentRecipe();
         ItemStack result = match.map(m -> be.resultOf(m)).orElse(ItemStack.EMPTY);
         if (result.isEmpty() || !be.hasOutputRoom(result)) {
             if (be.progress != 0) { be.progress = 0; be.markDirty(); }
@@ -95,15 +95,15 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
         }
     }
 
-    private Optional<RecipeEntry<SmeltingRecipe>> currentRecipe() {
-        if (getStack(INPUT).isEmpty() || !(world instanceof ServerWorld sw)) return Optional.empty();
+    private Optional<RecipeHolder<SmeltingRecipe>> currentRecipe() {
+        if (getStack(INPUT).isEmpty() || !(world instanceof ServerLevel sw)) return Optional.empty();
         return sw.getRecipeManager().getFirstMatch(
-                RecipeType.SMELTING, new SingleStackRecipeInput(getStack(INPUT)), world);
+                RecipeType.SMELTING, new SingleRecipeInput(getStack(INPUT)), world);
     }
 
-    private ItemStack resultOf(RecipeEntry<SmeltingRecipe> entry) {
-        if (!(world instanceof ServerWorld sw)) return ItemStack.EMPTY;
-        return entry.value().craft(new SingleStackRecipeInput(getStack(INPUT)), sw.getRegistryManager());
+    private ItemStack resultOf(RecipeHolder<SmeltingRecipe> entry) {
+        if (!(world instanceof ServerLevel sw)) return ItemStack.EMPTY;
+        return entry.value().craft(new SingleRecipeInput(getStack(INPUT)), sw.getRegistryManager());
     }
 
     private boolean hasOutputRoom(ItemStack result) {
@@ -141,30 +141,30 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
     // --- screen ---
-    @Override public Text getDisplayName() { return Text.translatable("block.echoes.transmuter"); }
-    @Override public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+    @Override public Component getDisplayName() { return Component.translatable("block.echoes.transmuter"); }
+    @Override public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
         return new AttunementFurnaceScreenHandler(syncId, inv, this, props);
     }
 
     // --- Configurable ---
     @Override public com.echoes.config.BlockConfig getConfig() { return config; }
     @Override public com.echoes.config.ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
     @Override public void onConfigChanged() { markDirty(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.writeNbt(nbt, lookup);
-        net.minecraft.inventory.Inventories.writeNbt(nbt, items, lookup);
+        net.minecraft.world.ContainerHelper.writeNbt(nbt, items, lookup);
         buffer.writeNbt(nbt);
         config.writeNbt(nbt);
         nbt.putInt("progress", progress);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.readNbt(nbt, lookup);
-        net.minecraft.inventory.Inventories.readNbt(nbt, items, lookup);
+        net.minecraft.world.ContainerHelper.readNbt(nbt, items, lookup);
         buffer.readNbt(nbt);
         config.readNbt(nbt);
         progress = nbt.getInt("progress");

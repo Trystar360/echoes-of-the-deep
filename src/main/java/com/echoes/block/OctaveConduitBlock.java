@@ -1,9 +1,9 @@
 package com.echoes.block;
 
 import com.echoes.block.entity.OctaveConduitBlockEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class OctaveConduitBlock extends ConduitBlock {
 
-    public OctaveConduitBlock(Settings settings) {
+    public OctaveConduitBlock(Properties settings) {
         super(settings);
     }
 

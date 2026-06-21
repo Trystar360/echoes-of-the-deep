@@ -1,8 +1,8 @@
 package com.echoes.block.entity;
 
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 
 /** Widens the per-tick transfer budget of its channel. Each one doubles it (capped). */
 public class ResonantAmplifierBlockEntity extends AbstractChannelDeviceBlockEntity {

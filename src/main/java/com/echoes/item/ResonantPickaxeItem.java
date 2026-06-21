@@ -1,22 +1,22 @@
 package com.echoes.item;
 
-import net.minecraft.item.PickaxeItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolMaterial;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.world.item.PickaxeItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import java.util.List;
 
 /** A Resonant pickaxe — tuned hard, per Walter Russell's balanced interchange. */
 public class ResonantPickaxeItem extends PickaxeItem {
-    public ResonantPickaxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Settings settings) {
+    public ResonantPickaxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties settings) {
         super(material, attackDamage, attackSpeed, settings);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("tooltip.echoes.resonant.lore").formatted(Formatting.AQUA, Formatting.ITALIC));
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+        tooltip.add(Component.translatable("tooltip.echoes.resonant.lore").formatted(ChatFormatting.AQUA, ChatFormatting.ITALIC));
     }
 }

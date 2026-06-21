@@ -2,16 +2,16 @@ package com.echoes.item;
 
 import com.echoes.registry.ModComponents;
 import com.echoes.transmute.TransmutationState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class OctaveStarItem extends Item {
     private final int tier;
     private final long capacity;
 
-    public OctaveStarItem(int tier, long capacity, Settings settings) {
+    public OctaveStarItem(int tier, long capacity, Properties settings) {
         super(settings);
         this.tier = tier;
         this.capacity = capacity;
@@ -40,36 +40,36 @@ public class OctaveStarItem extends Item {
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
+    public InteractionResult use(Level world, Player user, InteractionHand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (world.isClient || !(world instanceof ServerWorld sw)) return ActionResult.SUCCESS;
+        if (world.isClient || !(world instanceof ServerLevel sw)) return InteractionResult.SUCCESS;
 
         TransmutationState state = TransmutationState.get(sw);
         TransmutationState.Account account = state.of(user.getUuid());
         long cur = stored(stack);
 
         if (user.isSneaking()) {
-            if (cur <= 0) return ActionResult.PASS;       // discharge → account
+            if (cur <= 0) return InteractionResult.PASS;       // discharge → account
             account.light += cur;
             setStored(stack, 0);
             state.markDirty();
-            user.sendMessage(Text.translatable("message.echoes.star.emptied", fmt(cur)), true);
+            user.sendMessage(Component.translatable("message.echoes.star.emptied", fmt(cur)), true);
         } else {
             long move = Math.min(capacity - cur, account.light); // charge ← account
-            if (move <= 0) return ActionResult.PASS;
+            if (move <= 0) return InteractionResult.PASS;
             account.light -= move;
             setStored(stack, cur + move);
             state.markDirty();
-            user.sendMessage(Text.translatable("message.echoes.star.charged", fmt(cur + move), fmt(capacity)), true);
+            user.sendMessage(Component.translatable("message.echoes.star.charged", fmt(cur + move), fmt(capacity)), true);
         }
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("tooltip.echoes.star.stored", fmt(stored(stack)), fmt(capacity))
-                .formatted(Formatting.AQUA));
-        tooltip.add(Text.translatable("tooltip.echoes.star.hint").formatted(Formatting.DARK_GRAY));
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+        tooltip.add(Component.translatable("tooltip.echoes.star.stored", fmt(stored(stack)), fmt(capacity))
+                .formatted(ChatFormatting.AQUA));
+        tooltip.add(Component.translatable("tooltip.echoes.star.hint").formatted(ChatFormatting.DARK_GRAY));
     }
 
     @Override public boolean isItemBarVisible(ItemStack stack) { return stored(stack) > 0; }

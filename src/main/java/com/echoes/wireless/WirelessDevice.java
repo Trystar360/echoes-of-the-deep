@@ -4,9 +4,9 @@ import com.echoes.energy.ResonanceNode;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.minecraft.item.Item;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.item.Item;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -25,7 +25,7 @@ public interface WirelessDevice {
 
     BlockPos wirelessPos();
 
-    ServerWorld wirelessWorld();
+    ServerLevel wirelessWorld();
 
     /** 0–15, one per dye colour. */
     int wirelessChannel();

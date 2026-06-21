@@ -2,20 +2,20 @@ package com.echoes.item;
 
 import com.echoes.energy.ResonanceNode;
 import com.echoes.registry.ModComponents;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.item.consume.UseAction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -33,15 +33,15 @@ public class ResonanceThrustersItem extends Item {
     private static final int RECHARGE_PER_USE = 200_000;
     private static final double FLY_SPEED = 0.85, SPRINT_SPEED = 1.45, LIFT = 0.06;
 
-    public ResonanceThrustersItem(Settings settings) {
+    public ResonanceThrustersItem(Properties settings) {
         super(settings);
     }
 
     public static int ru(ItemStack stack) { return stack.getOrDefault(ModComponents.STORED_RU, 0); }
 
     /** True if this living entity is a player carrying charged thrusters — no fall damage. */
-    public static boolean shieldsFall(net.minecraft.entity.LivingEntity entity) {
-        if (!(entity instanceof PlayerEntity p)) return false;
+    public static boolean shieldsFall(net.minecraft.world.entity.LivingEntity entity) {
+        if (!(entity instanceof Player p)) return false;
         for (ItemStack s : p.getInventory().main) {
             if (s.getItem() instanceof ResonanceThrustersItem && ru(s) > 0) return true;
         }
@@ -54,41 +54,41 @@ public class ResonanceThrustersItem extends Item {
 
     /** Right-click a buffered Resonance block to siphon RU into the thrusters. */
     @Override
-    public ActionResult useOnBlock(ItemUsageContext ctx) {
-        World world = ctx.getWorld();
-        if (world.isClient) return ActionResult.SUCCESS;
+    public InteractionResult useOnBlock(UseOnContext ctx) {
+        Level world = ctx.getWorld();
+        if (world.isClient) return InteractionResult.SUCCESS;
         if (!(world.getBlockEntity(ctx.getBlockPos()) instanceof ResonanceNode node) || node.storedRu() <= 0) {
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }
         ItemStack stack = ctx.getStack();
         int space = CAPACITY - ru(stack);
-        if (space <= 0) return ActionResult.SUCCESS;
+        if (space <= 0) return InteractionResult.SUCCESS;
         long pulled = node.extract(Math.min(space, RECHARGE_PER_USE), false);
         if (pulled > 0) {
             setRu(stack, ru(stack) + (int) pulled);
             if (node instanceof BlockEntity be) be.markDirty();
-            PlayerEntity p = ctx.getPlayer();
-            if (p != null) p.sendMessage(Text.translatable("message.echoes.thrusters.charge",
+            Player p = ctx.getPlayer();
+            if (p != null) p.sendMessage(Component.translatable("message.echoes.thrusters.charge",
                     fmt(ru(stack)), fmt(CAPACITY)), true);
         }
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     /** Begin thrusting (continuous use) if there's charge. */
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
+    public InteractionResult use(Level world, Player user, InteractionHand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (ru(stack) <= 0 && !user.isCreative()) return ActionResult.FAIL;
+        if (ru(stack) <= 0 && !user.isCreative()) return InteractionResult.FAIL;
         user.setCurrentHand(hand);
-        return ActionResult.CONSUME;
+        return InteractionResult.CONSUME;
     }
 
-    @Override public UseAction getUseAction(ItemStack stack) { return UseAction.BOW; }
+    @Override public ItemUseAnimation getUseAction(ItemStack stack) { return ItemUseAnimation.BOW; }
     @Override public int getMaxUseTime(ItemStack stack, LivingEntity user) { return 72_000; }
 
     @Override
-    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        boolean creative = user instanceof PlayerEntity p && p.isCreative();
+    public void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        boolean creative = user instanceof Player p && p.isCreative();
         if (ru(stack) <= 0 && !creative) {
             user.stopUsingItem();
             return;
@@ -98,7 +98,7 @@ public class ResonanceThrustersItem extends Item {
         if (user.isSneaking()) {
             user.setVelocity(user.getVelocity().multiply(0.6, 0.0, 0.6)); // hover/brake
         } else {
-            Vec3d look = user.getRotationVector();
+            Vec3 look = user.getRotationVector();
             user.setVelocity(look.x * speed, look.y * speed + LIFT, look.z * speed);
         }
         user.velocityModified = true;
@@ -110,10 +110,10 @@ public class ResonanceThrustersItem extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("tooltip.echoes.thrusters.charge", fmt(ru(stack)), fmt(CAPACITY))
-                .formatted(Formatting.AQUA));
-        tooltip.add(Text.translatable("tooltip.echoes.thrusters.hint").formatted(Formatting.DARK_GRAY));
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+        tooltip.add(Component.translatable("tooltip.echoes.thrusters.charge", fmt(ru(stack)), fmt(CAPACITY))
+                .formatted(ChatFormatting.AQUA));
+        tooltip.add(Component.translatable("tooltip.echoes.thrusters.hint").formatted(ChatFormatting.DARK_GRAY));
     }
 
     private static String fmt(int value) { return String.format("%,d", value); }

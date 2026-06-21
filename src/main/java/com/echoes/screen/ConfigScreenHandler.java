@@ -7,24 +7,24 @@ import com.echoes.config.RedstoneMode;
 import com.echoes.config.SideMode;
 import com.echoes.config.TuningParam;
 import com.echoes.registry.ModScreens;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * A slot-less configuration screen shared by every {@link Configurable} device.
- * Live values are mirrored to the client through a {@link PropertyDelegate};
+ * Live values are mirrored to the client through a {@link ContainerData};
  * edits travel back via vanilla button clicks ({@link #onButtonClick}). The
  * static {@link ConfigSpec} and title are read straight off the (client- or
  * server-side) block entity addressed by {@link #pos}.
  */
-public class ConfigScreenHandler extends ScreenHandler {
+public class ConfigScreenHandler extends AbstractContainerMenu {
 
     // Property layout (size 11): 0 channel, 1 octave, 2 redstone,
     // 3..8 side modes (Direction id order), 9 tuningA, 10 tuningB.
@@ -40,12 +40,12 @@ public class ConfigScreenHandler extends ScreenHandler {
             B_TUNING_B_DOWN = 22, B_TUNING_B_UP = 23;
 
     private final BlockPos pos;
-    private final PropertyDelegate properties;
+    private final ContainerData properties;
     private final ConfigSpec spec;
     @Nullable private final BlockConfig config; // server-side authoritative config
-    private final PlayerEntity player;
+    private final Player player;
 
-    public ConfigScreenHandler(int syncId, PlayerInventory inv, BlockPos pos) {
+    public ConfigScreenHandler(int syncId, Inventory inv, BlockPos pos) {
         super(ModScreens.CONFIG, syncId);
         this.pos = pos;
         this.player = inv.player;
@@ -59,7 +59,7 @@ public class ConfigScreenHandler extends ScreenHandler {
             this.properties = backedBy(config);
         } else {
             this.config = null;
-            this.properties = new ArrayPropertyDelegate(SIZE);
+            this.properties = new SimpleContainerData(SIZE);
         }
         addProperties(properties);
     }
@@ -74,7 +74,7 @@ public class ConfigScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public boolean onButtonClick(PlayerEntity player, int id) {
+    public boolean onButtonClick(Player player, int id) {
         if (config == null) return false; // server only
         boolean changed = true;
         if (id == B_CHANNEL_DOWN) config.setChannel(config.channel() - 1);
@@ -104,8 +104,8 @@ public class ConfigScreenHandler extends ScreenHandler {
         else config.setTuningB(p.adjust(config.tuningB(), dir));
     }
 
-    private static PropertyDelegate backedBy(BlockConfig c) {
-        return new PropertyDelegate() {
+    private static ContainerData backedBy(BlockConfig c) {
+        return new ContainerData() {
             @Override public int get(int i) {
                 return switch (i) {
                     case P_CHANNEL -> c.channel();
@@ -130,10 +130,10 @@ public class ConfigScreenHandler extends ScreenHandler {
         };
     }
 
-    @Override public ItemStack quickMove(PlayerEntity player, int slot) { return ItemStack.EMPTY; }
+    @Override public ItemStack quickMove(Player player, int slot) { return ItemStack.EMPTY; }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
+    public boolean canUse(Player player) {
         return player.getWorld().getBlockEntity(pos) instanceof Configurable
                 && player.squaredDistanceTo(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64.0;
     }

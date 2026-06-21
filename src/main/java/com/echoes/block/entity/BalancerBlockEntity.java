@@ -5,14 +5,14 @@ import com.echoes.config.Configurable;
 import com.echoes.config.ConfigSpec;
 import com.echoes.energy.ResonanceNetworkManager;
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Rhythmic balanced interchange made a block: every few ticks it nudges all storage
@@ -36,8 +36,8 @@ public class BalancerBlockEntity extends BlockEntity implements Configurable {
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, BalancerBlockEntity be) {
-        if (!(world instanceof ServerWorld sw)) return;
+    public static void tick(Level world, BlockPos pos, BlockState state, BalancerBlockEntity be) {
+        if (!(world instanceof ServerLevel sw)) return;
         if (!be.config.redstone().allows(sw.isReceivingRedstonePower(pos))) return;
         if (++be.timer < INTERVAL) return;
         be.timer = 0;
@@ -47,17 +47,17 @@ public class BalancerBlockEntity extends BlockEntity implements Configurable {
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
     @Override public void onConfigChanged() { markDirty(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.writeNbt(nbt, lookup);
         config.writeNbt(nbt);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.readNbt(nbt, lookup);
         config.readNbt(nbt);
     }

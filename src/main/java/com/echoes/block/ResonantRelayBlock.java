@@ -2,18 +2,18 @@ package com.echoes.block;
 
 import com.echoes.block.entity.AbstractChannelDeviceBlockEntity;
 import com.echoes.block.entity.ResonantRelayBlockEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -24,19 +24,19 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ResonantRelayBlock extends AbstractChannelDeviceBlock {
 
-    public ResonantRelayBlock(Settings settings) {
+    public ResonantRelayBlock(Properties settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState().with(Properties.FACING, Direction.NORTH));
+        setDefaultState(getStateManager().getDefaultState().with(BlockStateProperties.FACING, Direction.NORTH));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(Properties.FACING);
+    protected void appendProperties(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(BlockStateProperties.FACING);
     }
 
     @Override
-    public @Nullable BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(Properties.FACING, ctx.getSide().getOpposite());
+    public @Nullable BlockState getPlacementState(BlockPlaceContext ctx) {
+        return getDefaultState().with(BlockStateProperties.FACING, ctx.getSide().getOpposite());
     }
 
     @Override
@@ -45,15 +45,15 @@ public class ResonantRelayBlock extends AbstractChannelDeviceBlock {
     }
 
     @Override
-    protected ActionResult onConfigure(World world, BlockPos pos, PlayerEntity player,
+    protected InteractionResult onConfigure(Level world, BlockPos pos, Player player,
                                        AbstractChannelDeviceBlockEntity device, ItemStack held) {
         if (device instanceof ResonantRelayBlockEntity relay) {
             relay.cycleMode();
             sendStatus(player, "message.echoes.relay.mode",
-                    net.minecraft.text.Text.translatable(
+                    net.minecraft.network.chat.Component.translatable(
                             "message.echoes.relay.mode." + relay.mode().name().toLowerCase()));
         }
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ResonantRelayBlock extends AbstractChannelDeviceBlock {
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    public int getComparatorOutput(BlockState state, Level world, BlockPos pos) {
         return world.getBlockEntity(pos) instanceof ResonantRelayBlockEntity relay
                 ? relay.comparatorOutput() : 0;
     }

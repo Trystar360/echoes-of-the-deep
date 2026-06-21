@@ -2,14 +2,14 @@ package com.echoes.block;
 
 import com.echoes.block.entity.AbstractChannelDeviceBlockEntity;
 import com.echoes.block.entity.HarmonicFilterBlockEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class HarmonicFilterBlock extends AbstractHorizontalDeviceBlock {
 
-    public HarmonicFilterBlock(Settings settings) {
+    public HarmonicFilterBlock(Properties settings) {
         super(settings);
     }
 
@@ -28,11 +28,11 @@ public class HarmonicFilterBlock extends AbstractHorizontalDeviceBlock {
     }
 
     @Override
-    protected ActionResult onConfigure(World world, BlockPos pos, PlayerEntity player,
+    protected InteractionResult onConfigure(Level world, BlockPos pos, Player player,
                                        AbstractChannelDeviceBlockEntity device, ItemStack held) {
-        if (device instanceof NamedScreenHandlerFactory factory) {
+        if (device instanceof MenuProvider factory) {
             player.openHandledScreen(factory);
         }
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 }

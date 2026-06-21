@@ -1,8 +1,8 @@
 package com.echoes.config;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.util.math.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.core.Direction;
 
 /**
  * Per-device, NBT-persisted configuration: wireless channel + octave, redstone
@@ -52,8 +52,8 @@ public final class BlockConfig {
     }
 
     // --- NBT ---
-    public void writeNbt(NbtCompound nbt) {
-        NbtCompound c = new NbtCompound();
+    public void writeNbt(CompoundTag nbt) {
+        CompoundTag c = new CompoundTag();
         c.putInt("channel", channel);
         c.putInt("octave", octave);
         c.putInt("redstone", redstone.id());
@@ -65,13 +65,13 @@ public final class BlockConfig {
         nbt.put("Config", c);
     }
 
-    public void readNbt(NbtCompound nbt) {
-        if (!nbt.contains("Config", NbtElement.COMPOUND_TYPE)) return;
-        NbtCompound c = nbt.getCompound("Config");
+    public void readNbt(CompoundTag nbt) {
+        if (!nbt.contains("Config", Tag.COMPOUND_TYPE)) return;
+        CompoundTag c = nbt.getCompound("Config");
         channel = c.getInt("channel");
         octave = c.getInt("octave");
         redstone = RedstoneMode.byId(c.getInt("redstone"));
-        if (c.contains("sides", NbtElement.INT_ARRAY_TYPE)) {
+        if (c.contains("sides", Tag.INT_ARRAY_TYPE)) {
             int[] sm = c.getIntArray("sides");
             for (int i = 0; i < 6 && i < sm.length; i++) sides[i] = SideMode.byId(sm[i]);
         }

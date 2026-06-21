@@ -10,12 +10,12 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.minecraft.item.Item;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.World;
+import net.minecraft.world.item.Item;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,7 +101,7 @@ public final class WirelessNetworkManager {
         holder.channel = channel;
     }
 
-    public static void unregister(ServerWorld world, BlockPos pos) {
+    public static void unregister(ServerLevel world, BlockPos pos) {
         Holder holder = DEVICES.remove(GlobalPos.create(world.getRegistryKey(), pos.toImmutable()));
         if (holder != null) BY_CHANNEL.get(holder.channel).remove(holder.device);
     }
@@ -124,7 +124,7 @@ public final class WirelessNetworkManager {
                 process(new ArrayList<>(all));
             } else {
                 // Split by dimension: a channel only spans dimensions via a repeater.
-                Map<RegistryKey<World>, List<WirelessDevice>> byDim = new HashMap<>();
+                Map<ResourceKey<Level>, List<WirelessDevice>> byDim = new HashMap<>();
                 for (WirelessDevice d : all) {
                     byDim.computeIfAbsent(d.wirelessWorld().getRegistryKey(), k -> new ArrayList<>()).add(d);
                 }

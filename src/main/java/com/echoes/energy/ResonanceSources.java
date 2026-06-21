@@ -4,13 +4,13 @@ import com.echoes.EchoesMod;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.core.Holder;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.GsonHelper;
 
 import java.io.Reader;
 import java.util.HashMap;
@@ -25,17 +25,17 @@ public final class ResonanceSources implements SimpleSynchronousResourceReloadLi
     private ResonanceSources() {}
 
     private static final Map<Identifier, Integer> SOURCES = new HashMap<>();
-    private static final Identifier FILE = Identifier.of(EchoesMod.MOD_ID, "resonance_sources.json");
-    private static final Identifier LISTENER_ID = Identifier.of(EchoesMod.MOD_ID, "resonance_sources");
+    private static final Identifier FILE = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "resonance_sources.json");
+    private static final Identifier LISTENER_ID = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "resonance_sources");
 
     /** RU emitted by this sound, or 0 if it isn't a resonance source. */
-    public static int ru(RegistryEntry<SoundEvent> sound) {
-        Identifier id = sound.getKey().map(net.minecraft.registry.RegistryKey::getValue).orElseGet(() -> sound.value().id());
+    public static int ru(Holder<SoundEvent> sound) {
+        Identifier id = sound.getKey().map(net.minecraft.resources.ResourceKey::getValue).orElseGet(() -> sound.value().id());
         return SOURCES.getOrDefault(id, 0);
     }
 
     public static void register() {
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ResonanceSources());
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new ResonanceSources());
     }
 
     @Override
@@ -46,8 +46,8 @@ public final class ResonanceSources implements SimpleSynchronousResourceReloadLi
         SOURCES.clear();
         for (Resource resource : manager.getAllResources(FILE)) {
             try (Reader reader = resource.getReader()) {
-                JsonObject root = JsonHelper.deserialize(reader);
-                JsonObject sources = JsonHelper.getObject(root, "sources", new JsonObject());
+                JsonObject root = GsonHelper.deserialize(reader);
+                JsonObject sources = GsonHelper.getObject(root, "sources", new JsonObject());
                 for (Map.Entry<String, com.google.gson.JsonElement> e : sources.entrySet()) {
                     Identifier id = Identifier.tryParse(e.getKey());
                     if (id != null && e.getValue().isJsonPrimitive()) {

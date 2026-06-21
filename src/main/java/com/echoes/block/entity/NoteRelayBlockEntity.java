@@ -2,11 +2,11 @@ package com.echoes.block.entity;
 
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.wireless.RelayMode;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.core.BlockPos;
 
 /**
  * A wireless redstone bus. SEND broadcasts the redstone power it receives onto
@@ -48,20 +48,20 @@ public class NoteRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
         markDirty();
         BlockState state = getCachedState();
         boolean powered = output > 0;
-        if (state.contains(Properties.POWERED) && state.get(Properties.POWERED) != powered) {
-            world.setBlockState(getPos(), state.with(Properties.POWERED, powered));
+        if (state.contains(BlockStateProperties.POWERED) && state.get(BlockStateProperties.POWERED) != powered) {
+            world.setBlockState(getPos(), state.with(BlockStateProperties.POWERED, powered));
         }
         world.updateNeighborsAlways(getPos(), state.getBlock());
     }
 
     @Override
-    protected void writeExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
         nbt.putInt("mode", mode.ordinal());
         nbt.putInt("output", output);
     }
 
     @Override
-    protected void readExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
         mode = RelayMode.byId(nbt.getInt("mode"));
         output = nbt.getInt("output");
     }

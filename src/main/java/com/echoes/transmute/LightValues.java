@@ -4,23 +4,23 @@ import com.echoes.EchoesMod;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.CraftingRecipe;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.SingleStackRecipe;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.recipe.input.SingleStackRecipeInput;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SingleItemRecipe;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.GsonHelper;
 
 import java.io.Reader;
 import java.util.Collection;
@@ -49,8 +49,8 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
     private static final Set<Identifier> BLACKLIST = new HashSet<>();         // never valued
     private static volatile Map<Identifier, Long> DERIVED = Map.of();         // recipe-derived
 
-    private static final Identifier FILE = Identifier.of(EchoesMod.MOD_ID, "light_values.json");
-    private static final Identifier LISTENER_ID = Identifier.of(EchoesMod.MOD_ID, "light_values");
+    private static final Identifier FILE = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "light_values.json");
+    private static final Identifier LISTENER_ID = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "light_values");
     private static final int MAX_PASSES = 16;
 
     /** Items that must never carry value (unobtainable / exploit blocks). */
@@ -65,7 +65,7 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
 
     /** Bound Light wound into one of this item, or 0 if it has no value / is blacklisted. */
     public static long get(Item item) {
-        Identifier id = Registries.ITEM.getId(item);
+        Identifier id = BuiltInRegistries.ITEM.getId(item);
         if (BLACKLIST.contains(id)) return 0L;
         Long seed = SEEDS.get(id);
         if (seed != null) return seed;
@@ -85,7 +85,7 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
     }
 
     public static void register() {
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new LightValues());
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new LightValues());
     }
 
     @Override
@@ -99,8 +99,8 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
         BLACKLIST.addAll(DEFAULT_BLACKLIST);
         for (Resource resource : manager.getAllResources(FILE)) {
             try (Reader reader = resource.getReader()) {
-                JsonObject root = JsonHelper.deserialize(reader);
-                JsonObject values = JsonHelper.getObject(root, "values", new JsonObject());
+                JsonObject root = GsonHelper.deserialize(reader);
+                JsonObject values = GsonHelper.getObject(root, "values", new JsonObject());
                 for (Map.Entry<String, com.google.gson.JsonElement> e : values.entrySet()) {
                     Identifier id = Identifier.tryParse(e.getKey());
                     if (id == null || !e.getValue().isJsonPrimitive()) continue;
@@ -109,7 +109,7 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
                     else SEEDS.put(id, v);
                 }
                 if (root.has("blacklist")) {
-                    for (com.google.gson.JsonElement el : JsonHelper.getArray(root, "blacklist")) {
+                    for (com.google.gson.JsonElement el : GsonHelper.getArray(root, "blacklist")) {
                         Identifier id = Identifier.tryParse(el.getAsString());
                         if (id != null) BLACKLIST.add(id);
                     }
@@ -124,23 +124,23 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
 
     // --- recipe-graph derivation ---------------------------------------------------
 
-    private static final SingleStackRecipeInput SINGLE_EMPTY = new SingleStackRecipeInput(ItemStack.EMPTY);
+    private static final SingleRecipeInput SINGLE_EMPTY = new SingleRecipeInput(ItemStack.EMPTY);
 
     /** Recompute derived values from the server's full recipe set (vanilla + every mod). */
     public static void derive(MinecraftServer server) {
-        RegistryWrapper.WrapperLookup lookup = server.getRegistryManager();
-        Collection<RecipeEntry<?>> recipes = server.getRecipeManager().values();
+        HolderLookup.Provider lookup = server.getRegistryManager();
+        Collection<RecipeHolder<?>> recipes = server.getRecipeManager().values();
 
         Map<Identifier, Long> values = new HashMap<>(SEEDS); // working set; seeds are the floor
         boolean changed = true;
         int pass = 0;
         while (changed && pass++ < MAX_PASSES) {
             changed = false;
-            for (RecipeEntry<?> entry : recipes) {
+            for (RecipeHolder<?> entry : recipes) {
                 Recipe<?> recipe = entry.value();
                 ItemStack out = output(recipe, lookup);
                 if (out.isEmpty()) continue;
-                Identifier outId = Registries.ITEM.getId(out.getItem());
+                Identifier outId = BuiltInRegistries.ITEM.getId(out.getItem());
                 if (SEEDS.containsKey(outId) || BLACKLIST.contains(outId)) continue; // authoritative / forbidden
 
                 List<Ingredient> ingredients = recipe.getIngredientPlacement().getIngredients();
@@ -174,13 +174,13 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
      * fixed result and ignore the input, so an empty input of the right type is enough.
      * Other (special / input-dependent) recipe types are skipped.
      */
-    private static ItemStack output(Recipe<?> recipe, RegistryWrapper.WrapperLookup lookup) {
+    private static ItemStack output(Recipe<?> recipe, HolderLookup.Provider lookup) {
         try {
             if (recipe instanceof CraftingRecipe crafting) {
-                ItemStack out = crafting.craft(CraftingRecipeInput.EMPTY, lookup);
+                ItemStack out = crafting.craft(CraftingInput.EMPTY, lookup);
                 return out == null ? ItemStack.EMPTY : out;
             }
-            if (recipe instanceof SingleStackRecipe single) { // smelting/blasting/smoking/campfire/stonecutting
+            if (recipe instanceof SingleItemRecipe single) { // smelting/blasting/smoking/campfire/stonecutting
                 ItemStack out = single.craft(SINGLE_EMPTY, lookup);
                 return out == null ? ItemStack.EMPTY : out;
             }
@@ -194,7 +194,7 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
     private static long cheapest(Ingredient ingredient, Map<Identifier, Long> values) {
         long best = -1;
         for (var entry : ingredient.getMatchingItems().toList()) {
-            Identifier id = Registries.ITEM.getId(entry.value());
+            Identifier id = BuiltInRegistries.ITEM.getId(entry.value());
             if (BLACKLIST.contains(id)) continue;
             Long v = values.get(id);
             if (v != null && v > 0 && (best < 0 || v < best)) best = v;

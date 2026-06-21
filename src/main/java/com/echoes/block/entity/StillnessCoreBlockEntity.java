@@ -7,14 +7,14 @@ import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * The still magnetic centre of zero — Russell's fulcrum from which all motion
@@ -37,9 +37,9 @@ public class StillnessCoreBlockEntity extends BlockEntity implements ResonanceNo
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, StillnessCoreBlockEntity be) {
+    public static void tick(Level world, BlockPos pos, BlockState state, StillnessCoreBlockEntity be) {
         if (world.isClient || be.storage.isFull()) return;
-        if (world instanceof ServerWorld sw && !be.config.redstone().allows(sw.isReceivingRedstonePower(pos))) return;
+        if (world instanceof ServerLevel sw && !be.config.redstone().allows(sw.isReceivingRedstonePower(pos))) return;
         be.storage.absorb(GEN_PER_TICK);
         be.markDirty();
     }
@@ -58,18 +58,18 @@ public class StillnessCoreBlockEntity extends BlockEntity implements ResonanceNo
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
     @Override public void onConfigChanged() { markDirty(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.writeNbt(nbt, lookup);
         storage.writeNbt(nbt);
         config.writeNbt(nbt);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.readNbt(nbt, lookup);
         storage.readNbt(nbt);
         config.readNbt(nbt);

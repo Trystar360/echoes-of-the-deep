@@ -7,23 +7,23 @@ import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ExperienceOrbEntity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -62,26 +62,26 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
         return attract;
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, PolarityFieldBlockEntity be) {
-        if (!(world instanceof ServerWorld sw)) return;
+    public static void tick(Level world, BlockPos pos, BlockState state, PolarityFieldBlockEntity be) {
+        if (!(world instanceof ServerLevel sw)) return;
         boolean powered = sw.isReceivingRedstonePower(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
-        if (state.contains(Properties.LIT) && state.get(Properties.LIT) != active) {
-            sw.setBlockState(pos, state.with(Properties.LIT, active), Block.NOTIFY_ALL);
+        if (state.contains(BlockStateProperties.LIT) && state.get(BlockStateProperties.LIT) != active) {
+            sw.setBlockState(pos, state.with(BlockStateProperties.LIT, active), Block.NOTIFY_ALL);
         }
         if (++be.timer < INTERVAL) return;
         be.timer = 0;
         if (!active) return;
 
-        Vec3d c = Vec3d.ofCenter(pos);
-        Box box = new Box(pos).expand(be.config.tuningA());
+        Vec3 c = Vec3.ofCenter(pos);
+        AABB box = new AABB(pos).expand(be.config.tuningA());
         boolean acted = false;
 
         if (be.attract) {
             List<Entity> pickups = sw.getEntitiesByClass(Entity.class, box,
-                    e -> e instanceof ItemEntity || e instanceof ExperienceOrbEntity);
+                    e -> e instanceof ItemEntity || e instanceof ExperienceOrb);
             for (Entity e : pickups) {
-                Vec3d dir = c.subtract(e.getPos());
+                Vec3 dir = c.subtract(e.getBlockPos());
                 if (dir.lengthSquared() < 0.6) continue;
                 e.setVelocity(e.getVelocity().multiply(0.4).add(dir.normalize().multiply(PULL)));
                 e.velocityModified = true;
@@ -89,10 +89,10 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
             }
         } else {
             List<LivingEntity> mobs = sw.getEntitiesByClass(LivingEntity.class, box,
-                    e -> !(e instanceof PlayerEntity) && e.isAlive());
+                    e -> !(e instanceof Player) && e.isAlive());
             for (LivingEntity e : mobs) {
-                Vec3d dir = e.getPos().subtract(c);
-                if (dir.lengthSquared() < 0.01) dir = new Vec3d(0, 1, 0);
+                Vec3 dir = e.getBlockPos().subtract(c);
+                if (dir.lengthSquared() < 0.01) dir = new Vec3(0, 1, 0);
                 e.setVelocity(e.getVelocity().add(dir.normalize().multiply(PUSH).add(0, 0.2, 0)));
                 e.velocityModified = true;
                 acted = true;
@@ -114,11 +114,11 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
     @Override public void onConfigChanged() { markDirty(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.writeNbt(nbt, lookup);
         buffer.writeNbt(nbt);
         config.writeNbt(nbt);
@@ -126,7 +126,7 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.readNbt(nbt, lookup);
         buffer.readNbt(nbt);
         config.readNbt(nbt);

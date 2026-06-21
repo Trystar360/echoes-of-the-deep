@@ -3,22 +3,22 @@ package com.echoes.block;
 import com.echoes.block.entity.TransmutationTableBlockEntity;
 import com.echoes.screen.TransmutationTableScreenHandler;
 import com.echoes.transmute.TransmutationState;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -27,21 +27,21 @@ import org.jetbrains.annotations.Nullable;
  * coins, or condense an attuned item back out. The portable {@code TransmutationTablet}
  * opens the same account.
  */
-public class TransmutationTableBlock extends Block implements BlockEntityProvider {
+public class TransmutationTableBlock extends Block implements EntityBlock {
 
-    public TransmutationTableBlock(Settings settings) {
+    public TransmutationTableBlock(Properties settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH));
+        setDefaultState(getStateManager().getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(Properties.HORIZONTAL_FACING);
+    protected void appendProperties(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(BlockStateProperties.HORIZONTAL_FACING);
     }
 
     @Override
-    public @Nullable BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+    public @Nullable BlockState getPlacementState(BlockPlaceContext ctx) {
+        return getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
     @Override
@@ -50,23 +50,23 @@ public class TransmutationTableBlock extends Block implements BlockEntityProvide
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    protected InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
         if (!world.isClient) {
             // Migrate any Light banked by the pre-account version into the opening player.
             if (world.getBlockEntity(pos) instanceof TransmutationTableBlockEntity be && be.legacyLight() > 0
-                    && world instanceof ServerWorld sw) {
+                    && world instanceof ServerLevel sw) {
                 TransmutationState.get(sw).of(player.getUuid()).light += be.drainLegacyLight();
                 TransmutationState.get(sw).markDirty();
             }
-            player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
+            player.openHandledScreen(new SimpleMenuProvider(
                     (syncId, inv, p) -> new TransmutationTableScreenHandler(syncId, inv),
-                    Text.translatable("block.echoes.transmutation_table")));
+                    Component.translatable("block.echoes.transmutation_table")));
         }
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onStateReplaced(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())
                 && world.getBlockEntity(pos) instanceof TransmutationTableBlockEntity be) {
             be.dropBankedLight(world, pos); // legacy banked Light → Mote coins, never silently lost

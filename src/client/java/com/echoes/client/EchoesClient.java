@@ -10,43 +10,43 @@ import com.echoes.registry.ModScreens;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.Identifier;
 
 public class EchoesClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        HandledScreens.register(ModScreens.CRUSHER, CrusherScreen::new);
-        HandledScreens.register(ModScreens.ATTUNEMENT_FURNACE, AttunementFurnaceScreen::new);
-        HandledScreens.register(ModScreens.HARMONIC_FILTER, HarmonicFilterScreen::new);
-        HandledScreens.register(ModScreens.CONFIG, ConfigScreen::new);
-        HandledScreens.register(ModScreens.TRANSMUTATION_TABLE, TransmutationTableScreen::new);
+        MenuScreens.register(ModScreens.CRUSHER, CrusherScreen::new);
+        MenuScreens.register(ModScreens.ATTUNEMENT_FURNACE, AttunementFurnaceScreen::new);
+        MenuScreens.register(ModScreens.HARMONIC_FILTER, HarmonicFilterScreen::new);
+        MenuScreens.register(ModScreens.CONFIG, ConfigScreen::new);
+        MenuScreens.register(ModScreens.TRANSMUTATION_TABLE, TransmutationTableScreen::new);
 
         // Append a one-line description to every Echoes block/item that defines one
         // (lang key "tooltip.echoes.desc.<path>"). Guarded by hasTranslation so any
         // item without a description simply gets no extra line.
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
-            Identifier id = Registries.ITEM.getId(stack.getItem());
+            Identifier id = BuiltInRegistries.ITEM.getId(stack.getItem());
             if (!"echoes".equals(id.getNamespace())) {
                 return;
             }
             String key = "tooltip.echoes.desc." + id.getPath();
             if (I18n.hasTranslation(key)) {
-                lines.add(Text.translatable(key).formatted(Formatting.GRAY));
+                lines.add(Component.translatable(key).formatted(ChatFormatting.GRAY));
             }
         });
 
         // Cutout flora + trapdoor; mipped cutout for leaves.
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(),
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.getCutout(),
                 ModBlocks.LUMEWOOD_SAPLING, ModBlocks.LUMEBLOOM,
                 ModBlocks.LUMEWOOD_TRAPDOOR, ModBlocks.LUME_LANTERN,
                 ModBlocks.GREATER_ACCUMULATOR);
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(),
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.getCutoutMipped(),
                 ModBlocks.LUMEWOOD_LEAVES);
     }
 }

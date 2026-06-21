@@ -1,19 +1,19 @@
 package com.echoes.block.entity;
 
-import net.minecraft.inventory.SidedInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.Direction;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.Direction;
 
 /**
  * The standard Fabric convenience interface: implement getItems() and you get a
- * full SidedInventory for free. Keeps the Crusher readable.
+ * full WorldlyContainer for free. Keeps the Crusher readable.
  */
-public interface ImplementedInventory extends SidedInventory {
+public interface ImplementedInventory extends WorldlyContainer {
 
-    DefaultedList<ItemStack> getItems();
+    NonNullList<ItemStack> getItems();
 
-    static ImplementedInventory of(DefaultedList<ItemStack> items) {
+    static ImplementedInventory of(NonNullList<ItemStack> items) {
         return () -> items;
     }
 
@@ -27,13 +27,13 @@ public interface ImplementedInventory extends SidedInventory {
     @Override default ItemStack getStack(int slot) { return getItems().get(slot); }
 
     @Override default ItemStack removeStack(int slot, int count) {
-        ItemStack result = net.minecraft.inventory.Inventories.splitStack(getItems(), slot, count);
+        ItemStack result = net.minecraft.world.ContainerHelper.splitStack(getItems(), slot, count);
         if (!result.isEmpty()) markDirty();
         return result;
     }
 
     @Override default ItemStack removeStack(int slot) {
-        return net.minecraft.inventory.Inventories.removeStack(getItems(), slot);
+        return net.minecraft.world.ContainerHelper.removeStack(getItems(), slot);
     }
 
     @Override default void setStack(int slot, ItemStack stack) {
@@ -46,7 +46,7 @@ public interface ImplementedInventory extends SidedInventory {
 
     @Override default void markDirty() {}
 
-    @Override default boolean canPlayerUse(net.minecraft.entity.player.PlayerEntity player) { return true; }
+    @Override default boolean canPlayerUse(net.minecraft.world.entity.player.Player player) { return true; }
 
     // Default sided access: top = input (slot 0), everything else = output (slot 1).
     @Override default int[] getAvailableSlots(Direction side) {

@@ -1,6 +1,6 @@
 package com.echoes.energy;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 /**
  * Anything that touches RU implements this. The simulate flag on extract/insert

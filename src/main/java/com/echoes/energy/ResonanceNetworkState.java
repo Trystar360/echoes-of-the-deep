@@ -1,11 +1,11 @@
 package com.echoes.energy;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.PersistentState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,10 +17,10 @@ import java.util.Set;
  * a restart. We persist only the conduit positions per network (plus the id
  * counter); the node lists are transient and re-scanned from the world on the next
  * tick. {@link ResonanceNetworkManager} owns one of these per {@link
- * net.minecraft.server.world.ServerWorld} and mirrors into it on every topology
+ * net.minecraft.server.level.ServerLevel} and mirrors into it on every topology
  * change.
  */
-public class ResonanceNetworkState extends PersistentState {
+public class ResonanceNetworkState extends SavedData {
     public static final String KEY = "echoes_resonance_networks";
 
     public final Map<Integer, Set<BlockPos>> networks = new HashMap<>();
@@ -29,12 +29,12 @@ public class ResonanceNetworkState extends PersistentState {
     public static final Type<ResonanceNetworkState> TYPE =
             new Type<>(ResonanceNetworkState::new, ResonanceNetworkState::fromNbt, null);
 
-    public static ResonanceNetworkState fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+    public static ResonanceNetworkState fromNbt(CompoundTag nbt, HolderLookup.Provider registries) {
         ResonanceNetworkState s = new ResonanceNetworkState();
         s.nextId = Math.max(1, nbt.getInt("nextId"));
-        NbtList list = nbt.getList("networks", NbtElement.COMPOUND_TYPE);
+        ListTag list = nbt.getList("networks", Tag.COMPOUND_TYPE);
         for (int i = 0; i < list.size(); i++) {
-            NbtCompound n = list.getCompound(i);
+            CompoundTag n = list.getCompound(i);
             Set<BlockPos> set = new HashSet<>();
             for (long packed : n.getLongArray("pos")) set.add(BlockPos.fromLong(packed));
             if (!set.isEmpty()) s.networks.put(n.getInt("id"), set);
@@ -43,12 +43,12 @@ public class ResonanceNetworkState extends PersistentState {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+    public CompoundTag writeNbt(CompoundTag nbt, HolderLookup.Provider registries) {
         nbt.putInt("nextId", nextId);
-        NbtList list = new NbtList();
+        ListTag list = new ListTag();
         for (Map.Entry<Integer, Set<BlockPos>> e : networks.entrySet()) {
             if (e.getValue().isEmpty()) continue;
-            NbtCompound n = new NbtCompound();
+            CompoundTag n = new CompoundTag();
             n.putInt("id", e.getKey());
             long[] arr = new long[e.getValue().size()];
             int i = 0;

@@ -4,16 +4,16 @@ import com.echoes.config.BlockConfig;
 import com.echoes.config.Configurable;
 import com.echoes.config.ConfigSpec;
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Fertilizable;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 
 /**
  * Living garden soil. Quietly accelerates the growth of plants around and above it
@@ -37,21 +37,21 @@ public class VerdantLoamBlockEntity extends BlockEntity implements Configurable 
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, VerdantLoamBlockEntity be) {
-        if (!(world instanceof ServerWorld sw)) return;
+    public static void tick(Level world, BlockPos pos, BlockState state, VerdantLoamBlockEntity be) {
+        if (!(world instanceof ServerLevel sw)) return;
         if (!be.config.redstone().allows(sw.isReceivingRedstonePower(pos))) return;
         if (++be.timer < be.config.tuningB()) return;
         be.timer = 0;
 
         int r = be.config.tuningA();
-        Random rng = sw.getRandom();
+        RandomSource rng = sw.getRandom();
         // A handful of tries to find a growable plant in the volume above the soil.
         for (int i = 0; i < 6; i++) {
             BlockPos p = pos.add(rng.nextInt(r * 2 + 1) - r,
                     1 + rng.nextInt(2),
                     rng.nextInt(r * 2 + 1) - r);
             BlockState s = sw.getBlockState(p);
-            if (s.getBlock() instanceof Fertilizable f
+            if (s.getBlock() instanceof BonemealableBlock f
                     && f.isFertilizable(sw, p, s) && f.canGrow(sw, rng, p, s)) {
                 f.grow(sw, rng, p, s);
                 sw.syncWorldEvent(2005, p, 0); // bonemeal particles
@@ -64,17 +64,17 @@ public class VerdantLoamBlockEntity extends BlockEntity implements Configurable 
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
     @Override public void onConfigChanged() { markDirty(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.writeNbt(nbt, lookup);
         config.writeNbt(nbt);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.readNbt(nbt, lookup);
         config.readNbt(nbt);
     }

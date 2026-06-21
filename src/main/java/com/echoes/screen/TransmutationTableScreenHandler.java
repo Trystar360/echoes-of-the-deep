@@ -4,19 +4,19 @@ import com.echoes.registry.ModItems;
 import com.echoes.registry.ModScreens;
 import com.echoes.transmute.LightValues;
 import com.echoes.transmute.TransmutationState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  *       from the pool (×1 or a stack).</li>
  * </ul>
  */
-public class TransmutationTableScreenHandler extends ScreenHandler {
+public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     public static final int INPUT = 0, OUTPUT = 1, TEMPLATE = 2;
     private static final int MACHINE_SLOTS = 3;
     private static final long DIGIT = 32768L;
@@ -43,20 +43,20 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
     public static final int SLOT_Y = 40, INPUT_X = 26, TEMPLATE_X = 80, OUTPUT_X = 134;
     private static final int INV_Y = 118, HOTBAR_Y = 176;
 
-    private final SimpleInventory inv = new SimpleInventory(MACHINE_SLOTS);
-    private final PropertyDelegate props;
-    private final PlayerEntity player;
+    private final SimpleContainer inv = new SimpleContainer(MACHINE_SLOTS);
+    private final ContainerData props;
+    private final Player player;
     private final @Nullable TransmutationState state;       // server only
     private final TransmutationState.@Nullable Account account; // server only
 
-    public TransmutationTableScreenHandler(int syncId, PlayerInventory playerInv) {
+    public TransmutationTableScreenHandler(int syncId, Inventory playerInv) {
         super(ModScreens.TRANSMUTATION_TABLE, syncId);
         this.player = playerInv.player;
 
-        if (player.getWorld() instanceof ServerWorld sw) {
+        if (player.getWorld() instanceof ServerLevel sw) {
             this.state = TransmutationState.get(sw);
             this.account = state.of(player.getUuid());
-            this.props = new PropertyDelegate() {
+            this.props = new ContainerData() {
                 @Override public int get(int i) {
                     long bl = account.light;
                     return switch (i) {
@@ -72,7 +72,7 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
         } else {
             this.state = null;
             this.account = null;
-            this.props = new ArrayPropertyDelegate(3);
+            this.props = new SimpleContainerData(3);
         }
 
         this.addSlot(new Slot(inv, INPUT, INPUT_X, SLOT_Y));         // dissolve
@@ -81,7 +81,7 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
         });
         this.addSlot(new Slot(inv, TEMPLATE, TEMPLATE_X, SLOT_Y) {   // ghost target
             @Override public boolean canInsert(ItemStack stack) { return false; }
-            @Override public boolean canTakeItems(PlayerEntity p) { return false; }
+            @Override public boolean canTakeItems(Player p) { return false; }
             @Override public int getMaxItemCount() { return 1; }
         });
 
@@ -101,10 +101,10 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
 
     public static long moteValue(int tier) { return ModItems.MOTE_VALUES[tier]; }
 
-    private static Identifier id(Item item) { return Registries.ITEM.getId(item); }
+    private static Identifier id(Item item) { return BuiltInRegistries.ITEM.getId(item); }
 
     @Override
-    public boolean onButtonClick(PlayerEntity p, int btn) {
+    public boolean onButtonClick(Player p, int btn) {
         if (account == null) return false; // server-authoritative
         boolean changed;
         if (btn >= 0 && btn < ModItems.MOTES.length) {
@@ -178,10 +178,10 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity p) {
+    public void onSlotClick(int slotIndex, int button, ClickType actionType, Player p) {
         if (slotIndex == TEMPLATE) {
             // Ghost slot: set/clear the condense target from the cursor without consuming it.
-            if (actionType == SlotActionType.PICKUP || actionType == SlotActionType.PICKUP_ALL) {
+            if (actionType == ClickType.PICKUP || actionType == ClickType.PICKUP_ALL) {
                 ItemStack cursor = getCursorStack();
                 if (cursor.isEmpty()) {
                     inv.setStack(TEMPLATE, ItemStack.EMPTY);
@@ -197,7 +197,7 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity p, int slotIndex) {
+    public ItemStack quickMove(Player p, int slotIndex) {
         ItemStack moved = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
         if (slot != null && slot.hasStack()) {
@@ -216,7 +216,7 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public void onClosed(PlayerEntity p) {
+    public void onClosed(Player p) {
         super.onClosed(p);
         // Return real held items; the ghost template is a phantom and is simply dropped.
         if (!p.getWorld().isClient) {
@@ -226,7 +226,7 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
         inv.setStack(TEMPLATE, ItemStack.EMPTY);
     }
 
-    private void returnStack(PlayerEntity p, int slot) {
+    private void returnStack(Player p, int slot) {
         ItemStack s = inv.getStack(slot);
         if (!s.isEmpty()) {
             p.getInventory().offerOrDrop(s);
@@ -235,5 +235,5 @@ public class TransmutationTableScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public boolean canUse(PlayerEntity p) { return true; }
+    public boolean canUse(Player p) { return true; }
 }

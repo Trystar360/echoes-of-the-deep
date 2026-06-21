@@ -1,7 +1,7 @@
 package com.echoes.energy;
 
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,7 +39,7 @@ public class ResonanceNetwork {
 
     public void markDirty() { dirty = true; }
 
-    public void rescan(ServerWorld world) {
+    public void rescan(ServerLevel world) {
         providers.clear();
         consumers.clear();
         storages.clear();
@@ -65,7 +65,7 @@ public class ResonanceNetwork {
     }
 
     /** Per-tick distribution. Call from the manager. */
-    public void tick(ServerWorld world) {        if ((id + world.getTime()) % tickInterval != 0) return;
+    public void tick(ServerLevel world) {        if ((id + world.getGameTime()) % tickInterval != 0) return;
         if (dirty) rescan(world);
         if (consumers.isEmpty() && storages.isEmpty()) return;
 
@@ -104,7 +104,7 @@ public class ResonanceNetwork {
         }
         long leftover = pool - distributed;
         if (leftover > 0) {
-            // Hand remainder to the most-starved (largest unmet) consumers first.
+            // InteractionHand remainder to the most-starved (largest unmet) consumers first.
             Integer[] order = new Integer[active.size()];
             for (int i = 0; i < order.length; i++) order[i] = i;
             final long[] a = alloc;
@@ -174,7 +174,7 @@ public class ResonanceNetwork {
      * mean fill ratio (Light is conserved — over-full give, under-full regive), so
      * no Resonance Cell hoards. Driven by the Balancer.
      */
-    public void balanceStorages(ServerWorld world, long rate) {
+    public void balanceStorages(ServerLevel world, long rate) {
         if (dirty) rescan(world);
         if (storages.size() < 2) return;
         long totalStored = 0, totalCap = 0;
@@ -191,14 +191,14 @@ public class ResonanceNetwork {
 
     // --- helpers ---
 
-    public static ResonanceNode nodeAt(ServerWorld world, BlockPos pos) {
-        if (!world.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4)) return null;
+    public static ResonanceNode nodeAt(ServerLevel world, BlockPos pos) {
+        if (!world.hasChunk(pos.getX() >> 4, pos.getZ() >> 4)) return null;
         return world.getBlockEntity(pos) instanceof ResonanceNode n ? n : null;
     }
 
     public static BlockPos[] neighbors(BlockPos p) {
         return new BlockPos[]{
-                p.up(), p.down(), p.north(), p.south(), p.east(), p.west()
+                p.above(), p.below(), p.north(), p.south(), p.east(), p.west()
         };
     }
 }

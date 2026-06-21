@@ -7,23 +7,23 @@ import com.echoes.recipe.CrushingRecipe;
 import com.echoes.recipe.ModRecipes;
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.screen.CrusherScreenHandler;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.recipe.input.SingleStackRecipeInput;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
@@ -35,7 +35,7 @@ import java.util.Optional;
  * briefly dips; it pulls its per-tick energy need from the network via demand().
  */
 public class CrusherBlockEntity extends BlockEntity
-        implements ImplementedInventory, ResonanceNode, NamedScreenHandlerFactory,
+        implements ImplementedInventory, ResonanceNode, MenuProvider,
         com.echoes.config.Configurable {
 
     private static final int INPUT = 0, OUTPUT = 1, BYPRODUCT = 2;
@@ -45,7 +45,7 @@ public class CrusherBlockEntity extends BlockEntity
     public static final com.echoes.config.ConfigSpec SPEC =
             com.echoes.config.ConfigSpec.builder().redstone().sides().build();
 
-    private final DefaultedList<ItemStack> items = DefaultedList.ofSize(3, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.ofSize(3, ItemStack.EMPTY);
     private final ResonanceStorage buffer = new ResonanceStorage(INTERNAL_BUFFER);
     private final com.echoes.config.BlockConfig config = new com.echoes.config.BlockConfig();
 
@@ -53,7 +53,7 @@ public class CrusherBlockEntity extends BlockEntity
     private int maxProgress;    // recipe.processingTime, cached
     private long energyPerTick; // recipe.energy / maxProgress, cached
 
-    private final PropertyDelegate props = new PropertyDelegate() {
+    private final ContainerData props = new ContainerData() {
         @Override public int get(int i) {
             return switch (i) {
                 case 0 -> progress;
@@ -72,13 +72,13 @@ public class CrusherBlockEntity extends BlockEntity
         super(ModBlockEntities.CRUSHER, pos, state);
     }
 
-    @Override public DefaultedList<ItemStack> getItems() { return items; }
+    @Override public NonNullList<ItemStack> getItems() { return items; }
 
     // --- tick (registered as a BlockEntityTicker) ---
-    public static void tick(World world, BlockPos pos, BlockState state, CrusherBlockEntity be) {
+    public static void tick(Level world, BlockPos pos, BlockState state, CrusherBlockEntity be) {
         if (world.isClient) return;
 
-        Optional<RecipeEntry<CrushingRecipe>> match = be.currentRecipe();
+        Optional<RecipeHolder<CrushingRecipe>> match = be.currentRecipe();
         if (match.isEmpty() || !be.hasOutputRoom(match.get().value())) {
             if (be.progress != 0) { be.progress = 0; be.markDirty(); }
             return;
@@ -100,11 +100,11 @@ public class CrusherBlockEntity extends BlockEntity
         }
     }
 
-    private Optional<RecipeEntry<CrushingRecipe>> currentRecipe() {
+    private Optional<RecipeHolder<CrushingRecipe>> currentRecipe() {
         if (getStack(INPUT).isEmpty()) return Optional.empty();
-        if (!(world instanceof net.minecraft.server.world.ServerWorld sw)) return Optional.empty();
+        if (!(world instanceof net.minecraft.server.level.ServerLevel sw)) return Optional.empty();
         return sw.getRecipeManager().getFirstMatch(
-                ModRecipes.CRUSHING_TYPE, new SingleStackRecipeInput(getStack(INPUT)), world);
+                ModRecipes.CRUSHING_TYPE, new SingleRecipeInput(getStack(INPUT)), world);
     }
 
     private boolean hasOutputRoom(CrushingRecipe recipe) {
@@ -158,8 +158,8 @@ public class CrusherBlockEntity extends BlockEntity
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
     // --- screen ---
-    @Override public Text getDisplayName() { return Text.translatable("block.echoes.compressor"); }
-    @Override public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+    @Override public Component getDisplayName() { return Component.translatable("block.echoes.compressor"); }
+    @Override public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
         return new CrusherScreenHandler(syncId, inv, this, props);
     }
 
@@ -168,22 +168,22 @@ public class CrusherBlockEntity extends BlockEntity
     // --- Configurable ---
     @Override public com.echoes.config.BlockConfig getConfig() { return config; }
     @Override public com.echoes.config.ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
     @Override public void onConfigChanged() { markDirty(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.writeNbt(nbt, lookup);
-        net.minecraft.inventory.Inventories.writeNbt(nbt, items, lookup);
+        net.minecraft.world.ContainerHelper.writeNbt(nbt, items, lookup);
         buffer.writeNbt(nbt);
         config.writeNbt(nbt);
         nbt.putInt("progress", progress);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.readNbt(nbt, lookup);
-        net.minecraft.inventory.Inventories.readNbt(nbt, items, lookup);
+        net.minecraft.world.ContainerHelper.readNbt(nbt, items, lookup);
         buffer.readNbt(nbt);
         config.readNbt(nbt);
         progress = nbt.getInt("progress");

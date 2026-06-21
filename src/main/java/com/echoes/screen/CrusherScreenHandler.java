@@ -1,28 +1,28 @@
 package com.echoes.screen;
 
 import com.echoes.registry.ModScreens;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 
-public class CrusherScreenHandler extends ScreenHandler {
-    private final Inventory inventory;
-    private final PropertyDelegate props;
+public class CrusherScreenHandler extends AbstractContainerMenu {
+    private final Container inventory;
+    private final ContainerData props;
 
     private static final int MACHINE_SLOTS = 3;
 
     /** Client constructor. */
-    public CrusherScreenHandler(int syncId, PlayerInventory playerInv) {
-        this(syncId, playerInv, new SimpleInventory(MACHINE_SLOTS), new ArrayPropertyDelegate(3));
+    public CrusherScreenHandler(int syncId, Inventory playerInv) {
+        this(syncId, playerInv, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(3));
     }
 
-    public CrusherScreenHandler(int syncId, PlayerInventory playerInv, Inventory inv, PropertyDelegate props) {
+    public CrusherScreenHandler(int syncId, Inventory playerInv, Container inv, ContainerData props) {
         super(ModScreens.CRUSHER, syncId);
         this.inventory = inv;
         this.props = props;
@@ -52,12 +52,12 @@ public class CrusherScreenHandler extends ScreenHandler {
     public int storedRu() { return props.get(2); }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
+    public boolean canUse(Player player) {
         return inventory.canPlayerUse(player);
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slotIndex) {
+    public ItemStack quickMove(Player player, int slotIndex) {
         ItemStack newStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
         if (slot != null && slot.hasStack()) {

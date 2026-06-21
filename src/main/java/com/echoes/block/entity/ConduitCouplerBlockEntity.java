@@ -5,10 +5,10 @@ import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.wireless.RelayMode;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.BlockPos;
 
 /**
  * Bridges the wired Resonance grid and a wireless channel. Placed next to a
@@ -53,13 +53,13 @@ public class ConduitCouplerBlockEntity extends AbstractChannelDeviceBlockEntity 
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
     @Override
-    protected void writeExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
         nbt.putInt("mode", mode.ordinal());
         buffer.writeNbt(nbt);
     }
 
     @Override
-    protected void readExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
         mode = RelayMode.byId(nbt.getInt("mode"));
         buffer.readNbt(nbt);
     }

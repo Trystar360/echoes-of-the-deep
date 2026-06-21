@@ -26,31 +26,31 @@ import com.echoes.block.ResonantSplitterBlock;
 import com.echoes.block.ResonatorBlock;
 import com.echoes.block.GreaterAccumulatorBlock;
 import com.echoes.block.VerdantLoamBlock;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockSetType;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FenceBlock;
-import net.minecraft.block.FenceGateBlock;
-import net.minecraft.block.FlowerBlock;
-import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.PillarBlock;
-import net.minecraft.block.SaplingBlock;
-import net.minecraft.block.SaplingGenerator;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.StairsBlock;
-import net.minecraft.block.TrapdoorBlock;
-import net.minecraft.block.WoodType;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.grower.TreeGrower;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -60,58 +60,58 @@ public final class ModBlocks {
 
     // Ores
     public static final Block ECHOCITE_ORE = register("echocite_ore",
-            Block::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().sounds(BlockSoundGroup.STONE));
+            Block::new, BlockBehaviour.Properties.create().strength(3.0f).requiresTool().sounds(SoundType.STONE));
     public static final Block DEEPSLATE_ECHOCITE_ORE = register("deepslate_echocite_ore",
-            Block::new, AbstractBlock.Settings.create().strength(4.5f).requiresTool().sounds(BlockSoundGroup.DEEPSLATE));
+            Block::new, BlockBehaviour.Properties.create().strength(4.5f).requiresTool().sounds(SoundType.DEEPSLATE));
     public static final Block DRUMSTONE_ORE = register("drumstone_ore",
-            Block::new, AbstractBlock.Settings.create().strength(4.5f).requiresTool().sounds(BlockSoundGroup.DEEPSLATE));
+            Block::new, BlockBehaviour.Properties.create().strength(4.5f).requiresTool().sounds(SoundType.DEEPSLATE));
     public static final Block SILENTITE_ORE = register("silentite_ore",
-            Block::new, AbstractBlock.Settings.create().strength(5.0f).requiresTool().sounds(BlockSoundGroup.AMETHYST_BLOCK));
+            Block::new, BlockBehaviour.Properties.create().strength(5.0f).requiresTool().sounds(SoundType.AMETHYST_BLOCK));
 
     // Machines / grid
     public static final Block RESONATOR = register("resonant_coil",
-            ResonatorBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool().nonOpaque());
+            ResonatorBlock::new, BlockBehaviour.Properties.create().strength(3.5f).requiresTool().nonOpaque());
     public static final Block TUNING_CONDUIT = register("wave_conduit",
-            ConduitBlock::new, AbstractBlock.Settings.create().strength(1.5f).nonOpaque());
+            ConduitBlock::new, BlockBehaviour.Properties.create().strength(1.5f).nonOpaque());
     public static final Block DENSE_CONDUIT = register("dense_wave_conduit",
-            DenseConduitBlock::new, AbstractBlock.Settings.create().strength(2.0f).requiresTool().nonOpaque());
+            DenseConduitBlock::new, BlockBehaviour.Properties.create().strength(2.0f).requiresTool().nonOpaque());
     public static final Block RESONANCE_CAPACITOR = register("resonance_cell",
-            ResonanceCapacitorBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque());
+            ResonanceCapacitorBlock::new, BlockBehaviour.Properties.create().strength(3.0f).requiresTool().nonOpaque());
     public static final Block STILLNESS_CORE = register("stillness_core",
-            StillnessCoreBlock::new, AbstractBlock.Settings.create().strength(4.0f).requiresTool().nonOpaque());
+            StillnessCoreBlock::new, BlockBehaviour.Properties.create().strength(4.0f).requiresTool().nonOpaque());
     public static final Block RADIATOR = register("growth_radiator",
-            RadiatorBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque()
-                    .luminance(s -> s.get(Properties.LIT) ? 12 : 2));
+            RadiatorBlock::new, BlockBehaviour.Properties.create().strength(3.0f).requiresTool().nonOpaque()
+                    .luminance(s -> s.get(BlockStateProperties.LIT) ? 12 : 2));
     public static final Block WARMTH_RADIATOR = register("warmth_radiator",
-            WarmthRadiatorBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque()
-                    .luminance(s -> s.get(Properties.LIT) ? 14 : 2));
+            WarmthRadiatorBlock::new, BlockBehaviour.Properties.create().strength(3.0f).requiresTool().nonOpaque()
+                    .luminance(s -> s.get(BlockStateProperties.LIT) ? 14 : 2));
     public static final Block POLARITY_FIELD = register("polarity_field",
-            PolarityFieldBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque()
-                    .luminance(s -> s.get(Properties.LIT) ? 8 : 2));
+            PolarityFieldBlock::new, BlockBehaviour.Properties.create().strength(3.0f).requiresTool().nonOpaque()
+                    .luminance(s -> s.get(BlockStateProperties.LIT) ? 8 : 2));
     public static final Block BALANCER = register("balancer",
-            BalancerBlock::new, AbstractBlock.Settings.create().strength(3.0f).requiresTool().nonOpaque());
+            BalancerBlock::new, BlockBehaviour.Properties.create().strength(3.0f).requiresTool().nonOpaque());
     public static final Block CRUSHER = register("compressor",
-            CrusherBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool());
+            CrusherBlock::new, BlockBehaviour.Properties.create().strength(3.5f).requiresTool());
     public static final Block ATTUNEMENT_FURNACE = register("transmuter",
-            AttunementFurnaceBlock::new, AbstractBlock.Settings.create().strength(3.5f).requiresTool());
+            AttunementFurnaceBlock::new, BlockBehaviour.Properties.create().strength(3.5f).requiresTool());
     public static final Block RESONANT_RELAY = register("wave_relay",
-            ResonantRelayBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
+            ResonantRelayBlock::new, BlockBehaviour.Properties.create().strength(2.0f).nonOpaque());
 
     // Wireless transport family
     public static final Block RESONANT_AMPLIFIER = register("wave_amplifier",
-            ResonantAmplifierBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
+            ResonantAmplifierBlock::new, BlockBehaviour.Properties.create().strength(2.0f).nonOpaque());
     public static final Block HARMONIC_FILTER = register("wave_filter",
-            HarmonicFilterBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
+            HarmonicFilterBlock::new, BlockBehaviour.Properties.create().strength(2.0f).nonOpaque());
     public static final Block RESONANT_SPLITTER = register("wave_splitter",
-            ResonantSplitterBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
+            ResonantSplitterBlock::new, BlockBehaviour.Properties.create().strength(2.0f).nonOpaque());
     public static final Block ECHO_REPEATER = register("wave_repeater",
-            EchoRepeaterBlock::new, AbstractBlock.Settings.create().strength(2.5f).requiresTool().nonOpaque());
+            EchoRepeaterBlock::new, BlockBehaviour.Properties.create().strength(2.5f).requiresTool().nonOpaque());
     public static final Block CONDUIT_COUPLER = register("wave_coupler",
-            ConduitCouplerBlock::new, AbstractBlock.Settings.create().strength(2.5f).requiresTool().nonOpaque());
+            ConduitCouplerBlock::new, BlockBehaviour.Properties.create().strength(2.5f).requiresTool().nonOpaque());
     public static final Block RESONANT_CHEST = register("wave_chest",
-            ResonantChestBlock::new, AbstractBlock.Settings.create().strength(2.5f).nonOpaque());
+            ResonantChestBlock::new, BlockBehaviour.Properties.create().strength(2.5f).nonOpaque());
     public static final Block NOTE_RELAY = register("signal_relay",
-            NoteRelayBlock::new, AbstractBlock.Settings.create().strength(2.0f).nonOpaque());
+            NoteRelayBlock::new, BlockBehaviour.Properties.create().strength(2.0f).nonOpaque());
 
     // ============================================================ Phase II — The Octave Grove
     // Wood / block set types for Lumewood (custom tree). Names are plain strings (no signs).
@@ -119,97 +119,97 @@ public final class ModBlocks {
     public static final WoodType LUMEWOOD_WOOD_TYPE = new WoodType("echoes_lumewood", LUMEWOOD_SET);
 
     /** Simple tree: a single regular variant points at the Lumewood configured feature. */
-    public static final SaplingGenerator LUMEWOOD_TREE_GEN = new SaplingGenerator(
+    public static final TreeGrower LUMEWOOD_TREE_GEN = new TreeGrower(
             "echoes_lumewood", 0.0f,
             Optional.empty(), Optional.empty(),
             Optional.of(ModWorldGen.LUMEWOOD_TREE), Optional.empty(),
             Optional.empty(), Optional.empty());
 
-    private static AbstractBlock.Settings wood() {
-        return AbstractBlock.Settings.create().strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD).burnable();
+    private static BlockBehaviour.Properties wood() {
+        return BlockBehaviour.Properties.create().strength(2.0f, 3.0f).sounds(SoundType.WOOD).burnable();
     }
 
     // Lumewood building set
     public static final Block LUMEWOOD_LOG = register("lumewood_log",
-            PillarBlock::new, AbstractBlock.Settings.create().strength(2.0f).sounds(BlockSoundGroup.WOOD)
+            RotatedPillarBlock::new, BlockBehaviour.Properties.create().strength(2.0f).sounds(SoundType.WOOD)
                     .burnable().luminance(s -> 4));
     public static final Block LUMEWOOD_WOOD = register("lumewood_wood",
-            PillarBlock::new, AbstractBlock.Settings.create().strength(2.0f).sounds(BlockSoundGroup.WOOD)
+            RotatedPillarBlock::new, BlockBehaviour.Properties.create().strength(2.0f).sounds(SoundType.WOOD)
                     .burnable().luminance(s -> 4));
     public static final Block LUMEWOOD_PLANKS = register("lumewood_planks", Block::new, wood());
     public static final Block LUMEWOOD_STAIRS = register("lumewood_stairs",
-            s -> new StairsBlock(LUMEWOOD_PLANKS.getDefaultState(), s) {}, wood());
+            s -> new StairBlock(LUMEWOOD_PLANKS.getDefaultState(), s) {}, wood());
     public static final Block LUMEWOOD_SLAB = register("lumewood_slab", SlabBlock::new, wood());
     public static final Block LUMEWOOD_FENCE = register("lumewood_fence", FenceBlock::new, wood());
     public static final Block LUMEWOOD_FENCE_GATE = register("lumewood_fence_gate",
             s -> new FenceGateBlock(LUMEWOOD_WOOD_TYPE, s), wood());
     public static final Block LUMEWOOD_TRAPDOOR = register("lumewood_trapdoor",
-            s -> new TrapdoorBlock(LUMEWOOD_SET, s) {},
-            AbstractBlock.Settings.create().strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque());
+            s -> new TrapDoorBlock(LUMEWOOD_SET, s) {},
+            BlockBehaviour.Properties.create().strength(3.0f).sounds(SoundType.WOOD).nonOpaque());
     public static final Block LUMEWOOD_LEAVES = register("lumewood_leaves",
-            LeavesBlock::new, AbstractBlock.Settings.create().strength(0.2f).ticksRandomly()
-                    .sounds(BlockSoundGroup.GRASS).nonOpaque().burnable().luminance(s -> 6));
+            LeavesBlock::new, BlockBehaviour.Properties.create().strength(0.2f).ticksRandomly()
+                    .sounds(SoundType.GRASS).nonOpaque().burnable().luminance(s -> 6));
     public static final Block LUMEWOOD_SAPLING = register("lumewood_sapling",
             s -> new SaplingBlock(LUMEWOOD_TREE_GEN, s) {},
-            AbstractBlock.Settings.create().noCollision().ticksRandomly().breakInstantly()
-                    .sounds(BlockSoundGroup.GRASS).luminance(s -> 4));
+            BlockBehaviour.Properties.create().noCollision().ticksRandomly().breakInstantly()
+                    .sounds(SoundType.GRASS).luminance(s -> 4));
 
     // Garden
     public static final Block LUMEBLOOM = register("lumebloom",
-            s -> new FlowerBlock(StatusEffects.GLOWING, 5.0f, s),
-            AbstractBlock.Settings.create().noCollision().breakInstantly()
-                    .sounds(BlockSoundGroup.GRASS).luminance(s -> 7));
+            s -> new FlowerBlock(MobEffects.GLOWING, 5.0f, s),
+            BlockBehaviour.Properties.create().noCollision().breakInstantly()
+                    .sounds(SoundType.GRASS).luminance(s -> 7));
     public static final Block LUME_LANTERN = register("lume_lantern",
-            Block::new, AbstractBlock.Settings.create().strength(0.4f).sounds(BlockSoundGroup.GLASS)
+            Block::new, BlockBehaviour.Properties.create().strength(0.4f).sounds(SoundType.GLASS)
                     .nonOpaque().luminance(s -> 15));
     public static final Block VERDANT_LOAM = register("verdant_loam",
-            VerdantLoamBlock::new, AbstractBlock.Settings.create().strength(0.6f)
-                    .sounds(BlockSoundGroup.ROOTED_DIRT));
+            VerdantLoamBlock::new, BlockBehaviour.Properties.create().strength(0.6f)
+                    .sounds(SoundType.ROOTED_DIRT));
 
     // Stone building materials
     public static final Block ECHOCITE_BRICKS = register("echocite_bricks",
-            Block::new, AbstractBlock.Settings.create().strength(2.0f, 6.0f).requiresTool()
-                    .sounds(BlockSoundGroup.STONE).luminance(s -> 3));
+            Block::new, BlockBehaviour.Properties.create().strength(2.0f, 6.0f).requiresTool()
+                    .sounds(SoundType.STONE).luminance(s -> 3));
     public static final Block ECHOCITE_BRICK_STAIRS = register("echocite_brick_stairs",
-            s -> new StairsBlock(ECHOCITE_BRICKS.getDefaultState(), s) {},
-            AbstractBlock.Settings.create().strength(2.0f, 6.0f).requiresTool()
-                    .sounds(BlockSoundGroup.STONE).luminance(s -> 3));
+            s -> new StairBlock(ECHOCITE_BRICKS.getDefaultState(), s) {},
+            BlockBehaviour.Properties.create().strength(2.0f, 6.0f).requiresTool()
+                    .sounds(SoundType.STONE).luminance(s -> 3));
     public static final Block ECHOCITE_BRICK_SLAB = register("echocite_brick_slab",
-            SlabBlock::new, AbstractBlock.Settings.create().strength(2.0f, 6.0f).requiresTool()
-                    .sounds(BlockSoundGroup.STONE).luminance(s -> 3));
+            SlabBlock::new, BlockBehaviour.Properties.create().strength(2.0f, 6.0f).requiresTool()
+                    .sounds(SoundType.STONE).luminance(s -> 3));
 
     // Octave II — Greater Resonance Cell (tiered storage)
     public static final Block GREATER_ACCUMULATOR = register("greater_resonance_cell",
-            GreaterAccumulatorBlock::new, AbstractBlock.Settings.create().strength(3.5f)
+            GreaterAccumulatorBlock::new, BlockBehaviour.Properties.create().strength(3.5f)
                     .requiresTool().nonOpaque());
 
     // Octave II — higher-octave generation & throughput (Radiant-tier)
     public static final Block OCTAVE_COIL = register("octave_coil",
-            OctaveCoilBlock::new, AbstractBlock.Settings.create().strength(4.0f).requiresTool()
+            OctaveCoilBlock::new, BlockBehaviour.Properties.create().strength(4.0f).requiresTool()
                     .nonOpaque().luminance(s -> 7));
     public static final Block OCTAVE_CONDUIT = register("octave_conduit",
-            OctaveConduitBlock::new, AbstractBlock.Settings.create().strength(2.5f).requiresTool()
+            OctaveConduitBlock::new, BlockBehaviour.Properties.create().strength(2.5f).requiresTool()
                     .nonOpaque().luminance(s -> 4));
 
     // The Verdant Octave — the transmutation economy (EMC = Bound Light)
     public static final Block TRANSMUTATION_TABLE = register("transmutation_table",
-            TransmutationTableBlock::new, AbstractBlock.Settings.create().strength(3.5f)
+            TransmutationTableBlock::new, BlockBehaviour.Properties.create().strength(3.5f)
                     .requiresTool().nonOpaque().luminance(s -> 6));
 
     // Phase VII — Storm Caller (lightning generation)
     public static final Block STORM_CALLER = register("storm_caller",
-            StormCallerBlock::new, AbstractBlock.Settings.create().strength(4.5f).requiresTool()
+            StormCallerBlock::new, BlockBehaviour.Properties.create().strength(4.5f).requiresTool()
                     .nonOpaque().luminance(s -> 6));
 
-    public static Block register(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
-        Identifier id = Identifier.of(EchoesMod.MOD_ID, name);
-        RegistryKey<Block> blockKey = RegistryKey.of(RegistryKeys.BLOCK, id);
+    public static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings) {
+        Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);
+        ResourceKey<Block> blockKey = ResourceKey.of(Registries.BLOCK, id);
         Block block = factory.apply(settings.registryKey(blockKey));
-        Registry.register(Registries.BLOCK, blockKey, block);
+        Registry.register(BuiltInRegistries.BLOCK, blockKey, block);
 
-        RegistryKey<Item> itemKey = RegistryKey.of(RegistryKeys.ITEM, id);
-        Registry.register(Registries.ITEM, itemKey,
-                new BlockItem(block, new Item.Settings().registryKey(itemKey).useBlockPrefixedTranslationKey()));
+        ResourceKey<Item> itemKey = ResourceKey.of(Registries.ITEM, id);
+        Registry.register(BuiltInRegistries.ITEM, itemKey,
+                new BlockItem(block, new Item.Properties().registryKey(itemKey).useBlockPrefixedTranslationKey()));
         return block;
     }
 

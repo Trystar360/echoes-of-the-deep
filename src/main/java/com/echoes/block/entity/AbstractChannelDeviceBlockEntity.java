@@ -5,15 +5,15 @@ import com.echoes.config.Configurable;
 import com.echoes.config.ConfigSpec;
 import com.echoes.wireless.WirelessDevice;
 import com.echoes.wireless.WirelessNetworkManager;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Common base for every wireless gadget: it carries a channel (now part of a full
@@ -37,8 +37,8 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
     }
 
     /** Lightweight ticker: guarantees the device is on the roster once loaded. */
-    public static void tick(World world, BlockPos pos, BlockState state, AbstractChannelDeviceBlockEntity be) {
-        if (be.registered || !(world instanceof ServerWorld)) return;
+    public static void tick(Level world, BlockPos pos, BlockState state, AbstractChannelDeviceBlockEntity be) {
+        if (be.registered || !(world instanceof ServerLevel)) return;
         WirelessNetworkManager.register(be);
         be.registered = true;
     }
@@ -55,7 +55,7 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
     /** Re-register with the manager and persist. Call after any networked change. */
     protected void sync() {
         markDirty();
-        if (world instanceof ServerWorld) {
+        if (world instanceof ServerLevel) {
             WirelessNetworkManager.register(this);
             registered = true;
         }
@@ -64,30 +64,30 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
     @Override public void onConfigChanged() { sync(); }
 
     // --- WirelessDevice ---
     @Override public BlockPos wirelessPos() { return getPos(); }
-    @Override public ServerWorld wirelessWorld() { return (ServerWorld) world; }
+    @Override public ServerLevel wirelessWorld() { return (ServerLevel) world; }
     @Override public int wirelessChannel() { return config.channel(); }
 
     @Override
     public void markRemoved() {
-        if (world instanceof ServerWorld sw) WirelessNetworkManager.unregister(sw, getPos());
+        if (world instanceof ServerLevel sw) WirelessNetworkManager.unregister(sw, getPos());
         registered = false;
         super.markRemoved();
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.writeNbt(nbt, lookup);
         config.writeNbt(nbt);
         writeExtra(nbt, lookup);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.readNbt(nbt, lookup);
         config.readNbt(nbt);
         if (nbt.contains("channel")) config.setChannel(nbt.getInt("channel")); // legacy saves
@@ -95,6 +95,6 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
         readExtra(nbt, lookup);
     }
 
-    protected void writeExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {}
-    protected void readExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {}
+    protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {}
+    protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {}
 }

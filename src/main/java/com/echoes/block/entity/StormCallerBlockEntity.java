@@ -7,16 +7,16 @@ import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Russell's high-potential discharge wound back into Light. A tall conductive
@@ -45,20 +45,20 @@ public class StormCallerBlockEntity extends BlockEntity implements ResonanceNode
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, StormCallerBlockEntity be) {
-        if (world.isClient || !(world instanceof ServerWorld sw)) return;
+    public static void tick(Level world, BlockPos pos, BlockState state, StormCallerBlockEntity be) {
+        if (world.isClient || !(world instanceof ServerLevel sw)) return;
         if (!world.isThundering()) { be.counter = 0; return; }
         if (be.storage.isFull()) return;
         if (!be.config.redstone().allows(sw.isReceivingRedstonePower(pos))) return;
         // Must see open sky to draw a bolt down onto the spire.
-        if (!world.isSkyVisibleAllowingSea(pos.up())) return;
+        if (!world.isSkyVisibleAllowingSea(pos.above())) return;
 
         // Tuning "rate" 1..4 sets how often the spire calls a strike (~9s .. ~2s).
         int period = 220 - be.config.tuningA() * 50;
         if (++be.counter < period) return;
         be.counter = 0;
 
-        LightningEntity bolt = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
+        LightningBolt bolt = new LightningBolt(EntityType.LIGHTNING_BOLT, world);
         bolt.refreshPositionAfterTeleport(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
         bolt.setCosmetic(true);   // visual + sound only — the spire grounds the charge
         sw.spawnEntity(bolt);
@@ -81,18 +81,18 @@ public class StormCallerBlockEntity extends BlockEntity implements ResonanceNode
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
     @Override public void onConfigChanged() { markDirty(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.writeNbt(nbt, lookup);
         storage.writeNbt(nbt);
         config.writeNbt(nbt);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.readNbt(nbt, lookup);
         storage.readNbt(nbt);
         config.readNbt(nbt);

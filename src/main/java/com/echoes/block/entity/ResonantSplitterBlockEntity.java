@@ -1,10 +1,10 @@
 package com.echoes.block.entity;
 
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.BlockPos;
 
 /**
  * Switches its channel's distribution policy. Enabled (default), cargo is shared
@@ -27,12 +27,12 @@ public class ResonantSplitterBlockEntity extends AbstractChannelDeviceBlockEntit
     }
 
     @Override
-    protected void writeExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
         nbt.putBoolean("roundRobin", roundRobin);
     }
 
     @Override
-    protected void readExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
         roundRobin = !nbt.contains("roundRobin") || nbt.getBoolean("roundRobin");
     }
 }

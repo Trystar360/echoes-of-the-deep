@@ -7,24 +7,24 @@ import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.SmeltingRecipe;
-import net.minecraft.recipe.input.SingleStackRecipeInput;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,27 +53,27 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, WarmthRadiatorBlockEntity be) {
-        if (!(world instanceof ServerWorld sw)) return;
+    public static void tick(Level world, BlockPos pos, BlockState state, WarmthRadiatorBlockEntity be) {
+        if (!(world instanceof ServerLevel sw)) return;
         boolean powered = sw.isReceivingRedstonePower(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         int radius = be.config.tuningA();
-        if (state.contains(Properties.LIT) && state.get(Properties.LIT) != active) {
-            sw.setBlockState(pos, state.with(Properties.LIT, active), Block.NOTIFY_ALL);
+        if (state.contains(BlockStateProperties.LIT) && state.get(BlockStateProperties.LIT) != active) {
+            sw.setBlockState(pos, state.with(BlockStateProperties.LIT, active), Block.NOTIFY_ALL);
         }
         if (++be.timer < INTERVAL) return;
         be.timer = 0;
         if (!active) return;
 
         // Cook one dropped stack that has a smelting recipe.
-        Box box = new Box(pos).expand(radius);
+        AABB box = new AABB(pos).expand(radius);
         List<ItemEntity> drops = sw.getEntitiesByClass(ItemEntity.class, box, e -> !e.getStack().isEmpty());
         for (ItemEntity e : drops) {
             ItemStack stack = e.getStack();
-            Optional<? extends net.minecraft.recipe.RecipeEntry<SmeltingRecipe>> m =
-                    sw.getRecipeManager().getFirstMatch(RecipeType.SMELTING, new SingleStackRecipeInput(stack), sw);
+            Optional<? extends net.minecraft.world.item.crafting.RecipeHolder<SmeltingRecipe>> m =
+                    sw.getRecipeManager().getFirstMatch(RecipeType.SMELTING, new SingleRecipeInput(stack), sw);
             if (m.isEmpty()) continue;
-            ItemStack result = m.get().value().craft(new SingleStackRecipeInput(stack), sw.getRegistryManager());
+            ItemStack result = m.get().value().craft(new SingleRecipeInput(stack), sw.getRegistryManager());
             if (result.isEmpty()) continue;
             ItemStack out = result.copy();
             out.setCount(stack.getCount() * result.getCount());
@@ -84,7 +84,7 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
         }
 
         // Thaw a little snow / ice.
-        Random rng = sw.getRandom();
+        RandomSource rng = sw.getRandom();
         BlockPos p = pos.add(rng.nextInt(radius * 2 + 1) - radius, rng.nextInt(3) - 1,
                 rng.nextInt(radius * 2 + 1) - radius);
         BlockState s = sw.getBlockState(p);
@@ -108,18 +108,18 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
     @Override public void onConfigChanged() { markDirty(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.writeNbt(nbt, lookup);
         buffer.writeNbt(nbt);
         config.writeNbt(nbt);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.readNbt(nbt, lookup);
         buffer.readNbt(nbt);
         config.readNbt(nbt);

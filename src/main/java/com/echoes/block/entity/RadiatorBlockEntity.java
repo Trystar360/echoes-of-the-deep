@@ -7,18 +7,18 @@ import com.echoes.energy.NodeRole;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Fertilizable;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 
 /**
  * Radiation — the centrifugal, expansive half of the two-way universe. Draws Light
@@ -47,26 +47,26 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, C
         config.applyDefaults(SPEC);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, RadiatorBlockEntity be) {
-        if (!(world instanceof ServerWorld sw)) return;
+    public static void tick(Level world, BlockPos pos, BlockState state, RadiatorBlockEntity be) {
+        if (!(world instanceof ServerLevel sw)) return;
 
         boolean powered = sw.isReceivingRedstonePower(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         int hRadius = be.config.tuningA();
-        if (state.contains(Properties.LIT) && state.get(Properties.LIT) != active) {
-            sw.setBlockState(pos, state.with(Properties.LIT, active), Block.NOTIFY_ALL);
+        if (state.contains(BlockStateProperties.LIT) && state.get(BlockStateProperties.LIT) != active) {
+            sw.setBlockState(pos, state.with(BlockStateProperties.LIT, active), Block.NOTIFY_ALL);
         }
         if (++be.timer < INTERVAL) return;
         be.timer = 0;
         if (!active) return;
 
-        Random rng = sw.getRandom();
+        RandomSource rng = sw.getRandom();
         for (int i = 0; i < TRIES; i++) {
             BlockPos p = pos.add(rng.nextInt(hRadius * 2 + 1) - hRadius,
                     rng.nextInt(V_RADIUS * 2 + 1) - V_RADIUS,
                     rng.nextInt(hRadius * 2 + 1) - hRadius);
             BlockState s = sw.getBlockState(p);
-            if (s.getBlock() instanceof Fertilizable f
+            if (s.getBlock() instanceof BonemealableBlock f
                     && f.isFertilizable(sw, p, s) && f.canGrow(sw, rng, p, s)) {
                 f.grow(sw, rng, p, s);
                 sw.syncWorldEvent(2005, p, 0); // bonemeal particles
@@ -90,18 +90,18 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, C
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Text configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
     @Override public void onConfigChanged() { markDirty(); }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.writeNbt(nbt, lookup);
         buffer.writeNbt(nbt);
         config.writeNbt(nbt);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
         super.readNbt(nbt, lookup);
         buffer.readNbt(nbt);
         config.readNbt(nbt);

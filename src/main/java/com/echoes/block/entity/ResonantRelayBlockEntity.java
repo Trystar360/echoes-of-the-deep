@@ -8,12 +8,12 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -38,7 +38,7 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     }
 
     public Direction facing() {
-        return getCachedState().getOrEmpty(Properties.FACING).orElse(Direction.NORTH);
+        return getCachedState().getOrEmpty(BlockStateProperties.FACING).orElse(Direction.NORTH);
     }
 
     /** The block this relay reads from / writes to. */
@@ -65,12 +65,12 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     }
 
     @Override
-    protected void writeExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
         nbt.putInt("mode", mode.ordinal());
     }
 
     @Override
-    protected void readExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+    protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
         mode = RelayMode.byId(nbt.getInt("mode"));
     }
 }

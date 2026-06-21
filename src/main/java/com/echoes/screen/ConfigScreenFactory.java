@@ -2,12 +2,12 @@ package com.echoes.screen;
 
 import com.echoes.config.Configurable;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
 
 /**
  * Opens the shared {@link ConfigScreenHandler} for a {@link Configurable} device,
@@ -18,17 +18,17 @@ public record ConfigScreenFactory(Configurable target, BlockPos pos)
         implements ExtendedScreenHandlerFactory<BlockPos> {
 
     @Override
-    public BlockPos getScreenOpeningData(ServerPlayerEntity player) {
+    public BlockPos getScreenOpeningData(ServerPlayer player) {
         return pos;
     }
 
     @Override
-    public Text getDisplayName() {
+    public Component getDisplayName() {
         return target.configTitle();
     }
 
     @Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
         return new ConfigScreenHandler(syncId, inv, pos);
     }
 }

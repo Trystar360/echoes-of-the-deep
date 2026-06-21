@@ -1,9 +1,9 @@
 package com.echoes.energy;
 
 import com.echoes.block.entity.ResonatorBlockEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
  * land, note block, ...) is claimed once by the nearest Resonator in range.
  *
  * <p>The sound→RU table is data-driven (data/echoes/resonance_sources.json);
- * the mixin on World#playSound and the LivingEntity death hook funnel into
+ * the mixin on Level#playSound and the LivingEntity death hook funnel into
  * {@link #emit}.
  */
 public final class ResonanceEvents {
@@ -20,13 +20,13 @@ public final class ResonanceEvents {
 
     private ResonanceEvents() {}
 
-    public static void emit(ServerWorld world, Vec3d pos, int amount) {
+    public static void emit(ServerLevel world, Vec3 pos, int amount) {
         if (amount <= 0) return;
         nearestResonator(world, pos, RADIUS).ifPresent(res -> res.absorbAmbient(amount));
     }
 
-    private static Optional<ResonatorBlockEntity> nearestResonator(ServerWorld world, Vec3d pos, int radius) {
-        BlockPos origin = BlockPos.ofFloored(pos);
+    private static Optional<ResonatorBlockEntity> nearestResonator(ServerLevel world, Vec3 pos, int radius) {
+        BlockPos origin = BlockPos.containing(pos);
         double r2 = (double) radius * radius;
         ResonatorBlockEntity best = null;
         double bestDist = Double.MAX_VALUE;
@@ -38,7 +38,7 @@ public final class ResonanceEvents {
         int minCz = (origin.getZ() - radius) >> 4, maxCz = (origin.getZ() + radius) >> 4;
         for (int cx = minCx; cx <= maxCx; cx++) {
             for (int cz = minCz; cz <= maxCz; cz++) {
-                var chunk = world.getChunkManager().getWorldChunk(cx, cz);
+                var chunk = world.getChunkSource().getChunkNow(cx, cz);
                 if (chunk == null) continue; // don't force-load chunks
                 for (var entry : chunk.getBlockEntities().entrySet()) {
                     if (entry.getValue() instanceof ResonatorBlockEntity res) {
