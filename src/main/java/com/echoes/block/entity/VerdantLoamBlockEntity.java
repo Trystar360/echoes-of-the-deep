@@ -49,13 +49,13 @@ public class VerdantLoamBlockEntity extends BlockEntity implements Configurable 
         RandomSource rng = sw.getRandom();
         // A handful of tries to find a growable plant in the volume above the soil.
         for (int i = 0; i < 6; i++) {
-            BlockPos p = pos.add(rng.nextInt(r * 2 + 1) - r,
+            BlockPos p = pos.offset(rng.nextInt(r * 2 + 1) - r,
                     1 + rng.nextInt(2),
                     rng.nextInt(r * 2 + 1) - r);
             BlockState s = sw.getBlockState(p);
             if (s.getBlock() instanceof BonemealableBlock f
-                    && f.isFertilizable(sw, p, s) && f.canGrow(sw, rng, p, s)) {
-                f.grow(sw, rng, p, s);
+                    && f.isValidBonemealTarget(sw, p, s) && f.isBonemealSuccess(sw, rng, p, s)) {
+                f.performBonemeal(sw, rng, p, s);
                 sw.levelEvent(2005, p, 0); // bonemeal particles
                 be.setChanged();
                 return;

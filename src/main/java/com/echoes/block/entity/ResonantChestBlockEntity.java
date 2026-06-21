@@ -57,7 +57,7 @@ public class ResonantChestBlockEntity extends AbstractChannelDeviceBlockEntity
     @Override public Component getDisplayName() { return Component.translatable("block.echoes.wave_chest"); }
 
     @Override public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
-        return ChestMenu.createGeneric9x3(syncId, inv, this);
+        return ChestMenu.threeRows(syncId, inv, this);
     }
 
     @Override

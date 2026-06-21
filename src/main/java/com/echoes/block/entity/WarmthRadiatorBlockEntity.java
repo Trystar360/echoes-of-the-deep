@@ -60,7 +60,7 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
         boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         int radius = be.config.tuningA();
-        if (state.contains(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT) != active) {
+        if (state.hasProperty(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT) != active) {
             sw.setBlock(pos, state.setValue(BlockStateProperties.LIT, active), Block.UPDATE_ALL);
         }
         if (++be.timer < INTERVAL) return;
@@ -87,7 +87,7 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
 
         // Thaw a little snow / ice.
         RandomSource rng = sw.getRandom();
-        BlockPos p = pos.add(rng.nextInt(radius * 2 + 1) - radius, rng.nextInt(3) - 1,
+        BlockPos p = pos.offset(rng.nextInt(radius * 2 + 1) - radius, rng.nextInt(3) - 1,
                 rng.nextInt(radius * 2 + 1) - radius);
         BlockState s = sw.getBlockState(p);
         if (s.is(Blocks.SNOW) || s.is(Blocks.SNOW_BLOCK) || s.is(Blocks.POWDER_SNOW)) {

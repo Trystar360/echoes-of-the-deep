@@ -102,7 +102,7 @@ public class ResonanceThrustersItem extends Item {
             Vec3 look = user.getViewVector(1.0F);
             user.setDeltaMovement(look.x * speed, look.y * speed + LIFT, look.z * speed);
         }
-        user.hasImpulse = true;
+        user.hurtMarked = true;
         user.fallDistance = 0;
 
         if (!world.isClientSide() && !creative) {

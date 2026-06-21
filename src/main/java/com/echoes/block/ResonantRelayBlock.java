@@ -36,7 +36,7 @@ public class ResonantRelayBlock extends AbstractChannelDeviceBlock {
 
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        return getDefaultState().setValue(BlockStateProperties.FACING, ctx.getClickedFace().getOpposite());
+        return defaultBlockState().setValue(BlockStateProperties.FACING, ctx.getClickedFace().getOpposite());
     }
 
     @Override
@@ -57,12 +57,12 @@ public class ResonantRelayBlock extends AbstractChannelDeviceBlock {
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState state) {
+    public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, Level world, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos, net.minecraft.core.Direction direction) {
         return world.getBlockEntity(pos) instanceof ResonantRelayBlockEntity relay
                 ? relay.comparatorOutput() : 0;
     }

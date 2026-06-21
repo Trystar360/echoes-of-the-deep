@@ -75,10 +75,10 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
     @Override public int wirelessChannel() { return config.channel(); }
 
     @Override
-    public void markRemoved() {
+    public void setRemoved() {
         if (level instanceof ServerLevel sw) WirelessNetworkManager.unregister(sw, getBlockPos());
         registered = false;
-        super.markRemoved();
+        super.setRemoved();
     }
 
     @Override

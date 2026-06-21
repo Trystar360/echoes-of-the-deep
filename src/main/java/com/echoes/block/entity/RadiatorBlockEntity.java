@@ -55,7 +55,7 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, C
         boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         int hRadius = be.config.tuningA();
-        if (state.contains(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT) != active) {
+        if (state.hasProperty(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT) != active) {
             sw.setBlock(pos, state.setValue(BlockStateProperties.LIT, active), Block.UPDATE_ALL);
         }
         if (++be.timer < INTERVAL) return;
@@ -64,13 +64,13 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, C
 
         RandomSource rng = sw.getRandom();
         for (int i = 0; i < TRIES; i++) {
-            BlockPos p = pos.add(rng.nextInt(hRadius * 2 + 1) - hRadius,
+            BlockPos p = pos.offset(rng.nextInt(hRadius * 2 + 1) - hRadius,
                     rng.nextInt(V_RADIUS * 2 + 1) - V_RADIUS,
                     rng.nextInt(hRadius * 2 + 1) - hRadius);
             BlockState s = sw.getBlockState(p);
             if (s.getBlock() instanceof BonemealableBlock f
-                    && f.isFertilizable(sw, p, s) && f.canGrow(sw, rng, p, s)) {
-                f.grow(sw, rng, p, s);
+                    && f.isValidBonemealTarget(sw, p, s) && f.isBonemealSuccess(sw, rng, p, s)) {
+                f.performBonemeal(sw, rng, p, s);
                 sw.levelEvent(2005, p, 0); // bonemeal particles
                 be.buffer.extract(COST, false);
                 be.setChanged();

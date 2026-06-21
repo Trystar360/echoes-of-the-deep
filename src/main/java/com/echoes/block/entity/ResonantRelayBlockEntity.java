@@ -40,7 +40,7 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     }
 
     public Direction facing() {
-        return getBlockState().getOrEmpty(BlockStateProperties.FACING).orElse(Direction.NORTH);
+        return getBlockState().getOptionalValue(BlockStateProperties.FACING).orElse(Direction.NORTH);
     }
 
     /** The block this relay reads from / writes to. */

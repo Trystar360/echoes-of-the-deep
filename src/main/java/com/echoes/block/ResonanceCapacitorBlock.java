@@ -36,10 +36,10 @@ public class ResonanceCapacitorBlock extends Block implements EntityBlock {
         super.affectNeighborsAfterRemoval(state, world, pos, moved);
     }
 
-    @Override public boolean hasComparatorOutput(BlockState state) { return true; }
+    @Override public boolean hasAnalogOutputSignal(BlockState state) { return true; }
 
     @Override
-    public int getComparatorOutput(BlockState state, Level world, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos, net.minecraft.core.Direction direction) {
         return world.getBlockEntity(pos) instanceof ResonanceCapacitorBlockEntity be
                 ? be.storage().comparatorOutput() : 0;
     }

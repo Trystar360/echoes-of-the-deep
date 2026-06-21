@@ -30,7 +30,7 @@ public class ResonatorBlock extends Block implements EntityBlock {
 
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        return getDefaultState().setValue(BlockStateProperties.HORIZONTAL_FACING, ctx.getHorizontalDirection().getOpposite());
+        return defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, ctx.getHorizontalDirection().getOpposite());
     }
 
     @Override
@@ -51,10 +51,10 @@ public class ResonatorBlock extends Block implements EntityBlock {
         super.affectNeighborsAfterRemoval(state, world, pos, moved);
     }
 
-    @Override public boolean hasComparatorOutput(BlockState state) { return true; }
+    @Override public boolean hasAnalogOutputSignal(BlockState state) { return true; }
 
     @Override
-    public int getComparatorOutput(BlockState state, Level world, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos, net.minecraft.core.Direction direction) {
         return world.getBlockEntity(pos) instanceof ResonatorBlockEntity be
                 ? be.storage().comparatorOutput() : 0;
     }

@@ -53,7 +53,7 @@ public class StormCallerBlockEntity extends BlockEntity implements ResonanceNode
         if (be.storage.isFull()) return;
         if (!be.config.redstone().allows(sw.hasNeighborSignal(pos))) return;
         // Must see open sky to draw a bolt down onto the spire.
-        if (!level.isSkyVisibleAllowingSea(pos.above())) return;
+        if (!level.canSeeSkyFromBelowWater(pos.above())) return;
 
         // Tuning "rate" 1..4 sets how often the spire calls a strike (~9s .. ~2s).
         int period = 220 - be.config.tuningA() * 50;
@@ -61,8 +61,8 @@ public class StormCallerBlockEntity extends BlockEntity implements ResonanceNode
         be.counter = 0;
 
         LightningBolt bolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
-        bolt.refreshPositionAfterTeleport(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
-        bolt.setCosmetic(true);   // visual + sound only — the spire grounds the charge
+        bolt.snapTo(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
+        bolt.setVisualOnly(true);   // visual + sound only — the spire grounds the charge
         sw.addFreshEntity(bolt);
 
         be.storage.absorb(STRIKE_LIGHT);

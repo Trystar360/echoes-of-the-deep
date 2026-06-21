@@ -68,14 +68,14 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
         if (!(level instanceof ServerLevel sw)) return;
         boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
-        if (state.contains(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT) != active) {
+        if (state.hasProperty(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT) != active) {
             sw.setBlock(pos, state.setValue(BlockStateProperties.LIT, active), Block.UPDATE_ALL);
         }
         if (++be.timer < INTERVAL) return;
         be.timer = 0;
         if (!active) return;
 
-        Vec3 c = Vec3.ofCenter(pos);
+        Vec3 c = Vec3.atCenterOf(pos);
         AABB box = new AABB(pos).inflate(be.config.tuningA());
         boolean acted = false;
 
@@ -86,7 +86,7 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
                 Vec3 dir = c.subtract(e.blockPosition());
                 if (dir.lengthSqr() < 0.6) continue;
                 e.setDeltaMovement(e.getDeltaMovement().multiply(0.4).add(dir.normalize().multiply(PULL)));
-                e.hasImpulse = true;
+                e.hurtMarked = true;
                 acted = true;
             }
         } else {
@@ -96,7 +96,7 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
                 Vec3 dir = e.blockPosition().subtract(c);
                 if (dir.lengthSqr() < 0.01) dir = new Vec3(0, 1, 0);
                 e.setDeltaMovement(e.getDeltaMovement().add(dir.normalize().multiply(PUSH).add(0, 0.2, 0)));
-                e.hasImpulse = true;
+                e.hurtMarked = true;
                 acted = true;
             }
         }
