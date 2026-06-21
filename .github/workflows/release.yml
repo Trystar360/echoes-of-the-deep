@@ -25,16 +25,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
 
       - name: Build
         run: |
           chmod +x ./gradlew
-          ./gradlew build --no-daemon
+          # gradle.properties pins a dev-box JDK path; point the toolchain at the
+          # runner's JDK 25 (set by setup-java) instead.
+          ./gradlew build --no-daemon -Porg.gradle.java.installations.paths="$JAVA_HOME"
 
       - name: List artifacts
         run: ls -la build/libs
@@ -49,21 +51,23 @@ jobs:
           files: |
             build/libs/echoes-of-the-deep-*.jar
             !build/libs/*-sources.jar
-            showcase/dist/Octaves-of-the-One-Showcase.zip
           body: |
-            **Octaves of the One** — a Fabric tech mod for Minecraft **1.21.4**, themed on
+            **Octaves of the One** — a Fabric tech mod for Minecraft **26.1.2**, themed on
             Walter Russell's two-way universe of rhythmic balanced interchange.
 
-            **Install:** drop the jar into `.minecraft/mods/` with **Fabric Loader** (≥ 0.16.0)
-            and **Fabric API** for **1.21.4** (Java 21).
+            This release ports the whole mod to **Minecraft 26.1.2** — the first unobfuscated
+            Minecraft, on Mojang official mappings (Yarn dropped), Fabric Loader `0.19.3`,
+            Fabric API `0.152.1+26.1.2`, **Java 25**. The build is green and the dedicated
+            server boots cleanly; every screen has been visually verified.
+
+            **Install:** drop the jar into `.minecraft/mods/` with **Fabric Loader** (≥ 0.19.0)
+            and **Fabric API** for **26.1** (Java 25).
 
             A complete, survival-craftable energy + logistics + transmutation loop, with an
             in-game Great Work advancement tree to guide it. Wiki:
             https://trystar360.github.io/echoes-of-the-deep/
 
-            **Showcase world** — `Octaves-of-the-One-Showcase.zip` is a guided tutorial
-            world: unzip into `.minecraft/saves/`, open in Creative (with the mod installed),
-            and walk east through the wings.
+            _The guided showcase world will return once it is rebuilt for 26.1._
 
       # Modrinth — only runs once a MODRINTH_ID variable + MODRINTH_TOKEN secret are set in
       # repo Settings (gated so an unconfigured repo doesn't fail the release). Mirrors the
@@ -78,8 +82,8 @@ jobs:
             build/libs/echoes-of-the-deep-*.jar
             !build/libs/*-sources.jar
           loaders: fabric
-          game-versions: '1.21.4'
-          java: '21'
+          game-versions: '26.1.2'
+          java: '25'
           dependencies: |
             fabric-api(required)
           github-token: ''
