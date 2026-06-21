@@ -110,6 +110,13 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
         g.fill(x, y, x + 1, y + imageHeight, 0xFF2A4A4A);
         g.fill(x + imageWidth - 1, y, x + imageWidth, y + imageHeight, 0xFF050A0B);
         g.fill(x, y + imageHeight - 1, x + imageWidth, y + imageHeight, 0xFF050A0B);
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        super.extractLabels(g, mouseX, mouseY);
+        // Row titles must be drawn in the label (foreground) pass — text drawn in
+        // extractBackground renders beneath the opaque panel fill and is invisible.
         drawRowTitles(g);
     }
 
@@ -147,7 +154,7 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
 
     /** Left-hand label for each row, drawn relative to its button's Y. */
     private void drawRowTitles(GuiGraphicsExtractor g) {
-        int color = 0xC8E6E6;
+        int color = 0xFFC8E6E6;
         if (channelBtn != null) label(g, "config.echoes.channel", channelBtn.getY(), color);
         if (octaveBtn != null) label(g, "config.echoes.octave", octaveBtn.getY(), color);
         if (redstoneBtn != null) label(g, "config.echoes.redstone", redstoneBtn.getY(), color);
@@ -158,6 +165,8 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
     }
 
     private void label(GuiGraphicsExtractor g, String key, int rowY, int color) {
-        g.text(font, Component.translatable(key), x() + 10, rowY + 6, color, false);
+        // extractLabels is panel-relative (the pose is translated to leftPos/topPos),
+        // so convert the button's absolute Y into panel space.
+        g.text(font, Component.translatable(key), 10, rowY - topPos + 6, color, false);
     }
 }

@@ -15,7 +15,8 @@
   "environment": "*",
   "entrypoints": {
     "main": ["com.echoes.EchoesMod"],
-    "client": ["com.echoes.client.EchoesClient"]
+    "client": ["com.echoes.client.EchoesClient"],
+    "fabric-client-gametest": ["com.echoes.client.gametest.ScreenLayoutTest"]
   },
   "mixins": [
     "echoes.mixins.json"

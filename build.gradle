@@ -23,6 +23,19 @@ loom {
             sourceSet sourceSets.client
         }
     }
+    runs {
+        // Dev-only: renders each screen and screenshots it (com.echoes.client.gametest).
+        // Run with `./gradlew runClientGametest`. The test classes live in the client
+        // source set but are excluded from the published jar (see the `jar` task).
+        clientGametest {
+            client()
+            name "Client Gametest"
+            source "client"
+            property("fabric.client.gametest")
+            // Headless software GL: avoid the deterministic network-sync deadlock on world join.
+            property("fabric.client.gametest.disableNetworkSynchronizer")
+        }
+    }
 }
 
 dependencies {
@@ -66,4 +79,6 @@ jar {
     // The Team Reborn Energy API stub is compile-only — never ship it (the real mod
     // provides team.reborn.energy.api.* at runtime).
     exclude "team/reborn/**"
+    // Dev-only client gametest — never ship it.
+    exclude "com/echoes/client/gametest/**"
 }
