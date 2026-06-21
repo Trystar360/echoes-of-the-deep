@@ -61,11 +61,11 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
             id("end_portal_frame"), id("reinforced_deepslate"), id("budding_amethyst"),
             id("spawner"), id("petrified_oak_slab"), id("farmland"), id("dirt_path"));
 
-    private static Identifier id(String path) { return Identifier.ofVanilla(path); }
+    private static Identifier id(String path) { return Identifier.withDefaultNamespace(path); }
 
     /** Bound Light wound into one of this item, or 0 if it has no value / is blacklisted. */
     public static long get(Item item) {
-        Identifier id = BuiltInRegistries.ITEM.getId(item);
+        Identifier id = BuiltInRegistries.ITEM.getKey(item);
         if (BLACKLIST.contains(id)) return 0L;
         Long seed = SEEDS.get(id);
         if (seed != null) return seed;
@@ -93,14 +93,14 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
 
     /** Reload only re-reads the JSON seeds; derivation needs the recipe manager (see {@link #derive}). */
     @Override
-    public void reload(ResourceManager manager) {
+    public void onResourceManagerReload(ResourceManager manager) {
         SEEDS.clear();
         BLACKLIST.clear();
         BLACKLIST.addAll(DEFAULT_BLACKLIST);
-        for (Resource resource : manager.getAllResources(FILE)) {
-            try (Reader reader = resource.getReader()) {
-                JsonObject root = GsonHelper.deserialize(reader);
-                JsonObject values = GsonHelper.getObject(root, "values", new JsonObject());
+        for (Resource resource : manager.getResourceStack(FILE)) {
+            try (Reader reader = resource.openAsReader()) {
+                JsonObject root = GsonHelper.parse(reader);
+                JsonObject values = GsonHelper.getAsJsonObject(root, "values", new JsonObject());
                 for (Map.Entry<String, com.google.gson.JsonElement> e : values.entrySet()) {
                     Identifier id = Identifier.tryParse(e.getKey());
                     if (id == null || !e.getValue().isJsonPrimitive()) continue;
@@ -109,14 +109,14 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
                     else SEEDS.put(id, v);
                 }
                 if (root.has("blacklist")) {
-                    for (com.google.gson.JsonElement el : GsonHelper.getArray(root, "blacklist")) {
+                    for (com.google.gson.JsonElement el : GsonHelper.getAsJsonArray(root, "blacklist")) {
                         Identifier id = Identifier.tryParse(el.getAsString());
                         if (id != null) BLACKLIST.add(id);
                     }
                 }
             } catch (Exception ex) {
                 EchoesMod.LOGGER.warn("Failed to read light_values.json from {}: {}",
-                        resource.getPackId(), ex.toString());
+                        resource.sourcePackId(), ex.toString());
             }
         }
         EchoesMod.LOGGER.info("Loaded {} Light Value seeds ({} blacklisted)", SEEDS.size(), BLACKLIST.size());
@@ -129,7 +129,7 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
     /** Recompute derived values from the server's full recipe set (vanilla + every mod). */
     public static void derive(MinecraftServer server) {
         HolderLookup.Provider lookup = server.registryAccess();
-        Collection<RecipeHolder<?>> recipes = server.recipeAccess().values();
+        Collection<RecipeHolder<?>> recipes = server.getRecipeManager().getRecipes();
 
         Map<Identifier, Long> values = new HashMap<>(SEEDS); // working set; seeds are the floor
         boolean changed = true;
@@ -140,10 +140,10 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
                 Recipe<?> recipe = entry.value();
                 ItemStack out = output(recipe, lookup);
                 if (out.isEmpty()) continue;
-                Identifier outId = BuiltInRegistries.ITEM.getId(out.getItem());
+                Identifier outId = BuiltInRegistries.ITEM.getKey(out.getItem());
                 if (SEEDS.containsKey(outId) || BLACKLIST.contains(outId)) continue; // authoritative / forbidden
 
-                List<Ingredient> ingredients = recipe.getIngredientPlacement().getIngredients();
+                List<Ingredient> ingredients = recipe.placementInfo().ingredients();
                 if (ingredients.isEmpty()) continue;
 
                 long total = 0;
@@ -177,11 +177,11 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
     private static ItemStack output(Recipe<?> recipe, HolderLookup.Provider lookup) {
         try {
             if (recipe instanceof CraftingRecipe crafting) {
-                ItemStack out = crafting.craft(CraftingInput.EMPTY, lookup);
+                ItemStack out = crafting.assemble(CraftingInput.EMPTY);
                 return out == null ? ItemStack.EMPTY : out;
             }
             if (recipe instanceof SingleItemRecipe single) { // smelting/blasting/smoking/campfire/stonecutting
-                ItemStack out = single.craft(SINGLE_EMPTY, lookup);
+                ItemStack out = single.assemble(SINGLE_EMPTY);
                 return out == null ? ItemStack.EMPTY : out;
             }
         } catch (Throwable t) {
@@ -193,8 +193,8 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
     /** Cheapest known value among an ingredient's matching items, or -1 if none is valued. */
     private static long cheapest(Ingredient ingredient, Map<Identifier, Long> values) {
         long best = -1;
-        for (var entry : ingredient.getMatchingItems().toList()) {
-            Identifier id = BuiltInRegistries.ITEM.getId(entry.value());
+        for (var entry : ingredient.items().toList()) {
+            Identifier id = BuiltInRegistries.ITEM.getKey(entry.value());
             if (BLACKLIST.contains(id)) continue;
             Long v = values.get(id);
             if (v != null && v > 0 && (best < 0 || v < best)) best = v;

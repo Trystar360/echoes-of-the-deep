@@ -15,7 +15,8 @@ public final class ModRecipes {
         @Override public String toString() { return "echoes:crushing"; }
     };
 
-    public static final CrushingRecipe.Serializer CRUSHING_SERIALIZER = new CrushingRecipe.Serializer();
+    public static final RecipeSerializer<CrushingRecipe> CRUSHING_SERIALIZER =
+            new RecipeSerializer<>(CrushingRecipe.CODEC, CrushingRecipe.STREAM_CODEC);
 
     public static void register() {
         Registry.register(BuiltInRegistries.RECIPE_TYPE, id("crushing"), CRUSHING_TYPE);
