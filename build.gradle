@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.9.2'
+    id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -26,15 +26,16 @@ loom {
 }
 
 dependencies {
+    // Minecraft 26.1 ships unobfuscated; Loom uses Mojang official mappings by default,
+    // so there is no longer a `mappings` line.
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    // Team Reborn Energy — optional soft dependency. Compile against the (stable)
-    // API only; it is not shipped or run by us. The bridge activates at runtime
-    // solely when the player supplies a 1.21.x-compatible Team Reborn Energy.
-    modCompileOnly "teamreborn:energy:${project.tr_energy_version}"
+    // NOTE: the Team Reborn Energy bridge (compat/) is temporarily disabled for 26.1 —
+    // no 26.1-compatible Team Reborn Energy build is available yet, and "no mods for
+    // 1.21.11 or older work on 26.1 even as a compile-only dependency". Restore the
+    // `compileOnly "teamreborn:energy:<26.1 build>"` line and re-enable compat/ when it ships.
 }
 
 processResources {
@@ -45,15 +46,13 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 21
+    it.options.release = 25
 }
 
 java {
     withSourcesJar()
-    // Portable across machines: Gradle auto-detects (or provisions) a JDK 21
-    // toolchain instead of relying on a hardcoded org.gradle.java.home path.
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
