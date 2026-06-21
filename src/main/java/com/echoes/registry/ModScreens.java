@@ -18,28 +18,28 @@ public final class ModScreens {
     private ModScreens() {}
 
     public static final MenuType<CrusherScreenHandler> CRUSHER =
-            Registry.register(BuiltInRegistries.SCREEN_HANDLER,
+            Registry.register(BuiltInRegistries.MENU,
                     Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "compressor"),
-                    new MenuType<>(CrusherScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
+                    new MenuType<>(CrusherScreenHandler::new, FeatureFlags.VANILLA_SET));
 
     public static final MenuType<AttunementFurnaceScreenHandler> ATTUNEMENT_FURNACE =
-            Registry.register(BuiltInRegistries.SCREEN_HANDLER,
+            Registry.register(BuiltInRegistries.MENU,
                     Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "transmuter"),
-                    new MenuType<>(AttunementFurnaceScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
+                    new MenuType<>(AttunementFurnaceScreenHandler::new, FeatureFlags.VANILLA_SET));
 
     public static final MenuType<HarmonicFilterScreenHandler> HARMONIC_FILTER =
-            Registry.register(BuiltInRegistries.SCREEN_HANDLER,
+            Registry.register(BuiltInRegistries.MENU,
                     Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "wave_filter"),
-                    new MenuType<>(HarmonicFilterScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
+                    new MenuType<>(HarmonicFilterScreenHandler::new, FeatureFlags.VANILLA_SET));
 
     public static final MenuType<TransmutationTableScreenHandler> TRANSMUTATION_TABLE =
-            Registry.register(BuiltInRegistries.SCREEN_HANDLER,
+            Registry.register(BuiltInRegistries.MENU,
                     Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "transmutation_table"),
-                    new MenuType<>(TransmutationTableScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
+                    new MenuType<>(TransmutationTableScreenHandler::new, FeatureFlags.VANILLA_SET));
 
     /** Shared configuration screen for every Configurable device. */
     public static final ExtendedMenuType<ConfigScreenHandler, BlockPos> CONFIG =
-            Registry.register(BuiltInRegistries.SCREEN_HANDLER,
+            Registry.register(BuiltInRegistries.MENU,
                     Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "config"),
                     new ExtendedMenuType<>(ConfigScreenHandler::new, BlockPos.STREAM_CODEC));
 

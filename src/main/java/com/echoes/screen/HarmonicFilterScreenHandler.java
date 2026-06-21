@@ -9,7 +9,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 
 /**
  * A 3×3 grid of <em>ghost</em> slots: clicking sets a slot to a single-item sample
@@ -34,9 +34,9 @@ public class HarmonicFilterScreenHandler extends AbstractContainerMenu {
         for (int r = 0; r < 3; r++)
             for (int c = 0; c < 3; c++)
                 this.addSlot(new Slot(filter, r * 3 + c, 62 + c * 18, 18 + r * 18) {
-                    @Override public boolean canInsert(ItemStack stack) { return false; }
-                    @Override public boolean canTakeItems(Player player) { return false; }
-                    @Override public int getMaxItemCount() { return 1; }
+                    @Override public boolean mayPlace(ItemStack stack) { return false; }
+                    @Override public boolean mayPickup(Player player) { return false; }
+                    @Override public int getMaxStackSize() { return 1; }
                 });
 
         // player inventory + hotbar
@@ -48,11 +48,11 @@ public class HarmonicFilterScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public void onSlotClick(int slotIndex, int button, ClickType actionType, Player player) {
+    public void clicked(int slotIndex, int button, ContainerInput actionType, Player player) {
         if (slotIndex >= 0 && slotIndex < SIZE) {
             // Ghost slot: set/clear a sample from the cursor without consuming it.
-            if (actionType == ClickType.PICKUP || actionType == ClickType.PICKUP_ALL) {
-                ItemStack cursor = getCursorStack();
+            if (actionType == ContainerInput.PICKUP || actionType == ContainerInput.PICKUP_ALL) {
+                ItemStack cursor = getCarried();
                 Slot slot = this.slots.get(slotIndex);
                 if (cursor.isEmpty()) {
                     slot.set(ItemStack.EMPTY);
@@ -64,7 +64,7 @@ public class HarmonicFilterScreenHandler extends AbstractContainerMenu {
             }
             return; // ghost slots never run default handling
         }
-        super.onSlotClick(slotIndex, button, actionType, player);
+        super.clicked(slotIndex, button, actionType, player);
     }
 
     /** No shift-transfer — the grid is configured by clicking, not by moving items. */

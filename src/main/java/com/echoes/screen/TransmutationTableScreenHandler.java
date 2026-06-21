@@ -14,7 +14,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -77,12 +77,12 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
 
         this.addSlot(new Slot(inv, INPUT, INPUT_X, SLOT_Y));         // dissolve
         this.addSlot(new Slot(inv, OUTPUT, OUTPUT_X, SLOT_Y) {       // extract-only
-            @Override public boolean canInsert(ItemStack stack) { return false; }
+            @Override public boolean mayPlace(ItemStack stack) { return false; }
         });
         this.addSlot(new Slot(inv, TEMPLATE, TEMPLATE_X, SLOT_Y) {   // ghost target
-            @Override public boolean canInsert(ItemStack stack) { return false; }
-            @Override public boolean canTakeItems(Player p) { return false; }
-            @Override public int getMaxItemCount() { return 1; }
+            @Override public boolean mayPlace(ItemStack stack) { return false; }
+            @Override public boolean mayPickup(Player p) { return false; }
+            @Override public int getMaxStackSize() { return 1; }
         });
 
         for (int row = 0; row < 3; row++)
@@ -178,11 +178,11 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public void onSlotClick(int slotIndex, int button, ClickType actionType, Player p) {
+    public void clicked(int slotIndex, int button, ContainerInput actionType, Player p) {
         if (slotIndex == TEMPLATE) {
             // Ghost slot: set/clear the condense target from the cursor without consuming it.
-            if (actionType == ClickType.PICKUP || actionType == ClickType.PICKUP_ALL) {
-                ItemStack cursor = getCursorStack();
+            if (actionType == ContainerInput.PICKUP || actionType == ContainerInput.PICKUP_ALL) {
+                ItemStack cursor = getCarried();
                 if (cursor.isEmpty()) {
                     inv.set(TEMPLATE, ItemStack.EMPTY);
                 } else {
@@ -193,7 +193,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
             }
             return;
         }
-        super.onSlotClick(slotIndex, button, actionType, p);
+        super.clicked(slotIndex, button, actionType, p);
     }
 
     @Override

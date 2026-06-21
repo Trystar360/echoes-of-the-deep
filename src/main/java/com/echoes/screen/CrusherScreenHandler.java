@@ -31,10 +31,10 @@ public class CrusherScreenHandler extends AbstractContainerMenu {
 
         this.addSlot(new Slot(inv, 0, 56, 35));        // input
         this.addSlot(new Slot(inv, 1, 116, 35) {       // output (extract-only)
-            @Override public boolean canInsert(ItemStack stack) { return false; }
+            @Override public boolean mayPlace(ItemStack stack) { return false; }
         });
         this.addSlot(new Slot(inv, 2, 116, 57) {       // byproduct (extract-only)
-            @Override public boolean canInsert(ItemStack stack) { return false; }
+            @Override public boolean mayPlace(ItemStack stack) { return false; }
         });
 
         // player inventory + hotbar
