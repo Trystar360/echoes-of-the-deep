@@ -68,7 +68,8 @@ public class EchoesMod implements ModInitializer {
 
         // Optional cross-mod energy bridge — only when Team Reborn Energy is present.
         // Isolated in a separate class so its TR Energy references aren't loaded otherwise.
-        if (false) { // Team Reborn Energy bridge disabled until a 26.1 build of the energy API ships
+        if (FabricLoader.getInstance().isModLoaded("team_reborn_energy")) {
+            com.echoes.compat.TeamRebornEnergyCompat.register();
         }
 
         LOGGER.info("Echoes of the Deep initialized.");

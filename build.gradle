@@ -32,10 +32,12 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    // NOTE: the Team Reborn Energy bridge (compat/) is temporarily disabled for 26.1 —
-    // no 26.1-compatible Team Reborn Energy build is available yet, and "no mods for
-    // 1.21.11 or older work on 26.1 even as a compile-only dependency". Restore the
-    // `compileOnly "teamreborn:energy:<26.1 build>"` line and re-enable compat/ when it ships.
+    // Team Reborn Energy bridge (compat/) compiles against a tiny in-tree stub of the
+    // EnergyStorage API (src/main/java/team/reborn/energy/api). The stub is EXCLUDED from
+    // the published jar (see the `jar` task below), so it is never shipped and cannot clash
+    // with the real mod. The bridge is guarded by isModLoaded("team_reborn_energy") and binds
+    // at runtime to whatever 26.1-compatible Team Reborn Energy the player installs. No
+    // remapped TR Energy artifact exists for 26.1 yet, hence the compile-only stub.
 }
 
 processResources {
@@ -61,4 +63,7 @@ jar {
     from("LICENSE") {
         rename { "${it}_${project.base.archivesName.get()}" }
     }
+    // The Team Reborn Energy API stub is compile-only — never ship it (the real mod
+    // provides team.reborn.energy.api.* at runtime).
+    exclude "team/reborn/**"
 }
