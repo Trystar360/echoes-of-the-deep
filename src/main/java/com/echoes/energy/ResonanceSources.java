@@ -30,7 +30,7 @@ public final class ResonanceSources implements SimpleSynchronousResourceReloadLi
 
     /** RU emitted by this sound, or 0 if it isn't a resonance source. */
     public static int ru(Holder<SoundEvent> sound) {
-        Identifier id = sound.getKey().map(net.minecraft.resources.ResourceKey::getValue).orElseGet(() -> sound.value().id());
+        Identifier id = sound.unwrapKey().map(net.minecraft.resources.ResourceKey::identifier).orElseGet(() -> sound.value().location());
         return SOURCES.getOrDefault(id, 0);
     }
 
@@ -42,12 +42,12 @@ public final class ResonanceSources implements SimpleSynchronousResourceReloadLi
     public Identifier getFabricId() { return LISTENER_ID; }
 
     @Override
-    public void reload(ResourceManager manager) {
+    public void onResourceManagerReload(ResourceManager manager) {
         SOURCES.clear();
-        for (Resource resource : manager.getAllResources(FILE)) {
-            try (Reader reader = resource.getReader()) {
-                JsonObject root = GsonHelper.deserialize(reader);
-                JsonObject sources = GsonHelper.getObject(root, "sources", new JsonObject());
+        for (Resource resource : manager.getResourceStack(FILE)) {
+            try (Reader reader = resource.openAsReader()) {
+                JsonObject root = GsonHelper.parse(reader);
+                JsonObject sources = GsonHelper.getAsJsonObject(root, "sources", new JsonObject());
                 for (Map.Entry<String, com.google.gson.JsonElement> e : sources.entrySet()) {
                     Identifier id = Identifier.tryParse(e.getKey());
                     if (id != null && e.getValue().isJsonPrimitive()) {
@@ -56,7 +56,7 @@ public final class ResonanceSources implements SimpleSynchronousResourceReloadLi
                 }
             } catch (Exception ex) {
                 EchoesMod.LOGGER.warn("Failed to read resonance_sources.json from {}: {}",
-                        resource.getPackId(), ex.toString());
+                        resource.sourcePackId(), ex.toString());
             }
         }
         EchoesMod.LOGGER.info("Loaded {} resonance sound sources", SOURCES.size());
