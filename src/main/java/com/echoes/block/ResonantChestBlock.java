@@ -2,6 +2,7 @@ package com.echoes.block;
 
 import com.echoes.block.entity.AbstractChannelDeviceBlockEntity;
 import com.echoes.block.entity.ResonantChestBlockEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.entity.player.Player;
@@ -39,12 +40,10 @@ public class ResonantChestBlock extends AbstractHorizontalDeviceBlock {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.is(newState.getBlock())) {
-            if (world.getBlockEntity(pos) instanceof ResonantChestBlockEntity be) {
-                Containers.spawn(world, pos, be.getItems());
-            }
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
+        if (world.getBlockEntity(pos) instanceof ResonantChestBlockEntity be) {
+            Containers.spawn(world, pos, be.getItems());
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
+        super.affectNeighborsAfterRemoval(state, world, pos, moved);
     }
 }

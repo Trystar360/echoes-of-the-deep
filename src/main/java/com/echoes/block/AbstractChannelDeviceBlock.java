@@ -69,11 +69,11 @@ public abstract class AbstractChannelDeviceBlock extends Block implements Entity
 
     protected static void sendChannel(Player player, int channel) {
         DyeColor color = DyeColor.byId(channel);
-        player.sendMessage(Component.translatable("message.echoes.channel",
-                Component.translatable("color.minecraft." + color.getName())), true);
+        player.sendOverlayMessage(Component.translatable("message.echoes.channel",
+                Component.translatable("color.minecraft." + color.getName())));
     }
 
     protected static void sendStatus(Player player, String translationKey, Object... args) {
-        player.sendMessage(Component.translatable(translationKey, args), true);
+        player.sendOverlayMessage(Component.translatable(translationKey, args));
     }
 }

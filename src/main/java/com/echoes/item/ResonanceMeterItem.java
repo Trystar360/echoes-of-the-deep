@@ -32,19 +32,19 @@ public class ResonanceMeterItem extends Item {
         }
 
         Component name = ctx.getLevel().getBlockState(ctx.getClickedPos()).getBlock().getName();
-        player.sendMessage(Component.translatable("message.echoes.meter.header", name, roles(node)), false);
+        player.sendSystemMessage(Component.translatable("message.echoes.meter.header", name, roles(node)));
 
         if (node.capacityRu() > 0) {
             long stored = node.storedRu(), cap = node.capacityRu();
             int pct = (int) Math.round(100.0 * stored / cap);
-            player.sendMessage(Component.translatable("message.echoes.meter.stored",
-                    fmt(stored), fmt(cap), pct), false);
+            player.sendSystemMessage(Component.translatable("message.echoes.meter.stored",
+                    fmt(stored), fmt(cap), pct));
         }
         if (node.is(NodeRole.CONSUMER) && node.demand() > 0) {
-            player.sendMessage(Component.translatable("message.echoes.meter.demand", fmt(node.demand())), false);
+            player.sendSystemMessage(Component.translatable("message.echoes.meter.demand", fmt(node.demand())));
         }
         if (node.is(NodeRole.CONDUIT) && node.transferCap() > 0) {
-            player.sendMessage(Component.translatable("message.echoes.meter.throughput", fmt(node.transferCap())), false);
+            player.sendSystemMessage(Component.translatable("message.echoes.meter.throughput", fmt(node.transferCap())));
         }
         return InteractionResult.SUCCESS;
     }

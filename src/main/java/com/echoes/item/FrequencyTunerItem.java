@@ -37,7 +37,7 @@ public class FrequencyTunerItem extends Item {
         // Sneak on a wireless device still does the quick channel-copy.
         if (player.isShiftKeyDown() && be instanceof AbstractChannelDeviceBlockEntity device) {
             store(tuner, device.channel());
-            player.sendMessage(Component.translatable("message.echoes.tuner.copied", colorName(device.channel())), true);
+            player.sendOverlayMessage(Component.translatable("message.echoes.tuner.copied", colorName(device.channel())));
             return InteractionResult.SUCCESS;
         }
 

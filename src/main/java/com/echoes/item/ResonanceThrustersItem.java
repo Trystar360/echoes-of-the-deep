@@ -69,8 +69,8 @@ public class ResonanceThrustersItem extends Item {
             setRu(stack, ru(stack) + (int) pulled);
             if (node instanceof BlockEntity be) be.setChanged();
             Player p = ctx.getPlayer();
-            if (p != null) p.sendMessage(Component.translatable("message.echoes.thrusters.charge",
-                    fmt(ru(stack)), fmt(CAPACITY)), true);
+            if (p != null) p.sendOverlayMessage(Component.translatable("message.echoes.thrusters.charge",
+                    fmt(ru(stack)), fmt(CAPACITY)));
         }
         return InteractionResult.SUCCESS;
     }

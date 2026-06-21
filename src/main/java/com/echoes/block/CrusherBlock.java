@@ -63,22 +63,18 @@ public class CrusherBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public void onBlockAdded(BlockState state, Level world, BlockPos pos, BlockState old, boolean notify) {
+    protected void onPlace(BlockState state, Level world, BlockPos pos, BlockState old, boolean notify) {
         if (world instanceof ServerLevel sw && !old.is(this)) {
             ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.immutable());
         }
     }
 
     @Override
-    public void onStateReplaced(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.is(newState.getBlock())) {
-            if (world.getBlockEntity(pos) instanceof CrusherBlockEntity be) {
-                Containers.spawn(world, pos, be.getItems());
-            }
-            if (world instanceof ServerLevel sw) {
-                ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.immutable());
-            }
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
+        if (world.getBlockEntity(pos) instanceof CrusherBlockEntity be) {
+            Containers.spawn(world, pos, be.getItems());
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
+        ResonanceNetworkManager.get(world).onAttachedNodeChanged(pos.immutable());
+        super.affectNeighborsAfterRemoval(state, world, pos, moved);
     }
 }

@@ -66,11 +66,10 @@ public class TransmutationTableBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.is(newState.getBlock())
-                && world.getBlockEntity(pos) instanceof TransmutationTableBlockEntity be) {
-            be.dropBankedLight(world, pos); // legacy banked Light → Mote coins, never silently lost
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
+        if (world.getBlockEntity(pos) instanceof TransmutationTableBlockEntity be) {
+            be.dropBankedLight(world, pos); // legacy banked Light -> Mote coins, never silently lost
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
+        super.affectNeighborsAfterRemoval(state, world, pos, moved);
     }
 }

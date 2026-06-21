@@ -54,14 +54,14 @@ public class OctaveStarItem extends Item {
             account.light += cur;
             setStored(stack, 0);
             state.setDirty();
-            user.sendMessage(Component.translatable("message.echoes.star.emptied", fmt(cur)), true);
+            user.sendOverlayMessage(Component.translatable("message.echoes.star.emptied", fmt(cur)));
         } else {
             long move = Math.min(capacity - cur, account.light); // charge ← account
             if (move <= 0) return InteractionResult.PASS;
             account.light -= move;
             setStored(stack, cur + move);
             state.setDirty();
-            user.sendMessage(Component.translatable("message.echoes.star.charged", fmt(cur + move), fmt(capacity)), true);
+            user.sendOverlayMessage(Component.translatable("message.echoes.star.charged", fmt(cur + move), fmt(capacity)));
         }
         return InteractionResult.SUCCESS;
     }

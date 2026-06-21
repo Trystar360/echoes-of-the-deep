@@ -32,8 +32,8 @@ public class ChannelAtlasItem extends Item {
         }
         int ch = device.channel();
         int[] r = WirelessNetworkManager.channelRoster(ch);
-        player.sendMessage(Component.translatable("message.echoes.atlas.roster",
-                colorName(ch), r[0], r[1], r[2], r[3]), false);
+        player.sendSystemMessage(Component.translatable("message.echoes.atlas.roster",
+                colorName(ch), r[0], r[1], r[2], r[3]));
         return InteractionResult.SUCCESS;
     }
 
@@ -42,13 +42,13 @@ public class ChannelAtlasItem extends Item {
         if (!world.isClientSide()) {
             int[] counts = WirelessNetworkManager.channelCounts();
             boolean any = false;
-            user.sendMessage(Component.translatable("message.echoes.atlas.header"), false);
+            user.sendSystemMessage(Component.translatable("message.echoes.atlas.header"));
             for (int ch = 0; ch < counts.length; ch++) {
                 if (counts[ch] == 0) continue;
                 any = true;
-                user.sendMessage(Component.translatable("message.echoes.atlas.line", colorName(ch), counts[ch]), false);
+                user.sendSystemMessage(Component.translatable("message.echoes.atlas.line", colorName(ch), counts[ch]));
             }
-            if (!any) user.sendMessage(Component.translatable("message.echoes.atlas.empty"), false);
+            if (!any) user.sendSystemMessage(Component.translatable("message.echoes.atlas.empty"));
         }
         return InteractionResult.SUCCESS;
     }
