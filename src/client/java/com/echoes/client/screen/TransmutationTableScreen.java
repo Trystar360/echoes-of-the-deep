@@ -81,6 +81,6 @@ public class TransmutationTableScreen extends AbstractContainerScreen<Transmutat
         super.extractLabels(g, mouseX, mouseY);
         // Banked Bound-Light readout (panel-relative coordinates).
         g.text(font, Component.translatable("screen.echoes.bound_light", menu.boundLight()),
-                8, 24, 0xE0E8EC, false);
+                8, 24, 0xFFE0E8EC, false);
     }
 }

@@ -31,6 +31,8 @@ public class CrusherScreen extends AbstractContainerScreen<CrusherScreenHandler>
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
-        g.text(font, Component.literal(menu.storedRu() + " Light"), 8, 6, 0x404040, false);
+        // Right-aligned in the title row so it doesn't overlap the block-name title.
+        Component ru = Component.literal(menu.storedRu() + " Light");
+        g.text(font, ru, imageWidth - font.width(ru) - 8, 6, 0xFF7FE9DD, false);
     }
 }
