@@ -26,6 +26,39 @@ A trial run on this repo established the real scope:
   Phase B code can be written but must be compiled/run where Java 25 + the 26.1 toolchain
   (Loom 1.15, Fabric API 26.1.2) are available.
 
+## Phase B kickoff — verified against the real 26.1.2 jars
+
+Provisioned **JDK 25** (Temurin 25.0.3) and the 26.1.2 toolchain; the build **resolves and
+compiles-attempts headlessly**. Toolchain (committed): Loom **1.17-SNAPSHOT**, Gradle
+**9.5.1**, Loader **0.19.3**, Fabric API **0.152.1+26.1.2**, mappings = Loom official
+(no `mappings` line). A trial source migration (`migrate_mojmap.py` + `migrate_mojmap2.py`)
+was run, the surface measured, then **reverted** (kept the scripts; src stays clean) so the
+branch isn't littered with half-renamed code.
+
+**Key finding — 26.1's official names are bespoke, derive the map from the jar.** Packages
+are Mojmap-style (`net.minecraft.core.BlockPos`, `net.minecraft.world.*`) but some class
+names keep Mojang's own spelling. Validated all 130 mappings against
+`minecraft-*-deobf-26.1.2.jar`: **124/130 correct**. Corrections/uniques:
+- `Identifier` stays **`Identifier`** (`net.minecraft.resources.Identifier`) — *not*
+  `ResourceLocation`. (Its `Identifier.of(ns,path)` factory likely also renamed — verify.)
+- RenderType is `net.minecraft.client.renderer.rendertype.**RenderType**`.
+- `Item.Properties`, `BlockBehaviour.Properties`, `HolderLookup.Provider` confirmed (block
+  ctors use the inherited bare `Properties`, not `Settings`).
+
+**Real API changes (not just renames) — own tasks:**
+- ⛔ **`PickaxeItem` and `SwordItem` were removed** in the 26.1 tool rework (Axe/Hoe/Shovel
+  remain). `ResonantPickaxeItem`/`ResonantSwordItem` must become `Item` (or a tool base)
+  with tool/weapon **data components** instead of subclassing the removed classes.
+- ⚠️ **GUI overhaul:** the `DrawContext`/`GuiGraphics` draw class and the slot click-type
+  (`SlotActionType`→`ClickType`?) names changed — resolve from the client jar; affects the
+  4 `*Screen` classes' `drawTexture`/`onSlotClick`.
+- **Method-rename layer still pending** (the scripts do imports/classes only): e.g.
+  `writeNbt`→`saveAdditional` (+signature), `getCachedState`→`getBlockState`,
+  `markDirty`→`setChanged`, `getPos`→`getBlockPos`, `up()/down()`→`above()/below()`,
+  `getTime`→`getGameTime`, `isChunkLoaded`→`hasChunk`, recipe `MapCodec`/`StreamCodec`,
+  Fabric `InventoryStorage`/`ExtendedScreenHandlerType` API, mixin descriptors. These
+  surface as the next compile round and are fixed per-file.
+
 ## Phase A — migrate Yarn → Mojang official mappings (still on 1.21.4)
 
 - [ ] `build.gradle`: `mappings "net.fabricmc:yarn:…:v2"` → `mappings loom.officialMojangMappings()`
