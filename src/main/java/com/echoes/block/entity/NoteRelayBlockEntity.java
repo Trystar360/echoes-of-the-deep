@@ -1,4 +1,6 @@
 package com.echoes.block.entity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.wireless.RelayMode;
@@ -45,7 +47,7 @@ public class NoteRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     private void setOutput(int level) {
         if (level == output || world == null) return;
         output = level;
-        markDirty();
+        setChanged();
         BlockState state = getCachedState();
         boolean powered = output > 0;
         if (state.contains(BlockStateProperties.POWERED) && state.get(BlockStateProperties.POWERED) != powered) {

@@ -9,6 +9,8 @@ import com.echoes.registry.ModBlockEntities;
 import com.echoes.screen.CrusherScreenHandler;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
@@ -133,7 +135,7 @@ public class CrusherBlockEntity extends BlockEntity
             }
             // else: byproduct slot is full/mismatched — the roll is forfeited, machine keeps running.
         }
-        markDirty();
+        setChanged();
     }
 
     // --- sided access: top inserts input; other faces extract output + byproduct ---
@@ -163,17 +165,17 @@ public class CrusherBlockEntity extends BlockEntity
         return new CrusherScreenHandler(syncId, inv, this, props);
     }
 
-    @Override public void markDirty() { super.markDirty(); }
+    @Override public void setChanged() { super.markDirty(); }
 
     // --- Configurable ---
     @Override public com.echoes.config.BlockConfig getConfig() { return config; }
     @Override public com.echoes.config.ConfigSpec getConfigSpec() { return SPEC; }
     @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
-    @Override public void onConfigChanged() { markDirty(); }
+    @Override public void onConfigChanged() { setChanged(); }
 
     @Override
-    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
-        super.writeNbt(nbt, lookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         net.minecraft.world.ContainerHelper.writeNbt(nbt, items, lookup);
         buffer.writeNbt(nbt);
         config.writeNbt(nbt);
@@ -181,8 +183,8 @@ public class CrusherBlockEntity extends BlockEntity
     }
 
     @Override
-    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
-        super.readNbt(nbt, lookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         net.minecraft.world.ContainerHelper.readNbt(nbt, items, lookup);
         buffer.readNbt(nbt);
         config.readNbt(nbt);

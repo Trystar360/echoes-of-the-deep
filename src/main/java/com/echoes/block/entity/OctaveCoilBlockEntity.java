@@ -9,6 +9,8 @@ import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.server.level.ServerLevel;
@@ -63,18 +65,18 @@ public class OctaveCoilBlockEntity extends BlockEntity implements ResonanceNode,
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
     @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
-    @Override public void onConfigChanged() { markDirty(); }
+    @Override public void onConfigChanged() { setChanged(); }
 
     @Override
-    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
-        super.writeNbt(nbt, lookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         storage.writeNbt(nbt);
         config.writeNbt(nbt);
     }
 
     @Override
-    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
-        super.readNbt(nbt, lookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         storage.readNbt(nbt);
         config.readNbt(nbt);
     }

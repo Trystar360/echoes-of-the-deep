@@ -1,4 +1,6 @@
 package com.echoes.block.entity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +30,7 @@ public interface ImplementedInventory extends WorldlyContainer {
 
     @Override default ItemStack removeStack(int slot, int count) {
         ItemStack result = net.minecraft.world.ContainerHelper.splitStack(getItems(), slot, count);
-        if (!result.isEmpty()) markDirty();
+        if (!result.isEmpty()) setChanged();
         return result;
     }
 
@@ -39,12 +41,12 @@ public interface ImplementedInventory extends WorldlyContainer {
     @Override default void setStack(int slot, ItemStack stack) {
         getItems().set(slot, stack);
         if (stack.getCount() > getMaxCountPerStack()) stack.setCount(getMaxCountPerStack());
-        markDirty();
+        setChanged();
     }
 
     @Override default void clear() { getItems().clear(); }
 
-    @Override default void markDirty() {}
+    @Override default void setChanged() {}
 
     @Override default boolean canPlayerUse(net.minecraft.world.entity.player.Player player) { return true; }
 

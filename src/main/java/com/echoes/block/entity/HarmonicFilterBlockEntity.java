@@ -1,4 +1,6 @@
 package com.echoes.block.entity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.screen.HarmonicFilterScreenHandler;

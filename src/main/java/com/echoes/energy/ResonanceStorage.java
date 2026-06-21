@@ -1,6 +1,7 @@
 package com.echoes.energy;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * A simple bounded RU buffer. Block entities embed one of these and delegate
@@ -57,14 +58,14 @@ public class ResonanceStorage {
         return (int) Math.round(15.0 * amount / capacity);
     }
 
-    public void writeNbt(CompoundTag nbt) {
-        nbt.putLong("ru", amount);
-        nbt.putLong("ruCap", capacity);
+    public void writeNbt(ValueOutput out) {
+        out.putLong("ru", amount);
+        out.putLong("ruCap", capacity);
     }
 
-    public void readNbt(CompoundTag nbt) {
-        amount = nbt.getLong("ru");
-        if (nbt.contains("ruCap")) capacity = nbt.getLong("ruCap");
+    public void readNbt(ValueInput in) {
+        amount = in.getLongOr("ru", 0L);
+        capacity = in.getLongOr("ruCap", capacity);
         if (amount > capacity) amount = capacity;
     }
 }

@@ -7,6 +7,8 @@ import com.echoes.registry.ModBlockEntities;
 import com.echoes.screen.AttunementFurnaceScreenHandler;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -117,7 +119,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
         getStack(INPUT).decrement(1);
         if (getStack(OUTPUT).isEmpty()) setStack(OUTPUT, result.copy());
         else getStack(OUTPUT).increment(result.getCount());
-        markDirty();
+        setChanged();
     }
 
     // --- sided access: top inserts input; other faces extract output ---
@@ -150,11 +152,11 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     @Override public com.echoes.config.BlockConfig getConfig() { return config; }
     @Override public com.echoes.config.ConfigSpec getConfigSpec() { return SPEC; }
     @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
-    @Override public void onConfigChanged() { markDirty(); }
+    @Override public void onConfigChanged() { setChanged(); }
 
     @Override
-    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
-        super.writeNbt(nbt, lookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         net.minecraft.world.ContainerHelper.writeNbt(nbt, items, lookup);
         buffer.writeNbt(nbt);
         config.writeNbt(nbt);
@@ -162,8 +164,8 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     }
 
     @Override
-    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
-        super.readNbt(nbt, lookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         net.minecraft.world.ContainerHelper.readNbt(nbt, items, lookup);
         buffer.readNbt(nbt);
         config.readNbt(nbt);

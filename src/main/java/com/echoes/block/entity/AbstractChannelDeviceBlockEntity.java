@@ -7,6 +7,8 @@ import com.echoes.wireless.WirelessDevice;
 import com.echoes.wireless.WirelessNetworkManager;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.HolderLookup;
@@ -54,7 +56,7 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
 
     /** Re-register with the manager and persist. Call after any networked change. */
     protected void sync() {
-        markDirty();
+        setChanged();
         if (world instanceof ServerLevel) {
             WirelessNetworkManager.register(this);
             registered = true;
@@ -80,15 +82,15 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
     }
 
     @Override
-    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
-        super.writeNbt(nbt, lookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         config.writeNbt(nbt);
         writeExtra(nbt, lookup);
     }
 
     @Override
-    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
-        super.readNbt(nbt, lookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         config.readNbt(nbt);
         if (nbt.contains("channel")) config.setChannel(nbt.getInt("channel")); // legacy saves
         registered = false; // re-register against the (possibly new) world roster

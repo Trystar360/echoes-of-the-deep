@@ -4,6 +4,8 @@ import com.echoes.registry.ModBlockEntities;
 import com.echoes.registry.ModItems;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.HolderLookup;
@@ -31,7 +33,7 @@ public class TransmutationTableBlockEntity extends BlockEntity {
     public long drainLegacyLight() {
         long l = legacyLight;
         legacyLight = 0;
-        markDirty();
+        setChanged();
         return l;
     }
 
@@ -53,14 +55,14 @@ public class TransmutationTableBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void writeNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
-        super.writeNbt(nbt, lookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         if (legacyLight > 0) nbt.putLong("bound_light", legacyLight);
     }
 
     @Override
-    protected void readNbt(CompoundTag nbt, HolderLookup.Provider lookup) {
-        super.readNbt(nbt, lookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         legacyLight = nbt.getLong("bound_light");
     }
 }
