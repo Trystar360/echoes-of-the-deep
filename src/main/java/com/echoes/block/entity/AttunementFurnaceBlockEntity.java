@@ -105,7 +105,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
 
     private ItemStack resultOf(RecipeHolder<SmeltingRecipe> entry) {
         if (!(level instanceof ServerLevel sw)) return ItemStack.EMPTY;
-        return entry.value().craft(new SingleRecipeInput(getItem(INPUT)), sw.registryAccess());
+        return entry.value().assemble(new SingleRecipeInput(getItem(INPUT)));
     }
 
     private boolean hasOutputRoom(ItemStack result) {
@@ -123,7 +123,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     }
 
     // --- sided access: top inserts input; other faces extract output ---
-    @Override public int[] getAvailableSlots(Direction side) {
+    @Override public int[] getSlotsForFace(Direction side) {
         return side == Direction.UP ? new int[]{INPUT} : new int[]{OUTPUT};
     }
     @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == INPUT; }

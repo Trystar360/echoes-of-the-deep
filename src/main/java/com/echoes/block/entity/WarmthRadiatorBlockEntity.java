@@ -75,7 +75,7 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
             Optional<? extends net.minecraft.world.item.crafting.RecipeHolder<SmeltingRecipe>> m =
                     sw.recipeAccess().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), sw);
             if (m.isEmpty()) continue;
-            ItemStack result = m.get().value().craft(new SingleRecipeInput(stack), sw.registryAccess());
+            ItemStack result = m.get().value().assemble(new SingleRecipeInput(stack));
             if (result.isEmpty()) continue;
             ItemStack out = result.copy();
             out.setCount(stack.getCount() * result.getCount());

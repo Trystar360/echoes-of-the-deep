@@ -4,7 +4,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import com.echoes.registry.ModBlockEntities;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 
@@ -29,12 +28,12 @@ public class ResonantSplitterBlockEntity extends AbstractChannelDeviceBlockEntit
     }
 
     @Override
-    protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
+    protected void writeExtra(ValueOutput nbt) {
         nbt.putBoolean("roundRobin", roundRobin);
     }
 
     @Override
-    protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
-        roundRobin = !nbt.contains("roundRobin") || nbt.getBooleanOr("roundRobin", false);
+    protected void readExtra(ValueInput nbt) {
+        roundRobin = nbt.getBooleanOr("roundRobin", true);
     }
 }

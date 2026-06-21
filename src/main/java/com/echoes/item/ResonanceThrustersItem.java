@@ -43,7 +43,7 @@ public class ResonanceThrustersItem extends Item {
     /** True if this living entity is a player carrying charged thrusters — no fall damage. */
     public static boolean shieldsFall(net.minecraft.world.entity.LivingEntity entity) {
         if (!(entity instanceof Player p)) return false;
-        for (ItemStack s : p.getInventory().main) {
+        for (ItemStack s : p.getInventory().getNonEquipmentItems()) {
             if (s.getItem() instanceof ResonanceThrustersItem && ru(s) > 0) return true;
         }
         return p.getOffhandItem().getItem() instanceof ResonanceThrustersItem
@@ -84,7 +84,7 @@ public class ResonanceThrustersItem extends Item {
         return InteractionResult.CONSUME;
     }
 
-    @Override public ItemUseAnimation getUseAction(ItemStack stack) { return ItemUseAnimation.BOW; }
+    @Override public ItemUseAnimation getUseAnimation(ItemStack stack) { return ItemUseAnimation.BOW; }
     @Override public int getMaxUseTime(ItemStack stack, LivingEntity user) { return 72_000; }
 
     @Override

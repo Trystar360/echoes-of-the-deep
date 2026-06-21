@@ -83,9 +83,9 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
             List<Entity> pickups = sw.getEntitiesOfClass(Entity.class, box,
                     e -> e instanceof ItemEntity || e instanceof ExperienceOrb);
             for (Entity e : pickups) {
-                Vec3 dir = c.subtract(e.blockPosition());
+                Vec3 dir = c.subtract(e.position());
                 if (dir.lengthSqr() < 0.6) continue;
-                e.setDeltaMovement(e.getDeltaMovement().multiply(0.4).add(dir.normalize().multiply(PULL)));
+                e.setDeltaMovement(e.getDeltaMovement().scale(0.4).add(dir.normalize().scale(PULL)));
                 e.hurtMarked = true;
                 acted = true;
             }
@@ -93,9 +93,9 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
             List<LivingEntity> mobs = sw.getEntitiesOfClass(LivingEntity.class, box,
                     e -> !(e instanceof Player) && e.isAlive());
             for (LivingEntity e : mobs) {
-                Vec3 dir = e.blockPosition().subtract(c);
+                Vec3 dir = e.position().subtract(c);
                 if (dir.lengthSqr() < 0.01) dir = new Vec3(0, 1, 0);
-                e.setDeltaMovement(e.getDeltaMovement().add(dir.normalize().multiply(PUSH).add(0, 0.2, 0)));
+                e.setDeltaMovement(e.getDeltaMovement().add(dir.normalize().scale(PUSH).add(0, 0.2, 0)));
                 e.hurtMarked = true;
                 acted = true;
             }

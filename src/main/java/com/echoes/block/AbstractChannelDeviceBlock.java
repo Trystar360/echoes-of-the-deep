@@ -47,10 +47,13 @@ public abstract class AbstractChannelDeviceBlock extends Block implements Entity
         if (!(world.getBlockEntity(pos) instanceof AbstractChannelDeviceBlockEntity device)) return InteractionResult.PASS;
 
         ItemStack held = player.getMainHandItem();
-        if (held.getItem() instanceof DyeItem dye) {
-            device.setChannel(dye.getColor().getId());
-            sendChannel(player, device.channel());
-            return InteractionResult.SUCCESS;
+        if (held.getItem() instanceof DyeItem) {
+            net.minecraft.world.item.DyeColor color = held.get(net.minecraft.core.component.DataComponents.DYE);
+            if (color != null) {
+                device.setChannel(color.getId());
+                sendChannel(player, device.channel());
+                return InteractionResult.SUCCESS;
+            }
         }
         if (player.isShiftKeyDown() && held.isEmpty()) {
             device.cycleChannel();

@@ -56,7 +56,7 @@ public class TransmutationTableBlock extends Block implements EntityBlock {
             if (world.getBlockEntity(pos) instanceof TransmutationTableBlockEntity be && be.legacyLight() > 0
                     && world instanceof ServerLevel sw) {
                 TransmutationState.get(sw).of(player.getUUID()).light += be.drainLegacyLight();
-                TransmutationState.get(sw).setChanged();
+                TransmutationState.get(sw).setDirty();
             }
             player.openMenu(new SimpleMenuProvider(
                     (syncId, inv, p) -> new TransmutationTableScreenHandler(syncId, inv),

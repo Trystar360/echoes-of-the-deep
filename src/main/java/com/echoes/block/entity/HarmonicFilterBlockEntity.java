@@ -46,7 +46,7 @@ public class HarmonicFilterBlockEntity extends AbstractChannelDeviceBlockEntity
     }
 
     // The ghost grid is configured via the screen only — keep hoppers/pipes out.
-    @Override public int[] getAvailableSlots(Direction side) { return new int[0]; }
+    @Override public int[] getSlotsForFace(Direction side) { return new int[0]; }
     @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) { return false; }
     @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) { return false; }
 

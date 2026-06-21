@@ -54,12 +54,12 @@ public class NoteRelayBlock extends AbstractHorizontalDeviceBlock {
     }
 
     @Override
-    protected boolean emitsRedstonePower(BlockState state) {
+    protected boolean isSignalSource(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getWeakRedstonePower(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
+    protected int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
         return world.getBlockEntity(pos) instanceof NoteRelayBlockEntity note ? note.redstonePower() : 0;
     }
 }

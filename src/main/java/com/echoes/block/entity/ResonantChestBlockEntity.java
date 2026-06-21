@@ -44,7 +44,7 @@ public class ResonantChestBlockEntity extends AbstractChannelDeviceBlockEntity
     }
 
     // Full, unsided access for hoppers/pipes and the wireless network.
-    @Override public int[] getAvailableSlots(Direction side) {
+    @Override public int[] getSlotsForFace(Direction side) {
         int[] slots = new int[SIZE];
         for (int i = 0; i < SIZE; i++) slots[i] = i;
         return slots;

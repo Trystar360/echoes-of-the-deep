@@ -139,7 +139,7 @@ public class CrusherBlockEntity extends BlockEntity
     }
 
     // --- sided access: top inserts input; other faces extract output + byproduct ---
-    @Override public int[] getAvailableSlots(Direction side) {
+    @Override public int[] getSlotsForFace(Direction side) {
         return side == Direction.UP ? new int[]{INPUT} : new int[]{OUTPUT, BYPRODUCT};
     }
     @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == INPUT; }

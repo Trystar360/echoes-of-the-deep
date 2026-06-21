@@ -48,7 +48,7 @@ public class TransmutationTableBlockEntity extends BlockEntity {
             while (count > 0) {
                 int batch = (int) Math.min(64, count);
                 count -= batch;
-                Containers.dropContents(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         new ItemStack(ModItems.MOTES[t], batch));
             }
         }

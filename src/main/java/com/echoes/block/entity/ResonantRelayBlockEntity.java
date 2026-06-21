@@ -11,7 +11,6 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.core.BlockPos;
@@ -44,7 +43,7 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     }
 
     /** The block this relay reads from / writes to. */
-    private BlockPos attachedPos() { return getBlockPos().offset(facing()); }
+    private BlockPos attachedPos() { return getBlockPos().relative(facing()); }
 
     /** 0 when disabled, otherwise a rough channel indicator (1–15) for comparators. */
     public int comparatorOutput() {
@@ -67,12 +66,12 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     }
 
     @Override
-    protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
+    protected void writeExtra(ValueOutput nbt) {
         nbt.putInt("mode", mode.ordinal());
     }
 
     @Override
-    protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
+    protected void readExtra(ValueInput nbt) {
         mode = RelayMode.byId(nbt.getIntOr("mode", 0));
     }
 }

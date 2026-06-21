@@ -51,7 +51,7 @@ public class FrequencyTunerItem extends Item {
 
     private static void store(ItemStack stack, int channel) {
         CustomData comp = stack.get(DataComponents.CUSTOM_DATA);
-        CompoundTag nbt = comp == null ? new CompoundTag() : comp.copyNbt();
+        CompoundTag nbt = comp == null ? new CompoundTag() : comp.copyTag();
         nbt.putInt("channel", channel);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
     }
