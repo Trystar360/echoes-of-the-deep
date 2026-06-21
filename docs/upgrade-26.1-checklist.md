@@ -1,5 +1,19 @@
 # MC 26.1.2 upgrade — implementation checklist
 
+> ## ✅ COMPLETE — the port is done, builds, and runs.
+>
+> - **Both source sets compile** against Minecraft **26.1.2** (Mojang official mappings),
+>   Fabric Loader 0.19.3, Fabric API 0.152.1, Java 25, Loom 1.17.
+> - **`./gradlew clean build` is green** and produces `echoes-of-the-deep-0.2.0.jar`.
+> - **The dedicated server boots to `Done`** with the mod loaded: items/blocks register,
+>   both mixins apply, resources reload, and the recipe-graph Light-Value derivation runs
+>   (`124 seeds + 781 from recipes = 905 valued items`).
+> - Runtime caught and fixed one issue compile could not: `playSound` is declared on
+>   `Level` (not `ServerLevel`), so `ServerWorldMixin` now mixes into `Level` with a
+>   server-side guard.
+> - The whole-codebase Yarn→Mojmap migration was driven by verifying every rename against
+>   the deobf `26.1.2` jars with `javap` before applying it.
+
 Living tracker for executing [`upgrade-26.1-plan.md`](upgrade-26.1-plan.md). Tick items as
 they land. Order matters: **Phase A** (Mojmap on 1.21.4) is verifiable in the current
 Java 21 / Loom 1.9.2 environment; **Phase B** (jump to 26.1.2) needs Java 25 + the 26.1
