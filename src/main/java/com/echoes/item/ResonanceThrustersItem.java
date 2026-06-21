@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.ChatFormatting;
@@ -17,7 +18,7 @@ import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Sound-powered flight. Hold right-click to thrust upward (and negate fall damage)
@@ -110,10 +111,11 @@ public class ResonanceThrustersItem extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
-        tooltip.add(Component.translatable("tooltip.echoes.thrusters.charge", fmt(ru(stack)), fmt(CAPACITY))
-                .formatted(ChatFormatting.AQUA));
-        tooltip.add(Component.translatable("tooltip.echoes.thrusters.hint").formatted(ChatFormatting.DARK_GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag type) {
+        tooltip.accept(Component.translatable("tooltip.echoes.thrusters.charge", fmt(ru(stack)), fmt(CAPACITY))
+                .withStyle(ChatFormatting.AQUA));
+        tooltip.accept(Component.translatable("tooltip.echoes.thrusters.hint").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     private static String fmt(int value) { return String.format("%,d", value); }

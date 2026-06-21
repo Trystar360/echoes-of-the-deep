@@ -186,7 +186,7 @@ public final class WirelessNetworkManager {
         long budget = Math.min(MAX_ITEMS * mult, givers * ITEMS_PER_SENDER * mult);
         List<Storage<ItemVariant>> sendSources = collectItems(senders, true);
         List<Storage<ItemVariant>> recvTargets = collectItems(receivers, false);
-        List<Storage<ItemVariant>> stores = collectItems(passive, false); // InventoryStorage does both
+        List<Storage<ItemVariant>> stores = collectItems(passive, false); // ContainerStorage does both
 
         final Set<Item> wl = whitelist;
         Predicate<ItemVariant> filter = wl == null ? v -> true : v -> wl.contains(v.getItem());

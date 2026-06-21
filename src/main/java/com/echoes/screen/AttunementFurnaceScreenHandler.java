@@ -24,8 +24,8 @@ public class AttunementFurnaceScreenHandler extends AbstractContainerMenu {
         super(ModScreens.ATTUNEMENT_FURNACE, syncId);
         this.inventory = inv;
         this.props = props;
-        checkSize(inv, 2);
-        inv.onOpen(playerInv.player);
+        checkContainerSize(inv, 2);
+        inv.startOpen(playerInv.player);
 
         this.addSlot(new Slot(inv, 0, 56, 35));        // input
         this.addSlot(new Slot(inv, 1, 116, 35) {       // output (extract-only)
@@ -46,25 +46,25 @@ public class AttunementFurnaceScreenHandler extends AbstractContainerMenu {
     public int storedRu() { return props.get(2); }
 
     @Override
-    public boolean canUse(Player player) {
-        return inventory.canPlayerUse(player);
+    public boolean stillValid(Player player) {
+        return inventory.stillValid(player);
     }
 
     @Override
-    public ItemStack quickMove(Player player, int slotIndex) {
+    public ItemStack quickMoveStack(Player player, int slotIndex) {
         ItemStack newStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
-        if (slot != null && slot.hasStack()) {
-            ItemStack original = slot.getStack();
+        if (slot != null && slot.hasItem()) {
+            ItemStack original = slot.getItem();
             newStack = original.copy();
             int machineSlots = 2;
             if (slotIndex < machineSlots) {
-                if (!this.insertItem(original, machineSlots, this.slots.size(), true)) return ItemStack.EMPTY;
-            } else if (!this.insertItem(original, 0, 1, false)) {
+                if (!this.moveItemStackTo(original, machineSlots, this.slots.size(), true)) return ItemStack.EMPTY;
+            } else if (!this.moveItemStackTo(original, 0, 1, false)) {
                 return ItemStack.EMPTY;
             }
-            if (original.isEmpty()) slot.setStack(ItemStack.EMPTY);
-            else slot.markDirty();
+            if (original.isEmpty()) slot.set(ItemStack.EMPTY);
+            else slot.setChanged();
         }
         return newStack;
     }

@@ -130,10 +130,10 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
         };
     }
 
-    @Override public ItemStack quickMove(Player player, int slot) { return ItemStack.EMPTY; }
+    @Override public ItemStack quickMoveStack(Player player, int slot) { return ItemStack.EMPTY; }
 
     @Override
-    public boolean canUse(Player player) {
+    public boolean stillValid(Player player) {
         return player.getWorld().getBlockEntity(pos) instanceof Configurable
                 && player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64.0;
     }

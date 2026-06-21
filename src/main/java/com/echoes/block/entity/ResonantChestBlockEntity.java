@@ -3,7 +3,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 import com.echoes.registry.ModBlockEntities;
-import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,7 +41,7 @@ public class ResonantChestBlockEntity extends AbstractChannelDeviceBlockEntity
     @Override public boolean isPassiveStorage() { return true; }
 
     @Override public @Nullable Storage<ItemVariant> wirelessItems() {
-        return InventoryStorage.of(this, null);
+        return ContainerStorage.of(this, null);
     }
 
     // Full, unsided access for hoppers/pipes and the wireless network.

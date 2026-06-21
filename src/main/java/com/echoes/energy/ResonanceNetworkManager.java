@@ -39,7 +39,7 @@ public class ResonanceNetworkManager {
 
     /** Restore persisted network topology (conduit sets) on first access per world. */
     private void load() {
-        state = world.getPersistentStateManager().getOrCreate(ResonanceNetworkState.TYPE, ResonanceNetworkState.KEY);
+        state = world.getDataStorage().computeIfAbsent(ResonanceNetworkState.TYPE);
         nextId = Math.max(nextId, state.nextId);
         for (Map.Entry<Integer, java.util.Set<BlockPos>> e : state.networks.entrySet()) {
             ResonanceNetwork net = new ResonanceNetwork(e.getKey());
@@ -59,7 +59,7 @@ public class ResonanceNetworkManager {
             state.networks.put(net.id, new java.util.HashSet<>(net.conduits));
         }
         state.nextId = nextId;
-        state.markDirty();
+        state.setDirty();
     }
 
     public static ResonanceNetworkManager get(ServerLevel world) {
@@ -67,7 +67,7 @@ public class ResonanceNetworkManager {
     }
 
     public static void init() {
-        ServerTickEvents.END_WORLD_TICK.register(world -> get(world).tick());
+        ServerTickEvents.END_LEVEL_TICK.register(world -> get(world).tick());
     }
 
     private void tick() {

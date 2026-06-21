@@ -5,11 +5,7 @@ import com.echoes.item.ChannelAtlasItem;
 import com.echoes.item.FrequencyTunerItem;
 import com.echoes.item.ResonanceMeterItem;
 import com.echoes.item.ResonanceThrustersItem;
-import com.echoes.item.ResonantAxeItem;
-import com.echoes.item.ResonantHoeItem;
-import com.echoes.item.ResonantPickaxeItem;
-import com.echoes.item.ResonantShovelItem;
-import com.echoes.item.ResonantSwordItem;
+import com.echoes.item.ResonantToolItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -95,15 +91,15 @@ public final class ModItems {
             BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 4000, 12.0f, 5.0f, 22, RESONANT_REPAIR);
 
     public static final Item RESONANT_PICKAXE = register("resonant_pickaxe",
-            s -> new ResonantPickaxeItem(ECHO_MATERIAL, 1.5f, -2.6f, s), new Item.Properties());
+            ResonantToolItem::new, new Item.Properties().pickaxe(ECHO_MATERIAL, 1.5f, -2.6f));
     public static final Item RESONANT_AXE = register("resonant_axe",
-            s -> new ResonantAxeItem(ECHO_MATERIAL, 6.0f, -3.0f, s), new Item.Properties());
+            ResonantToolItem::new, new Item.Properties().axe(ECHO_MATERIAL, 6.0f, -3.0f));
     public static final Item RESONANT_SHOVEL = register("resonant_shovel",
-            s -> new ResonantShovelItem(ECHO_MATERIAL, 1.5f, -3.0f, s), new Item.Properties());
+            ResonantToolItem::new, new Item.Properties().shovel(ECHO_MATERIAL, 1.5f, -3.0f));
     public static final Item RESONANT_SWORD = register("resonant_sword",
-            s -> new ResonantSwordItem(ECHO_MATERIAL, 4.0f, -2.2f, s), new Item.Properties());
+            ResonantToolItem::new, new Item.Properties().sword(ECHO_MATERIAL, 4.0f, -2.2f));
     public static final Item RESONANT_HOE = register("resonant_hoe",
-            s -> new ResonantHoeItem(ECHO_MATERIAL, -2.0f, 0.0f, s), new Item.Properties());
+            ResonantToolItem::new, new Item.Properties().hoe(ECHO_MATERIAL, -2.0f, 0.0f));
 
     public static Item register(String name, Function<Item.Properties, Item> factory, Item.Properties settings) {
         Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);

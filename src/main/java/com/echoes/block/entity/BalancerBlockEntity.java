@@ -49,7 +49,7 @@ public class BalancerBlockEntity extends BlockEntity implements Configurable {
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getBlockState().getBlock().getName(); }
     @Override public void onConfigChanged() { setChanged(); }
 
     @Override

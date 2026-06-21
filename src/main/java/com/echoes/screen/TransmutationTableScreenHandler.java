@@ -118,19 +118,19 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
         } else {
             return super.onButtonClick(p, btn);
         }
-        if (changed) state.markDirty();
+        if (changed) state.setChanged();
         return true;
     }
 
     /** Dissolve the input stack into banked Light and attune its tone. */
     private boolean dissolve() {
-        ItemStack in = inv.getStack(INPUT);
+        ItemStack in = inv.getItem(INPUT);
         if (in.isEmpty()) return false;
         long unit = LightValues.get(in.getItem());
         if (unit <= 0) return false; // no value / blacklisted
         account.light += unit * in.getCount();
         account.attuned.add(id(in.getItem()));
-        inv.setStack(INPUT, ItemStack.EMPTY);
+        inv.set(INPUT, ItemStack.EMPTY);
         return true;
     }
 
@@ -145,7 +145,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
 
     /** Re-create the (attuned) template item from the pool, up to {@code max} copies. */
     private boolean condense(int max) {
-        ItemStack tmpl = inv.getStack(TEMPLATE);
+        ItemStack tmpl = inv.getItem(TEMPLATE);
         if (tmpl.isEmpty()) return false;
         Item item = tmpl.getItem();
         if (!account.attuned.contains(id(item))) return false;
@@ -161,16 +161,16 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
 
     /** Add one of {@code item} to the output slot if it can stack there. */
     private boolean addToOutput(Item item) {
-        ItemStack out = inv.getStack(OUTPUT);
-        if (out.isEmpty()) { inv.setStack(OUTPUT, new ItemStack(item)); return true; }
+        ItemStack out = inv.getItem(OUTPUT);
+        if (out.isEmpty()) { inv.set(OUTPUT, new ItemStack(item)); return true; }
         if (out.getItem() == item && out.getCount() < out.getMaxCount()) { out.increment(1); return true; }
         return false;
     }
 
     /** Output slot first (so hoppers can pull), else the player's inventory. */
     private boolean outputInsert(ItemStack stack) {
-        ItemStack out = inv.getStack(OUTPUT);
-        if (out.isEmpty()) { inv.setStack(OUTPUT, stack); return true; }
+        ItemStack out = inv.getItem(OUTPUT);
+        if (out.isEmpty()) { inv.set(OUTPUT, stack); return true; }
         if (ItemStack.areItemsAndComponentsEqual(out, stack) && out.getCount() < out.getMaxCount()) {
             out.increment(1); return true;
         }
@@ -184,11 +184,11 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
             if (actionType == ClickType.PICKUP || actionType == ClickType.PICKUP_ALL) {
                 ItemStack cursor = getCursorStack();
                 if (cursor.isEmpty()) {
-                    inv.setStack(TEMPLATE, ItemStack.EMPTY);
+                    inv.set(TEMPLATE, ItemStack.EMPTY);
                 } else {
                     ItemStack ghost = cursor.copy();
                     ghost.setCount(1);
-                    inv.setStack(TEMPLATE, ghost);
+                    inv.set(TEMPLATE, ghost);
                 }
             }
             return;
@@ -197,20 +197,20 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMove(Player p, int slotIndex) {
+    public ItemStack quickMoveStack(Player p, int slotIndex) {
         ItemStack moved = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
-        if (slot != null && slot.hasStack()) {
+        if (slot != null && slot.hasItem()) {
             if (slotIndex == TEMPLATE) return ItemStack.EMPTY; // ghost
-            ItemStack original = slot.getStack();
+            ItemStack original = slot.getItem();
             moved = original.copy();
             if (slotIndex < MACHINE_SLOTS) {
-                if (!this.insertItem(original, MACHINE_SLOTS, this.slots.size(), true)) return ItemStack.EMPTY;
-            } else if (!this.insertItem(original, INPUT, INPUT + 1, false)) { // player -> input only
+                if (!this.moveItemStackTo(original, MACHINE_SLOTS, this.slots.size(), true)) return ItemStack.EMPTY;
+            } else if (!this.moveItemStackTo(original, INPUT, INPUT + 1, false)) { // player -> input only
                 return ItemStack.EMPTY;
             }
-            if (original.isEmpty()) slot.setStack(ItemStack.EMPTY);
-            else slot.markDirty();
+            if (original.isEmpty()) slot.set(ItemStack.EMPTY);
+            else slot.setChanged();
         }
         return moved;
     }
@@ -223,17 +223,17 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
             returnStack(p, INPUT);
             returnStack(p, OUTPUT);
         }
-        inv.setStack(TEMPLATE, ItemStack.EMPTY);
+        inv.set(TEMPLATE, ItemStack.EMPTY);
     }
 
     private void returnStack(Player p, int slot) {
-        ItemStack s = inv.getStack(slot);
+        ItemStack s = inv.getItem(slot);
         if (!s.isEmpty()) {
             p.getInventory().offerOrDrop(s);
-            inv.setStack(slot, ItemStack.EMPTY);
+            inv.set(slot, ItemStack.EMPTY);
         }
     }
 
     @Override
-    public boolean canUse(Player p) { return true; }
+    public boolean stillValid(Player p) { return true; }
 }

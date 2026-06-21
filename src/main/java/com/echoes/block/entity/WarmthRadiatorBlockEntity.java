@@ -103,14 +103,14 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
     @Override public long insert(long max, boolean simulate) { return buffer.insert(max, simulate); }
     @Override public long demand() { return buffer.getCapacity() - buffer.getAmount(); }
     @Override public int transferCap() { return 0; }
-    @Override public BlockPos pos() { return getPos(); }
+    @Override public BlockPos pos() { return getBlockPos(); }
     @Override public long storedRu() { return buffer.getAmount(); }
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getBlockState().getBlock().getName(); }
     @Override public void onConfigChanged() { setChanged(); }
 
     @Override

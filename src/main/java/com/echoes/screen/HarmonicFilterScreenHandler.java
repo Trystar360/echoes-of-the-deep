@@ -28,7 +28,7 @@ public class HarmonicFilterScreenHandler extends AbstractContainerMenu {
     public HarmonicFilterScreenHandler(int syncId, Inventory playerInv, Container filter) {
         super(ModScreens.HARMONIC_FILTER, syncId);
         this.filter = filter;
-        checkSize(filter, SIZE);
+        checkContainerSize(filter, SIZE);
 
         // 3x3 ghost grid
         for (int r = 0; r < 3; r++)
@@ -55,11 +55,11 @@ public class HarmonicFilterScreenHandler extends AbstractContainerMenu {
                 ItemStack cursor = getCursorStack();
                 Slot slot = this.slots.get(slotIndex);
                 if (cursor.isEmpty()) {
-                    slot.setStack(ItemStack.EMPTY);
+                    slot.set(ItemStack.EMPTY);
                 } else {
                     ItemStack ghost = cursor.copy();
                     ghost.setCount(1);
-                    slot.setStack(ghost);
+                    slot.set(ghost);
                 }
             }
             return; // ghost slots never run default handling
@@ -69,12 +69,12 @@ public class HarmonicFilterScreenHandler extends AbstractContainerMenu {
 
     /** No shift-transfer — the grid is configured by clicking, not by moving items. */
     @Override
-    public ItemStack quickMove(Player player, int slotIndex) {
+    public ItemStack quickMoveStack(Player player, int slotIndex) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean canUse(Player player) {
-        return filter.canPlayerUse(player);
+    public boolean stillValid(Player player) {
+        return filter.stillValid(player);
     }
 }

@@ -6,7 +6,7 @@ import com.echoes.screen.ConfigScreenHandler;
 import com.echoes.screen.CrusherScreenHandler;
 import com.echoes.screen.HarmonicFilterScreenHandler;
 import com.echoes.screen.TransmutationTableScreenHandler;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Registry;
 import net.minecraft.world.flag.FeatureFlags;
@@ -38,10 +38,10 @@ public final class ModScreens {
                     new MenuType<>(TransmutationTableScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
 
     /** Shared configuration screen for every Configurable device. */
-    public static final ExtendedScreenHandlerType<ConfigScreenHandler, BlockPos> CONFIG =
+    public static final ExtendedMenuType<ConfigScreenHandler, BlockPos> CONFIG =
             Registry.register(BuiltInRegistries.SCREEN_HANDLER,
                     Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "config"),
-                    new ExtendedScreenHandlerType<>(ConfigScreenHandler::new, BlockPos.PACKET_CODEC));
+                    new ExtendedMenuType<>(ConfigScreenHandler::new, BlockPos.STREAM_CODEC));
 
     public static void register() {
         EchoesMod.LOGGER.info("Registering screen handlers for {}", EchoesMod.MOD_ID);

@@ -57,14 +57,14 @@ public class OctaveCoilBlockEntity extends BlockEntity implements ResonanceNode,
     @Override public long insert(long max, boolean simulate) { return storage.insert(max, simulate); }
     @Override public long demand() { return 0; }
     @Override public int transferCap() { return 0; }
-    @Override public BlockPos pos() { return getPos(); }
+    @Override public BlockPos pos() { return getBlockPos(); }
     @Override public long storedRu() { return storage.getAmount(); }
     @Override public long capacityRu() { return storage.getCapacity(); }
 
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getBlockState().getBlock().getName(); }
     @Override public void onConfigChanged() { setChanged(); }
 
     @Override

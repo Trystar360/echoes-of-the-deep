@@ -1,7 +1,7 @@
 package com.echoes.screen;
 
 import com.echoes.config.Configurable;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -15,7 +15,7 @@ import net.minecraft.core.BlockPos;
  * block entity.
  */
 public record ConfigScreenFactory(Configurable target, BlockPos pos)
-        implements ExtendedScreenHandlerFactory<BlockPos> {
+        implements ExtendedMenuProvider<BlockPos> {
 
     @Override
     public BlockPos getScreenOpeningData(ServerPlayer player) {

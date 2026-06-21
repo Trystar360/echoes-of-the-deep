@@ -13,7 +13,7 @@ import com.echoes.registry.ModScreens;
 import com.echoes.registry.ModWorldGen;
 import com.echoes.wireless.WirelessNetworkManager;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
@@ -56,20 +56,19 @@ public class EchoesMod implements ModInitializer {
         // Top face inserts to input, other faces extract from output (see
         // ImplementedInventory#getAvailableSlots).
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.CRUSHER);
+                (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.CRUSHER);
 
         // Resonant Chest exposes its inventory to hoppers/pipes too.
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.RESONANT_CHEST);
+                (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.RESONANT_CHEST);
 
         // Attunement Furnace exposes its input/output to hoppers/pipes.
         ItemStorage.SIDED.registerForBlockEntity(
-                (be, side) -> InventoryStorage.of(be, side), ModBlockEntities.ATTUNEMENT_FURNACE);
+                (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.ATTUNEMENT_FURNACE);
 
         // Optional cross-mod energy bridge — only when Team Reborn Energy is present.
         // Isolated in a separate class so its TR Energy references aren't loaded otherwise.
-        if (FabricLoader.getInstance().isModLoaded("team_reborn_energy")) {
-            com.echoes.compat.TeamRebornEnergyCompat.register();
+        if (false) { // Team Reborn Energy bridge disabled until a 26.1 build of the energy API ships
         }
 
         LOGGER.info("Echoes of the Deep initialized.");

@@ -45,12 +45,12 @@ public class ConduitBlockEntity extends BlockEntity implements ResonanceNode, Co
     @Override public long insert(long max, boolean simulate) { return 0; }
     @Override public long demand() { return 0; }
     @Override public int transferCap() { return DEFAULT_TRANSFER; }
-    @Override public BlockPos pos() { return getPos(); }
+    @Override public BlockPos pos() { return getBlockPos(); }
 
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getBlockState().getBlock().getName(); }
     @Override public void onConfigChanged() { setChanged(); }
 
     @Override

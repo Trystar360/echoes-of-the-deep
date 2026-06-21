@@ -138,7 +138,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
         return buffer.getCapacity() - buffer.getAmount();
     }
     @Override public int transferCap() { return 0; }
-    @Override public BlockPos pos() { return getPos(); }
+    @Override public BlockPos pos() { return getBlockPos(); }
     @Override public long storedRu() { return buffer.getAmount(); }
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
@@ -151,7 +151,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     // --- Configurable ---
     @Override public com.echoes.config.BlockConfig getConfig() { return config; }
     @Override public com.echoes.config.ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getBlockState().getBlock().getName(); }
     @Override public void onConfigChanged() { setChanged(); }
 
     @Override

@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -13,7 +14,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A portable <b>Bound Light</b> battery (the "Klein Star" of this economy). Right-click to
@@ -52,24 +53,25 @@ public class OctaveStarItem extends Item {
             if (cur <= 0) return InteractionResult.PASS;       // discharge → account
             account.light += cur;
             setStored(stack, 0);
-            state.markDirty();
+            state.setDirty();
             user.sendMessage(Component.translatable("message.echoes.star.emptied", fmt(cur)), true);
         } else {
             long move = Math.min(capacity - cur, account.light); // charge ← account
             if (move <= 0) return InteractionResult.PASS;
             account.light -= move;
             setStored(stack, cur + move);
-            state.markDirty();
+            state.setDirty();
             user.sendMessage(Component.translatable("message.echoes.star.charged", fmt(cur + move), fmt(capacity)), true);
         }
         return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
-        tooltip.add(Component.translatable("tooltip.echoes.star.stored", fmt(stored(stack)), fmt(capacity))
-                .formatted(ChatFormatting.AQUA));
-        tooltip.add(Component.translatable("tooltip.echoes.star.hint").formatted(ChatFormatting.DARK_GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag type) {
+        tooltip.accept(Component.translatable("tooltip.echoes.star.stored", fmt(stored(stack)), fmt(capacity))
+                .withStyle(ChatFormatting.AQUA));
+        tooltip.accept(Component.translatable("tooltip.echoes.star.hint").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override public boolean isItemBarVisible(ItemStack stack) { return stored(stack) > 0; }

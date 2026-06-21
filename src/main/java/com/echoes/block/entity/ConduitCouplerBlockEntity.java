@@ -50,7 +50,7 @@ public class ConduitCouplerBlockEntity extends AbstractChannelDeviceBlockEntity 
     @Override public long insert(long max, boolean simulate) { return buffer.insert(max, simulate); }
     @Override public long demand() { return 0; }
     @Override public int transferCap() { return 0; }
-    @Override public BlockPos pos() { return getPos(); }
+    @Override public BlockPos pos() { return getBlockPos(); }
     @Override public long storedRu() { return buffer.getAmount(); }
     @Override public long capacityRu() { return buffer.getCapacity(); }
 

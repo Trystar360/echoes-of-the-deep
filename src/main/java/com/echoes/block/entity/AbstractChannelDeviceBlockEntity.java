@@ -66,17 +66,17 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
     // --- Configurable ---
     @Override public BlockConfig getConfig() { return config; }
     @Override public ConfigSpec getConfigSpec() { return SPEC; }
-    @Override public Component configTitle() { return getCachedState().getBlock().getName(); }
+    @Override public Component configTitle() { return getBlockState().getBlock().getName(); }
     @Override public void onConfigChanged() { sync(); }
 
     // --- WirelessDevice ---
-    @Override public BlockPos wirelessPos() { return getPos(); }
+    @Override public BlockPos wirelessPos() { return getBlockPos(); }
     @Override public ServerLevel wirelessWorld() { return (ServerLevel) world; }
     @Override public int wirelessChannel() { return config.channel(); }
 
     @Override
     public void markRemoved() {
-        if (world instanceof ServerLevel sw) WirelessNetworkManager.unregister(sw, getPos());
+        if (world instanceof ServerLevel sw) WirelessNetworkManager.unregister(sw, getBlockPos());
         registered = false;
         super.markRemoved();
     }
