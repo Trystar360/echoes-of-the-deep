@@ -57,6 +57,7 @@ public class CrushingRecipe implements Recipe<SingleRecipeInput> {
     @Override public boolean matches(SingleRecipeInput in, Level level) { return input.test(in.item()); }
     @Override public ItemStack assemble(SingleRecipeInput in) { return result.copy(); }
     @Override public String group() { return ""; }
+    @Override public boolean showNotification() { return false; }
     @Override public RecipeBookCategory recipeBookCategory() { return RecipeBookCategories.CRAFTING_MISC; }
 
     @Override public PlacementInfo placementInfo() {

@@ -27,7 +27,7 @@ public class FrequencyTunerItem extends Item {
     }
 
     @Override
-    public InteractionResult useOnBlock(UseOnContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         if (context.getLevel().isClientSide()) return InteractionResult.SUCCESS;
         Player player = context.getPlayer();
         if (player == null) return InteractionResult.PASS;

@@ -37,23 +37,23 @@ public class NoteRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
 
     // --- WirelessDevice (redstone) ---
     @Override public int redstoneOut() {
-        return mode == RelayMode.SEND && level != null ? level.getReceivedRedstonePower(getBlockPos()) : -1;
+        return mode == RelayMode.SEND && level != null ? level.getBestNeighborSignal(getBlockPos()) : -1;
     }
 
-    @Override public void acceptRedstone(int level) {
-        if (mode == RelayMode.RECEIVE) setOutput(level);
+    @Override public void acceptRedstone(int power) {
+        if (mode == RelayMode.RECEIVE) setOutput(power);
     }
 
-    private void setOutput(int level) {
-        if (level == output || level == null) return;
-        output = level;
+    private void setOutput(int power) {
+        if (power == output) return;
+        output = power;
         setChanged();
         BlockState state = getBlockState();
         boolean powered = output > 0;
         if (state.hasProperty(BlockStateProperties.POWERED) && state.getValue(BlockStateProperties.POWERED) != powered) {
             level.setBlockAndUpdate(getBlockPos(), state.setValue(BlockStateProperties.POWERED, powered));
         }
-        level.updateNeighborsAlways(getBlockPos(), state.getBlock());
+        level.updateNeighborsAt(getBlockPos(), state.getBlock());
     }
 
     @Override

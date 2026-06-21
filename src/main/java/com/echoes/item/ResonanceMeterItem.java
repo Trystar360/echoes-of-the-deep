@@ -23,7 +23,7 @@ public class ResonanceMeterItem extends Item {
     }
 
     @Override
-    public InteractionResult useOnBlock(UseOnContext ctx) {
+    public InteractionResult useOn(UseOnContext ctx) {
         if (ctx.getLevel().isClientSide()) return InteractionResult.SUCCESS;
         Player player = ctx.getPlayer();
         if (player == null) return InteractionResult.PASS;

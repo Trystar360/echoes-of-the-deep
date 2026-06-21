@@ -55,7 +55,7 @@ public class ResonanceThrustersItem extends Item {
 
     /** Right-click a buffered Resonance block to siphon RU into the thrusters. */
     @Override
-    public InteractionResult useOnBlock(UseOnContext ctx) {
+    public InteractionResult useOn(UseOnContext ctx) {
         Level world = ctx.getLevel();
         if (world.isClientSide()) return InteractionResult.SUCCESS;
         if (!(world.getBlockEntity(ctx.getClickedPos()) instanceof ResonanceNode node) || node.storedRu() <= 0) {

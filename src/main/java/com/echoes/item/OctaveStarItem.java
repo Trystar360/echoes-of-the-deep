@@ -74,11 +74,11 @@ public class OctaveStarItem extends Item {
         tooltip.accept(Component.translatable("tooltip.echoes.star.hint").withStyle(ChatFormatting.DARK_GRAY));
     }
 
-    @Override public boolean isItemBarVisible(ItemStack stack) { return stored(stack) > 0; }
-    @Override public int getItemBarStep(ItemStack stack) {
+    @Override public boolean isBarVisible(ItemStack stack) { return stored(stack) > 0; }
+    @Override public int getBarWidth(ItemStack stack) {
         return (int) Math.round(13.0 * stored(stack) / capacity);
     }
-    @Override public int getItemBarColor(ItemStack stack) { return 0x36E2D4; } // resonance teal
+    @Override public int getBarColor(ItemStack stack) { return 0x36E2D4; } // resonance teal
 
     private static String fmt(long value) { return String.format("%,d", value); }
 }

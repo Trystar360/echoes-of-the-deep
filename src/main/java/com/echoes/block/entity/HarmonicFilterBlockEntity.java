@@ -9,7 +9,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -59,12 +58,12 @@ public class HarmonicFilterBlockEntity extends AbstractChannelDeviceBlockEntity
     }
 
     @Override
-    protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
+    protected void writeExtra(ValueOutput nbt) {
         net.minecraft.world.ContainerHelper.saveAllItems(nbt, samples);
     }
 
     @Override
-    protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
+    protected void readExtra(ValueInput nbt) {
         net.minecraft.world.ContainerHelper.loadAllItems(nbt, samples);
     }
 }

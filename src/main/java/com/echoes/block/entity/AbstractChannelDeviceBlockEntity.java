@@ -10,7 +10,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
@@ -85,7 +84,7 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
     protected void saveAdditional(ValueOutput nbt) {
         super.saveAdditional(nbt);
         config.writeNbt(nbt);
-        writeExtra(nbt, lookup);
+        writeExtra(nbt);
     }
 
     @Override
@@ -94,9 +93,9 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
         config.readNbt(nbt);
         if (nbt.contains("channel")) config.setChannel(nbt.getIntOr("channel", 0)); // legacy saves
         registered = false; // re-register against the (possibly new) level roster
-        readExtra(nbt, lookup);
+        readExtra(nbt);
     }
 
-    protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {}
-    protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {}
+    protected void writeExtra(ValueOutput nbt) {}
+    protected void readExtra(ValueInput nbt) {}
 }

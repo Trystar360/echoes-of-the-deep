@@ -8,7 +8,6 @@ import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.wireless.RelayMode;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 
@@ -55,13 +54,13 @@ public class ConduitCouplerBlockEntity extends AbstractChannelDeviceBlockEntity 
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
     @Override
-    protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
+    protected void writeExtra(ValueOutput nbt) {
         nbt.putInt("mode", mode.ordinal());
         buffer.writeNbt(nbt);
     }
 
     @Override
-    protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
+    protected void readExtra(ValueInput nbt) {
         mode = RelayMode.byId(nbt.getIntOr("mode", 0));
         buffer.readNbt(nbt);
     }
