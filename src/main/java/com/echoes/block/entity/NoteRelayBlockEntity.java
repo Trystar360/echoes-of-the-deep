@@ -5,7 +5,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.wireless.RelayMode;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.core.BlockPos;
@@ -57,13 +56,13 @@ public class NoteRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     }
 
     @Override
-    protected void writeExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
+    protected void writeExtra(ValueOutput nbt) {
         nbt.putInt("mode", mode.ordinal());
         nbt.putInt("output", output);
     }
 
     @Override
-    protected void readExtra(CompoundTag nbt, HolderLookup.Provider lookup) {
+    protected void readExtra(ValueInput nbt) {
         mode = RelayMode.byId(nbt.getIntOr("mode", 0));
         output = nbt.getIntOr("output", 0);
     }

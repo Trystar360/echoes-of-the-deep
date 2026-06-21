@@ -66,7 +66,7 @@ public final class ModBlocks {
     public static final Block DRUMSTONE_ORE = register("drumstone_ore",
             Block::new, BlockBehaviour.Properties.of().strength(4.5f).requiresCorrectToolForDrops().sound(SoundType.DEEPSLATE));
     public static final Block SILENTITE_ORE = register("silentite_ore",
-            Block::new, BlockBehaviour.Properties.of().strength(5.0f).requiresCorrectToolForDrops().sound(SoundType.AMETHYST_BLOCK));
+            Block::new, BlockBehaviour.Properties.of().strength(5.0f).requiresCorrectToolForDrops().sound(SoundType.AMETHYST));
 
     // Machines / grid
     public static final Block RESONATOR = register("resonant_coil",
@@ -147,7 +147,7 @@ public final class ModBlocks {
             s -> new TrapDoorBlock(LUMEWOOD_SET, s) {},
             BlockBehaviour.Properties.of().strength(3.0f).sound(SoundType.WOOD).noOcclusion());
     public static final Block LUMEWOOD_LEAVES = register("lumewood_leaves",
-            LeavesBlock::new, BlockBehaviour.Properties.of().strength(0.2f).randomTicks()
+            p -> new LeavesBlock(0.01F, p), BlockBehaviour.Properties.of().strength(0.2f).randomTicks()
                     .sound(SoundType.GRASS).noOcclusion().lightLevel(s -> 6));
     public static final Block LUMEWOOD_SAPLING = register("lumewood_sapling",
             s -> new SaplingBlock(LUMEWOOD_TREE_GEN, s) {},
@@ -203,13 +203,13 @@ public final class ModBlocks {
 
     public static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings) {
         Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);
-        ResourceKey<Block> blockKey = ResourceKey.of(Registries.BLOCK, id);
+        ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, id);
         Block block = factory.apply(settings.setId(blockKey));
         Registry.register(BuiltInRegistries.BLOCK, blockKey, block);
 
-        ResourceKey<Item> itemKey = ResourceKey.of(Registries.ITEM, id);
+        ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, id);
         Registry.register(BuiltInRegistries.ITEM, itemKey,
-                new BlockItem(block, new Item.Properties().setId(itemKey).useBlockPrefixedTranslationKey()));
+                new BlockItem(block, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix()));
         return block;
     }
 

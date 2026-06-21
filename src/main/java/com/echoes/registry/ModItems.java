@@ -103,7 +103,7 @@ public final class ModItems {
 
     public static Item register(String name, Function<Item.Properties, Item> factory, Item.Properties settings) {
         Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);
-        ResourceKey<Item> key = ResourceKey.of(Registries.ITEM, id);
+        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, id);
         Item item = factory.apply(settings.setId(key));
         return Registry.register(BuiltInRegistries.ITEM, key, item);
     }

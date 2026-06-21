@@ -228,7 +228,7 @@ public final class WirelessNetworkManager {
         Predicate<FluidVariant> filter = v -> true;
         if (whitelist != null) {
             boolean anyFluid = false;
-            for (Item it : whitelist) { if (it instanceof net.minecraft.item.BucketItem) { anyFluid = true; break; } }
+            for (Item it : whitelist) { if (it instanceof net.minecraft.world.item.BucketItem) { anyFluid = true; break; } }
             if (anyFluid) {
                 final Set<Item> wl = whitelist;
                 filter = v -> wl.contains(v.getFluid().getBucketItem());

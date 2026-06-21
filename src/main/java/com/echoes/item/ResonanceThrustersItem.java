@@ -85,10 +85,10 @@ public class ResonanceThrustersItem extends Item {
     }
 
     @Override public ItemUseAnimation getUseAnimation(ItemStack stack) { return ItemUseAnimation.BOW; }
-    @Override public int getMaxUseTime(ItemStack stack, LivingEntity user) { return 72_000; }
+    @Override public int getUseDuration(ItemStack stack, LivingEntity user) { return 72_000; }
 
     @Override
-    public void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+    public void onUseTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         boolean creative = user instanceof Player p && p.isCreative();
         if (ru(stack) <= 0 && !creative) {
             user.stopUsingItem();

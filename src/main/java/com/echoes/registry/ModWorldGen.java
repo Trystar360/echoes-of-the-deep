@@ -19,11 +19,11 @@ public final class ModWorldGen {
     private ModWorldGen() {}
 
     private static ResourceKey<PlacedFeature> placed(String name) {
-        return ResourceKey.of(Registries.PLACED_FEATURE, Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name));
+        return ResourceKey.create(Registries.PLACED_FEATURE, Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name));
     }
 
     private static ResourceKey<ConfiguredFeature<?, ?>> configured(String name) {
-        return ResourceKey.of(Registries.CONFIGURED_FEATURE, Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name));
+        return ResourceKey.create(Registries.CONFIGURED_FEATURE, Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name));
     }
 
     public static final ResourceKey<PlacedFeature> ECHOCITE_ORE = placed("echocite_ore");

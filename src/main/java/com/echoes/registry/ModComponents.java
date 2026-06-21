@@ -16,13 +16,13 @@ public final class ModComponents {
     public static final DataComponentType<Integer> STORED_RU = Registry.register(
             BuiltInRegistries.DATA_COMPONENT_TYPE,
             Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "stored_ru"),
-            DataComponentType.<Integer>builder().codec(Codec.INT).packetCodec(ByteBufCodecs.VAR_INT).build());
+            DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
 
     /** Bound Light stored on an item (the Octave Star's portable EMC buffer). */
     public static final DataComponentType<Long> STORED_LIGHT = Registry.register(
             BuiltInRegistries.DATA_COMPONENT_TYPE,
             Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "stored_light"),
-            DataComponentType.<Long>builder().codec(Codec.LONG).packetCodec(ByteBufCodecs.VAR_LONG).build());
+            DataComponentType.<Long>builder().persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG).build());
 
     public static void register() {
         EchoesMod.LOGGER.info("Registering data components for {}", EchoesMod.MOD_ID);
