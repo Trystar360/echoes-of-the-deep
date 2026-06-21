@@ -102,12 +102,12 @@ public final class WirelessNetworkManager {
     }
 
     public static void unregister(ServerLevel world, BlockPos pos) {
-        Holder holder = DEVICES.remove(GlobalPos.create(world.dimension(), pos.immutable()));
+        Holder holder = DEVICES.remove(GlobalPos.of(world.dimension(), pos.immutable()));
         if (holder != null) BY_CHANNEL.get(holder.channel).remove(holder.device);
     }
 
     private static GlobalPos keyOf(WirelessDevice d) {
-        return GlobalPos.create(d.wirelessWorld().dimension(), d.wirelessPos().immutable());
+        return GlobalPos.of(d.wirelessWorld().dimension(), d.wirelessPos().immutable());
     }
 
     // --- tick ---
@@ -231,7 +231,7 @@ public final class WirelessNetworkManager {
             for (Item it : whitelist) { if (it instanceof net.minecraft.world.item.BucketItem) { anyFluid = true; break; } }
             if (anyFluid) {
                 final Set<Item> wl = whitelist;
-                filter = v -> wl.contains(v.getFluid().getBucketItem());
+                filter = v -> wl.contains(v.getFluid().getBucket());
             }
         }
         moveAll(sources, targets, budget, filter, roundRobin);

@@ -101,10 +101,10 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
 
     public static long moteValue(int tier) { return ModItems.MOTE_VALUES[tier]; }
 
-    private static Identifier id(Item item) { return BuiltInRegistries.ITEM.getId(item); }
+    private static Identifier id(Item item) { return BuiltInRegistries.ITEM.getKey(item); }
 
     @Override
-    public boolean onButtonClick(Player p, int btn) {
+    public boolean clickMenuButton(Player p, int btn) {
         if (account == null) return false; // server-authoritative
         boolean changed;
         if (btn >= 0 && btn < ModItems.MOTES.length) {
@@ -116,9 +116,9 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
         } else if (btn == BTN_CONDENSE_STACK) {
             changed = condense(64);
         } else {
-            return super.onButtonClick(p, btn);
+            return super.clickMenuButton(p, btn);
         }
-        if (changed) state.setChanged();
+        if (changed) state.setDirty();
         return true;
     }
 
@@ -130,7 +130,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
         if (unit <= 0) return false; // no value / blacklisted
         account.light += unit * in.getCount();
         account.attuned.add(id(in.getItem()));
-        inv.set(INPUT, ItemStack.EMPTY);
+        inv.setItem(INPUT, ItemStack.EMPTY);
         return true;
     }
 
@@ -162,7 +162,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     /** Add one of {@code item} to the output slot if it can stack there. */
     private boolean addToOutput(Item item) {
         ItemStack out = inv.getItem(OUTPUT);
-        if (out.isEmpty()) { inv.set(OUTPUT, new ItemStack(item)); return true; }
+        if (out.isEmpty()) { inv.setItem(OUTPUT, new ItemStack(item)); return true; }
         if (out.getItem() == item && out.getCount() < out.getMaxStackSize()) { out.grow(1); return true; }
         return false;
     }
@@ -170,7 +170,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     /** Output slot first (so hoppers can pull), else the player's inventory. */
     private boolean outputInsert(ItemStack stack) {
         ItemStack out = inv.getItem(OUTPUT);
-        if (out.isEmpty()) { inv.set(OUTPUT, stack); return true; }
+        if (out.isEmpty()) { inv.setItem(OUTPUT, stack); return true; }
         if (ItemStack.isSameItemSameComponents(out, stack) && out.getCount() < out.getMaxStackSize()) {
             out.grow(1); return true;
         }
@@ -184,11 +184,11 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
             if (actionType == ContainerInput.PICKUP || actionType == ContainerInput.PICKUP_ALL) {
                 ItemStack cursor = getCarried();
                 if (cursor.isEmpty()) {
-                    inv.set(TEMPLATE, ItemStack.EMPTY);
+                    inv.setItem(TEMPLATE, ItemStack.EMPTY);
                 } else {
                     ItemStack ghost = cursor.copy();
                     ghost.setCount(1);
-                    inv.set(TEMPLATE, ghost);
+                    inv.setItem(TEMPLATE, ghost);
                 }
             }
             return;
@@ -216,21 +216,21 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public void onClosed(Player p) {
-        super.onClosed(p);
+    public void removed(Player p) {
+        super.removed(p);
         // Return real held items; the ghost template is a phantom and is simply dropped.
         if (!p.level().isClientSide()) {
             returnStack(p, INPUT);
             returnStack(p, OUTPUT);
         }
-        inv.set(TEMPLATE, ItemStack.EMPTY);
+        inv.setItem(TEMPLATE, ItemStack.EMPTY);
     }
 
     private void returnStack(Player p, int slot) {
         ItemStack s = inv.getItem(slot);
         if (!s.isEmpty()) {
-            p.getInventory().offerOrDrop(s);
-            inv.set(slot, ItemStack.EMPTY);
+            p.getInventory().placeItemBackInInventory(s);
+            inv.setItem(slot, ItemStack.EMPTY);
         }
     }
 

@@ -61,7 +61,7 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
             this.config = null;
             this.properties = new SimpleContainerData(SIZE);
         }
-        addProperties(properties);
+        addDataSlots(properties);
     }
 
     public ConfigSpec spec() { return spec; }
@@ -74,7 +74,7 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean onButtonClick(Player player, int id) {
+    public boolean clickMenuButton(Player player, int id) {
         if (config == null) return false; // server only
         boolean changed = true;
         if (id == B_CHANNEL_DOWN) config.setChannel(config.channel() - 1);
@@ -92,7 +92,7 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
         if (changed) {
             Configurable cfg = target();
             if (cfg != null) cfg.onConfigChanged();
-            sendContentUpdates();
+            broadcastChanges();
         }
         return changed;
     }

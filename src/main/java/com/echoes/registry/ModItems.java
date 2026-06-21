@@ -86,7 +86,7 @@ public final class ModItems {
     // Resonant tools — deliberately strong: faster than netherite, tougher, highly
     // enchantable, mines anything. "Energy is carried, not transmitted" — W. Russell.
     public static final TagKey<Item> RESONANT_REPAIR =
-            TagKey.of(Registries.ITEM, Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "resonant_repair"));
+            TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "resonant_repair"));
     public static final ToolMaterial ECHO_MATERIAL = new ToolMaterial(
             BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 4000, 12.0f, 5.0f, 22, RESONANT_REPAIR);
 

@@ -33,7 +33,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FlowerBlock;
-import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.TintedParticleLeavesBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.grower.TreeGrower;
@@ -147,7 +147,7 @@ public final class ModBlocks {
             s -> new TrapDoorBlock(LUMEWOOD_SET, s) {},
             BlockBehaviour.Properties.of().strength(3.0f).sound(SoundType.WOOD).noOcclusion());
     public static final Block LUMEWOOD_LEAVES = register("lumewood_leaves",
-            p -> new LeavesBlock(0.01F, p), BlockBehaviour.Properties.of().strength(0.2f).randomTicks()
+            p -> new TintedParticleLeavesBlock(0.01F, p), BlockBehaviour.Properties.of().strength(0.2f).randomTicks()
                     .sound(SoundType.GRASS).noOcclusion().lightLevel(s -> 6));
     public static final Block LUMEWOOD_SAPLING = register("lumewood_sapling",
             s -> new SaplingBlock(LUMEWOOD_TREE_GEN, s) {},

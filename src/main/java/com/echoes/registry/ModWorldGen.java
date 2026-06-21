@@ -37,21 +37,21 @@ public final class ModWorldGen {
     public static void register() {
         BiomeModifications.addFeature(
                 BiomeSelectors.foundInOverworld(),
-                GenerationStep.Feature.UNDERGROUND_ORES,
+                GenerationStep.Decoration.UNDERGROUND_ORES,
                 ECHOCITE_ORE);
         BiomeModifications.addFeature(
                 BiomeSelectors.foundInOverworld(),
-                GenerationStep.Feature.UNDERGROUND_ORES,
+                GenerationStep.Decoration.UNDERGROUND_ORES,
                 DRUMSTONE_ORE);
         // Silentite only seeds the Deep Dark — silence pooled in the deepest places.
         BiomeModifications.addFeature(
                 BiomeSelectors.includeByKey(Biomes.DEEP_DARK),
-                GenerationStep.Feature.UNDERGROUND_ORES,
+                GenerationStep.Decoration.UNDERGROUND_ORES,
                 SILENTITE_ORE);
         // Lumewood seeds itself sparsely through forested biomes.
         BiomeModifications.addFeature(
                 BiomeSelectors.tag(net.minecraft.tags.BiomeTags.IS_FOREST),
-                GenerationStep.Feature.VEGETAL_DECORATION,
+                GenerationStep.Decoration.VEGETAL_DECORATION,
                 LUMEWOOD_TREE_PLACED);
     }
 }
