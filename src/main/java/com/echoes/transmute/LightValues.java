@@ -128,8 +128,8 @@ public final class LightValues implements SimpleSynchronousResourceReloadListene
 
     /** Recompute derived values from the server's full recipe set (vanilla + every mod). */
     public static void derive(MinecraftServer server) {
-        HolderLookup.Provider lookup = server.getRegistryManager();
-        Collection<RecipeHolder<?>> recipes = server.getRecipeManager().values();
+        HolderLookup.Provider lookup = server.registryAccess();
+        Collection<RecipeHolder<?>> recipes = server.recipeAccess().values();
 
         Map<Identifier, Long> values = new HashMap<>(SEEDS); // working set; seeds are the floor
         boolean changed = true;

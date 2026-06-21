@@ -51,7 +51,7 @@ public class NoteRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
         BlockState state = getBlockState();
         boolean powered = output > 0;
         if (state.contains(BlockStateProperties.POWERED) && state.get(BlockStateProperties.POWERED) != powered) {
-            world.setBlockState(getBlockPos(), state.with(BlockStateProperties.POWERED, powered));
+            world.setBlockAndUpdate(getBlockPos(), state.setValue(BlockStateProperties.POWERED, powered));
         }
         world.updateNeighborsAlways(getBlockPos(), state.getBlock());
     }

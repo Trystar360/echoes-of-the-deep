@@ -102,12 +102,12 @@ public final class WirelessNetworkManager {
     }
 
     public static void unregister(ServerLevel world, BlockPos pos) {
-        Holder holder = DEVICES.remove(GlobalPos.create(world.getRegistryKey(), pos.immutable()));
+        Holder holder = DEVICES.remove(GlobalPos.create(world.dimension(), pos.immutable()));
         if (holder != null) BY_CHANNEL.get(holder.channel).remove(holder.device);
     }
 
     private static GlobalPos keyOf(WirelessDevice d) {
-        return GlobalPos.create(d.wirelessWorld().getRegistryKey(), d.wirelessPos().immutable());
+        return GlobalPos.create(d.wirelessWorld().dimension(), d.wirelessPos().immutable());
     }
 
     // --- tick ---
@@ -126,7 +126,7 @@ public final class WirelessNetworkManager {
                 // Split by dimension: a channel only spans dimensions via a repeater.
                 Map<ResourceKey<Level>, List<WirelessDevice>> byDim = new HashMap<>();
                 for (WirelessDevice d : all) {
-                    byDim.computeIfAbsent(d.wirelessWorld().getRegistryKey(), k -> new ArrayList<>()).add(d);
+                    byDim.computeIfAbsent(d.wirelessWorld().dimension(), k -> new ArrayList<>()).add(d);
                 }
                 for (List<WirelessDevice> group : byDim.values()) {
                     if (group.size() >= 2) process(group);

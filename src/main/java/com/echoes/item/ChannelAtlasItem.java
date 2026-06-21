@@ -23,10 +23,10 @@ public class ChannelAtlasItem extends Item {
 
     @Override
     public InteractionResult useOnBlock(UseOnContext context) {
-        if (context.getWorld().isClient) return InteractionResult.SUCCESS;
+        if (context.getLevel().isClientSide()) return InteractionResult.SUCCESS;
         Player player = context.getPlayer();
         if (player == null) return InteractionResult.PASS;
-        if (!(context.getWorld().getBlockEntity(context.getBlockPos())
+        if (!(context.getLevel().getBlockEntity(context.getClickedPos())
                 instanceof AbstractChannelDeviceBlockEntity device)) {
             return InteractionResult.PASS;
         }
@@ -39,7 +39,7 @@ public class ChannelAtlasItem extends Item {
 
     @Override
     public InteractionResult use(Level world, Player user, InteractionHand hand) {
-        if (!world.isClient) {
+        if (!world.isClientSide()) {
             int[] counts = WirelessNetworkManager.channelCounts();
             boolean any = false;
             user.sendMessage(Component.translatable("message.echoes.atlas.header"), false);

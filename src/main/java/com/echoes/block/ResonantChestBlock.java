@@ -25,7 +25,7 @@ public class ResonantChestBlock extends AbstractHorizontalDeviceBlock {
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ResonantChestBlockEntity(pos, state);
     }
 
@@ -33,14 +33,14 @@ public class ResonantChestBlock extends AbstractHorizontalDeviceBlock {
     protected InteractionResult onConfigure(Level world, BlockPos pos, Player player,
                                        AbstractChannelDeviceBlockEntity device, ItemStack held) {
         if (device instanceof MenuProvider factory) {
-            player.openHandledScreen(factory);
+            player.openMenu(factory);
         }
         return InteractionResult.SUCCESS;
     }
 
     @Override
     public void onStateReplaced(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
+        if (!state.is(newState.getBlock())) {
             if (world.getBlockEntity(pos) instanceof ResonantChestBlockEntity be) {
                 Containers.spawn(world, pos, be.getItems());
             }

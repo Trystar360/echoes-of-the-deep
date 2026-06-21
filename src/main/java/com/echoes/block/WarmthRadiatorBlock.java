@@ -21,36 +21,36 @@ public class WarmthRadiatorBlock extends Block implements EntityBlock {
 
     public WarmthRadiatorBlock(Properties settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState().with(BlockStateProperties.LIT, false));
+        registerDefaultState(getStateDefinition().any().setValue(BlockStateProperties.LIT, false));
     }
 
     @Override
-    protected void appendProperties(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BlockStateProperties.LIT);
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new WarmthRadiatorBlockEntity(pos, state);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        if (world.isClient || type != ModBlockEntities.WARMTH_RADIATOR) return null;
+        if (world.isClientSide() || type != ModBlockEntities.WARMTH_RADIATOR) return null;
         return (w, p, s, be) -> WarmthRadiatorBlockEntity.tick(w, p, s, (WarmthRadiatorBlockEntity) be);
     }
 
     @Override
     public void onBlockAdded(BlockState state, Level world, BlockPos pos, BlockState old, boolean notify) {
-        if (world instanceof ServerLevel sw && !old.isOf(this)) {
+        if (world instanceof ServerLevel sw && !old.is(this)) {
             ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.immutable());
         }
     }
 
     @Override
     public void onStateReplaced(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock()) && world instanceof ServerLevel sw) {
+        if (!state.is(newState.getBlock()) && world instanceof ServerLevel sw) {
             ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.immutable());
         }
         super.onStateReplaced(state, world, pos, newState, moved);

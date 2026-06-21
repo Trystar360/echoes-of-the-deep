@@ -78,11 +78,11 @@ public class CrusherBlockEntity extends BlockEntity
 
     // --- tick (registered as a BlockEntityTicker) ---
     public static void tick(Level world, BlockPos pos, BlockState state, CrusherBlockEntity be) {
-        if (world.isClient) return;
+        if (world.isClientSide()) return;
 
         Optional<RecipeHolder<CrushingRecipe>> match = be.currentRecipe();
         if (match.isEmpty() || !be.hasOutputRoom(match.get().value())) {
-            if (be.progress != 0) { be.progress = 0; be.markDirty(); }
+            if (be.progress != 0) { be.progress = 0; be.setChanged(); }
             return;
         }
 
@@ -94,7 +94,7 @@ public class CrusherBlockEntity extends BlockEntity
         if (be.buffer.extract(be.energyPerTick, true) >= be.energyPerTick) {
             be.buffer.extract(be.energyPerTick, false);
             be.progress++;
-            be.markDirty();
+            be.setChanged();
             if (be.progress >= be.maxProgress) {
                 be.craft(recipe);
                 be.progress = 0;
@@ -105,7 +105,7 @@ public class CrusherBlockEntity extends BlockEntity
     private Optional<RecipeHolder<CrushingRecipe>> currentRecipe() {
         if (getStack(INPUT).isEmpty()) return Optional.empty();
         if (!(world instanceof net.minecraft.server.level.ServerLevel sw)) return Optional.empty();
-        return sw.getRecipeManager().getFirstMatch(
+        return sw.recipeAccess().getFirstMatch(
                 ModRecipes.CRUSHING_TYPE, new SingleRecipeInput(getStack(INPUT)), world);
     }
 
@@ -113,15 +113,15 @@ public class CrusherBlockEntity extends BlockEntity
         ItemStack out = getStack(OUTPUT);
         ItemStack result = recipe.result();
         if (out.isEmpty()) return true;
-        if (!ItemStack.areItemsAndComponentsEqual(out, result)) return false;
-        return out.getCount() + result.getCount() <= out.getMaxCount();
+        if (!ItemStack.isSameItemSameComponents(out, result)) return false;
+        return out.getCount() + result.getCount() <= out.getMaxStackSize();
     }
 
     private void craft(CrushingRecipe recipe) {
-        getStack(INPUT).decrement(1);
+        getStack(INPUT).shrink(1);
         ItemStack result = recipe.result();
         if (getStack(OUTPUT).isEmpty()) setStack(OUTPUT, result.copy());
-        else getStack(OUTPUT).increment(result.getCount());
+        else getStack(OUTPUT).grow(result.getCount());
 
         // Roll the optional byproduct (e.g. resonant slag) into the third slot.
         ItemStack sec = recipe.secondary();
@@ -129,9 +129,9 @@ public class CrusherBlockEntity extends BlockEntity
             ItemStack slot = getStack(BYPRODUCT);
             if (slot.isEmpty()) {
                 setStack(BYPRODUCT, sec.copy());
-            } else if (ItemStack.areItemsAndComponentsEqual(slot, sec)
-                    && slot.getCount() + sec.getCount() <= slot.getMaxCount()) {
-                slot.increment(sec.getCount());
+            } else if (ItemStack.isSameItemSameComponents(slot, sec)
+                    && slot.getCount() + sec.getCount() <= slot.getMaxStackSize()) {
+                slot.grow(sec.getCount());
             }
             // else: byproduct slot is full/mismatched — the roll is forfeited, machine keeps running.
         }
@@ -165,7 +165,7 @@ public class CrusherBlockEntity extends BlockEntity
         return new CrusherScreenHandler(syncId, inv, this, props);
     }
 
-    @Override public void setChanged() { super.markDirty(); }
+    @Override public void setChanged() { super.setChanged(); }
 
     // --- Configurable ---
     @Override public com.echoes.config.BlockConfig getConfig() { return config; }

@@ -42,14 +42,14 @@ public class OctaveStarItem extends Item {
 
     @Override
     public InteractionResult use(Level world, Player user, InteractionHand hand) {
-        ItemStack stack = user.getStackInHand(hand);
-        if (world.isClient || !(world instanceof ServerLevel sw)) return InteractionResult.SUCCESS;
+        ItemStack stack = user.getItemInHand(hand);
+        if (world.isClientSide() || !(world instanceof ServerLevel sw)) return InteractionResult.SUCCESS;
 
         TransmutationState state = TransmutationState.get(sw);
         TransmutationState.Account account = state.of(user.getUUID());
         long cur = stored(stack);
 
-        if (user.isSneaking()) {
+        if (user.isShiftKeyDown()) {
             if (cur <= 0) return InteractionResult.PASS;       // discharge → account
             account.light += cur;
             setStored(stack, 0);

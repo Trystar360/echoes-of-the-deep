@@ -28,49 +28,49 @@ public class AttunementFurnaceBlock extends Block implements EntityBlock {
 
     public AttunementFurnaceBlock(Properties settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+        registerDefaultState(getStateDefinition().any().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
-    protected void appendProperties(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BlockStateProperties.HORIZONTAL_FACING);
     }
 
     @Override
-    public @Nullable BlockState getPlacementState(BlockPlaceContext ctx) {
-        return getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext ctx) {
+        return getDefaultState().setValue(BlockStateProperties.HORIZONTAL_FACING, ctx.getHorizontalDirection().getOpposite());
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new AttunementFurnaceBlockEntity(pos, state);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        if (world.isClient || type != ModBlockEntities.ATTUNEMENT_FURNACE) return null;
+        if (world.isClientSide() || type != ModBlockEntities.ATTUNEMENT_FURNACE) return null;
         return (w, p, s, be) -> AttunementFurnaceBlockEntity.tick(w, p, s, (AttunementFurnaceBlockEntity) be);
     }
 
     @Override
-    protected InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!world.isClient && world.getBlockEntity(pos) instanceof MenuProvider factory) {
-            player.openHandledScreen(factory);
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!world.isClientSide() && world.getBlockEntity(pos) instanceof MenuProvider factory) {
+            player.openMenu(factory);
         }
         return InteractionResult.SUCCESS;
     }
 
     @Override
     public void onBlockAdded(BlockState state, Level world, BlockPos pos, BlockState old, boolean notify) {
-        if (world instanceof ServerLevel sw && !old.isOf(this)) {
+        if (world instanceof ServerLevel sw && !old.is(this)) {
             ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.immutable());
         }
     }
 
     @Override
     public void onStateReplaced(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
+        if (!state.is(newState.getBlock())) {
             if (world.getBlockEntity(pos) instanceof AttunementFurnaceBlockEntity be) {
                 Containers.spawn(world, pos, be.getItems());
             }

@@ -26,19 +26,19 @@ public class NoteRelayBlock extends AbstractHorizontalDeviceBlock {
 
     public NoteRelayBlock(Properties settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState()
-                .with(BlockStateProperties.HORIZONTAL_FACING, net.minecraft.core.Direction.NORTH)
-                .with(BlockStateProperties.POWERED, false));
+        registerDefaultState(getStateDefinition().any()
+                .setValue(BlockStateProperties.HORIZONTAL_FACING, net.minecraft.core.Direction.NORTH)
+                .setValue(BlockStateProperties.POWERED, false));
     }
 
     @Override
-    protected void appendProperties(StateDefinition.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(BlockStateProperties.POWERED);
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new NoteRelayBlockEntity(pos, state);
     }
 

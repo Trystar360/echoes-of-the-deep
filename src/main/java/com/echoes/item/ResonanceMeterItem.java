@@ -24,14 +24,14 @@ public class ResonanceMeterItem extends Item {
 
     @Override
     public InteractionResult useOnBlock(UseOnContext ctx) {
-        if (ctx.getWorld().isClient) return InteractionResult.SUCCESS;
+        if (ctx.getLevel().isClientSide()) return InteractionResult.SUCCESS;
         Player player = ctx.getPlayer();
         if (player == null) return InteractionResult.PASS;
-        if (!(ctx.getWorld().getBlockEntity(ctx.getBlockPos()) instanceof ResonanceNode node)) {
+        if (!(ctx.getLevel().getBlockEntity(ctx.getClickedPos()) instanceof ResonanceNode node)) {
             return InteractionResult.PASS;
         }
 
-        Component name = ctx.getWorld().getBlockState(ctx.getBlockPos()).getBlock().getName();
+        Component name = ctx.getLevel().getBlockState(ctx.getClickedPos()).getBlock().getName();
         player.sendMessage(Component.translatable("message.echoes.meter.header", name, roles(node)), false);
 
         if (node.capacityRu() > 0) {

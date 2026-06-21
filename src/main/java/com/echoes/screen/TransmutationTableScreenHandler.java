@@ -53,7 +53,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
         super(ModScreens.TRANSMUTATION_TABLE, syncId);
         this.player = playerInv.player;
 
-        if (player.getWorld() instanceof ServerLevel sw) {
+        if (player.level() instanceof ServerLevel sw) {
             this.state = TransmutationState.get(sw);
             this.account = state.of(player.getUUID());
             this.props = new ContainerData() {
@@ -163,7 +163,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     private boolean addToOutput(Item item) {
         ItemStack out = inv.getItem(OUTPUT);
         if (out.isEmpty()) { inv.set(OUTPUT, new ItemStack(item)); return true; }
-        if (out.getItem() == item && out.getCount() < out.getMaxCount()) { out.increment(1); return true; }
+        if (out.getItem() == item && out.getCount() < out.getMaxStackSize()) { out.grow(1); return true; }
         return false;
     }
 
@@ -171,8 +171,8 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     private boolean outputInsert(ItemStack stack) {
         ItemStack out = inv.getItem(OUTPUT);
         if (out.isEmpty()) { inv.set(OUTPUT, stack); return true; }
-        if (ItemStack.areItemsAndComponentsEqual(out, stack) && out.getCount() < out.getMaxCount()) {
-            out.increment(1); return true;
+        if (ItemStack.isSameItemSameComponents(out, stack) && out.getCount() < out.getMaxStackSize()) {
+            out.grow(1); return true;
         }
         return player.getInventory().insertStack(stack);
     }
@@ -219,7 +219,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     public void onClosed(Player p) {
         super.onClosed(p);
         // Return real held items; the ghost template is a phantom and is simply dropped.
-        if (!p.getWorld().isClient) {
+        if (!p.level().isClientSide()) {
             returnStack(p, INPUT);
             returnStack(p, OUTPUT);
         }

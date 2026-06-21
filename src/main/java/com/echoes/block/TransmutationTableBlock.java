@@ -31,34 +31,34 @@ public class TransmutationTableBlock extends Block implements EntityBlock {
 
     public TransmutationTableBlock(Properties settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+        registerDefaultState(getStateDefinition().any().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
-    protected void appendProperties(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BlockStateProperties.HORIZONTAL_FACING);
     }
 
     @Override
-    public @Nullable BlockState getPlacementState(BlockPlaceContext ctx) {
-        return getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext ctx) {
+        return getDefaultState().setValue(BlockStateProperties.HORIZONTAL_FACING, ctx.getHorizontalDirection().getOpposite());
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new TransmutationTableBlockEntity(pos, state);
     }
 
     @Override
-    protected InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!world.isClient) {
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!world.isClientSide()) {
             // Migrate any Light banked by the pre-account version into the opening player.
             if (world.getBlockEntity(pos) instanceof TransmutationTableBlockEntity be && be.legacyLight() > 0
                     && world instanceof ServerLevel sw) {
                 TransmutationState.get(sw).of(player.getUUID()).light += be.drainLegacyLight();
-                TransmutationState.get(sw).markDirty();
+                TransmutationState.get(sw).setChanged();
             }
-            player.openHandledScreen(new SimpleMenuProvider(
+            player.openMenu(new SimpleMenuProvider(
                     (syncId, inv, p) -> new TransmutationTableScreenHandler(syncId, inv),
                     Component.translatable("block.echoes.transmutation_table")));
         }
@@ -67,7 +67,7 @@ public class TransmutationTableBlock extends Block implements EntityBlock {
 
     @Override
     public void onStateReplaced(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())
+        if (!state.is(newState.getBlock())
                 && world.getBlockEntity(pos) instanceof TransmutationTableBlockEntity be) {
             be.dropBankedLight(world, pos); // legacy banked Light → Mote coins, never silently lost
         }

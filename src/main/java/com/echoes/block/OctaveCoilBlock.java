@@ -22,27 +22,27 @@ public class OctaveCoilBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new OctaveCoilBlockEntity(pos, state);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        if (world.isClient || type != ModBlockEntities.OCTAVE_COIL) return null;
+        if (world.isClientSide() || type != ModBlockEntities.OCTAVE_COIL) return null;
         return (w, p, s, be) -> OctaveCoilBlockEntity.tick(w, p, s, (OctaveCoilBlockEntity) be);
     }
 
     @Override
     public void onBlockAdded(BlockState state, Level world, BlockPos pos, BlockState old, boolean notify) {
-        if (world instanceof ServerLevel sw && !old.isOf(this)) {
+        if (world instanceof ServerLevel sw && !old.is(this)) {
             ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.immutable());
         }
     }
 
     @Override
     public void onStateReplaced(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock()) && world instanceof ServerLevel sw) {
+        if (!state.is(newState.getBlock()) && world instanceof ServerLevel sw) {
             ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.immutable());
         }
         super.onStateReplaced(state, world, pos, newState, moved);

@@ -29,7 +29,7 @@ public interface ImplementedInventory extends WorldlyContainer {
     @Override default ItemStack getStack(int slot) { return getItems().get(slot); }
 
     @Override default ItemStack removeStack(int slot, int count) {
-        ItemStack result = net.minecraft.world.ContainerHelper.splitStack(getItems(), slot, count);
+        ItemStack result = net.minecraft.world.ContainerHelper.split(getItems(), slot, count);
         if (!result.isEmpty()) setChanged();
         return result;
     }

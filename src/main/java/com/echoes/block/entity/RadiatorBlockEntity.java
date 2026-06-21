@@ -52,11 +52,11 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, C
     public static void tick(Level world, BlockPos pos, BlockState state, RadiatorBlockEntity be) {
         if (!(world instanceof ServerLevel sw)) return;
 
-        boolean powered = sw.isReceivingRedstonePower(pos);
+        boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         int hRadius = be.config.tuningA();
         if (state.contains(BlockStateProperties.LIT) && state.get(BlockStateProperties.LIT) != active) {
-            sw.setBlockState(pos, state.with(BlockStateProperties.LIT, active), Block.NOTIFY_ALL);
+            sw.setBlock(pos, state.setValue(BlockStateProperties.LIT, active), Block.UPDATE_ALL);
         }
         if (++be.timer < INTERVAL) return;
         be.timer = 0;
@@ -71,9 +71,9 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, C
             if (s.getBlock() instanceof BonemealableBlock f
                     && f.isFertilizable(sw, p, s) && f.canGrow(sw, rng, p, s)) {
                 f.grow(sw, rng, p, s);
-                sw.syncWorldEvent(2005, p, 0); // bonemeal particles
+                sw.levelEvent(2005, p, 0); // bonemeal particles
                 be.buffer.extract(COST, false);
-                be.markDirty();
+                be.setChanged();
                 break;
             }
         }

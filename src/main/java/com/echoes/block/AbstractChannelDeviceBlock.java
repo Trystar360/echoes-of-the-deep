@@ -35,24 +35,24 @@ public abstract class AbstractChannelDeviceBlock extends Block implements Entity
     @Override
     @SuppressWarnings("unchecked")
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        if (world.isClient) return null;
+        if (world.isClientSide()) return null;
         return (w, p, s, be) -> {
             if (be instanceof AbstractChannelDeviceBlockEntity d) AbstractChannelDeviceBlockEntity.tick(w, p, s, d);
         };
     }
 
     @Override
-    protected InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
-        if (world.isClient) return InteractionResult.SUCCESS;
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+        if (world.isClientSide()) return InteractionResult.SUCCESS;
         if (!(world.getBlockEntity(pos) instanceof AbstractChannelDeviceBlockEntity device)) return InteractionResult.PASS;
 
-        ItemStack held = player.getMainHandStack();
+        ItemStack held = player.getMainHandItem();
         if (held.getItem() instanceof DyeItem dye) {
             device.setChannel(dye.getColor().getId());
             sendChannel(player, device.channel());
             return InteractionResult.SUCCESS;
         }
-        if (player.isSneaking() && held.isEmpty()) {
+        if (player.isShiftKeyDown() && held.isEmpty()) {
             device.cycleChannel();
             sendChannel(player, device.channel());
             return InteractionResult.SUCCESS;

@@ -40,10 +40,10 @@ public class StillnessCoreBlockEntity extends BlockEntity implements ResonanceNo
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, StillnessCoreBlockEntity be) {
-        if (world.isClient || be.storage.isFull()) return;
-        if (world instanceof ServerLevel sw && !be.config.redstone().allows(sw.isReceivingRedstonePower(pos))) return;
+        if (world.isClientSide() || be.storage.isFull()) return;
+        if (world instanceof ServerLevel sw && !be.config.redstone().allows(sw.hasNeighborSignal(pos))) return;
         be.storage.absorb(GEN_PER_TICK);
-        be.markDirty();
+        be.setChanged();
     }
 
     public ResonanceStorage storage() { return storage; }

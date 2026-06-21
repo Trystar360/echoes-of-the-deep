@@ -40,7 +40,7 @@ public class BalancerBlockEntity extends BlockEntity implements Configurable {
 
     public static void tick(Level world, BlockPos pos, BlockState state, BalancerBlockEntity be) {
         if (!(world instanceof ServerLevel sw)) return;
-        if (!be.config.redstone().allows(sw.isReceivingRedstonePower(pos))) return;
+        if (!be.config.redstone().allows(sw.hasNeighborSignal(pos))) return;
         if (++be.timer < INTERVAL) return;
         be.timer = 0;
         ResonanceNetworkManager.get(sw).balanceAround(pos, be.config.tuningA());

@@ -14,7 +14,7 @@ public class ResonantAmplifierBlock extends AbstractHorizontalDeviceBlock {
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ResonantAmplifierBlockEntity(pos, state);
     }
 }

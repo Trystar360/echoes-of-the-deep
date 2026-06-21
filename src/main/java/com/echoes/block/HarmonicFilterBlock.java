@@ -23,7 +23,7 @@ public class HarmonicFilterBlock extends AbstractHorizontalDeviceBlock {
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new HarmonicFilterBlockEntity(pos, state);
     }
 
@@ -31,7 +31,7 @@ public class HarmonicFilterBlock extends AbstractHorizontalDeviceBlock {
     protected InteractionResult onConfigure(Level world, BlockPos pos, Player player,
                                        AbstractChannelDeviceBlockEntity device, ItemStack held) {
         if (device instanceof MenuProvider factory) {
-            player.openHandledScreen(factory);
+            player.openMenu(factory);
         }
         return InteractionResult.SUCCESS;
     }

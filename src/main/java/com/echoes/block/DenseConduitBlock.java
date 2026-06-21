@@ -17,7 +17,7 @@ public class DenseConduitBlock extends ConduitBlock {
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new DenseConduitBlockEntity(pos, state);
     }
 }

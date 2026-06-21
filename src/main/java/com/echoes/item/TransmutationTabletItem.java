@@ -20,8 +20,8 @@ public class TransmutationTabletItem extends Item {
 
     @Override
     public InteractionResult use(Level world, Player user, InteractionHand hand) {
-        if (!world.isClient) {
-            user.openHandledScreen(new SimpleMenuProvider(
+        if (!world.isClientSide()) {
+            user.openMenu(new SimpleMenuProvider(
                     (syncId, inv, p) -> new TransmutationTableScreenHandler(syncId, inv),
                     Component.translatable("item.echoes.transmutation_tablet")));
         }

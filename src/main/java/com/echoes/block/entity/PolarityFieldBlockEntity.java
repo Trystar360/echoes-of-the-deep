@@ -66,41 +66,41 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
 
     public static void tick(Level world, BlockPos pos, BlockState state, PolarityFieldBlockEntity be) {
         if (!(world instanceof ServerLevel sw)) return;
-        boolean powered = sw.isReceivingRedstonePower(pos);
+        boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         if (state.contains(BlockStateProperties.LIT) && state.get(BlockStateProperties.LIT) != active) {
-            sw.setBlockState(pos, state.with(BlockStateProperties.LIT, active), Block.NOTIFY_ALL);
+            sw.setBlock(pos, state.setValue(BlockStateProperties.LIT, active), Block.UPDATE_ALL);
         }
         if (++be.timer < INTERVAL) return;
         be.timer = 0;
         if (!active) return;
 
         Vec3 c = Vec3.ofCenter(pos);
-        AABB box = new AABB(pos).expand(be.config.tuningA());
+        AABB box = new AABB(pos).inflate(be.config.tuningA());
         boolean acted = false;
 
         if (be.attract) {
-            List<Entity> pickups = sw.getEntitiesByClass(Entity.class, box,
+            List<Entity> pickups = sw.getEntitiesOfClass(Entity.class, box,
                     e -> e instanceof ItemEntity || e instanceof ExperienceOrb);
             for (Entity e : pickups) {
-                Vec3 dir = c.subtract(e.getBlockPos());
-                if (dir.lengthSquared() < 0.6) continue;
-                e.setVelocity(e.getVelocity().multiply(0.4).add(dir.normalize().multiply(PULL)));
-                e.velocityModified = true;
+                Vec3 dir = c.subtract(e.blockPosition());
+                if (dir.lengthSqr() < 0.6) continue;
+                e.setDeltaMovement(e.getDeltaMovement().multiply(0.4).add(dir.normalize().multiply(PULL)));
+                e.hasImpulse = true;
                 acted = true;
             }
         } else {
-            List<LivingEntity> mobs = sw.getEntitiesByClass(LivingEntity.class, box,
+            List<LivingEntity> mobs = sw.getEntitiesOfClass(LivingEntity.class, box,
                     e -> !(e instanceof Player) && e.isAlive());
             for (LivingEntity e : mobs) {
-                Vec3 dir = e.getBlockPos().subtract(c);
-                if (dir.lengthSquared() < 0.01) dir = new Vec3(0, 1, 0);
-                e.setVelocity(e.getVelocity().add(dir.normalize().multiply(PUSH).add(0, 0.2, 0)));
-                e.velocityModified = true;
+                Vec3 dir = e.blockPosition().subtract(c);
+                if (dir.lengthSqr() < 0.01) dir = new Vec3(0, 1, 0);
+                e.setDeltaMovement(e.getDeltaMovement().add(dir.normalize().multiply(PUSH).add(0, 0.2, 0)));
+                e.hasImpulse = true;
                 acted = true;
             }
         }
-        if (acted) { be.buffer.extract(COST, false); be.markDirty(); }
+        if (acted) { be.buffer.extract(COST, false); be.setChanged(); }
     }
 
     // --- ResonanceNode (CONSUMER) ---

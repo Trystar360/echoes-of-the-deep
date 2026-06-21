@@ -76,12 +76,12 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     @Override public NonNullList<ItemStack> getItems() { return items; }
 
     public static void tick(Level world, BlockPos pos, BlockState state, AttunementFurnaceBlockEntity be) {
-        if (world.isClient) return;
+        if (world.isClientSide()) return;
 
         Optional<RecipeHolder<SmeltingRecipe>> match = be.currentRecipe();
         ItemStack result = match.map(m -> be.resultOf(m)).orElse(ItemStack.EMPTY);
         if (result.isEmpty() || !be.hasOutputRoom(result)) {
-            if (be.progress != 0) { be.progress = 0; be.markDirty(); }
+            if (be.progress != 0) { be.progress = 0; be.setChanged(); }
             return;
         }
 
@@ -89,7 +89,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
         if (be.buffer.extract(ENERGY_PER_TICK, true) >= ENERGY_PER_TICK) {
             be.buffer.extract(ENERGY_PER_TICK, false);
             be.progress++;
-            be.markDirty();
+            be.setChanged();
             if (be.progress >= be.maxProgress) {
                 be.craft(result);
                 be.progress = 0;
@@ -99,26 +99,26 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
 
     private Optional<RecipeHolder<SmeltingRecipe>> currentRecipe() {
         if (getStack(INPUT).isEmpty() || !(world instanceof ServerLevel sw)) return Optional.empty();
-        return sw.getRecipeManager().getFirstMatch(
+        return sw.recipeAccess().getFirstMatch(
                 RecipeType.SMELTING, new SingleRecipeInput(getStack(INPUT)), world);
     }
 
     private ItemStack resultOf(RecipeHolder<SmeltingRecipe> entry) {
         if (!(world instanceof ServerLevel sw)) return ItemStack.EMPTY;
-        return entry.value().craft(new SingleRecipeInput(getStack(INPUT)), sw.getRegistryManager());
+        return entry.value().craft(new SingleRecipeInput(getStack(INPUT)), sw.registryAccess());
     }
 
     private boolean hasOutputRoom(ItemStack result) {
         ItemStack out = getStack(OUTPUT);
         if (out.isEmpty()) return true;
-        if (!ItemStack.areItemsAndComponentsEqual(out, result)) return false;
-        return out.getCount() + result.getCount() <= out.getMaxCount();
+        if (!ItemStack.isSameItemSameComponents(out, result)) return false;
+        return out.getCount() + result.getCount() <= out.getMaxStackSize();
     }
 
     private void craft(ItemStack result) {
-        getStack(INPUT).decrement(1);
+        getStack(INPUT).shrink(1);
         if (getStack(OUTPUT).isEmpty()) setStack(OUTPUT, result.copy());
-        else getStack(OUTPUT).increment(result.getCount());
+        else getStack(OUTPUT).grow(result.getCount());
         setChanged();
     }
 

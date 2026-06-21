@@ -20,14 +20,14 @@ public class BalancerBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new BalancerBlockEntity(pos, state);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        if (world.isClient || type != ModBlockEntities.BALANCER) return null;
+        if (world.isClientSide() || type != ModBlockEntities.BALANCER) return null;
         return (w, p, s, be) -> BalancerBlockEntity.tick(w, p, s, (BalancerBlockEntity) be);
     }
 }

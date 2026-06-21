@@ -57,31 +57,31 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
 
     public static void tick(Level world, BlockPos pos, BlockState state, WarmthRadiatorBlockEntity be) {
         if (!(world instanceof ServerLevel sw)) return;
-        boolean powered = sw.isReceivingRedstonePower(pos);
+        boolean powered = sw.hasNeighborSignal(pos);
         boolean active = be.buffer.getAmount() >= COST && be.config.redstone().allows(powered);
         int radius = be.config.tuningA();
         if (state.contains(BlockStateProperties.LIT) && state.get(BlockStateProperties.LIT) != active) {
-            sw.setBlockState(pos, state.with(BlockStateProperties.LIT, active), Block.NOTIFY_ALL);
+            sw.setBlock(pos, state.setValue(BlockStateProperties.LIT, active), Block.UPDATE_ALL);
         }
         if (++be.timer < INTERVAL) return;
         be.timer = 0;
         if (!active) return;
 
         // Cook one dropped stack that has a smelting recipe.
-        AABB box = new AABB(pos).expand(radius);
-        List<ItemEntity> drops = sw.getEntitiesByClass(ItemEntity.class, box, e -> !e.getStack().isEmpty());
+        AABB box = new AABB(pos).inflate(radius);
+        List<ItemEntity> drops = sw.getEntitiesOfClass(ItemEntity.class, box, e -> !e.getStack().isEmpty());
         for (ItemEntity e : drops) {
             ItemStack stack = e.getStack();
             Optional<? extends net.minecraft.world.item.crafting.RecipeHolder<SmeltingRecipe>> m =
-                    sw.getRecipeManager().getFirstMatch(RecipeType.SMELTING, new SingleRecipeInput(stack), sw);
+                    sw.recipeAccess().getFirstMatch(RecipeType.SMELTING, new SingleRecipeInput(stack), sw);
             if (m.isEmpty()) continue;
-            ItemStack result = m.get().value().craft(new SingleRecipeInput(stack), sw.getRegistryManager());
+            ItemStack result = m.get().value().craft(new SingleRecipeInput(stack), sw.registryAccess());
             if (result.isEmpty()) continue;
             ItemStack out = result.copy();
             out.setCount(stack.getCount() * result.getCount());
             e.setStack(out);
             be.buffer.extract(COST, false);
-            be.markDirty();
+            be.setChanged();
             break;
         }
 
@@ -90,10 +90,10 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
         BlockPos p = pos.add(rng.nextInt(radius * 2 + 1) - radius, rng.nextInt(3) - 1,
                 rng.nextInt(radius * 2 + 1) - radius);
         BlockState s = sw.getBlockState(p);
-        if (s.isOf(Blocks.SNOW) || s.isOf(Blocks.SNOW_BLOCK) || s.isOf(Blocks.POWDER_SNOW)) {
-            sw.setBlockState(p, Blocks.AIR.getDefaultState());
-        } else if (s.isOf(Blocks.ICE) || s.isOf(Blocks.FROSTED_ICE)) {
-            sw.setBlockState(p, Blocks.WATER.getDefaultState());
+        if (s.is(Blocks.SNOW) || s.is(Blocks.SNOW_BLOCK) || s.is(Blocks.POWDER_SNOW)) {
+            sw.setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
+        } else if (s.is(Blocks.ICE) || s.is(Blocks.FROSTED_ICE)) {
+            sw.setBlockAndUpdate(p, Blocks.WATER.defaultBlockState());
         }
     }
 

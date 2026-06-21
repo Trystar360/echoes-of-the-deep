@@ -50,11 +50,11 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
         this.pos = pos;
         this.player = inv.player;
 
-        BlockEntity be = inv.player.getWorld().getBlockEntity(pos);
+        BlockEntity be = inv.player.level().getBlockEntity(pos);
         Configurable cfg = be instanceof Configurable c ? c : null;
         this.spec = cfg != null ? cfg.getConfigSpec() : ConfigSpec.builder().build();
 
-        if (!inv.player.getWorld().isClient && cfg != null) {
+        if (!inv.player.level().isClientSide() && cfg != null) {
             this.config = cfg.getConfig();
             this.properties = backedBy(config);
         } else {
@@ -69,7 +69,7 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
     public int prop(int i) { return properties.get(i); }
 
     public Configurable target() {
-        BlockEntity be = player.getWorld().getBlockEntity(pos);
+        BlockEntity be = player.level().getBlockEntity(pos);
         return be instanceof Configurable c ? c : null;
     }
 
@@ -134,7 +134,7 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return player.getWorld().getBlockEntity(pos) instanceof Configurable
+        return player.level().getBlockEntity(pos) instanceof Configurable
                 && player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64.0;
     }
 }

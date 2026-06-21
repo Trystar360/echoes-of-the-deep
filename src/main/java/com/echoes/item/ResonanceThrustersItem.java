@@ -46,8 +46,8 @@ public class ResonanceThrustersItem extends Item {
         for (ItemStack s : p.getInventory().main) {
             if (s.getItem() instanceof ResonanceThrustersItem && ru(s) > 0) return true;
         }
-        return p.getOffHandStack().getItem() instanceof ResonanceThrustersItem
-                && ru(p.getOffHandStack()) > 0;
+        return p.getOffhandItem().getItem() instanceof ResonanceThrustersItem
+                && ru(p.getOffhandItem()) > 0;
     }
     private static void setRu(ItemStack stack, int value) {
         stack.set(ModComponents.STORED_RU, Math.max(0, Math.min(CAPACITY, value)));
@@ -56,9 +56,9 @@ public class ResonanceThrustersItem extends Item {
     /** Right-click a buffered Resonance block to siphon RU into the thrusters. */
     @Override
     public InteractionResult useOnBlock(UseOnContext ctx) {
-        Level world = ctx.getWorld();
-        if (world.isClient) return InteractionResult.SUCCESS;
-        if (!(world.getBlockEntity(ctx.getBlockPos()) instanceof ResonanceNode node) || node.storedRu() <= 0) {
+        Level world = ctx.getLevel();
+        if (world.isClientSide()) return InteractionResult.SUCCESS;
+        if (!(world.getBlockEntity(ctx.getClickedPos()) instanceof ResonanceNode node) || node.storedRu() <= 0) {
             return InteractionResult.PASS;
         }
         ItemStack stack = ctx.getStack();
@@ -67,7 +67,7 @@ public class ResonanceThrustersItem extends Item {
         long pulled = node.extract(Math.min(space, RECHARGE_PER_USE), false);
         if (pulled > 0) {
             setRu(stack, ru(stack) + (int) pulled);
-            if (node instanceof BlockEntity be) be.markDirty();
+            if (node instanceof BlockEntity be) be.setChanged();
             Player p = ctx.getPlayer();
             if (p != null) p.sendMessage(Component.translatable("message.echoes.thrusters.charge",
                     fmt(ru(stack)), fmt(CAPACITY)), true);
@@ -78,9 +78,9 @@ public class ResonanceThrustersItem extends Item {
     /** Begin thrusting (continuous use) if there's charge. */
     @Override
     public InteractionResult use(Level world, Player user, InteractionHand hand) {
-        ItemStack stack = user.getStackInHand(hand);
+        ItemStack stack = user.getItemInHand(hand);
         if (ru(stack) <= 0 && !user.isCreative()) return InteractionResult.FAIL;
-        user.setCurrentHand(hand);
+        user.startUsingItem(hand);
         return InteractionResult.CONSUME;
     }
 
@@ -96,16 +96,16 @@ public class ResonanceThrustersItem extends Item {
         }
         // Full directional flight: ride wherever you look. Sneak hovers in place.
         double speed = user.isSprinting() ? SPRINT_SPEED : FLY_SPEED;
-        if (user.isSneaking()) {
-            user.setVelocity(user.getVelocity().multiply(0.6, 0.0, 0.6)); // hover/brake
+        if (user.isShiftKeyDown()) {
+            user.setDeltaMovement(user.getDeltaMovement().multiply(0.6, 0.0, 0.6)); // hover/brake
         } else {
-            Vec3 look = user.getRotationVector();
-            user.setVelocity(look.x * speed, look.y * speed + LIFT, look.z * speed);
+            Vec3 look = user.getViewVector(1.0F);
+            user.setDeltaMovement(look.x * speed, look.y * speed + LIFT, look.z * speed);
         }
-        user.velocityModified = true;
+        user.hasImpulse = true;
         user.fallDistance = 0;
 
-        if (!world.isClient && !creative) {
+        if (!world.isClientSide() && !creative) {
             setRu(stack, ru(stack) - DRAIN_PER_TICK);
         }
     }

@@ -28,14 +28,14 @@ public class FrequencyTunerItem extends Item {
 
     @Override
     public InteractionResult useOnBlock(UseOnContext context) {
-        if (context.getWorld().isClient) return InteractionResult.SUCCESS;
+        if (context.getLevel().isClientSide()) return InteractionResult.SUCCESS;
         Player player = context.getPlayer();
         if (player == null) return InteractionResult.PASS;
-        BlockEntity be = context.getWorld().getBlockEntity(context.getBlockPos());
+        BlockEntity be = context.getLevel().getBlockEntity(context.getClickedPos());
         ItemStack tuner = context.getStack();
 
         // Sneak on a wireless device still does the quick channel-copy.
-        if (player.isSneaking() && be instanceof AbstractChannelDeviceBlockEntity device) {
+        if (player.isShiftKeyDown() && be instanceof AbstractChannelDeviceBlockEntity device) {
             store(tuner, device.channel());
             player.sendMessage(Component.translatable("message.echoes.tuner.copied", colorName(device.channel())), true);
             return InteractionResult.SUCCESS;
@@ -43,7 +43,7 @@ public class FrequencyTunerItem extends Item {
 
         // Otherwise, open the configuration screen for any configurable device.
         if (be instanceof Configurable cfg) {
-            player.openHandledScreen(new ConfigScreenFactory(cfg, context.getBlockPos().immutable()));
+            player.openMenu(new ConfigScreenFactory(cfg, context.getClickedPos().immutable()));
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;

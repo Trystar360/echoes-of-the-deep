@@ -55,33 +55,33 @@ public final class ModItems {
 
     // The portable transmutation terminal (per-player Bound-Light account).
     public static final Item TRANSMUTATION_TABLET = register("transmutation_tablet",
-            com.echoes.item.TransmutationTabletItem::new, new Item.Properties().maxCount(1));
+            com.echoes.item.TransmutationTabletItem::new, new Item.Properties().stacksTo(1));
 
     // Octave Stars — portable Bound-Light batteries, six tiers (×4 capacity per tier).
     public static final Item OCTAVE_STAR_1 = register("octave_star_1",
-            s -> new com.echoes.item.OctaveStarItem(1, 100_000L, s), new Item.Properties().maxCount(1));
+            s -> new com.echoes.item.OctaveStarItem(1, 100_000L, s), new Item.Properties().stacksTo(1));
     public static final Item OCTAVE_STAR_2 = register("octave_star_2",
-            s -> new com.echoes.item.OctaveStarItem(2, 400_000L, s), new Item.Properties().maxCount(1));
+            s -> new com.echoes.item.OctaveStarItem(2, 400_000L, s), new Item.Properties().stacksTo(1));
     public static final Item OCTAVE_STAR_3 = register("octave_star_3",
-            s -> new com.echoes.item.OctaveStarItem(3, 1_600_000L, s), new Item.Properties().maxCount(1));
+            s -> new com.echoes.item.OctaveStarItem(3, 1_600_000L, s), new Item.Properties().stacksTo(1));
     public static final Item OCTAVE_STAR_4 = register("octave_star_4",
-            s -> new com.echoes.item.OctaveStarItem(4, 6_400_000L, s), new Item.Properties().maxCount(1));
+            s -> new com.echoes.item.OctaveStarItem(4, 6_400_000L, s), new Item.Properties().stacksTo(1));
     public static final Item OCTAVE_STAR_5 = register("octave_star_5",
-            s -> new com.echoes.item.OctaveStarItem(5, 25_600_000L, s), new Item.Properties().maxCount(1));
+            s -> new com.echoes.item.OctaveStarItem(5, 25_600_000L, s), new Item.Properties().stacksTo(1));
     public static final Item OCTAVE_STAR_6 = register("octave_star_6",
-            s -> new com.echoes.item.OctaveStarItem(6, 102_400_000L, s), new Item.Properties().maxCount(1));
+            s -> new com.echoes.item.OctaveStarItem(6, 102_400_000L, s), new Item.Properties().stacksTo(1));
     public static final Item[] OCTAVE_STARS = {
             OCTAVE_STAR_1, OCTAVE_STAR_2, OCTAVE_STAR_3, OCTAVE_STAR_4, OCTAVE_STAR_5, OCTAVE_STAR_6 };
 
     // Wireless transport tools
     public static final Item FREQUENCY_TUNER = register("wave_tuner",
-            FrequencyTunerItem::new, new Item.Properties().maxCount(1));
+            FrequencyTunerItem::new, new Item.Properties().stacksTo(1));
     public static final Item CHANNEL_ATLAS   = register("wave_atlas",
-            ChannelAtlasItem::new, new Item.Properties().maxCount(1));
+            ChannelAtlasItem::new, new Item.Properties().stacksTo(1));
     public static final Item RESONANCE_METER = register("light_meter",
-            ResonanceMeterItem::new, new Item.Properties().maxCount(1));
+            ResonanceMeterItem::new, new Item.Properties().stacksTo(1));
     public static final Item RESONANCE_THRUSTERS = register("resonant_thrusters",
-            ResonanceThrustersItem::new, new Item.Properties().maxCount(1));
+            ResonanceThrustersItem::new, new Item.Properties().stacksTo(1));
 
     // Resonant tools — deliberately strong: faster than netherite, tougher, highly
     // enchantable, mines anything. "Energy is carried, not transmitted" — W. Russell.
@@ -104,7 +104,7 @@ public final class ModItems {
     public static Item register(String name, Function<Item.Properties, Item> factory, Item.Properties settings) {
         Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);
         ResourceKey<Item> key = ResourceKey.of(Registries.ITEM, id);
-        Item item = factory.apply(settings.registryKey(key));
+        Item item = factory.apply(settings.setId(key));
         return Registry.register(BuiltInRegistries.ITEM, key, item);
     }
 

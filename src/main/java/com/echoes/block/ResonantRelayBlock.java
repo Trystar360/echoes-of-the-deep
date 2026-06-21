@@ -26,21 +26,21 @@ public class ResonantRelayBlock extends AbstractChannelDeviceBlock {
 
     public ResonantRelayBlock(Properties settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState().with(BlockStateProperties.FACING, Direction.NORTH));
+        registerDefaultState(getStateDefinition().any().setValue(BlockStateProperties.FACING, Direction.NORTH));
     }
 
     @Override
-    protected void appendProperties(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BlockStateProperties.FACING);
     }
 
     @Override
-    public @Nullable BlockState getPlacementState(BlockPlaceContext ctx) {
-        return getDefaultState().with(BlockStateProperties.FACING, ctx.getSide().getOpposite());
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext ctx) {
+        return getDefaultState().setValue(BlockStateProperties.FACING, ctx.getClickedFace().getOpposite());
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ResonantRelayBlockEntity(pos, state);
     }
 

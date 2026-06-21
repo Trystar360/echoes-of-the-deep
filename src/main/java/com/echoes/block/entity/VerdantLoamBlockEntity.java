@@ -41,7 +41,7 @@ public class VerdantLoamBlockEntity extends BlockEntity implements Configurable 
 
     public static void tick(Level world, BlockPos pos, BlockState state, VerdantLoamBlockEntity be) {
         if (!(world instanceof ServerLevel sw)) return;
-        if (!be.config.redstone().allows(sw.isReceivingRedstonePower(pos))) return;
+        if (!be.config.redstone().allows(sw.hasNeighborSignal(pos))) return;
         if (++be.timer < be.config.tuningB()) return;
         be.timer = 0;
 
@@ -56,8 +56,8 @@ public class VerdantLoamBlockEntity extends BlockEntity implements Configurable 
             if (s.getBlock() instanceof BonemealableBlock f
                     && f.isFertilizable(sw, p, s) && f.canGrow(sw, rng, p, s)) {
                 f.grow(sw, rng, p, s);
-                sw.syncWorldEvent(2005, p, 0); // bonemeal particles
-                be.markDirty();
+                sw.levelEvent(2005, p, 0); // bonemeal particles
+                be.setChanged();
                 return;
             }
         }
