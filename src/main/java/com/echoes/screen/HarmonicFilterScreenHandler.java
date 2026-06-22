@@ -10,6 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.core.BlockPos;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A 3×3 grid of <em>ghost</em> slots: clicking sets a slot to a single-item sample
@@ -17,17 +19,22 @@ import net.minecraft.world.inventory.ContainerInput;
  * cursor clears it. The samples drive {@link HarmonicFilterBlockEntity#itemWhitelist()}.
  */
 public class HarmonicFilterScreenHandler extends AbstractContainerMenu {
+    /** Button id: open this block's Info panel (server resolves the position). */
+    public static final int B_INFO = 50;
+
     private static final int SIZE = HarmonicFilterBlockEntity.SIZE;
     private final Container filter;
+    private final @Nullable BlockPos pos;   // server-side only; null on the client
 
     /** Client constructor. */
     public HarmonicFilterScreenHandler(int syncId, Inventory playerInv) {
-        this(syncId, playerInv, new SimpleContainer(SIZE));
+        this(syncId, playerInv, new SimpleContainer(SIZE), null);
     }
 
-    public HarmonicFilterScreenHandler(int syncId, Inventory playerInv, Container filter) {
+    public HarmonicFilterScreenHandler(int syncId, Inventory playerInv, Container filter, @Nullable BlockPos pos) {
         super(ModScreens.HARMONIC_FILTER, syncId);
         this.filter = filter;
+        this.pos = pos;
         checkContainerSize(filter, SIZE);
 
         // 3x3 ghost grid
@@ -65,6 +72,15 @@ public class HarmonicFilterScreenHandler extends AbstractContainerMenu {
             return; // ghost slots never run default handling
         }
         super.clicked(slotIndex, button, actionType, player);
+    }
+
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (id == B_INFO && pos != null && !player.level().isClientSide()) {
+            player.openMenu(new InfoScreenFactory(player.level().getBlockState(pos).getBlock().getName(), pos));
+            return true;
+        }
+        return super.clickMenuButton(player, id);
     }
 
     /** No shift-transfer — the grid is configured by clicking, not by moving items. */

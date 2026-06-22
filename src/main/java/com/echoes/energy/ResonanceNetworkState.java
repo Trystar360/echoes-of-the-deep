@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 
 /**
  * Disk-backed snapshot of the wired Resonance grid's topology so networks survive a
- * restart. We persist only the conduit positions per network (plus the id counter);
- * the node lists are transient and re-scanned from the world on the next tick.
+ * restart. We persist the member positions per network (plus the id counter); the
+ * per-role node lists are transient and re-scanned from the world on the next tick.
  * {@link ResonanceNetworkManager} owns one per {@link
  * net.minecraft.server.level.ServerLevel}.
  *

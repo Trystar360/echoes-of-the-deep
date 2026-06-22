@@ -4,10 +4,12 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
 
+import java.util.UUID;
+
 /**
  * Per-device, NBT-persisted configuration: wireless channel + octave, redstone
- * behaviour, six per-face transfer modes, and up to two block-specific tuning
- * dials. One instance lives on each {@link Configurable} block entity.
+ * behaviour, six per-face transfer modes, up to two block-specific tuning dials,
+ * and ownership/security. One instance lives on each {@link Configurable} block entity.
  *
  * <p>Side modes are indexed by {@link Direction#getId()} (0=DOWN … 5=EAST).
  */
@@ -22,6 +24,17 @@ public final class BlockConfig {
                                        SideMode.BOTH, SideMode.BOTH, SideMode.BOTH };
     private int tuningA = 0;
     private int tuningB = 0;
+    private UUID owner = null;                          // claimed on first access
+    private SecurityMode security = SecurityMode.PUBLIC;
+
+    // --- ownership / security ---
+    public UUID owner() { return owner; }
+    public SecurityMode security() { return security; }
+    public void setSecurity(SecurityMode m) { security = m; }
+    /** Claim ownership for {@code who} if unclaimed; no-op once owned. */
+    public void claim(UUID who) { if (owner == null) owner = who; }
+    /** May {@code who} open/configure this device? Unowned or PUBLIC devices allow anyone. */
+    public boolean canAccess(UUID who) { return security.allows(owner, who); }
 
     // --- channel / octave ---
     public int channel() { return channel; }
@@ -62,6 +75,8 @@ public final class BlockConfig {
         c.putIntArray("sides", sm);
         c.putInt("tuningA", tuningA);
         c.putInt("tuningB", tuningB);
+        c.putInt("security", security.id());
+        if (owner != null) c.putString("owner", owner.toString());
     }
 
     public void readNbt(ValueInput in) {
@@ -76,5 +91,9 @@ public final class BlockConfig {
         });
         tuningA = c.getIntOr("tuningA", 0);
         tuningB = c.getIntOr("tuningB", 0);
+        security = SecurityMode.byId(c.getIntOr("security", 0));
+        c.getString("owner").ifPresent(s -> {
+            try { owner = UUID.fromString(s); } catch (IllegalArgumentException ignored) {}
+        });
     }
 }

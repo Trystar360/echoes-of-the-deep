@@ -15,7 +15,7 @@ A walkable **"Great Work" feature hall** that demonstrates every block and item 
 
 ## Play it
 
-1. Install **Fabric Loader**, **Fabric API**, and **Octaves of the One** for **1.21.4**
+1. Install **Fabric Loader**, **Fabric API**, and **Octaves of the One** for **26.1.2**
    (the world is full of the mod's blocks, so the mod must be present).
 2. Unzip `Octaves-of-the-One-Showcase.zip` into your `.minecraft/saves/` folder.
 3. Open the world (**Creative**) — you spawn at the atrium; walk **east** through the wings.
@@ -24,7 +24,7 @@ A walkable **"Great Work" feature hall** that demonstrates every block and item 
 
 ```bash
 python3 gen_showcase.py      # regenerate the datapack
-./build_showcase.sh          # build on a headless server + repackage the save (JDK 21)
+./build_showcase.sh          # build on a headless server + repackage the save (JDK 25)
 ```
 
 The datapack is plain data — drop it into any world's `datapacks/` folder and run

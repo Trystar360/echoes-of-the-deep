@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": ["qeq", "ece", "qeq"],
+  "key": { "e": "echoes:echo_ingot", "q": "minecraft:quartz", "c": "minecraft:copper_ingot" },
+  "result": { "id": "echoes:efficiency_damper", "count": 1 }
+}

@@ -10,22 +10,33 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.core.BlockPos;
+import org.jetbrains.annotations.Nullable;
 
 public class CrusherScreenHandler extends AbstractContainerMenu {
+    /** Button id: open this block's Info panel (server resolves the position). */
+    public static final int B_INFO = 50;
+    /** Button id: open this block's Config screen. */
+    public static final int B_CONFIG = 51;
+
     private final Container inventory;
     private final ContainerData props;
+    private final @Nullable BlockPos pos;   // server-side only; null on the client
 
-    private static final int MACHINE_SLOTS = 3;
+    private static final int MACHINE_SLOTS = 5;          // input, output, byproduct, 2 augments
+    // Augment slot screen positions (right column).
+    public static final int AUG0_X = 152, AUG0_Y = 17, AUG1_X = 152, AUG1_Y = 39;
 
     /** Client constructor. */
     public CrusherScreenHandler(int syncId, Inventory playerInv) {
-        this(syncId, playerInv, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(3));
+        this(syncId, playerInv, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(3), null);
     }
 
-    public CrusherScreenHandler(int syncId, Inventory playerInv, Container inv, ContainerData props) {
+    public CrusherScreenHandler(int syncId, Inventory playerInv, Container inv, ContainerData props, @Nullable BlockPos pos) {
         super(ModScreens.CRUSHER, syncId);
         this.inventory = inv;
         this.props = props;
+        this.pos = pos;
         checkContainerSize(inv, MACHINE_SLOTS);
         inv.startOpen(playerInv.player);
 
@@ -35,6 +46,12 @@ public class CrusherScreenHandler extends AbstractContainerMenu {
         });
         this.addSlot(new Slot(inv, 2, 116, 57) {       // byproduct (extract-only)
             @Override public boolean mayPlace(ItemStack stack) { return false; }
+        });
+        this.addSlot(new Slot(inv, 3, AUG0_X, AUG0_Y) {   // augment slots
+            @Override public boolean mayPlace(ItemStack s) { return com.echoes.block.entity.CrusherBlockEntity.isAugment(s); }
+        });
+        this.addSlot(new Slot(inv, 4, AUG1_X, AUG1_Y) {
+            @Override public boolean mayPlace(ItemStack s) { return com.echoes.block.entity.CrusherBlockEntity.isAugment(s); }
         });
 
         // player inventory + hotbar
@@ -52,6 +69,20 @@ public class CrusherScreenHandler extends AbstractContainerMenu {
     public int storedRu() { return props.get(2); }
 
     @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (pos == null || player.level().isClientSide()) return super.clickMenuButton(player, id);
+        if (id == B_INFO) {
+            player.openMenu(new InfoScreenFactory(player.level().getBlockState(pos).getBlock().getName(), pos));
+            return true;
+        }
+        if (id == B_CONFIG && player.level().getBlockEntity(pos) instanceof com.echoes.config.Configurable cfg) {
+            player.openMenu(new ConfigScreenFactory(cfg, pos));
+            return true;
+        }
+        return super.clickMenuButton(player, id);
+    }
+
+    @Override
     public boolean stillValid(Player player) {
         return inventory.stillValid(player);
     }
@@ -65,6 +96,8 @@ public class CrusherScreenHandler extends AbstractContainerMenu {
             newStack = original.copy();
             if (slotIndex < MACHINE_SLOTS) {
                 if (!this.moveItemStackTo(original, MACHINE_SLOTS, this.slots.size(), true)) return ItemStack.EMPTY;
+            } else if (com.echoes.block.entity.CrusherBlockEntity.isAugment(original)) {
+                if (!this.moveItemStackTo(original, 3, 5, false)) return ItemStack.EMPTY;   // player -> augment slots
             } else if (!this.moveItemStackTo(original, 0, 1, false)) {  // player -> input only
                 return ItemStack.EMPTY;
             }

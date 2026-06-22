@@ -14,14 +14,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Owns all conduit networks for a single {@link ServerLevel}. Networks are
- * persistent objects mutated incrementally on topology changes — we never
- * flood-fill on the tick path. The only expensive operation is a split check
- * when a conduit is removed, which is rare (player-driven).
+ * Owns all energy networks for a single {@link ServerLevel}. A network is the
+ * connected component of energy block entities joined face-to-face: any blocks
+ * that touch auto-join one network with no conduit between them, and conduits are
+ * ordinary members that exist to span gaps. Networks are persistent objects
+ * mutated incrementally on topology changes — we never flood-fill on the tick
+ * path. The only expensive operation is a split check when a member is removed,
+ * which is rare (player-driven).
  *
- * <p>One instance per world, held in a static map keyed by world. (For a
- * shipping mod, attach this to the world via a Cardinal Components world
- * component or a SavedData; kept simple here.)
+ * <p>One instance per world, held in a static map keyed by world.
  */
 public class ResonanceNetworkManager {
     private static final Map<ServerLevel, ResonanceNetworkManager> INSTANCES = new HashMap<>();
@@ -37,13 +38,13 @@ public class ResonanceNetworkManager {
         load();
     }
 
-    /** Restore persisted network topology (conduit sets) on first access per world. */
+    /** Restore persisted network topology (member sets) on first access per world. */
     private void load() {
         state = world.getDataStorage().computeIfAbsent(ResonanceNetworkState.TYPE);
         nextId = Math.max(nextId, state.nextId);
         for (Map.Entry<Integer, java.util.Set<BlockPos>> e : state.networks.entrySet()) {
             ResonanceNetwork net = new ResonanceNetwork(e.getKey());
-            net.conduits.addAll(e.getValue());
+            net.members.addAll(e.getValue());
             net.markDirty(); // nodes re-scanned from the world on the next tick
             networks.put(net.id, net);
             for (BlockPos p : e.getValue()) posToNetwork.put(p, net.id);
@@ -56,7 +57,7 @@ public class ResonanceNetworkManager {
         if (state == null) return;
         state.networks.clear();
         for (ResonanceNetwork net : networks.values()) {
-            state.networks.put(net.id, new java.util.HashSet<>(net.conduits));
+            state.networks.put(net.id, new java.util.HashSet<>(net.members));
         }
         state.nextId = nextId;
         state.setDirty();
@@ -76,11 +77,30 @@ public class ResonanceNetworkManager {
         }
     }
 
-    // --- topology events (called from conduit block onPlaced / onBroken) ---
+    // --- topology events ---
+    //
+    // Every energy block routes its place/break here. A single entry point,
+    // onNodeChanged, auto-detects which happened by whether a node block entity
+    // exists at the position now: present after setBlock => placed; absent after
+    // removal => broken. So no block class needs to know the difference.
 
-    /** A conduit was placed. Create / join / merge with neighboring networks. */
-    public void onConduitPlaced(BlockPos pos) {
+    /** An energy block was placed or broken at {@code pos}; reconcile the network. */
+    public void onNodeChanged(BlockPos pos) {
+        pos = pos.immutable();
+        if (ResonanceNetwork.nodeAt(world, pos) != null) onNodePlaced(pos);
+        else onNodeBroken(pos);
+    }
+
+    // Backwards-compatible aliases — existing blocks call these.
+    public void onConduitPlaced(BlockPos pos)      { onNodeChanged(pos); }
+    public void onConduitBroken(BlockPos pos)       { onNodeChanged(pos); }
+    public void onAttachedNodeChanged(BlockPos pos) { onNodeChanged(pos); }
+
+    /** A node appeared at {@code pos}. Create / join / merge with neighboring networks. */
+    private void onNodePlaced(BlockPos pos) {
         Set<Integer> adjacent = new HashSet<>();
+        Integer existing = posToNetwork.get(pos);
+        if (existing != null) adjacent.add(existing);   // idempotent re-notify
         for (BlockPos n : ResonanceNetwork.neighbors(pos)) {
             Integer id = posToNetwork.get(n);
             if (id != null) adjacent.add(id);
@@ -96,60 +116,67 @@ public class ResonanceNetworkManager {
             net = networks.get(it.next());
             while (it.hasNext()) merge(net, networks.get(it.next()));
         }
-        net.conduits.add(pos);
+        net.members.add(pos);
         posToNetwork.put(pos, net.id);
-        markNeighborsDirty(pos, net);
+        net.markDirty();
         syncState();
     }
 
-    /** A conduit was removed. Remove it, then check whether the network split. */
-    public void onConduitBroken(BlockPos pos) {
-        if (doConduitBroken(pos)) syncState();
-    }
-
-    private boolean doConduitBroken(BlockPos pos) {
+    /** A node at {@code pos} was removed. Remove it, then check whether the network split. */
+    private void onNodeBroken(BlockPos pos) {
         Integer id = posToNetwork.remove(pos);
-        if (id == null) return false;
+        if (id == null) return;
         ResonanceNetwork net = networks.get(id);
-        if (net == null) return true;
-        net.conduits.remove(pos);
+        if (net == null) { syncState(); return; }
+        net.members.remove(pos);
 
-        // Seeds = surviving conduit neighbors.
+        // Seeds = surviving member neighbors.
         List<BlockPos> seeds = new ArrayList<>();
         for (BlockPos n : ResonanceNetwork.neighbors(pos))
-            if (net.conduits.contains(n)) seeds.add(n);
+            if (net.members.contains(n)) seeds.add(n);
 
-        if (net.conduits.isEmpty()) { networks.remove(id); return true; }
-        if (seeds.size() <= 1) { net.markDirty(); return true; }
+        if (net.members.isEmpty()) { networks.remove(id); syncState(); return; }
+        if (seeds.size() <= 1) { net.markDirty(); syncState(); return; }
 
         // Flood-fill from each seed; if they don't all reach each other, split.
         List<Set<BlockPos>> components = new ArrayList<>();
         Set<BlockPos> globalVisited = new HashSet<>();
         for (BlockPos seed : seeds) {
             if (globalVisited.contains(seed)) continue;
-            components.add(floodFill(seed, net.conduits, globalVisited));
+            components.add(floodFill(seed, net.members, globalVisited));
         }
-        if (components.size() <= 1) { net.markDirty(); return true; }
+        if (components.size() <= 1) { net.markDirty(); syncState(); return; }
 
-        // Split: keep the largest as the original, spin up new ones for the rest.
+        // Split: spin up a fresh network for each disconnected component.
         networks.remove(id);
-        for (BlockPos p : net.conduits) posToNetwork.remove(p);
+        for (BlockPos p : net.members) posToNetwork.remove(p);
         for (Set<BlockPos> comp : components) {
             ResonanceNetwork fresh = new ResonanceNetwork(nextId++);
-            fresh.conduits.addAll(comp);
+            fresh.members.addAll(comp);
             networks.put(fresh.id, fresh);
             for (BlockPos p : comp) posToNetwork.put(p, fresh.id);
             fresh.markDirty();
         }
-        return true;
+        syncState();
     }
 
-    /** A machine/storage/provider next to a conduit changed — re-scan attached nodes. */
-    public void onAttachedNodeChanged(BlockPos pos) {
-        for (BlockPos n : ResonanceNetwork.neighbors(pos)) {
-            Integer id = posToNetwork.get(n);
-            if (id != null) networks.get(id).markDirty();
+    /** A snapshot of the network a position belongs to, for the Info screen. */
+    public record NetInfo(int members, long stored, long capacity) {}
+
+    /** Totals for the network containing {@code pos} (members loaded right now). */
+    public NetInfo infoFor(BlockPos pos) {
+        Integer id = posToNetwork.get(pos);
+        ResonanceNetwork net = id == null ? null : networks.get(id);
+        if (net == null) {                          // lone node not yet in a network
+            ResonanceNode n = ResonanceNetwork.nodeAt(world, pos);
+            return n == null ? new NetInfo(1, 0, 0) : new NetInfo(1, n.storedRu(), n.capacityRu());
         }
+        long stored = 0, cap = 0;
+        for (BlockPos m : net.members) {
+            ResonanceNode n = ResonanceNetwork.nodeAt(world, m);
+            if (n != null) { stored += n.storedRu(); cap += n.capacityRu(); }
+        }
+        return new NetInfo(net.members.size(), stored, cap);
     }
 
     /** Equalize storage on every network adjacent to {@code pos} (the Balancer). */
@@ -166,16 +193,12 @@ public class ResonanceNetworkManager {
 
     private void merge(ResonanceNetwork keep, ResonanceNetwork drop) {
         if (keep == drop || drop == null) return;
-        for (BlockPos p : drop.conduits) {
-            keep.conduits.add(p);
+        for (BlockPos p : drop.members) {
+            keep.members.add(p);
             posToNetwork.put(p, keep.id);
         }
         networks.remove(drop.id);
         keep.markDirty();
-    }
-
-    private void markNeighborsDirty(BlockPos pos, ResonanceNetwork net) {
-        net.markDirty();
     }
 
     private Set<BlockPos> floodFill(BlockPos start, Set<BlockPos> domain, Set<BlockPos> globalVisited) {

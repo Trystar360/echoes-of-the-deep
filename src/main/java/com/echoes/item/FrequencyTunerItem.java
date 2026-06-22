@@ -43,6 +43,10 @@ public class FrequencyTunerItem extends Item {
 
         // Otherwise, open the configuration screen for any configurable device.
         if (be instanceof Configurable cfg) {
+            if (!cfg.getConfig().canAccess(player.getUUID())) {
+                player.sendOverlayMessage(Component.translatable("message.echoes.locked"));
+                return InteractionResult.SUCCESS;
+            }
             player.openMenu(new ConfigScreenFactory(cfg, context.getClickedPos().immutable()));
             return InteractionResult.SUCCESS;
         }

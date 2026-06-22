@@ -57,6 +57,11 @@ public class CrusherBlock extends Block implements EntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
         if (!world.isClientSide() && world.getBlockEntity(pos) instanceof MenuProvider factory) {
+            if (world.getBlockEntity(pos) instanceof com.echoes.config.Configurable cfg
+                    && !cfg.getConfig().canAccess(player.getUUID())) {
+                player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.echoes.locked"));
+                return InteractionResult.SUCCESS;
+            }
             player.openMenu(factory);
         }
         return InteractionResult.SUCCESS;

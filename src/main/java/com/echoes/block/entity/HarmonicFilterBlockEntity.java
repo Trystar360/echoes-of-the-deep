@@ -54,7 +54,7 @@ public class HarmonicFilterBlockEntity extends AbstractChannelDeviceBlockEntity
     @Override public Component getDisplayName() { return Component.translatable("block.echoes.wave_filter"); }
 
     @Override public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
-        return new HarmonicFilterScreenHandler(syncId, inv, this);
+        return new HarmonicFilterScreenHandler(syncId, inv, this, getBlockPos());
     }
 
     @Override
