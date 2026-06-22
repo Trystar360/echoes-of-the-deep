@@ -145,7 +145,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     // --- screen ---
     @Override public Component getDisplayName() { return Component.translatable("block.echoes.transmuter"); }
     @Override public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
-        return new AttunementFurnaceScreenHandler(syncId, inv, this, props);
+        return new AttunementFurnaceScreenHandler(syncId, inv, this, props, getBlockPos());
     }
 
     // --- Configurable ---

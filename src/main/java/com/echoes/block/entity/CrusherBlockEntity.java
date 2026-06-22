@@ -162,7 +162,7 @@ public class CrusherBlockEntity extends BlockEntity
     // --- screen ---
     @Override public Component getDisplayName() { return Component.translatable("block.echoes.compressor"); }
     @Override public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
-        return new CrusherScreenHandler(syncId, inv, this, props);
+        return new CrusherScreenHandler(syncId, inv, this, props, getBlockPos());
     }
 
     @Override public void setChanged() { super.setChanged(); }

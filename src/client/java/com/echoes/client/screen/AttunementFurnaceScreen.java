@@ -18,6 +18,12 @@ public class AttunementFurnaceScreen extends AbstractContainerScreen<AttunementF
     }
 
     @Override
+    protected void init() {
+        super.init();
+        addRenderableWidget(MachineTabs.infoButton(leftPos, topPos, menu.containerId, AttunementFurnaceScreenHandler.B_INFO));
+    }
+
+    @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         g.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);

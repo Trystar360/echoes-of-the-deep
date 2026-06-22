@@ -10,22 +10,29 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.core.BlockPos;
+import org.jetbrains.annotations.Nullable;
 
 public class CrusherScreenHandler extends AbstractContainerMenu {
+    /** Button id: open this block's Info panel (server resolves the position). */
+    public static final int B_INFO = 50;
+
     private final Container inventory;
     private final ContainerData props;
+    private final @Nullable BlockPos pos;   // server-side only; null on the client
 
     private static final int MACHINE_SLOTS = 3;
 
     /** Client constructor. */
     public CrusherScreenHandler(int syncId, Inventory playerInv) {
-        this(syncId, playerInv, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(3));
+        this(syncId, playerInv, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(3), null);
     }
 
-    public CrusherScreenHandler(int syncId, Inventory playerInv, Container inv, ContainerData props) {
+    public CrusherScreenHandler(int syncId, Inventory playerInv, Container inv, ContainerData props, @Nullable BlockPos pos) {
         super(ModScreens.CRUSHER, syncId);
         this.inventory = inv;
         this.props = props;
+        this.pos = pos;
         checkContainerSize(inv, MACHINE_SLOTS);
         inv.startOpen(playerInv.player);
 
@@ -50,6 +57,15 @@ public class CrusherScreenHandler extends AbstractContainerMenu {
     public int progress() { return props.get(0); }
     public int maxProgress() { return props.get(1); }
     public int storedRu() { return props.get(2); }
+
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (id == B_INFO && pos != null && !player.level().isClientSide()) {
+            player.openMenu(new InfoScreenFactory(player.level().getBlockState(pos).getBlock().getName(), pos));
+            return true;
+        }
+        return super.clickMenuButton(player, id);
+    }
 
     @Override
     public boolean stillValid(Player player) {

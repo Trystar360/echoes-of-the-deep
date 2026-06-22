@@ -94,7 +94,28 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
             int w = (int) ((160 - 2) * Math.min(1.0, (double) nst / ncap));
             g.fill(x + 9, ny + 1, x + 9 + w, ny + 9, FILL);
         }
+
+        // Hover tooltips on the flow graphic and network bar (exact numbers).
+        if (hover(mouseX, mouseY, x + 8, fy, 26, fh))
+            tip(g, mouseX, mouseY, Component.translatable("screen.echoes.info.in"));
+        else if (hover(mouseX, mouseY, x + 142, fy, 26, fh))
+            tip(g, mouseX, mouseY, Component.translatable("screen.echoes.info.out"));
+        else if (hover(mouseX, mouseY, bx0, fy, bx1 - bx0, fh))
+            tip(g, mouseX, mouseY, Component.translatable("screen.echoes.info.buffer", grp(stored), grp(cap)));
+        else if (hover(mouseX, mouseY, x + 8, ny, 160, 10))
+            tip(g, mouseX, mouseY, Component.translatable("screen.echoes.info.netbar", grp(nst), grp(ncap), menu.netMembers()));
     }
+
+    private static boolean hover(int mx, int my, int x, int y, int w, int h) {
+        return mx >= x && mx < x + w && my >= y && my < y + h;
+    }
+
+    private void tip(GuiGraphicsExtractor g, int mouseX, int mouseY, Component c) {
+        g.setComponentTooltipForNextFrame(font, java.util.List.of(c), mouseX, mouseY);
+    }
+
+    /** Exact, grouped number (e.g. 150,000). */
+    private static String grp(long v) { return String.format("%,d", v); }
 
     private void chip(GuiGraphicsExtractor g, int x, int y, int w, int h, boolean lit) {
         g.fill(x, y, x + w, y + h, WELL);
