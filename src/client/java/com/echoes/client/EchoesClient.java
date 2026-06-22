@@ -4,6 +4,7 @@ import com.echoes.client.screen.AttunementFurnaceScreen;
 import com.echoes.client.screen.ConfigScreen;
 import com.echoes.client.screen.CrusherScreen;
 import com.echoes.client.screen.HarmonicFilterScreen;
+import com.echoes.client.screen.InfoScreen;
 import com.echoes.client.screen.TransmutationTableScreen;
 import com.echoes.registry.ModScreens;
 import net.fabricmc.api.ClientModInitializer;
@@ -22,6 +23,7 @@ public class EchoesClient implements ClientModInitializer {
         MenuScreens.register(ModScreens.ATTUNEMENT_FURNACE, AttunementFurnaceScreen::new);
         MenuScreens.register(ModScreens.HARMONIC_FILTER, HarmonicFilterScreen::new);
         MenuScreens.register(ModScreens.CONFIG, ConfigScreen::new);
+        MenuScreens.register(ModScreens.INFO, InfoScreen::new);
         MenuScreens.register(ModScreens.TRANSMUTATION_TABLE, TransmutationTableScreen::new);
 
         // Append a one-line description to every Echoes block/item that defines one

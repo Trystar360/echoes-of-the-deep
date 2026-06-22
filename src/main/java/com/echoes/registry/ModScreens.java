@@ -3,6 +3,7 @@ package com.echoes.registry;
 import com.echoes.EchoesMod;
 import com.echoes.screen.AttunementFurnaceScreenHandler;
 import com.echoes.screen.ConfigScreenHandler;
+import com.echoes.screen.InfoScreenHandler;
 import com.echoes.screen.CrusherScreenHandler;
 import com.echoes.screen.HarmonicFilterScreenHandler;
 import com.echoes.screen.TransmutationTableScreenHandler;
@@ -42,6 +43,12 @@ public final class ModScreens {
             Registry.register(BuiltInRegistries.MENU,
                     Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "config"),
                     new ExtendedMenuType<>(ConfigScreenHandler::new, BlockPos.STREAM_CODEC));
+
+    /** Shared read-only inspection screen for every energy block. */
+    public static final ExtendedMenuType<InfoScreenHandler, BlockPos> INFO =
+            Registry.register(BuiltInRegistries.MENU,
+                    Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "info"),
+                    new ExtendedMenuType<>(InfoScreenHandler::new, BlockPos.STREAM_CODEC));
 
     public static void register() {
         EchoesMod.LOGGER.info("Registering screen handlers for {}", EchoesMod.MOD_ID);

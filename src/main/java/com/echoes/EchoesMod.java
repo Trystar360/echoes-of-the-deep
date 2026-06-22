@@ -37,6 +37,10 @@ public class EchoesMod implements ModInitializer {
         // Per-world Resonance network ticking.
         ResonanceNetworkManager.init();
 
+        // Right-click any energy block with an empty hand to open its Info screen
+        // (sneak-click for machines, which keep their function menu on a plain click).
+        registerInfoOnRightClick();
+
         // Per-world wireless transport (Resonant Relay channels).
         WirelessNetworkManager.init();
 
@@ -73,5 +77,30 @@ public class EchoesMod implements ModInitializer {
         }
 
         LOGGER.info("Echoes of the Deep initialized.");
+    }
+
+    /**
+     * Empty-hand right-click on any {@link com.echoes.energy.ResonanceNode} block opens
+     * the read-only Info screen. Machines (which are {@link net.minecraft.world.MenuProvider}s)
+     * keep opening their function menu on a plain click and surface Info on a sneak-click, so
+     * nothing existing is shadowed and no tool is needed.
+     */
+    private static void registerInfoOnRightClick() {
+        net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
+            if (world.isClientSide() || hand != net.minecraft.world.InteractionHand.MAIN_HAND
+                    || !player.getMainHandItem().isEmpty()) {
+                return net.minecraft.world.InteractionResult.PASS;
+            }
+            net.minecraft.core.BlockPos pos = hit.getBlockPos();
+            net.minecraft.world.level.block.entity.BlockEntity be = world.getBlockEntity(pos);
+            if (!(be instanceof com.echoes.energy.ResonanceNode)) return net.minecraft.world.InteractionResult.PASS;
+            boolean machine = be instanceof net.minecraft.world.MenuProvider;
+            if (machine && !player.isShiftKeyDown()) return net.minecraft.world.InteractionResult.PASS;
+            if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+                net.minecraft.network.chat.Component name = world.getBlockState(pos).getBlock().getName();
+                sp.openMenu(new com.echoes.screen.InfoScreenFactory(name, pos.immutable()));
+            }
+            return net.minecraft.world.InteractionResult.SUCCESS;
+        });
     }
 }

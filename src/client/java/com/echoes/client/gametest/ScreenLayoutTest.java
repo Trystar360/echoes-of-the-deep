@@ -4,11 +4,13 @@ import com.echoes.client.screen.AttunementFurnaceScreen;
 import com.echoes.client.screen.ConfigScreen;
 import com.echoes.client.screen.CrusherScreen;
 import com.echoes.client.screen.HarmonicFilterScreen;
+import com.echoes.client.screen.InfoScreen;
 import com.echoes.client.screen.TransmutationTableScreen;
 import com.echoes.screen.AttunementFurnaceScreenHandler;
 import com.echoes.screen.ConfigScreenHandler;
 import com.echoes.screen.CrusherScreenHandler;
 import com.echoes.screen.HarmonicFilterScreenHandler;
+import com.echoes.screen.InfoScreenHandler;
 import com.echoes.screen.TransmutationTableScreenHandler;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -73,6 +75,8 @@ public class ScreenLayoutTest implements FabricClientGameTest {
             context.waitTicks(10);
             shot(context, "config",
                     inv -> new ConfigScreen(new ConfigScreenHandler(1, inv, cfgPos), inv, Component.literal("Configure")));
+            shot(context, "info",
+                    inv -> new InfoScreen(new InfoScreenHandler(1, inv, cfgPos), inv, Component.literal("Resonance Cell")));
 
             context.runOnClient(client -> client.setScreen(null));
         }

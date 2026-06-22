@@ -160,6 +160,25 @@ public class ResonanceNetworkManager {
         syncState();
     }
 
+    /** A snapshot of the network a position belongs to, for the Info screen. */
+    public record NetInfo(int members, long stored, long capacity) {}
+
+    /** Totals for the network containing {@code pos} (members loaded right now). */
+    public NetInfo infoFor(BlockPos pos) {
+        Integer id = posToNetwork.get(pos);
+        ResonanceNetwork net = id == null ? null : networks.get(id);
+        if (net == null) {                          // lone node not yet in a network
+            ResonanceNode n = ResonanceNetwork.nodeAt(world, pos);
+            return n == null ? new NetInfo(1, 0, 0) : new NetInfo(1, n.storedRu(), n.capacityRu());
+        }
+        long stored = 0, cap = 0;
+        for (BlockPos m : net.members) {
+            ResonanceNode n = ResonanceNetwork.nodeAt(world, m);
+            if (n != null) { stored += n.storedRu(); cap += n.capacityRu(); }
+        }
+        return new NetInfo(net.members.size(), stored, cap);
+    }
+
     /** Equalize storage on every network adjacent to {@code pos} (the Balancer). */
     public void balanceAround(BlockPos pos, long rate) {
         java.util.Set<Integer> seen = new HashSet<>();
