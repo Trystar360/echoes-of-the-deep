@@ -10,24 +10,27 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A connected component of conduits plus the provider/consumer/storage nodes
- * attached to it. Persistent across ticks; mutated incrementally by
- * {@link ResonanceNetworkManager} on topology changes.
+ * A connected component of energy nodes — any block entity that touches RU
+ * (generators, machines, cells, conduits) — joined face-to-face. Blocks that
+ * physically touch share one network with no conduit between them; conduits are
+ * ordinary members that exist to span gaps. Persistent across ticks; mutated
+ * incrementally by {@link ResonanceNetworkManager} on topology changes.
  *
- * <p>Each tick it moves RU from providers+storage to consumers using a
- * largest-remainder proportional allocation, so under scarcity every consumer
- * gets a share proportional to its demand and leftover goes to the most-starved
- * consumers first — no starvation, no waste.
+ * <p>Internal transfer is <b>unlimited</b>: each tick the whole network's supply
+ * is offered to its consumers with no throughput ceiling. When supply can't meet
+ * demand it falls back to a largest-remainder proportional allocation, so under
+ * genuine scarcity every consumer gets a share proportional to its demand and the
+ * remainder goes to the most-starved consumers first — no starvation, no waste.
  */
 public class ResonanceNetwork {
     public final int id;
-    public final Set<BlockPos> conduits = new HashSet<>();
+    /** Every energy block entity in this connected component (generators, machines, cells, conduits). */
+    public final Set<BlockPos> members = new HashSet<>();
 
     // Re-scanned lazily when dirty.
     private final List<ResonanceNode> providers = new ArrayList<>();
     private final List<ResonanceNode> consumers = new ArrayList<>();
     private final List<ResonanceNode> storages = new ArrayList<>();
-    private long transferBudget;
     private boolean dirty = true;
 
     // Stagger large networks so they don't all compute on the same tick.
@@ -43,24 +46,17 @@ public class ResonanceNetwork {
         providers.clear();
         consumers.clear();
         storages.clear();
-        long budget = 0;
-        Set<BlockPos> seen = new HashSet<>();
 
-        for (BlockPos c : conduits) {
-            ResonanceNode conduit = nodeAt(world, c);
-            if (conduit != null) budget += conduit.transferCap();
-
-            for (BlockPos n : neighbors(c)) {
-                if (conduits.contains(n) || !seen.add(n)) continue;
-                ResonanceNode node = nodeAt(world, n);
-                if (node == null) continue;
-                if (node.is(NodeRole.PROVIDER)) providers.add(node);
-                if (node.is(NodeRole.CONSUMER)) consumers.add(node);
-                if (node.is(NodeRole.STORAGE))  storages.add(node);
-            }
+        // Classify every loaded member by role (a node may hold several roles).
+        // Conduits carry no buffer and simply hold the component together.
+        for (BlockPos m : members) {
+            ResonanceNode node = nodeAt(world, m);
+            if (node == null) continue;               // unloaded chunk or already gone
+            if (node.is(NodeRole.PROVIDER)) providers.add(node);
+            if (node.is(NodeRole.CONSUMER)) consumers.add(node);
+            if (node.is(NodeRole.STORAGE))  storages.add(node);
         }
-        this.transferBudget = budget;
-        this.tickInterval = conduits.size() > 256 ? 4 : 1;
+        this.tickInterval = members.size() > 512 ? 4 : 1;
         this.dirty = false;
     }
 
@@ -90,9 +86,8 @@ public class ResonanceNetwork {
             return;
         }
 
-        // 3. Throughput ceiling.
-        long budget = Math.min(supply, Math.max(transferBudget, 1));
-        long pool = Math.min(budget, totalDemand);
+        // 3. Unlimited internal throughput — the only ceiling is what's available.
+        long pool = Math.min(supply, totalDemand);
 
         // 4. Largest-remainder proportional allocation.
         long[] alloc = new long[active.size()];
