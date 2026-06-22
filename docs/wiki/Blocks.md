@@ -21,10 +21,10 @@ See [Ores & Worldgen](Ores-and-Worldgen.md).
 
 | Block | What it does |
 | --- | --- |
-| **Resonant Coil** | Winds ambient sound into stored Light (10,000 buffer). The starter generator. |
-| **Stillness Core** | Trickles 4 Light/t from rest — no sound needed (50,000 buffer). |
-| **Octave Coil** | Strong late generator, 24 Light/t (tunable), 300,000 buffer; comparator output. |
-| **Storm Caller** | Calls lightning during thunderstorms and banks 40,000 Light/strike (400,000 buffer). Needs open sky; self-struck bolts are cosmetic. |
+| **Resonant Coil** | Winds ambient sound into stored Light (10,000 buffer). The starter generator; arrayed on its octave it converts sound up to ×3. |
+| **Stillness Core** | Trickles 4 Light/t from rest — no sound needed (50,000 buffer). The **anchor** of a resonant array: empowers every generator tuned to its octave. |
+| **Octave Coil** | Strong late generator, 24 Light/t base, up to ×4 (96 Light/t) in a tuned standing-wave array. 300,000 buffer; comparator output. |
+| **Storm Caller** | Calls lightning during thunderstorms and banks 40,000 Light/strike — up to ×3 when tuned spires resonate as an array (400,000 buffer). Needs open sky; self-struck bolts are cosmetic. |
 
 ## Storage
 

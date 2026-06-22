@@ -2,10 +2,13 @@ package com.echoes.block;
 
 import com.echoes.block.entity.ResonatorBlockEntity;
 import com.echoes.energy.ResonanceNetworkManager;
+import com.echoes.registry.ModBlockEntities;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -36,6 +39,13 @@ public class ResonatorBlock extends Block implements EntityBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ResonatorBlockEntity(pos, state);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+        if (world.isClientSide() || type != ModBlockEntities.RESONATOR) return null;
+        return (w, p, s, be) -> ResonatorBlockEntity.tick(w, p, s, (ResonatorBlockEntity) be);
     }
 
     @Override

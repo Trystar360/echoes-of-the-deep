@@ -1,7 +1,10 @@
 package com.echoes.item;
 
 import com.echoes.energy.NodeRole;
+import com.echoes.energy.ResonanceCoupler;
+import com.echoes.energy.ResonanceField;
 import com.echoes.energy.ResonanceNode;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
@@ -39,6 +42,12 @@ public class ResonanceMeterItem extends Item {
             int pct = (int) Math.round(100.0 * stored / cap);
             player.sendSystemMessage(Component.translatable("message.echoes.meter.stored",
                     fmt(stored), fmt(cap), pct));
+        }
+        if (node instanceof ResonanceCoupler coupler && node.is(NodeRole.PROVIDER)
+                && ctx.getLevel() instanceof ServerLevel sw) {
+            ResonanceField.Coupling c = ResonanceField.scan(sw, ctx.getClickedPos(), coupler.couplingOctave());
+            player.sendSystemMessage(Component.translatable("message.echoes.meter.resonance",
+                    String.format("%.2f", coupler.resonanceMultiplier()), c.partners(), c.spacing()));
         }
         if (node.is(NodeRole.CONSUMER) && node.demand() > 0) {
             player.sendSystemMessage(Component.translatable("message.echoes.meter.demand", fmt(node.demand())));
