@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": ["aea", "ece", "aea"],
+  "key": { "e": "echoes:echo_ingot", "a": "minecraft:amethyst_shard", "c": "minecraft:copper_ingot" },
+  "result": { "id": "echoes:yield_resonator", "count": 1 }
+}

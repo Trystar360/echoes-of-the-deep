@@ -101,6 +101,11 @@ public final class ModItems {
     public static final Item RESONANT_HOE = register("resonant_hoe",
             ResonantToolItem::new, new Item.Properties().hoe(ECHO_MATERIAL, -2.0f, 0.0f));
 
+    // Machine augments — slotted into the Compressor to tune speed / Light cost / yield.
+    public static final Item ACCELERATION_COIL = register("acceleration_coil", Item::new, new Item.Properties());
+    public static final Item EFFICIENCY_DAMPER = register("efficiency_damper", Item::new, new Item.Properties());
+    public static final Item YIELD_RESONATOR   = register("yield_resonator",   Item::new, new Item.Properties());
+
     public static Item register(String name, Function<Item.Properties, Item> factory, Item.Properties settings) {
         Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, id);

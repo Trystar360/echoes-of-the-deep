@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": ["rer", "ece", "rer"],
+  "key": { "e": "echoes:echo_ingot", "r": "minecraft:redstone", "c": "minecraft:copper_ingot" },
+  "result": { "id": "echoes:acceleration_coil", "count": 1 }
+}

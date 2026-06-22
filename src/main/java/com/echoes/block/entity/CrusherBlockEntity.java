@@ -40,14 +40,22 @@ public class CrusherBlockEntity extends BlockEntity
         implements ImplementedInventory, ResonanceNode, MenuProvider,
         com.echoes.config.Configurable {
 
-    private static final int INPUT = 0, OUTPUT = 1, BYPRODUCT = 2;
+    private static final int INPUT = 0, OUTPUT = 1, BYPRODUCT = 2, AUGMENT0 = 3, AUGMENT1 = 4;
+    public static final int AUGMENT_FIRST = AUGMENT0, AUGMENT_LAST = AUGMENT1;
     private static final long INTERNAL_BUFFER = 1_000;
+
+    /** True for the three items that may go in an augment slot. */
+    public static boolean isAugment(ItemStack s) {
+        return s.is(com.echoes.registry.ModItems.ACCELERATION_COIL)
+                || s.is(com.echoes.registry.ModItems.EFFICIENCY_DAMPER)
+                || s.is(com.echoes.registry.ModItems.YIELD_RESONATOR);
+    }
 
     /** The Crusher exposes redstone behaviour and per-face I/O. */
     public static final com.echoes.config.ConfigSpec SPEC =
             com.echoes.config.ConfigSpec.builder().redstone().sides().build();
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> items = NonNullList.withSize(5, ItemStack.EMPTY);
     private final ResonanceStorage buffer = new ResonanceStorage(INTERNAL_BUFFER);
     private final com.echoes.config.BlockConfig config = new com.echoes.config.BlockConfig();
 
@@ -76,6 +84,16 @@ public class CrusherBlockEntity extends BlockEntity
 
     @Override public NonNullList<ItemStack> getItems() { return items; }
 
+    /** Total number of a given augment item across both augment slots. */
+    private int augCount(net.minecraft.world.item.Item type) {
+        int n = 0;
+        for (int s = AUGMENT0; s <= AUGMENT1; s++) {
+            ItemStack a = getItem(s);
+            if (a.is(type)) n += a.getCount();
+        }
+        return n;
+    }
+
     // --- tick (registered as a BlockEntityTicker) ---
     public static void tick(Level level, BlockPos pos, BlockState state, CrusherBlockEntity be) {
         if (level.isClientSide()) return;
@@ -87,8 +105,15 @@ public class CrusherBlockEntity extends BlockEntity
         }
 
         CrushingRecipe recipe = match.get().value();
-        be.maxProgress = recipe.processingTime();
-        be.energyPerTick = Math.max(1, recipe.energy() / recipe.processingTime());
+        // Augments tune the recipe: acceleration cuts the time (costing more Light per
+        // craft), efficiency cuts the Light cost.
+        int accel = Math.min(8, be.augCount(com.echoes.registry.ModItems.ACCELERATION_COIL));
+        int eff   = Math.min(8, be.augCount(com.echoes.registry.ModItems.EFFICIENCY_DAMPER));
+        double speed = 1.0 + 0.5 * accel;                         // up to 5× faster
+        double costMul = (1.0 + 0.25 * accel) * Math.max(0.2, 1.0 - 0.2 * eff);
+        be.maxProgress = Math.max(1, (int) Math.round(recipe.processingTime() / speed));
+        long energyPerCraft = Math.max(1, Math.round(recipe.energy() * costMul));
+        be.energyPerTick = Math.max(1, energyPerCraft / be.maxProgress);
 
         // Spend energy from the internal buffer; the network refills it via demand().
         if (be.buffer.extract(be.energyPerTick, true) >= be.energyPerTick) {
@@ -124,8 +149,11 @@ public class CrusherBlockEntity extends BlockEntity
         else getItem(OUTPUT).grow(result.getCount());
 
         // Roll the optional byproduct (e.g. resonant slag) into the third slot.
+        // Yield Resonators raise the odds.
         ItemStack sec = recipe.secondary();
-        if (!sec.isEmpty() && level != null && level.getRandom().nextFloat() < recipe.secondaryChance()) {
+        float chance = Math.min(1.0f, recipe.secondaryChance()
+                + 0.25f * Math.min(8, augCount(com.echoes.registry.ModItems.YIELD_RESONATOR)));
+        if (!sec.isEmpty() && level != null && level.getRandom().nextFloat() < chance) {
             ItemStack slot = getItem(BYPRODUCT);
             if (slot.isEmpty()) {
                 setItem(BYPRODUCT, sec.copy());

@@ -23,7 +23,9 @@ public class CrusherScreenHandler extends AbstractContainerMenu {
     private final ContainerData props;
     private final @Nullable BlockPos pos;   // server-side only; null on the client
 
-    private static final int MACHINE_SLOTS = 3;
+    private static final int MACHINE_SLOTS = 5;          // input, output, byproduct, 2 augments
+    // Augment slot screen positions (right column).
+    public static final int AUG0_X = 152, AUG0_Y = 17, AUG1_X = 152, AUG1_Y = 39;
 
     /** Client constructor. */
     public CrusherScreenHandler(int syncId, Inventory playerInv) {
@@ -44,6 +46,12 @@ public class CrusherScreenHandler extends AbstractContainerMenu {
         });
         this.addSlot(new Slot(inv, 2, 116, 57) {       // byproduct (extract-only)
             @Override public boolean mayPlace(ItemStack stack) { return false; }
+        });
+        this.addSlot(new Slot(inv, 3, AUG0_X, AUG0_Y) {   // augment slots
+            @Override public boolean mayPlace(ItemStack s) { return com.echoes.block.entity.CrusherBlockEntity.isAugment(s); }
+        });
+        this.addSlot(new Slot(inv, 4, AUG1_X, AUG1_Y) {
+            @Override public boolean mayPlace(ItemStack s) { return com.echoes.block.entity.CrusherBlockEntity.isAugment(s); }
         });
 
         // player inventory + hotbar
@@ -88,6 +96,8 @@ public class CrusherScreenHandler extends AbstractContainerMenu {
             newStack = original.copy();
             if (slotIndex < MACHINE_SLOTS) {
                 if (!this.moveItemStackTo(original, MACHINE_SLOTS, this.slots.size(), true)) return ItemStack.EMPTY;
+            } else if (com.echoes.block.entity.CrusherBlockEntity.isAugment(original)) {
+                if (!this.moveItemStackTo(original, 3, 5, false)) return ItemStack.EMPTY;   // player -> augment slots
             } else if (!this.moveItemStackTo(original, 0, 1, false)) {  // player -> input only
                 return ItemStack.EMPTY;
             }
