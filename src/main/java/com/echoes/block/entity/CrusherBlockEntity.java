@@ -61,13 +61,14 @@ public class CrusherBlockEntity extends BlockEntity
                 case 0 -> progress;
                 case 1 -> maxProgress;
                 case 2 -> (int) buffer.getAmount();
+                case 3 -> (int) buffer.getCapacity();
                 default -> 0;
             };
         }
         @Override public void set(int i, int v) {
             switch (i) { case 0 -> progress = v; case 1 -> maxProgress = v; }
         }
-        @Override public int getCount() { return 3; }
+        @Override public int getCount() { return 4; }
     };
 
     public CrusherBlockEntity(BlockPos pos, BlockState state) {

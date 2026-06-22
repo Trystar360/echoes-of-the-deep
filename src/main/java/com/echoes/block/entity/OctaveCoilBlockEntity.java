@@ -4,6 +4,8 @@ import com.echoes.config.BlockConfig;
 import com.echoes.config.Configurable;
 import com.echoes.config.ConfigSpec;
 import com.echoes.energy.NodeRole;
+import com.echoes.energy.ResonanceCoupler;
+import com.echoes.energy.ResonanceField;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.energy.ResonanceStorage;
 import com.echoes.registry.ModBlockEntities;
@@ -20,22 +22,26 @@ import net.minecraft.world.level.Level;
 
 /**
  * The higher-octave generator — a Stillness Core wound up an octave with charged
- * Radiant matter. It draws a far stronger trickle of Light from the stillness and
- * banks far more of it (PROVIDER + STORAGE), the baseline generator for a maturing
- * grid. Tunable generation via the config GUI (the coil's "rate").
+ * Radiant matter. The workhorse resonator: tune it to an octave and lay coils on
+ * that octave's antinode lattice and they reinforce one another, a lone coil's 24
+ * Light/t climbing to ×4 in a full standing-wave array (PROVIDER + STORAGE).
  */
-public class OctaveCoilBlockEntity extends BlockEntity implements ResonanceNode, Configurable {
+public class OctaveCoilBlockEntity extends BlockEntity implements ResonanceNode, ResonanceCoupler, Configurable {
     public static final long CAPACITY = 300_000;
     private static final int BASE_GEN_PER_TICK = 24;
+    /** Octave Coils scale hardest with their array: coupling 0..4 → ×1..×4. */
+    private static final double RESONANCE_GAIN = 1.0;
+    private static final double RESONANCE_MAX_BONUS = 3.0;
+    private static final int RESCAN_INTERVAL = 40;
 
-    /** The Coil exposes redstone behaviour, per-face I/O, and a tunable generation rate. */
+    /** The Coil exposes its octave (which array it joins), redstone behaviour, and per-face I/O. */
     public static final ConfigSpec SPEC = ConfigSpec.builder()
-            .redstone().sides()
-            .tuning("config.echoes.tuning.rate", 1, 4, 1, 2)
+            .octave().redstone().sides()
             .build();
 
     private final ResonanceStorage storage = new ResonanceStorage(CAPACITY);
     private final BlockConfig config = new BlockConfig();
+    private double resonance = 1.0;
 
     public OctaveCoilBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.OCTAVE_COIL, pos, state);
@@ -43,12 +49,21 @@ public class OctaveCoilBlockEntity extends BlockEntity implements ResonanceNode,
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, OctaveCoilBlockEntity be) {
-        if (level.isClientSide() || be.storage.isFull()) return;
-        if (level instanceof ServerLevel sw && !be.config.redstone().allows(sw.hasNeighborSignal(pos))) return;
-        // Tuning "rate" 1..4 scales the base generation.
-        be.storage.absorb(BASE_GEN_PER_TICK * be.config.tuningA());
+        if (level.isClientSide() || !(level instanceof ServerLevel sw)) return;
+        if (!be.config.redstone().allows(sw.hasNeighborSignal(pos))) return;
+
+        if ((sw.getGameTime() + Math.floorMod(pos.hashCode(), RESCAN_INTERVAL)) % RESCAN_INTERVAL == 0) {
+            be.resonance = ResonanceField.scan(sw, pos, be.config.octave())
+                    .multiplier(RESONANCE_GAIN, RESONANCE_MAX_BONUS);
+        }
+        if (be.storage.isFull()) return;
+        be.storage.absorb(Math.round(BASE_GEN_PER_TICK * be.resonance));
         be.setChanged();
+        if (be.resonance >= 1.5 && sw.getGameTime() % 20 == 0) ResonanceField.ringParticles(sw, pos);
     }
+
+    @Override public int couplingOctave() { return config.octave(); }
+    @Override public double resonanceMultiplier() { return resonance; }
 
     public ResonanceStorage storage() { return storage; }
 

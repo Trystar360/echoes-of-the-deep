@@ -23,13 +23,14 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
     private static final String[] ROMAN = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" };
 
     private final ConfigSpec spec;
-    private Button channelBtn, octaveBtn, redstoneBtn, tuningABtn, tuningBBtn;
-    private final Button[] sideBtns = new Button[6];
+    private ThemedButton channelBtn, octaveBtn, redstoneBtn, tuningABtn, tuningBBtn;
+    private final ThemedButton[] sideBtns = new ThemedButton[6];
 
     public ConfigScreen(ConfigScreenHandler handler, Inventory inv, Component title) {
         super(handler, inv, title, 214, 30 + rowCount(handler.spec()) * 24 + 8);
         this.spec = handler.spec();
         this.inventoryLabelY = -1000; // hide "Container" label (no slots)
+        this.titleLabelY = -1000;     // we draw the title ourselves (bright, in the header band)
         this.titleLabelX = 8;
     }
 
@@ -76,23 +77,21 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
         }
     }
 
-    /** A centered value button flanked by [-] and [+]. The center button is inert (display only). */
-    private Button addValueRow(int y, int downId, int upId) {
-        addButton(x() + 96, y, 20, Component.literal("-"), downId);
-        Button value = Button.builder(Component.empty(), b -> {})
-                .bounds(x() + 118, y, 64, 20).build();
-        value.active = false;
+    /** A centered value field flanked by [-] and [+]. The center field is inert (display only). */
+    private ThemedButton addValueRow(int y, int downId, int upId) {
+        addButton(x() + 96, y, 20, Component.literal("–"), downId);
+        ThemedButton value = new ThemedButton(x() + 118, y, 64, 20, Component.empty(), () -> {}).asField();
         addRenderableWidget(value);
         addButton(x() + 184, y, 20, Component.literal("+"), upId);
         return value;
     }
 
-    private Button addButton(int bx, int by, int w, Component label, int buttonId) {
-        Button b = Button.builder(label, btn -> {
+    private ThemedButton addButton(int bx, int by, int w, Component label, int buttonId) {
+        ThemedButton b = new ThemedButton(bx, by, w, 20, label, () -> {
             if (minecraft != null && minecraft.gameMode != null) {
                 minecraft.gameMode.handleInventoryButtonClick(menu.containerId, buttonId);
             }
-        }).bounds(bx, by, w, 20).build();
+        });
         addRenderableWidget(b);
         return b;
     }
@@ -104,17 +103,13 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         refreshLabels();
-        int x = x(), y = y();
-        g.fill(x, y, x + imageWidth, y + imageHeight, 0xF00B1416);                  // panel
-        g.fill(x, y, x + imageWidth, y + 1, 0xFF2A4A4A);                            // top hi-light
-        g.fill(x, y, x + 1, y + imageHeight, 0xFF2A4A4A);
-        g.fill(x + imageWidth - 1, y, x + imageWidth, y + imageHeight, 0xFF050A0B);
-        g.fill(x, y + imageHeight - 1, x + imageWidth, y + imageHeight, 0xFF050A0B);
+        GuiTheme.panel(g, x(), y(), imageWidth, imageHeight, 18, GuiTheme.ACCENT);
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
+        g.text(font, title, 8, 6, GuiTheme.TEXT, false);   // device name, in the header band
         // Row titles must be drawn in the label (foreground) pass — text drawn in
         // extractBackground renders beneath the opaque panel fill and is invisible.
         drawRowTitles(g);
@@ -154,7 +149,7 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
 
     /** Left-hand label for each row, drawn relative to its button's Y. */
     private void drawRowTitles(GuiGraphicsExtractor g) {
-        int color = 0xFFC8E6E6;
+        int color = GuiTheme.LABEL;
         if (channelBtn != null) label(g, "config.echoes.channel", channelBtn.getY(), color);
         if (octaveBtn != null) label(g, "config.echoes.octave", octaveBtn.getY(), color);
         if (redstoneBtn != null) label(g, "config.echoes.redstone", redstoneBtn.getY(), color);

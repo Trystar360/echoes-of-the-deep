@@ -828,79 +828,93 @@ def resonant_sword():
 resonant_sword()
 
 # ================================================================ CRUSHER GUI (256x256) — deep restyle
+# ================================================================ GUI CHROME (shared)
+# Brighter, higher-contrast "lit steel" panels (Thermal-inspired): a vertical
+# gradient body, crisp 2px bevels, a coloured accent header, beveled inset slots,
+# and a real Light gauge. Shared helpers keep every machine GUI consistent.
+GUI_TOP = (72, 88, 96); GUI_BOT = (48, 61, 68)            # panel gradient
+GUI_HI = (142, 166, 172); GUI_HI2 = (104, 126, 132)       # outer bevel highlight
+GUI_SH = (20, 28, 33); GUI_SH2 = (40, 52, 58)             # outer bevel shadow
+GUI_HEADER = (34, 47, 53)                                  # title band
+GUI_SLOT = (30, 40, 44); GUI_SLOT_SH = (13, 19, 23); GUI_SLOT_HI = (112, 134, 140)
+GAUGE_W, GAUGE_H = 7, 40
+
+def _gput(px, W, H, x, y, c):
+    if 0 <= x < W and 0 <= y < H: px[y * W + x] = (c[0], c[1], c[2], 255) if len(c) == 3 else c
+def _grect(px, W, H, x0, y0, x1, y1, c):
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1): _gput(px, W, H, x, y, c)
+
+def gui_chrome(px, W, H, pw=176, ph=166, header=18, accent=TEAL):
+    for y in range(ph):                                    # gradient body
+        _grect(px, W, H, 0, y, pw - 1, y, lerp(GUI_TOP, GUI_BOT, y / max(1, ph - 1)))
+    _grect(px, W, H, 0, 0, pw - 1, header - 1, GUI_HEADER) # title band
+    _grect(px, W, H, 0, header - 1, pw - 1, header - 1, accent[3])   # bright accent line
+    _grect(px, W, H, 0, header, pw - 1, header, accent[1])           # soft glow under it
+    _grect(px, W, H, 0, 0, pw - 1, 0, GUI_HI); _grect(px, W, H, 0, 0, 0, ph - 1, GUI_HI)
+    _grect(px, W, H, 1, 1, pw - 2, 1, GUI_HI2); _grect(px, W, H, 1, 1, 1, ph - 2, GUI_HI2)
+    _grect(px, W, H, pw - 1, 0, pw - 1, ph - 1, GUI_SH); _grect(px, W, H, 0, ph - 1, pw - 1, ph - 1, GUI_SH)
+    _grect(px, W, H, pw - 2, 1, pw - 2, ph - 2, GUI_SH2); _grect(px, W, H, 1, ph - 2, pw - 2, ph - 2, GUI_SH2)
+
+def gui_slot(px, W, H, ix, iy, tint=None):
+    _grect(px, W, H, ix - 1, iy - 1, ix + 16, iy + 16, tint or GUI_SLOT)
+    _grect(px, W, H, ix - 1, iy - 1, ix + 16, iy - 1, GUI_SLOT_SH)
+    _grect(px, W, H, ix - 1, iy - 1, ix - 1, iy + 16, GUI_SLOT_SH)
+    _grect(px, W, H, ix - 1, iy + 16, ix + 16, iy + 16, GUI_SLOT_HI)
+    _grect(px, W, H, ix + 16, iy - 1, ix + 16, iy + 16, GUI_SLOT_HI)
+
+def gui_player_slots(px, W, H, x=8, inv_y=84, hot_y=142):
+    for r in range(3):
+        for col in range(9): gui_slot(px, W, H, x + col * 18, inv_y + r * 18)
+    for col in range(9): gui_slot(px, W, H, x + col * 18, hot_y)
+
+def gui_energy_track(px, W, H, x, y, w=GAUGE_W, h=GAUGE_H):
+    _grect(px, W, H, x - 1, y - 1, x + w, y + h, GUI_SLOT_SH)       # inset frame
+    _grect(px, W, H, x + w, y, x + w, y + h, GUI_SLOT_HI)
+    _grect(px, W, H, x, y, x + w - 1, y + h - 1, (9, 14, 16))       # dark well
+
+def gui_energy_sprite(px, W, H, ox, oy, w=GAUGE_W, h=GAUGE_H):
+    for j in range(h):                                              # bright teal fill
+        _grect(px, W, H, ox, oy + j, ox + w - 1, oy + j, lerp(TEAL[1], TEAL[4], (h - 1 - j) / (h - 1)))
+    _grect(px, W, H, ox, oy, ox, oy + h - 1, lerp(TEAL[3], TEAL[4], 0.5))  # tube highlight
+    _grect(px, W, H, ox + w - 1, oy, ox + w - 1, oy + h - 1, TEAL[1])      # tube shade
+
+def gui_arrow_track(px, W, H, ox, oy):
+    for yy in range(oy + 5, oy + 11):
+        for xx in range(ox, ox + 15): _gput(px, W, H, xx, yy, (9, 14, 16))
+    for k in range(8):
+        for yy in range(oy + 2 + k, oy + 14 - k): _gput(px, W, H, ox + 14 + k, yy, (9, 14, 16))
+
+def gui_arrow_sprite(px, W, H, ox, oy):
+    for yy in range(oy + 5, oy + 11):
+        for xx in range(ox, ox + 15): _gput(px, W, H, xx, yy, lerp(TEAL[3], TEAL[1], (yy - (oy + 5)) / 5))
+    for k in range(8):
+        for yy in range(oy + 2 + k, oy + 14 - k): _gput(px, W, H, ox + 14 + k, yy, lerp(TEAL[3], TEAL[2], k / 8))
+    for xx in range(ox, ox + 15): _gput(px, W, H, xx, oy + 5, TEAL[4])
+
 def gui():
     W = H = 256
     px = [(0, 0, 0, 0)] * (W * H)
-    def s(x, y, c):
-        if 0 <= x < W and 0 <= y < H: px[y * W + x] = (c[0], c[1], c[2], 255) if len(c) == 3 else c
-    def rect(x0, y0, x1, y1, c):
-        for y in range(y0, y1 + 1):
-            for x in range(x0, x1 + 1): s(x, y, c)
-    PANEL = (26, 32, 34); LITE = (58, 74, 74); DARK = (10, 14, 16); MID = (18, 24, 26); SDARK = (8, 11, 12)
-    rect(0, 0, 175, 165, PANEL)
-    rect(0, 0, 175, 2, LITE); rect(0, 0, 2, 165, LITE)
-    rect(0, 163, 175, 165, DARK); rect(173, 0, 175, 165, DARK)
-    def slot(ix, iy):
-        rect(ix - 1, iy - 1, ix + 16, iy + 16, MID)
-        rect(ix - 1, iy - 1, ix + 16, iy - 1, SDARK); rect(ix - 1, iy - 1, ix - 1, iy + 16, SDARK)
-        rect(ix - 1, iy + 16, ix + 16, iy + 16, LITE); rect(ix + 16, iy - 1, ix + 16, iy + 16, LITE)
-    slot(56, 35); slot(116, 35); slot(116, 57)   # input, output, byproduct
-    for r in range(3):
-        for col in range(9): slot(8 + col * 18, 84 + r * 18)
-    for col in range(9): slot(8 + col * 18, 142)
-    def arrow(ox, oy, fill):
-        for yy in range(oy + 5, oy + 11):
-            for xx in range(ox, ox + 15): s(xx, yy, fill)
-        for k in range(8):
-            for yy in range(oy + 2 + k, oy + 14 - k): s(ox + 14 + k, yy, fill)
-    arrow(79, 32, SDARK)
-    rect(20, 20, 28, 52, SDARK); rect(21, 21, 27, 51, (10, 16, 18))
-    for yy in range(40, 51):
-        for xx in range(21, 28): s(xx, yy, lerp(TEAL[1], TEAL[3], (51 - yy) / 11))
-    def sprite_arrow(ox, oy):
-        for yy in range(oy + 5, oy + 11):
-            for xx in range(ox, ox + 15): s(xx, yy, lerp(TEAL[3], TEAL[1], (yy - (oy + 5)) / 5))
-        for k in range(8):
-            for yy in range(oy + 2 + k, oy + 14 - k): s(ox + 14 + k, yy, lerp(TEAL[3], TEAL[2], k / 8))
-        for xx in range(ox, ox + 15): s(xx, oy + 5, TEAL[4])
-    sprite_arrow(176, 0)
+    gui_chrome(px, W, H)
+    gui_slot(px, W, H, 56, 35); gui_slot(px, W, H, 116, 35); gui_slot(px, W, H, 116, 57)
+    gui_player_slots(px, W, H)
+    gui_arrow_track(px, W, H, 79, 32)
+    gui_energy_track(px, W, H, 21, 24)
+    gui_arrow_sprite(px, W, H, 176, 0)        # progress fill sprite
+    gui_energy_sprite(px, W, H, 200, 0)       # Light fill sprite (7x40)
     write_png(f"{OUT}/gui/compressor.png", W, H, px)
 gui()
 
 def gui_furnace():
     W = H = 256
     px = [(0, 0, 0, 0)] * (W * H)
-    def s(x, y, c):
-        if 0 <= x < W and 0 <= y < H: px[y * W + x] = (c[0], c[1], c[2], 255) if len(c) == 3 else c
-    def rect(x0, y0, x1, y1, c):
-        for y in range(y0, y1 + 1):
-            for x in range(x0, x1 + 1): s(x, y, c)
-    PANEL = (26, 32, 34); LITE = (58, 74, 74); DARK = (10, 14, 16); MID = (18, 24, 26); SDARK = (8, 11, 12)
-    rect(0, 0, 175, 165, PANEL)
-    rect(0, 0, 175, 2, LITE); rect(0, 0, 2, 165, LITE)
-    rect(0, 163, 175, 165, DARK); rect(173, 0, 175, 165, DARK)
-    def slot(ix, iy):
-        rect(ix - 1, iy - 1, ix + 16, iy + 16, MID)
-        rect(ix - 1, iy - 1, ix + 16, iy - 1, SDARK); rect(ix - 1, iy - 1, ix - 1, iy + 16, SDARK)
-        rect(ix - 1, iy + 16, ix + 16, iy + 16, LITE); rect(ix + 16, iy - 1, ix + 16, iy + 16, LITE)
-    slot(56, 35); slot(116, 35)                  # input, output (no byproduct)
-    for r in range(3):
-        for col in range(9): slot(8 + col * 18, 84 + r * 18)
-    for col in range(9): slot(8 + col * 18, 142)
-    for yy in range(37, 43):                      # engraved arrow track
-        for xx in range(79, 94): s(xx, yy, SDARK)
-    for k in range(8):
-        for yy in range(34 + k, 46 - k): s(93 + k, yy, SDARK)
-    rect(20, 20, 28, 52, SDARK); rect(21, 21, 27, 51, (10, 16, 18))
-    for yy in range(40, 51):
-        for xx in range(21, 28): s(xx, yy, lerp(TEAL[1], TEAL[3], (51 - yy) / 11))
-    def sprite_arrow(ox, oy):                     # filled progress sprite at (176,0)
-        for yy in range(oy + 5, oy + 11):
-            for xx in range(ox, ox + 15): s(xx, yy, lerp(TEAL[3], TEAL[1], (yy - (oy + 5)) / 5))
-        for k in range(8):
-            for yy in range(oy + 2 + k, oy + 14 - k): s(ox + 14 + k, yy, lerp(TEAL[3], TEAL[2], k / 8))
-        for xx in range(ox, ox + 15): s(xx, oy + 5, TEAL[4])
-    sprite_arrow(176, 0)
+    gui_chrome(px, W, H, accent=AMBER)        # transmuter reads warm (amber accent)
+    gui_slot(px, W, H, 56, 35); gui_slot(px, W, H, 116, 35)   # input, output
+    gui_player_slots(px, W, H)
+    gui_arrow_track(px, W, H, 79, 32)
+    gui_energy_track(px, W, H, 21, 24)
+    gui_arrow_sprite(px, W, H, 176, 0)
+    gui_energy_sprite(px, W, H, 200, 0)
     write_png(f"{OUT}/gui/transmuter.png", W, H, px)
 gui_furnace()
 
@@ -908,30 +922,13 @@ gui_furnace()
 def gui_filter():
     W = H = 256
     px = [(0, 0, 0, 0)] * (W * H)
-    def s(x, y, c):
-        if 0 <= x < W and 0 <= y < H: px[y * W + x] = (c[0], c[1], c[2], 255) if len(c) == 3 else c
-    def rect(x0, y0, x1, y1, c):
-        for y in range(y0, y1 + 1):
-            for x in range(x0, x1 + 1): s(x, y, c)
-    PANEL = (26, 32, 34); LITE = (58, 74, 74); DARK = (10, 14, 16); MID = (18, 24, 26); SDARK = (8, 11, 12)
-    rect(0, 0, 175, 165, PANEL)
-    rect(0, 0, 175, 2, LITE); rect(0, 0, 2, 165, LITE)
-    rect(0, 163, 175, 165, DARK); rect(173, 0, 175, 165, DARK)
-    def slot(ix, iy, tint=MID):
-        rect(ix - 1, iy - 1, ix + 16, iy + 16, tint)
-        rect(ix - 1, iy - 1, ix + 16, iy - 1, SDARK); rect(ix - 1, iy - 1, ix - 1, iy + 16, SDARK)
-        rect(ix - 1, iy + 16, ix + 16, iy + 16, LITE); rect(ix + 16, iy - 1, ix + 16, iy + 16, LITE)
-    # 3x3 ghost grid (teal-tinted to read as "filter samples")
-    for r in range(3):
+    gui_chrome(px, W, H, header=16)
+    for r in range(3):                        # 3x3 sample grid (teal-tinted)
         for c in range(3):
-            slot(62 + c * 18, 18 + r * 18, (16, 30, 32))
-    # subtle teal frame around the grid
-    rect(60, 16, 115, 16, TEAL[1]); rect(60, 69, 115, 69, TEAL[1])
-    rect(60, 16, 60, 69, TEAL[1]); rect(115, 16, 115, 69, TEAL[1])
-    # player inventory + hotbar
-    for r in range(3):
-        for c in range(9): slot(8 + c * 18, 84 + r * 18)
-    for c in range(9): slot(8 + c * 18, 142)
+            gui_slot(px, W, H, 62 + c * 18, 18 + r * 18, (18, 34, 38))
+    for (x0, y0, x1, y1) in [(60, 16, 115, 16), (60, 69, 115, 69), (60, 16, 60, 69), (115, 16, 115, 69)]:
+        _grect(px, W, H, x0, y0, x1, y1, TEAL[2])   # bright teal frame around the grid
+    gui_player_slots(px, W, H)
     write_png(f"{OUT}/gui/wave_filter.png", W, H, px)
 gui_filter()
 

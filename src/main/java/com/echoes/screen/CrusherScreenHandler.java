@@ -19,7 +19,7 @@ public class CrusherScreenHandler extends AbstractContainerMenu {
 
     /** Client constructor. */
     public CrusherScreenHandler(int syncId, Inventory playerInv) {
-        this(syncId, playerInv, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(3));
+        this(syncId, playerInv, new SimpleContainer(MACHINE_SLOTS), new SimpleContainerData(4));
     }
 
     public CrusherScreenHandler(int syncId, Inventory playerInv, Container inv, ContainerData props) {
@@ -50,6 +50,7 @@ public class CrusherScreenHandler extends AbstractContainerMenu {
     public int progress() { return props.get(0); }
     public int maxProgress() { return props.get(1); }
     public int storedRu() { return props.get(2); }
+    public int maxRu() { return props.get(3); }
 
     @Override
     public boolean stillValid(Player player) {

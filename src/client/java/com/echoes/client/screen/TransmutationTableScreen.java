@@ -5,22 +5,21 @@ import com.echoes.screen.TransmutationTableScreenHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.network.chat.Component;
 
 /**
- * The transmutation terminal screen (Table and Tablet share it). Drawn programmatically:
- * a dark panel, the dissolve / template / output slots, the banked Bound-Light readout,
- * a row of five Mote-withdraw buttons, and Dissolve / Condense / Condense-stack actions.
+ * The transmutation terminal screen (Table and Tablet share it). Drawn with the
+ * shared {@link GuiTheme}: a lit-steel panel, beveled slots, an inset Bound-Light
+ * readout, a row of five Mote-withdraw buttons, and Dissolve / Condense actions.
  */
 public class TransmutationTableScreen extends AbstractContainerScreen<TransmutationTableScreenHandler> {
-    private static final int PANEL = 0xF0202830, BORDER = 0xFF3A4A52, SLOT = 0xFF101418;
     private static final String[] LABELS = {"L", "T", "M", "D", "H"};
 
     public TransmutationTableScreen(TransmutationTableScreenHandler handler, Inventory inv, Component title) {
         super(handler, inv, title, 176, 200);
-        this.inventoryLabelY = this.imageHeight - 94;
+        this.titleLabelY = -1000;       // drawn bright in the header band
+        this.inventoryLabelY = -1000;
     }
 
     @Override
@@ -31,27 +30,26 @@ public class TransmutationTableScreen extends AbstractContainerScreen<Transmutat
         int x0 = leftPos + (imageWidth - total) / 2, by = topPos + 60;
         for (int i = 0; i < n; i++) {
             final int tier = i;
-            addRenderableWidget(Button.builder(Component.literal(LABELS[i]),
-                            b -> click(tier))
-                    .bounds(x0 + i * (bw + gap), by, bw, 18)
-                    .tooltip(Tooltip.create(Component.translatable(ModItems.MOTES[tier].getDescriptionId())
-                            .append(Component.literal(" — withdraw (" + TransmutationTableScreenHandler.moteValue(tier) + " LV)"))))
-                    .build());
+            ThemedButton b = new ThemedButton(x0 + i * (bw + gap), by, bw, 18,
+                    Component.literal(LABELS[i]), () -> click(tier));
+            b.setTooltip(Tooltip.create(Component.translatable(ModItems.MOTES[tier].getDescriptionId())
+                    .append(Component.literal(" — withdraw (" + TransmutationTableScreenHandler.moteValue(tier) + " LV)"))));
+            addRenderableWidget(b);
         }
         // Action row: Dissolve / Condense / Condense ×64.
         int ay = topPos + 86;
-        addRenderableWidget(Button.builder(Component.translatable("screen.echoes.dissolve"),
-                        b -> click(TransmutationTableScreenHandler.BTN_DISSOLVE))
-                .bounds(leftPos + 8, ay, 50, 18)
-                .tooltip(Tooltip.create(Component.translatable("screen.echoes.dissolve.tip"))).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.echoes.condense"),
-                        b -> click(TransmutationTableScreenHandler.BTN_CONDENSE_1))
-                .bounds(leftPos + 62, ay, 52, 18)
-                .tooltip(Tooltip.create(Component.translatable("screen.echoes.condense.tip"))).build());
-        addRenderableWidget(Button.builder(Component.literal("×64"),
-                        b -> click(TransmutationTableScreenHandler.BTN_CONDENSE_STACK))
-                .bounds(leftPos + 118, ay, 50, 18)
-                .tooltip(Tooltip.create(Component.translatable("screen.echoes.condense.tip"))).build());
+        action(leftPos + 8, ay, 50, Component.translatable("screen.echoes.dissolve"),
+                TransmutationTableScreenHandler.BTN_DISSOLVE, "screen.echoes.dissolve.tip");
+        action(leftPos + 62, ay, 52, Component.translatable("screen.echoes.condense"),
+                TransmutationTableScreenHandler.BTN_CONDENSE_1, "screen.echoes.condense.tip");
+        action(leftPos + 118, ay, 50, Component.literal("×64"),
+                TransmutationTableScreenHandler.BTN_CONDENSE_STACK, "screen.echoes.condense.tip");
+    }
+
+    private void action(int x, int y, int w, Component label, int id, String tipKey) {
+        ThemedButton b = new ThemedButton(x, y, w, 18, label, () -> click(id));
+        b.setTooltip(Tooltip.create(Component.translatable(tipKey)));
+        addRenderableWidget(b);
     }
 
     private void click(int id) {
@@ -63,24 +61,28 @@ public class TransmutationTableScreen extends AbstractContainerScreen<Transmutat
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
-        g.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, PANEL);
-        // border (4 edges — GuiGraphicsExtractor has no drawBorder helper)
-        g.fill(leftPos, topPos, leftPos + imageWidth, topPos + 1, BORDER);
-        g.fill(leftPos, topPos + imageHeight - 1, leftPos + imageWidth, topPos + imageHeight, BORDER);
-        g.fill(leftPos, topPos, leftPos + 1, topPos + imageHeight, BORDER);
-        g.fill(leftPos + imageWidth - 1, topPos, leftPos + imageWidth, topPos + imageHeight, BORDER);
+        GuiTheme.panel(g, leftPos, topPos, imageWidth, imageHeight, 18, GuiTheme.ACCENT);
+        // Bound-Light readout well.
+        GuiTheme.inset(g, leftPos + 6, topPos + 22, imageWidth - 12, 12, GuiTheme.FIELD_BG);
+        // Machine slots.
         int sy = TransmutationTableScreenHandler.SLOT_Y - 1;
         for (int sx : new int[]{TransmutationTableScreenHandler.INPUT_X,
                 TransmutationTableScreenHandler.TEMPLATE_X, TransmutationTableScreenHandler.OUTPUT_X}) {
-            g.fill(leftPos + sx - 1, topPos + sy, leftPos + sx + 17, topPos + sy + 18, SLOT);
+            GuiTheme.slot(g, leftPos + sx - 1, topPos + sy);
         }
+        // Player inventory + hotbar.
+        for (int r = 0; r < 3; r++)
+            for (int c = 0; c < 9; c++)
+                GuiTheme.slot(g, leftPos + 7 + c * 18, topPos + 117 + r * 18);
+        for (int c = 0; c < 9; c++)
+            GuiTheme.slot(g, leftPos + 7 + c * 18, topPos + 175);
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
-        // Banked Bound-Light readout (panel-relative coordinates).
+        g.text(font, title, 8, 6, GuiTheme.TEXT, false);
         g.text(font, Component.translatable("screen.echoes.bound_light", menu.boundLight()),
-                8, 24, 0xFFE0E8EC, false);
+                10, 24, GuiTheme.ACCENT, false);
     }
 }

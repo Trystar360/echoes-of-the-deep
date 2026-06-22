@@ -15,12 +15,22 @@ public class AttunementFurnaceScreen extends AbstractContainerScreen<AttunementF
 
     public AttunementFurnaceScreen(AttunementFurnaceScreenHandler handler, Inventory inv, Component title) {
         super(handler, inv, title);
+        this.titleLabelY = -1000;       // drawn bright in the header band
+        this.inventoryLabelY = -1000;   // hide the dark vanilla "Inventory" label
     }
 
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         g.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
+        // Light gauge (fills bottom-up, sprite at atlas 200,0 — 7×40).
+        int cap = menu.maxRu();
+        if (cap > 0) {
+            int fh = Math.min(40, (int) (menu.storedRu() * 40L / cap));
+            if (fh > 0)
+                g.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + 21, topPos + 24 + (40 - fh),
+                        200, 40 - fh, 7, fh, 256, 256);
+        }
         int max = menu.maxProgress();
         if (max > 0) {
             int w = menu.progress() * 24 / max;
@@ -31,8 +41,9 @@ public class AttunementFurnaceScreen extends AbstractContainerScreen<AttunementF
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
+        g.text(font, title, 8, 6, GuiTheme.TEXT, false);
         // Right-aligned in the title row so it doesn't overlap the block-name title.
         Component ru = Component.literal(menu.storedRu() + " Light");
-        g.text(font, ru, imageWidth - font.width(ru) - 8, 6, 0xFF7FE9DD, false);
+        g.text(font, ru, imageWidth - font.width(ru) - 8, 6, GuiTheme.ACCENT, false);
     }
 }
