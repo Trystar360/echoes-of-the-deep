@@ -19,35 +19,52 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * The transmutation terminal — shared by the Transmutation Table (block) and the
  * Transmutation Tablet (item). Both operate on the opening player's {@link
- * TransmutationState.Account} (Bound Light pool + attuned tones):
+ * TransmutationState.Account} (Bound Light pool + learned tones), ProjectE-style:
  *
  * <ul>
- *   <li><b>Dissolve</b> (input slot → button) banks the item's Light Value and attunes it.</li>
- *   <li><b>Withdraw</b> (five tone buttons) pays the pool out as Mote coins.</li>
- *   <li><b>Condense</b> (ghost template slot → button) re-creates an <i>attuned</i> item
- *       from the pool (×1 or a stack).</li>
+ *   <li><b>Dissolve / learn</b> (input slot → button): banks the item's Light Value
+ *       and <i>learns</i> it (adds it to your knowledge) so it appears in the grid.</li>
+ *   <li><b>Knowledge grid</b>: every item you've learned shows as a display icon.
+ *       Click one to <b>create</b> it (left = one, shift/right = a stack), paying its
+ *       Light Value out of your banked pool. Light is conserved — creating costs
+ *       exactly what dissolving refunds — so there is no infinite duplication.</li>
+ *   <li><b>Withdraw</b> (five tone buttons): pays the pool out as Mote coins.</li>
  * </ul>
+ *
+ * <p>The knowledge grid is built from real (display-only) menu slots filled by the
+ * server, so it rides vanilla menu syncing — no custom packets. The set is paged
+ * when a player has learned more than one screen's worth.
  */
 public class TransmutationTableScreenHandler extends AbstractContainerMenu {
-    public static final int INPUT = 0, OUTPUT = 1, TEMPLATE = 2;
-    private static final int MACHINE_SLOTS = 3;
+    public static final int INPUT = 0, OUTPUT = 1;
+    public static final int GRID_COLS = 9, GRID_ROWS = 3, GRID_SIZE = GRID_COLS * GRID_ROWS;
+    public static final int KNOWLEDGE_START = 2;                 // first knowledge slot index
+    private static final int MACHINE_SLOTS = KNOWLEDGE_START + GRID_SIZE;
     private static final long DIGIT = 32768L;
 
     // button ids
-    public static final int BTN_DISSOLVE = 10, BTN_CONDENSE_1 = 11, BTN_CONDENSE_STACK = 12;
+    public static final int BTN_DISSOLVE = 100, BTN_PAGE_PREV = 101, BTN_PAGE_NEXT = 102;
 
     // slot layout (kept in sync with the client screen)
-    public static final int SLOT_Y = 40, INPUT_X = 26, TEMPLATE_X = 80, OUTPUT_X = 134;
-    private static final int INV_Y = 118, HOTBAR_Y = 176;
+    public static final int INPUT_X = 8, OUTPUT_X = 150, SLOT_Y = 18;
+    public static final int GRID_X = 8, GRID_Y = 90;
+    private static final int INV_Y = 160, HOTBAR_Y = 218;
 
-    private final SimpleContainer inv = new SimpleContainer(MACHINE_SLOTS);
+    private final SimpleContainer inv = new SimpleContainer(2);                 // input + output
+    private final SimpleContainer knowledge = new SimpleContainer(GRID_SIZE);   // display-only grid
     private final ContainerData props;
     private final Player player;
     private final @Nullable TransmutationState state;       // server only
     private final TransmutationState.@Nullable Account account; // server only
+    private List<Item> learned = List.of();                 // server only, sorted, current view
+    private int page = 0;
 
     public TransmutationTableScreenHandler(int syncId, Inventory playerInv) {
         super(ModScreens.TRANSMUTATION_TABLE, syncId);
@@ -63,27 +80,36 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
                         case 0 -> (int) (bl % DIGIT);
                         case 1 -> (int) ((bl / DIGIT) % DIGIT);
                         case 2 -> (int) ((bl / (DIGIT * DIGIT)) % DIGIT);
+                        case 3 -> pageCount();
+                        case 4 -> page;
                         default -> 0;
                     };
                 }
                 @Override public void set(int i, int v) { }
-                @Override public int getCount() { return 3; }
+                @Override public int getCount() { return 5; }
             };
         } else {
             this.state = null;
             this.account = null;
-            this.props = new SimpleContainerData(3);
+            this.props = new SimpleContainerData(5);
         }
 
-        this.addSlot(new Slot(inv, INPUT, INPUT_X, SLOT_Y));         // dissolve
-        this.addSlot(new Slot(inv, OUTPUT, OUTPUT_X, SLOT_Y) {       // extract-only
+        this.addSlot(new Slot(inv, INPUT, INPUT_X, SLOT_Y));         // dissolve / learn
+        this.addSlot(new Slot(inv, OUTPUT, OUTPUT_X, SLOT_Y) {       // created items out (extract-only)
             @Override public boolean mayPlace(ItemStack stack) { return false; }
         });
-        this.addSlot(new Slot(inv, TEMPLATE, TEMPLATE_X, SLOT_Y) {   // ghost target
-            @Override public boolean mayPlace(ItemStack stack) { return false; }
-            @Override public boolean mayPickup(Player p) { return false; }
-            @Override public int getMaxStackSize() { return 1; }
-        });
+
+        // Knowledge grid — display-only slots the server fills with learned items.
+        for (int row = 0; row < GRID_ROWS; row++) {
+            for (int col = 0; col < GRID_COLS; col++) {
+                int idx = KNOWLEDGE_START + row * GRID_COLS + col;
+                this.addSlot(new Slot(knowledge, idx - KNOWLEDGE_START,
+                        GRID_X + col * 18, GRID_Y + row * 18) {
+                    @Override public boolean mayPlace(ItemStack stack) { return false; }
+                    @Override public boolean mayPickup(Player p) { return false; }
+                });
+            }
+        }
 
         for (int row = 0; row < 3; row++)
             for (int col = 0; col < 9; col++)
@@ -92,6 +118,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
             this.addSlot(new Slot(playerInv, col, 8 + col * 18, HOTBAR_Y));
 
         this.addDataSlots(props);
+        refreshKnowledge();
     }
 
     /** Banked Bound Light, reconstructed from the 3×15-bit property delegate (client). */
@@ -99,30 +126,61 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
         return (props.get(0) & 0xFFFFL) + props.get(1) * DIGIT + props.get(2) * DIGIT * DIGIT;
     }
 
+    public int pageCountClient() { return Math.max(1, props.get(3)); }
+    public int pageClient()      { return props.get(4); }
+
     public static long moteValue(int tier) { return ModItems.MOTE_VALUES[tier]; }
 
     private static Identifier id(Item item) { return BuiltInRegistries.ITEM.getKey(item); }
 
+    private int pageCount() {
+        if (account == null) return 1;
+        int n = account.attuned.size();
+        return Math.max(1, (n + GRID_SIZE - 1) / GRID_SIZE);
+    }
+
+    /** Rebuild the sorted learned list and fill the visible page's display slots (server). */
+    private void refreshKnowledge() {
+        if (account == null) return;
+        List<Item> all = new ArrayList<>();
+        for (Identifier rid : account.attuned) {
+            Item it = BuiltInRegistries.ITEM.getValue(rid);
+            if (it != null && it != net.minecraft.world.item.Items.AIR) all.add(it);
+        }
+        all.sort(Comparator.comparing(it -> id(it).toString()));
+        int pages = Math.max(1, (all.size() + GRID_SIZE - 1) / GRID_SIZE);
+        if (page >= pages) page = pages - 1;
+        if (page < 0) page = 0;
+        int from = page * GRID_SIZE;
+        this.learned = all;
+        for (int i = 0; i < GRID_SIZE; i++) {
+            int gi = from + i;
+            knowledge.setItem(i, gi < all.size() ? new ItemStack(all.get(gi)) : ItemStack.EMPTY);
+        }
+    }
+
     @Override
     public boolean clickMenuButton(Player p, int btn) {
         if (account == null) return false; // server-authoritative
-        boolean changed;
+        boolean changed = false;
         if (btn >= 0 && btn < ModItems.MOTES.length) {
             changed = withdraw(btn);
         } else if (btn == BTN_DISSOLVE) {
             changed = dissolve();
-        } else if (btn == BTN_CONDENSE_1) {
-            changed = condense(1);
-        } else if (btn == BTN_CONDENSE_STACK) {
-            changed = condense(64);
+        } else if (btn == BTN_PAGE_PREV) {
+            if (page > 0) { page--; refreshKnowledge(); }
+            return true;
+        } else if (btn == BTN_PAGE_NEXT) {
+            if (page < pageCount() - 1) { page++; refreshKnowledge(); }
+            return true;
         } else {
             return super.clickMenuButton(p, btn);
         }
-        if (changed) state.setDirty();
+        if (changed) { refreshKnowledge(); state.setDirty(); }
         return true;
     }
 
-    /** Dissolve the input stack into banked Light and attune its tone. */
+    /** Dissolve the input stack into banked Light and learn its tone. */
     private boolean dissolve() {
         ItemStack in = inv.getItem(INPUT);
         if (in.isEmpty()) return false;
@@ -143,11 +201,9 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
         return true;
     }
 
-    /** Re-create the (attuned) template item from the pool, up to {@code max} copies. */
-    private boolean condense(int max) {
-        ItemStack tmpl = inv.getItem(TEMPLATE);
-        if (tmpl.isEmpty()) return false;
-        Item item = tmpl.getItem();
+    /** Create up to {@code max} copies of a learned item, paying its value from the pool. */
+    private boolean create(Item item, int max) {
+        if (account == null || item == null) return false;
         if (!account.attuned.contains(id(item))) return false;
         long unit = LightValues.get(item);
         if (unit <= 0) return false;
@@ -156,6 +212,7 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
             account.light -= unit;
             made++;
         }
+        if (made > 0) state.setDirty();
         return made > 0;
     }
 
@@ -179,18 +236,13 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
 
     @Override
     public void clicked(int slotIndex, int button, ContainerInput actionType, Player p) {
-        if (slotIndex == TEMPLATE) {
-            // Ghost slot: set/clear the condense target from the cursor without consuming it.
-            if (actionType == ContainerInput.PICKUP || actionType == ContainerInput.PICKUP_ALL) {
-                ItemStack cursor = getCarried();
-                if (cursor.isEmpty()) {
-                    inv.setItem(TEMPLATE, ItemStack.EMPTY);
-                } else {
-                    ItemStack ghost = cursor.copy();
-                    ghost.setCount(1);
-                    inv.setItem(TEMPLATE, ghost);
-                }
-            }
+        // Knowledge grid: clicking a learned item creates it (left = 1, shift/right = a stack).
+        if (slotIndex >= KNOWLEDGE_START && slotIndex < MACHINE_SLOTS) {
+            if (account == null) return; // client: server is authoritative
+            int gi = (slotIndex - KNOWLEDGE_START) + page * GRID_SIZE;
+            if (gi < 0 || gi >= learned.size()) return;
+            int max = (actionType == ContainerInput.QUICK_MOVE || button == 1) ? 64 : 1;
+            if (create(learned.get(gi), max)) refreshKnowledge();
             return;
         }
         super.clicked(slotIndex, button, actionType, p);
@@ -199,9 +251,10 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(Player p, int slotIndex) {
         ItemStack moved = ItemStack.EMPTY;
+        // Shift-clicking a knowledge slot is handled by clicked() (create a stack).
+        if (slotIndex >= KNOWLEDGE_START && slotIndex < MACHINE_SLOTS) return ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
         if (slot != null && slot.hasItem()) {
-            if (slotIndex == TEMPLATE) return ItemStack.EMPTY; // ghost
             ItemStack original = slot.getItem();
             moved = original.copy();
             if (slotIndex < MACHINE_SLOTS) {
@@ -218,12 +271,10 @@ public class TransmutationTableScreenHandler extends AbstractContainerMenu {
     @Override
     public void removed(Player p) {
         super.removed(p);
-        // Return real held items; the ghost template is a phantom and is simply dropped.
         if (!p.level().isClientSide()) {
             returnStack(p, INPUT);
             returnStack(p, OUTPUT);
         }
-        inv.setItem(TEMPLATE, ItemStack.EMPTY);
     }
 
     private void returnStack(Player p, int slot) {
