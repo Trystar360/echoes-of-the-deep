@@ -17,12 +17,11 @@ import net.minecraft.network.chat.Component;
  * jumps to the device's Config screen, or back to its Function menu for machines.
  */
 public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
-    private static final int PANEL = 0xF00B1416, EDGE_HI = 0xFF2A4A4A, EDGE_LO = 0xFF050A0B;
-    private static final int WELL = 0xFF101418, ACCENT = 0xFF7FE9DD, DIM = 0xFF3A4A52;
-    private static final int TEXT = 0xFFC8E6E6;
+    private static final int WELL = GuiPaint.WELL, ACCENT = GuiPaint.HEADER, DIM = GuiPaint.DIM;
+    private static final int TEXT = GuiPaint.TEXT;
 
     public InfoScreen(InfoScreenHandler handler, Inventory inv, Component title) {
-        super(handler, inv, title, 176, 172);
+        super(handler, inv, GuiPaint.f(title), 176, 184);
         this.inventoryLabelY = -1000; // no slots
         this.titleLabelX = 8;
     }
@@ -55,7 +54,7 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         int x = leftPos, y = topPos;
-        GuiPaint.bevelPanel(g, x, y, imageWidth, imageHeight, PANEL, EDGE_HI, EDGE_LO);
+        GuiPaint.panel(g, x, y, imageWidth, imageHeight);
 
         boolean inLit  = menu.has(NodeRole.CONSUMER) || menu.has(NodeRole.STORAGE) || menu.has(NodeRole.CONDUIT);
         boolean outLit = menu.has(NodeRole.PROVIDER) || menu.has(NodeRole.STORAGE) || menu.has(NodeRole.CONDUIT);
@@ -118,11 +117,11 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
-        g.text(font, Component.translatable("screen.echoes.info.role", roleText()), 8, 26, ACCENT, false);
+        g.text(font, GuiPaint.f(Component.translatable("screen.echoes.info.role", roleText())), 8, 26, ACCENT, false);
 
         // IN / OUT chip captions.
-        g.text(font, Component.literal("IN"), 14, 50, TEXT, false);
-        g.text(font, Component.literal("OUT"), 145, 50, TEXT, false);
+        g.text(font, GuiPaint.f("IN"), 14, 50, TEXT, false);
+        g.text(font, GuiPaint.f("OUT"), 145, 50, TEXT, false);
 
         // Buffer readout (or "pass-through" for bufferless nodes).
         Component buf = menu.capacity() > 0
@@ -131,15 +130,19 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
         center(g, buf, 88, 76, TEXT);
 
         // Network summary.
-        g.text(font, Component.translatable("screen.echoes.info.network", menu.netMembers()), 8, 104, TEXT, false);
+        g.text(font, GuiPaint.f(Component.translatable("screen.echoes.info.network", menu.netMembers())), 8, 104, TEXT, false);
         center(g, Component.literal(fmt(menu.netStored()) + " / " + fmt(menu.netCapacity()) + " L"), 88, 132, TEXT);
 
         if (menu.has(NodeRole.CONDUIT) && menu.throughput() > 0) {
-            g.text(font, Component.translatable("screen.echoes.info.throughput", fmt(menu.throughput())), 8, 150, TEXT, false);
+            g.text(font, GuiPaint.f(Component.translatable("screen.echoes.info.throughput", fmt(menu.throughput()))), 8, 150, TEXT, false);
         }
+
+        // I/O colour key (bottom row).
+        GuiPaint.ioKey(g, font, 8, 170);
     }
 
     private void center(GuiGraphicsExtractor g, Component c, int cx, int y, int color) {
+        c = GuiPaint.f(c);
         g.text(font, c, cx - font.width(c) / 2, y, color, false);
     }
 

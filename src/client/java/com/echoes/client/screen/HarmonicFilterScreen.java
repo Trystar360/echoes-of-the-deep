@@ -1,20 +1,16 @@
 package com.echoes.client.screen;
 
-import com.echoes.EchoesMod;
 import com.echoes.screen.HarmonicFilterScreenHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 
+/** The Wave Filter screen — Obsidian &amp; Gold, drawn programmatically (no baked texture). */
 public class HarmonicFilterScreen extends AbstractContainerScreen<HarmonicFilterScreenHandler> {
-    private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "textures/gui/wave_filter.png");
 
     public HarmonicFilterScreen(HarmonicFilterScreenHandler handler, Inventory inv, Component title) {
-        super(handler, inv, title);
+        super(handler, inv, GuiPaint.f(title));
     }
 
     @Override
@@ -28,10 +24,17 @@ public class HarmonicFilterScreen extends AbstractContainerScreen<HarmonicFilter
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
-        g.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
-        // The 3×3 whitelist grid is a filter (input-side); ring it teal.
+        GuiPaint.panel(g, leftPos, topPos, imageWidth, imageHeight);
+        // The 3×3 whitelist grid is a filter (input-side); ring it ice-blue.
         for (int r = 0; r < 3; r++)
             for (int c = 0; c < 3; c++)
-                GuiPaint.slotRing(g, leftPos + 62 + c * 18, topPos + 18 + r * 18, GuiPaint.IN);
+                GuiPaint.slot(g, leftPos + 62 + c * 18, topPos + 18 + r * 18, GuiPaint.IN);
+        GuiPaint.playerSlots(g, leftPos + 8, topPos + 84, topPos + 142);
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+        super.extractLabels(g, mouseX, mouseY);
+        GuiPaint.ioKeyV(g, font, 8, 20);
     }
 }

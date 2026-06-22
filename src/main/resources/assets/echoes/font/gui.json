@@ -1,0 +1,31 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        " ": 4,
+        " ": 4
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "echoes:font/gui_ascii.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        " !\"#$%&'()*+,-./",
+        "0123456789:;<=>?",
+        "@ABCDEFGHIJKLMNO",
+        "PQRSTUVWXYZ[\\]^_",
+        "`abcdefghijklmno",
+        "pqrstuvwxyz{|}~",
+        " ¡¢£¤¥¦§¨©ª«¬­®¯",
+        "°±²³´µ¶·¸¹º»¼½¾¿",
+        "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ",
+        "ÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞß",
+        "àáâãäåæçèéêëìíîï",
+        "ðñòóôõö÷øùúûüýþÿ"
+      ]
+    }
+  ]
+}

@@ -8,7 +8,6 @@ import com.echoes.config.TuningParam;
 import com.echoes.screen.ConfigScreenHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
@@ -24,11 +23,11 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
     private static final String[] ROMAN = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" };
 
     private final ConfigSpec spec;
-    private Button channelBtn, octaveBtn, redstoneBtn, tuningABtn, tuningBBtn, securityBtn;
-    private final Button[] sideBtns = new Button[6];
+    private TexturedButton channelBtn, octaveBtn, redstoneBtn, tuningABtn, tuningBBtn, securityBtn;
+    private final TexturedButton[] sideBtns = new TexturedButton[6];
 
     public ConfigScreen(ConfigScreenHandler handler, Inventory inv, Component title) {
-        super(handler, inv, title, 214, 30 + rowCount(handler.spec()) * 24 + 8);
+        super(handler, inv, GuiPaint.f(title), 214, 30 + rowCount(handler.spec()) * 24 + 8);
         this.spec = handler.spec();
         this.inventoryLabelY = -1000; // hide "Container" label (no slots)
         this.titleLabelX = 8;
@@ -72,7 +71,7 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
             };
             for (int[] p : place) {
                 sideBtns[p[0]] = addButton(cx + p[1] * 22, y + p[2] * 22, 20,
-                        Component.literal(FACE[p[0]]), ConfigScreenHandler.B_SIDE_BASE + p[0]);
+                        GuiPaint.f(FACE[p[0]]), ConfigScreenHandler.B_SIDE_BASE + p[0]);
             }
             y += 24 * 3;
         }
@@ -89,23 +88,17 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
         y += 24;
     }
 
-    /** A centered value button flanked by [-] and [+]. The center button is inert (display only). */
-    private Button addValueRow(int y, int downId, int upId) {
-        addButton(x() + 96, y, 20, Component.literal("-"), downId);
-        Button value = Button.builder(Component.empty(), b -> {})
-                .bounds(x() + 118, y, 64, 20).build();
-        value.active = false;
+    /** A centered value field flanked by [-] and [+]. The center field is display only. */
+    private TexturedButton addValueRow(int y, int downId, int upId) {
+        addButton(x() + 96, y, 20, GuiPaint.f("-"), downId);
+        TexturedButton value = new TexturedButton(x() + 118, y, 64, 20, Component.empty(), font, () -> {});
         addRenderableWidget(value);
-        addButton(x() + 184, y, 20, Component.literal("+"), upId);
+        addButton(x() + 184, y, 20, GuiPaint.f("+"), upId);
         return value;
     }
 
-    private Button addButton(int bx, int by, int w, Component label, int buttonId) {
-        Button b = Button.builder(label, btn -> {
-            if (minecraft != null && minecraft.gameMode != null) {
-                minecraft.gameMode.handleInventoryButtonClick(menu.containerId, buttonId);
-            }
-        }).bounds(bx, by, w, 20).build();
+    private TexturedButton addButton(int bx, int by, int w, Component label, int buttonId) {
+        TexturedButton b = TexturedButton.menu(bx, by, w, 20, label, font, menu.containerId, buttonId);
         addRenderableWidget(b);
         return b;
     }
@@ -117,7 +110,7 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         refreshLabels();
-        GuiPaint.bevelPanel(g, x(), y(), imageWidth, imageHeight, 0xF00B1416, 0xFF2A4A4A, 0xFF050A0B);
+        GuiPaint.panel(g, x(), y(), imageWidth, imageHeight);
     }
 
     @Override
@@ -132,28 +125,28 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
         if (channelBtn != null) {
             int ch = menu.prop(ConfigScreenHandler.P_CHANNEL);
             DyeColor dye = DyeColor.byId(ch);
-            channelBtn.setMessage(Component.translatable("color.minecraft." + dye.getName()));
+            channelBtn.setMessage(GuiPaint.f(Component.translatable("color.minecraft." + dye.getName())));
         }
         if (octaveBtn != null) {
             int oc = Math.floorMod(menu.prop(ConfigScreenHandler.P_OCTAVE), ROMAN.length);
-            octaveBtn.setMessage(Component.literal(ROMAN[oc]));
+            octaveBtn.setMessage(GuiPaint.f(ROMAN[oc]));
         }
         if (redstoneBtn != null) {
             RedstoneMode m = RedstoneMode.byId(menu.prop(ConfigScreenHandler.P_REDSTONE));
-            redstoneBtn.setMessage(Component.translatable(m.translationKey()));
+            redstoneBtn.setMessage(GuiPaint.f(Component.translatable(m.translationKey())));
         }
         for (int i = 0; i < 6; i++) {
             if (sideBtns[i] == null) continue;
             SideMode sm = SideMode.byId(menu.prop(ConfigScreenHandler.P_SIDE0 + i));
-            sideBtns[i].setMessage(Component.literal(FACE[i]).withStyle(sideColor(sm)));
+            sideBtns[i].setMessage(GuiPaint.f(Component.literal(FACE[i]).withStyle(sideColor(sm))));
         }
-        if (tuningABtn != null) tuningABtn.setMessage(Component.literal(String.valueOf(menu.prop(ConfigScreenHandler.P_TUNING_A))));
-        if (tuningBBtn != null) tuningBBtn.setMessage(Component.literal(String.valueOf(menu.prop(ConfigScreenHandler.P_TUNING_B))));
+        if (tuningABtn != null) tuningABtn.setMessage(GuiPaint.f(String.valueOf(menu.prop(ConfigScreenHandler.P_TUNING_A))));
+        if (tuningBBtn != null) tuningBBtn.setMessage(GuiPaint.f(String.valueOf(menu.prop(ConfigScreenHandler.P_TUNING_B))));
         if (securityBtn != null) {
             SecurityMode sm = SecurityMode.byId(menu.prop(ConfigScreenHandler.P_SECURITY));
             boolean owned = menu.prop(ConfigScreenHandler.P_OWNED) != 0;
-            securityBtn.setMessage(Component.translatable(sm.translationKey())
-                    .withStyle(sm == SecurityMode.PRIVATE ? ChatFormatting.RED : ChatFormatting.GREEN));
+            securityBtn.setMessage(GuiPaint.f(Component.translatable(sm.translationKey())
+                    .withStyle(sm == SecurityMode.PRIVATE ? ChatFormatting.RED : ChatFormatting.GREEN)));
             securityBtn.active = owned;   // only the owner may toggle
         }
     }
@@ -169,7 +162,7 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
 
     /** Left-hand label for each row, drawn relative to its button's Y. */
     private void drawRowTitles(GuiGraphicsExtractor g) {
-        int color = 0xFFC8E6E6;
+        int color = GuiPaint.HEADER;
         if (channelBtn != null) label(g, "config.echoes.channel", channelBtn.getY(), color);
         if (octaveBtn != null) label(g, "config.echoes.octave", octaveBtn.getY(), color);
         if (redstoneBtn != null) label(g, "config.echoes.redstone", redstoneBtn.getY(), color);
@@ -183,6 +176,6 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
     private void label(GuiGraphicsExtractor g, String key, int rowY, int color) {
         // extractLabels is panel-relative (the pose is translated to leftPos/topPos),
         // so convert the button's absolute Y into panel space.
-        g.text(font, Component.translatable(key), 10, rowY - topPos + 6, color, false);
+        g.text(font, GuiPaint.f(Component.translatable(key)), 10, rowY - topPos + 6, color, false);
     }
 }
