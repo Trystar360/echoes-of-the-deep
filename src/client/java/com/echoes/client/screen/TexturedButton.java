@@ -45,7 +45,7 @@ final class TexturedButton extends AbstractWidget {
     protected void extractWidgetRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         Identifier sprite = !active ? DISABLED : (isHoveredOrFocused() ? HOVER : NORMAL);
         g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, getX(), getY(), getWidth(), getHeight());
-        int color = active ? GuiPaint.TEXT : GuiPaint.DIM;
+        int color = active ? GuiPaint.BUTTON_TEXT : GuiPaint.DIM;
         int tx = getX() + (getWidth() - font.width(getMessage())) / 2;
         int ty = getY() + (getHeight() - 8) / 2;
         g.text(font, getMessage(), tx, ty, color, false);

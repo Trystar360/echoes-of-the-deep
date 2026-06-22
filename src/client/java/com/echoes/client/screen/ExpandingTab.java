@@ -46,17 +46,17 @@ final class ExpandingTab extends AbstractWidget {
         setX(rightEdge - w);
         int x = getX(), y = getY();
 
-        // Body pill with an accent-tinted top/left bevel.
-        GuiPaint.bevelPanel(g, x, y, w, H, BODY, accent, 0xFF050A0B);
+        // Wood pill body (button sprite) with an accent strip down the icon edge.
+        net.minecraft.resources.Identifier btn = net.minecraft.resources.Identifier.fromNamespaceAndPath("echoes", "widget/button");
+        g.blitSprite(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, btn, x, y, w, H);
         if (expanded) {
-            // label to the left, a divider, then the icon cell on the right
-            g.text(font, getMessage(), x + PAD, y + (H - 8) / 2, 0xFFC8E6E6, false);
+            g.text(font, GuiPaint.f(getMessage().copy()), x + PAD, y + (H - 8) / 2, GuiPaint.BUTTON_TEXT, false);
             int ix = rightEdge - ICON_W;
             g.fill(ix, y + 2, ix + 1, y + H - 2, accent);
         }
         // Icon glyph, centred in the right-hand icon cell.
         int ix = rightEdge - ICON_W;
-        g.text(font, Component.literal(icon), ix + (ICON_W - font.width(icon)) / 2, y + (H - 8) / 2, accent, false);
+        g.text(font, GuiPaint.f(icon), ix + (ICON_W - font.width(icon)) / 2, y + (H - 8) / 2, accent, false);
     }
 
     @Override
