@@ -4,6 +4,7 @@ import com.echoes.config.BlockConfig;
 import com.echoes.config.Configurable;
 import com.echoes.config.ConfigSpec;
 import com.echoes.config.RedstoneMode;
+import com.echoes.config.SecurityMode;
 import com.echoes.config.SideMode;
 import com.echoes.config.TuningParam;
 import com.echoes.registry.ModScreens;
@@ -26,15 +27,16 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ConfigScreenHandler extends AbstractContainerMenu {
 
-    // Property layout (size 11): 0 channel, 1 octave, 2 redstone,
-    // 3..8 side modes (Direction id order), 9 tuningA, 10 tuningB.
-    public static final int SIZE = 11;
+    // Property layout (size 13): 0 channel, 1 octave, 2 redstone,
+    // 3..8 side modes (Direction id order), 9 tuningA, 10 tuningB,
+    // 11 security mode, 12 owned-by-viewer flag.
+    public static final int SIZE = 13;
     public static final int P_CHANNEL = 0, P_OCTAVE = 1, P_REDSTONE = 2, P_SIDE0 = 3,
-            P_TUNING_A = 9, P_TUNING_B = 10;
+            P_TUNING_A = 9, P_TUNING_B = 10, P_SECURITY = 11, P_OWNED = 12;
 
     // Button ids.
     public static final int B_CHANNEL_DOWN = 0, B_CHANNEL_UP = 1,
-            B_OCTAVE_DOWN = 2, B_OCTAVE_UP = 3, B_REDSTONE = 4,
+            B_OCTAVE_DOWN = 2, B_OCTAVE_UP = 3, B_REDSTONE = 4, B_SECURITY = 5,
             B_SIDE_BASE = 10,            // 10..15 cycle side i
             B_TUNING_A_DOWN = 20, B_TUNING_A_UP = 21,
             B_TUNING_B_DOWN = 22, B_TUNING_B_UP = 23;
@@ -56,7 +58,8 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
 
         if (!inv.player.level().isClientSide() && cfg != null) {
             this.config = cfg.getConfig();
-            this.properties = backedBy(config);
+            this.config.claim(inv.player.getUUID());   // first opener owns an unclaimed device
+            this.properties = backedBy(config, inv.player.getUUID());
         } else {
             this.config = null;
             this.properties = new SimpleContainerData(SIZE);
@@ -87,6 +90,12 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
         else if (id == B_TUNING_A_UP) adjustTuning(0, 1);
         else if (id == B_TUNING_B_DOWN) adjustTuning(1, -1);
         else if (id == B_TUNING_B_UP) adjustTuning(1, 1);
+        else if (id == B_SECURITY) {
+            // Only the owner may change the security mode.
+            if (config.owner() == null || config.owner().equals(player.getUUID()))
+                config.setSecurity(config.security().next());
+            else changed = false;
+        }
         else changed = false;
 
         if (changed) {
@@ -104,7 +113,7 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
         else config.setTuningB(p.adjust(config.tuningB(), dir));
     }
 
-    private static ContainerData backedBy(BlockConfig c) {
+    private static ContainerData backedBy(BlockConfig c, java.util.UUID viewer) {
         return new ContainerData() {
             @Override public int get(int i) {
                 return switch (i) {
@@ -113,6 +122,8 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
                     case P_REDSTONE -> c.redstone().id();
                     case P_TUNING_A -> c.tuningA();
                     case P_TUNING_B -> c.tuningB();
+                    case P_SECURITY -> c.security().id();
+                    case P_OWNED -> (c.owner() == null || c.owner().equals(viewer)) ? 1 : 0;
                     default -> (i >= P_SIDE0 && i < P_SIDE0 + 6) ? c.side(i - P_SIDE0).id() : 0;
                 };
             }
@@ -123,6 +134,8 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
                     case P_REDSTONE -> c.setRedstone(RedstoneMode.byId(v));
                     case P_TUNING_A -> c.setTuningA(v);
                     case P_TUNING_B -> c.setTuningB(v);
+                    case P_SECURITY -> c.setSecurity(SecurityMode.byId(v));
+                    case P_OWNED -> {}
                     default -> { if (i >= P_SIDE0 && i < P_SIDE0 + 6) c.setSide(i - P_SIDE0, SideMode.byId(v)); }
                 }
             }

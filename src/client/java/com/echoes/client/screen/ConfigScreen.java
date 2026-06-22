@@ -2,6 +2,7 @@ package com.echoes.client.screen;
 
 import com.echoes.config.ConfigSpec;
 import com.echoes.config.RedstoneMode;
+import com.echoes.config.SecurityMode;
 import com.echoes.config.SideMode;
 import com.echoes.config.TuningParam;
 import com.echoes.screen.ConfigScreenHandler;
@@ -23,7 +24,7 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
     private static final String[] ROMAN = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" };
 
     private final ConfigSpec spec;
-    private Button channelBtn, octaveBtn, redstoneBtn, tuningABtn, tuningBBtn;
+    private Button channelBtn, octaveBtn, redstoneBtn, tuningABtn, tuningBBtn, securityBtn;
     private final Button[] sideBtns = new Button[6];
 
     public ConfigScreen(ConfigScreenHandler handler, Inventory inv, Component title) {
@@ -38,8 +39,9 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
         if (spec.channel()) n++;
         if (spec.octave()) n++;
         if (spec.redstone()) n++;
-        if (spec.sides()) n++;
+        if (spec.sides()) n += 3;          // per-face I/O is drawn as a 3-row cube net
         n += spec.tunings().size();
+        n++;                                // security row (universal)
         return Math.max(n, 1);
     }
 
@@ -60,11 +62,19 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
             y += 24;
         }
         if (spec.sides()) {
-            for (int i = 0; i < 6; i++) {
-                sideBtns[i] = addButton(x() + 70 + i * 23, y, 21, Component.literal(FACE[i]),
-                        ConfigScreenHandler.B_SIDE_BASE + i);
+            // Per-face I/O drawn as a cube net: U on top, W·N·E·S across the middle, D on the
+            // bottom — a flattened cube (like Thermal's side-config), each face cycling its mode.
+            int cx = x() + 88;
+            int[][] place = {            // {faceIndex (D,U,N,S,W,E order), col, row}
+                    {1, 1, 0},           // U  — top
+                    {4, 0, 1}, {2, 1, 1}, {5, 2, 1}, {3, 3, 1},  // W N E S — middle
+                    {0, 1, 2}            // D  — bottom
+            };
+            for (int[] p : place) {
+                sideBtns[p[0]] = addButton(cx + p[1] * 22, y + p[2] * 22, 20,
+                        Component.literal(FACE[p[0]]), ConfigScreenHandler.B_SIDE_BASE + p[0]);
             }
-            y += 24;
+            y += 24 * 3;
         }
         if (spec.tuning(0) != null) {
             tuningABtn = addValueRow(y, ConfigScreenHandler.B_TUNING_A_DOWN, ConfigScreenHandler.B_TUNING_A_UP);
@@ -74,6 +84,9 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
             tuningBBtn = addValueRow(y, ConfigScreenHandler.B_TUNING_B_DOWN, ConfigScreenHandler.B_TUNING_B_UP);
             y += 24;
         }
+        // Security / ownership (universal).
+        securityBtn = addButton(x() + 96, y, 108, Component.empty(), ConfigScreenHandler.B_SECURITY);
+        y += 24;
     }
 
     /** A centered value button flanked by [-] and [+]. The center button is inert (display only). */
@@ -136,6 +149,13 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
         }
         if (tuningABtn != null) tuningABtn.setMessage(Component.literal(String.valueOf(menu.prop(ConfigScreenHandler.P_TUNING_A))));
         if (tuningBBtn != null) tuningBBtn.setMessage(Component.literal(String.valueOf(menu.prop(ConfigScreenHandler.P_TUNING_B))));
+        if (securityBtn != null) {
+            SecurityMode sm = SecurityMode.byId(menu.prop(ConfigScreenHandler.P_SECURITY));
+            boolean owned = menu.prop(ConfigScreenHandler.P_OWNED) != 0;
+            securityBtn.setMessage(Component.translatable(sm.translationKey())
+                    .withStyle(sm == SecurityMode.PRIVATE ? ChatFormatting.RED : ChatFormatting.GREEN));
+            securityBtn.active = owned;   // only the owner may toggle
+        }
     }
 
     private static ChatFormatting sideColor(SideMode m) {
@@ -153,10 +173,11 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
         if (channelBtn != null) label(g, "config.echoes.channel", channelBtn.getY(), color);
         if (octaveBtn != null) label(g, "config.echoes.octave", octaveBtn.getY(), color);
         if (redstoneBtn != null) label(g, "config.echoes.redstone", redstoneBtn.getY(), color);
-        if (sideBtns[0] != null) label(g, "config.echoes.sides", sideBtns[0].getY(), color);
+        if (sideBtns[1] != null) label(g, "config.echoes.sides", sideBtns[1].getY() + 22, color);
         TuningParam t0 = spec.tuning(0), t1 = spec.tuning(1);
         if (tuningABtn != null && t0 != null) label(g, t0.labelKey(), tuningABtn.getY(), color);
         if (tuningBBtn != null && t1 != null) label(g, t1.labelKey(), tuningBBtn.getY(), color);
+        if (securityBtn != null) label(g, "config.echoes.security", securityBtn.getY(), color);
     }
 
     private void label(GuiGraphicsExtractor g, String key, int rowY, int color) {

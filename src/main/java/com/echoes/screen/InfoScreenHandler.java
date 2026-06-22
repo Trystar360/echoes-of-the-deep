@@ -122,6 +122,10 @@ public class InfoScreenHandler extends AbstractContainerMenu {
         if (level == null || !(p instanceof ServerPlayer)) return false;
         BlockEntity be = level.getBlockEntity(pos);
         if (id == B_TAB_CONFIG && be instanceof Configurable cfg) {
+            if (!cfg.getConfig().canAccess(p.getUUID())) {
+                p.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.echoes.locked"));
+                return true;
+            }
             p.openMenu(new ConfigScreenFactory(cfg, pos));
             return true;
         }
