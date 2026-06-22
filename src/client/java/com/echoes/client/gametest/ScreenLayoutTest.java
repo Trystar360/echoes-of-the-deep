@@ -78,6 +78,28 @@ public class ScreenLayoutTest implements FabricClientGameTest {
             shot(context, "info",
                     inv -> new InfoScreen(new InfoScreenHandler(1, inv, cfgPos), inv, Component.literal("Resonance Cell")));
 
+            // Live Info panel: build a real 3-block network (cell + conduit + generator),
+            // put Light in the cell, then open the ACTUAL server-backed menu so the screen
+            // shows live synced state (role, filled buffer, network totals) — not placeholders.
+            BlockPos cell = new BlockPos(2, -60, 4);
+            sp.getServer().runCommand("setblock 2 -60 4 echoes:resonance_cell");
+            sp.getServer().runCommand("setblock 3 -60 4 echoes:octave_conduit");
+            sp.getServer().runCommand("setblock 2 -60 5 echoes:stillness_core");
+            context.waitTicks(10); // let the network form
+            sp.getServer().runOnServer(server -> {
+                net.minecraft.server.level.ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+                net.minecraft.server.level.ServerLevel lvl = server.overworld();
+                if (lvl.getBlockEntity(cell) instanceof com.echoes.block.entity.ResonanceCapacitorBlockEntity be) {
+                    be.storage().absorb(150_000); // ~60% of the cell's 250k buffer
+                    be.setChanged();
+                }
+                Component name = lvl.getBlockState(cell).getBlock().getName();
+                p.openMenu(new com.echoes.screen.InfoScreenFactory(name, cell));
+            });
+            context.waitTicks(10); // client opens the synced screen
+            context.takeScreenshot("info_live");
+            context.waitTick();
+
             context.runOnClient(client -> client.setScreen(null));
         }
     }
