@@ -19,7 +19,7 @@ import net.minecraft.network.chat.Component;
 public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
     private static final int PANEL = 0xF00B1416, EDGE_HI = 0xFF2A4A4A, EDGE_LO = 0xFF050A0B;
     private static final int WELL = 0xFF101418, ACCENT = 0xFF7FE9DD, DIM = 0xFF3A4A52;
-    private static final int FILL = 0xFF49C7B8, TEXT = 0xFFC8E6E6;
+    private static final int TEXT = 0xFFC8E6E6;
 
     public InfoScreen(InfoScreenHandler handler, Inventory inv, Component title) {
         super(handler, inv, title, 176, 172);
@@ -60,40 +60,30 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         int x = leftPos, y = topPos;
-        g.fill(x, y, x + imageWidth, y + imageHeight, PANEL);
-        g.fill(x, y, x + imageWidth, y + 1, EDGE_HI);
-        g.fill(x, y, x + 1, y + imageHeight, EDGE_HI);
-        g.fill(x + imageWidth - 1, y, x + imageWidth, y + imageHeight, EDGE_LO);
-        g.fill(x, y + imageHeight - 1, x + imageWidth, y + imageHeight, EDGE_LO);
+        GuiPaint.bevelPanel(g, x, y, imageWidth, imageHeight, PANEL, EDGE_HI, EDGE_LO);
 
         boolean inLit  = menu.has(NodeRole.CONSUMER) || menu.has(NodeRole.STORAGE) || menu.has(NodeRole.CONDUIT);
         boolean outLit = menu.has(NodeRole.PROVIDER) || menu.has(NodeRole.STORAGE) || menu.has(NodeRole.CONDUIT);
 
-        // Flow graphic: [IN] ▸ [ buffer ] ▸ [OUT]
+        // Flow graphic: [IN] ▸ [ buffer ] ▸ [OUT] — input teal, output amber (color-coded I/O).
         int fy = y + 42, fh = 24;
-        chip(g, x + 8, fy, 26, fh, inLit);                    // IN chip
-        arrow(g, x + 36, fy + fh / 2, inLit);                 // ▸ into buffer
+        chip(g, x + 8, fy, 26, fh, inLit ? GuiPaint.IN : DIM);   // IN chip
+        arrow(g, x + 36, fy + fh / 2, inLit ? GuiPaint.IN : DIM); // ▸ into buffer
         int bx0 = x + 50, bx1 = x + 126;
-        g.fill(bx0, fy, bx1, fy + fh, WELL);                  // buffer well
         long cap = menu.capacity(), stored = menu.stored();
         if (cap > 0) {
-            int w = (int) ((bx1 - bx0 - 2) * Math.min(1.0, (double) stored / cap));
-            g.fill(bx0 + 1, fy + 1, bx0 + 1 + w, fy + fh - 1, FILL);
+            GuiPaint.bar(g, bx0, fy, bx1 - bx0, fh, (double) stored / cap, GuiPaint.IN);
         } else {
-            // bufferless (conduit / machine): show a pass-through line
+            g.fill(bx0, fy, bx1, fy + fh, WELL);                 // bufferless: pass-through line
             g.fill(bx0 + 2, fy + fh / 2 - 1, bx1 - 2, fy + fh / 2 + 1, ACCENT);
         }
-        arrow(g, x + 128, fy + fh / 2, outLit);               // ▸ out
-        chip(g, x + 142, fy, 26, fh, outLit);                 // OUT chip
+        arrow(g, x + 128, fy + fh / 2, outLit ? GuiPaint.OUT : DIM); // ▸ out
+        chip(g, x + 142, fy, 26, fh, outLit ? GuiPaint.OUT : DIM);   // OUT chip
 
-        // Network banked bar.
+        // Network banked bar (framed).
         int ny = y + 118;
-        g.fill(x + 8, ny, x + 168, ny + 10, WELL);
         long ncap = menu.netCapacity(), nst = menu.netStored();
-        if (ncap > 0) {
-            int w = (int) ((160 - 2) * Math.min(1.0, (double) nst / ncap));
-            g.fill(x + 9, ny + 1, x + 9 + w, ny + 9, FILL);
-        }
+        GuiPaint.bar(g, x + 8, ny, 160, 10, ncap > 0 ? (double) nst / ncap : 0, GuiPaint.IN);
 
         // Hover tooltips on the flow graphic and network bar (exact numbers).
         if (hover(mouseX, mouseY, x + 8, fy, 26, fh))
@@ -117,9 +107,8 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
     /** Exact, grouped number (e.g. 150,000). */
     private static String grp(long v) { return String.format("%,d", v); }
 
-    private void chip(GuiGraphicsExtractor g, int x, int y, int w, int h, boolean lit) {
+    private void chip(GuiGraphicsExtractor g, int x, int y, int w, int h, int c) {
         g.fill(x, y, x + w, y + h, WELL);
-        int c = lit ? ACCENT : DIM;
         g.fill(x, y, x + w, y + 1, c);
         g.fill(x, y + h - 1, x + w, y + h, c);
         g.fill(x, y, x + 1, y + h, c);
@@ -127,8 +116,7 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
     }
 
     /** A small right-pointing arrow centred on (x, cy). */
-    private void arrow(GuiGraphicsExtractor g, int x, int cy, boolean lit) {
-        int c = lit ? ACCENT : DIM;
+    private void arrow(GuiGraphicsExtractor g, int x, int cy, int c) {
         for (int i = 0; i < 6; i++) g.fill(x + i, cy - (6 - i), x + i + 1, cy + (6 - i), c);
     }
 

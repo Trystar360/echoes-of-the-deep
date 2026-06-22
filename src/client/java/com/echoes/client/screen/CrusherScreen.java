@@ -20,7 +20,10 @@ public class CrusherScreen extends AbstractContainerScreen<CrusherScreenHandler>
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(MachineTabs.infoButton(leftPos, topPos, menu.containerId, CrusherScreenHandler.B_INFO));
+        addRenderableWidget(MachineTabs.tab(leftPos, topPos, 0, "i", "screen.echoes.tab.info",
+                menu.containerId, CrusherScreenHandler.B_INFO));
+        addRenderableWidget(MachineTabs.tab(leftPos, topPos, 1, "C", "screen.echoes.tab.config",
+                menu.containerId, CrusherScreenHandler.B_CONFIG));
     }
 
     @Override
@@ -32,6 +35,10 @@ public class CrusherScreen extends AbstractContainerScreen<CrusherScreenHandler>
             int w = menu.progress() * 24 / max;
             g.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + 79, topPos + 34, 176, 0, w, 16, 256, 256);
         }
+        // Color-coded slots: input (teal) -> output (amber) + byproduct (amethyst).
+        GuiPaint.slotRing(g, leftPos + 56, topPos + 35, GuiPaint.IN);
+        GuiPaint.slotRing(g, leftPos + 116, topPos + 35, GuiPaint.OUT);
+        GuiPaint.slotRing(g, leftPos + 116, topPos + 57, GuiPaint.AUX);
     }
 
     @Override

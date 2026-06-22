@@ -17,7 +17,7 @@ import net.minecraft.network.chat.Component;
  * its Light Value); the grid pages when you've learned more than one screenful.
  */
 public class TransmutationTableScreen extends AbstractContainerScreen<TransmutationTableScreenHandler> {
-    private static final int PANEL = 0xF0202830, BORDER = 0xFF3A4A52, SLOT = 0xFF101418;
+    private static final int PANEL = 0xF0202830;
     private static final int GRID_BG = 0xFF181F26, ACCENT = 0xFF7FE9DD;
     private static final String[] LABELS = {"L", "T", "M", "D", "H"};
 
@@ -75,26 +75,19 @@ public class TransmutationTableScreen extends AbstractContainerScreen<Transmutat
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
-        g.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, PANEL);
-        // border (4 edges — GuiGraphicsExtractor has no drawBorder helper)
-        g.fill(leftPos, topPos, leftPos + imageWidth, topPos + 1, BORDER);
-        g.fill(leftPos, topPos + imageHeight - 1, leftPos + imageWidth, topPos + imageHeight, BORDER);
-        g.fill(leftPos, topPos, leftPos + 1, topPos + imageHeight, BORDER);
-        g.fill(leftPos + imageWidth - 1, topPos, leftPos + imageWidth, topPos + imageHeight, BORDER);
+        GuiPaint.bevelPanel(g, leftPos, topPos, imageWidth, imageHeight, PANEL, 0xFF2A4A4A, 0xFF050A0B);
 
-        // Input (dissolve) + output slot wells.
-        int sy = TransmutationTableScreenHandler.SLOT_Y - 1;
-        for (int sx : new int[]{TransmutationTableScreenHandler.INPUT_X, TransmutationTableScreenHandler.OUTPUT_X}) {
-            g.fill(leftPos + sx - 1, topPos + sy, leftPos + sx + 17, topPos + sy + 18, SLOT);
-        }
+        // Color-coded slots: input (dissolve, teal) and output (created items, amber).
+        GuiPaint.slot(g, leftPos + TransmutationTableScreenHandler.INPUT_X, topPos + TransmutationTableScreenHandler.SLOT_Y, GuiPaint.IN);
+        GuiPaint.slot(g, leftPos + TransmutationTableScreenHandler.OUTPUT_X, topPos + TransmutationTableScreenHandler.SLOT_Y, GuiPaint.OUT);
 
-        // Knowledge grid backing panel + per-cell wells.
+        // Knowledge grid backing panel + per-cell wells (neutral — these are learned items).
         int gx = leftPos + TransmutationTableScreenHandler.GRID_X, gy = topPos + TransmutationTableScreenHandler.GRID_Y;
         int gw = TransmutationTableScreenHandler.GRID_COLS * 18, gh = TransmutationTableScreenHandler.GRID_ROWS * 18;
         g.fill(gx - 1, gy - 1, gx + gw + 1, gy + gh + 1, GRID_BG);
         for (int row = 0; row < TransmutationTableScreenHandler.GRID_ROWS; row++)
             for (int col = 0; col < TransmutationTableScreenHandler.GRID_COLS; col++)
-                g.fill(gx + col * 18, gy + row * 18, gx + col * 18 + 16, gy + row * 18 + 16, SLOT);
+                GuiPaint.slotRing(g, gx + col * 18 + 1, gy + row * 18 + 1, GuiPaint.NEUTRAL);
     }
 
     @Override

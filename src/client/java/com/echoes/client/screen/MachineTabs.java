@@ -6,22 +6,25 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 
 /**
- * Shared helper: builds the AE2-style "i" Info tab button for the left edge of a machine
- * screen. Clicking it fires the menu's {@code B_INFO} button, which the server handler
- * turns into an Info panel for that block — so machines reach their live Info view with a
- * click, the same way passive blocks reach it with a right-click. The caller adds the
- * returned button to its own widget list.
+ * Shared helper: builds the AE2/Thermal-style vertical tab buttons for the left edge of a
+ * machine screen. Each tab fires one of the menu's {@code B_*} buttons, which the
+ * server-side handler — which knows the block position — turns into the matching panel
+ * (Info / Config) for that block. So the client never needs the position threaded to it,
+ * and machines reach their live Info and Config views with a click. The caller adds the
+ * returned buttons to its own widget list (addRenderableWidget is protected).
  */
 final class MachineTabs {
     private MachineTabs() {}
 
-    static Button infoButton(int leftPos, int topPos, int containerId, int infoButtonId) {
-        return Button.builder(Component.literal("i"), b -> {
+    /** A tab button at vertical slot {@code index} (0 = top) down the left edge. */
+    static Button tab(int leftPos, int topPos, int index, String label, String tooltipKey,
+                      int containerId, int buttonId) {
+        return Button.builder(Component.literal(label), b -> {
                     Minecraft mc = Minecraft.getInstance();
-                    if (mc.gameMode != null) mc.gameMode.handleInventoryButtonClick(containerId, infoButtonId);
+                    if (mc.gameMode != null) mc.gameMode.handleInventoryButtonClick(containerId, buttonId);
                 })
-                .bounds(leftPos - 22, topPos + 6, 20, 20)
-                .tooltip(Tooltip.create(Component.translatable("screen.echoes.tab.info")))
+                .bounds(leftPos - 22, topPos + 6 + index * 22, 20, 20)
+                .tooltip(Tooltip.create(Component.translatable(tooltipKey)))
                 .build();
     }
 }

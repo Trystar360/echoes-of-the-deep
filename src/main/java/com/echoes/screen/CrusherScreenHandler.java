@@ -16,6 +16,8 @@ import org.jetbrains.annotations.Nullable;
 public class CrusherScreenHandler extends AbstractContainerMenu {
     /** Button id: open this block's Info panel (server resolves the position). */
     public static final int B_INFO = 50;
+    /** Button id: open this block's Config screen. */
+    public static final int B_CONFIG = 51;
 
     private final Container inventory;
     private final ContainerData props;
@@ -60,8 +62,13 @@ public class CrusherScreenHandler extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (id == B_INFO && pos != null && !player.level().isClientSide()) {
+        if (pos == null || player.level().isClientSide()) return super.clickMenuButton(player, id);
+        if (id == B_INFO) {
             player.openMenu(new InfoScreenFactory(player.level().getBlockState(pos).getBlock().getName(), pos));
+            return true;
+        }
+        if (id == B_CONFIG && player.level().getBlockEntity(pos) instanceof com.echoes.config.Configurable cfg) {
+            player.openMenu(new ConfigScreenFactory(cfg, pos));
             return true;
         }
         return super.clickMenuButton(player, id);

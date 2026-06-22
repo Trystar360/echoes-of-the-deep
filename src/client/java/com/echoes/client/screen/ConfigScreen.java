@@ -104,12 +104,7 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         refreshLabels();
-        int x = x(), y = y();
-        g.fill(x, y, x + imageWidth, y + imageHeight, 0xF00B1416);                  // panel
-        g.fill(x, y, x + imageWidth, y + 1, 0xFF2A4A4A);                            // top hi-light
-        g.fill(x, y, x + 1, y + imageHeight, 0xFF2A4A4A);
-        g.fill(x + imageWidth - 1, y, x + imageWidth, y + imageHeight, 0xFF050A0B);
-        g.fill(x, y + imageHeight - 1, x + imageWidth, y + imageHeight, 0xFF050A0B);
+        GuiPaint.bevelPanel(g, x(), y(), imageWidth, imageHeight, 0xF00B1416, 0xFF2A4A4A, 0xFF050A0B);
     }
 
     @Override
