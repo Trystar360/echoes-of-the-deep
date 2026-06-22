@@ -8,8 +8,8 @@
 #   4. save, stop, strip the datapack (so the shipped world is static)
 #   5. zip -> showcase/dist/Octaves-of-the-One-Showcase.zip
 #
-# Requires JDK 21 (the mod's dev server runs via ./gradlew runServer). Run from
-# the repo root:  ./build_showcase.sh
+# Requires JDK 25 (Minecraft 26.1 needs Java 25; the mod's dev server runs via
+# ./gradlew runServer). Run from the repo root:  ./build_showcase.sh
 set -euo pipefail
 cd "$(dirname "$0")"
 

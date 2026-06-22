@@ -11,9 +11,11 @@ Run from the repo root:  python3 gen_showcase.py
 The build pipeline (build_showcase.sh) copies it into a server world, lets the
 `minecraft:load` tag build it, then packages the result as a save.
 
-All NBT here is in the exact form the 1.21.4 server accepts (verified): sign
-`messages` are four single-quoted JSON-text strings; item frames summon with
-`Item:{id,count}`.
+All NBT here is in the exact form the Minecraft 26.1 server accepts (verified by
+building on a headless 26.1.2 server): text components stored in NBT are now NBT
+compounds, not stringified JSON, so sign `messages` are four `{text:...,color:...}`
+compounds (the old `'{"text":...}'` string form is rejected since 1.21.5). Game
+rules use their snake_case registry IDs. Item frames summon with `Item:{id,count}`.
 """
 from __future__ import annotations
 
@@ -83,15 +85,16 @@ WINGS = [
 
 # ── command emit helpers ──────────────────────────────────────────────────
 def jtext(s, color=None):
+    # 26.1 stores text components in NBT as compounds (not stringified JSON), so each
+    # sign message is a `{text:"...",color:"..."}` SNBT compound. Values are double-quoted,
+    # so only backslashes and double quotes need escaping — apostrophes pass through.
     s = s.replace("\\", "\\\\").replace('"', '\\"')
-    return ('{"text":"%s","color":"%s"}' % (s, color)) if color else '{"text":"%s"}' % s
+    return ('{text:"%s",color:"%s"}' % (s, color)) if color else '{text:"%s"}' % s
 
 def sign_cmd(x, y, z, lines, colors=None):
     colors = (list(colors or []) + [None] * 4)[:4]   # pad so zip never truncates
     lines = (list(lines) + ["", "", "", ""])[:4]
-    # each message is a single-quoted SNBT string holding a JSON text component;
-    # apostrophes in the text must be escaped so they don't close the SNBT string.
-    msgs = ",".join("'%s'" % jtext(l, c).replace("'", "\\'") for l, c in zip(lines, colors))
+    msgs = ",".join(jtext(l, c) for l, c in zip(lines, colors))
     return ('setblock %d %d %d minecraft:oak_wall_sign[facing=south]'
             '{front_text:{messages:[%s],has_glowing_text:1b,color:"white"}}' % (x, y, z, msgs))
 
@@ -134,11 +137,12 @@ def build():
 
     out = []
     out.append("# === Octaves of the One — the Great Work showcase ===")
-    out.append("gamerule doDaylightCycle false")
-    out.append("gamerule doWeatherCycle false")
-    out.append("gamerule doMobSpawning false")
-    out.append("gamerule doTileDrops false")
-    out.append("gamerule keepInventory true")
+    # 26.1 game rules are addressed by their snake_case registry IDs.
+    out.append("gamerule advance_time false")
+    out.append("gamerule advance_weather false")
+    out.append("gamerule spawn_mobs false")
+    out.append("gamerule block_drops false")
+    out.append("gamerule keep_inventory true")
     out.append("weather clear 1000000")
     out.append("time set 2000")
     out.append("difficulty peaceful")
@@ -217,7 +221,7 @@ def build():
 
     # pack.mcmeta + load tag
     open(os.path.join(DP, "pack.mcmeta"), "w").write(json.dumps({
-        "pack": {"pack_format": 61,
+        "pack": {"pack_format": 101,   # Minecraft 26.1.2 data-pack format
                  "description": "Octaves of the One - the Great Work showcase world"}}, indent=2) + "\n")
     tagdir = os.path.join(DP, "data", "minecraft", "tags", "function")
     os.makedirs(tagdir, exist_ok=True)
