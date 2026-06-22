@@ -30,29 +30,24 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
     @Override
     protected void init() {
         super.init();
-        // AE2-style vertical tab strip on the left edge. Info is the current tab (inert);
+        // AE2/Thermal-style expanding tab strip on the left edge. Info is the current tab;
         // Config / Function appear when the block supports them.
-        int tx = leftPos - 22, ty = topPos + 6;
-        Button info = Button.builder(Component.literal("i"), b -> {}).bounds(tx, ty, 20, 20).build();
+        int ty = topPos + 6;
+        ExpandingTab info = new ExpandingTab(leftPos, ty, GuiPaint.IN, "i",
+                Component.translatable("screen.echoes.tab.info"), font, () -> {});
         info.active = false;
         addRenderableWidget(info);
-        ty += 24;
+        ty += 22;
         if (menu.configurable()) {
-            addRenderableWidget(Button.builder(Component.literal("C"), b -> click(InfoScreenHandler.B_TAB_CONFIG))
-                    .bounds(tx, ty, 20, 20)
-                    .tooltip(Tooltip.create(Component.translatable("screen.echoes.tab.config"))).build());
-            ty += 24;
+            addRenderableWidget(new ExpandingTab(leftPos, ty, GuiPaint.OUT, "C",
+                    Component.translatable("screen.echoes.tab.config"), font,
+                    ExpandingTab.menuButton(menu.containerId, InfoScreenHandler.B_TAB_CONFIG)));
+            ty += 22;
         }
         if (menu.machine()) {
-            addRenderableWidget(Button.builder(Component.literal("M"), b -> click(InfoScreenHandler.B_TAB_FUNCTION))
-                    .bounds(tx, ty, 20, 20)
-                    .tooltip(Tooltip.create(Component.translatable("screen.echoes.tab.function"))).build());
-        }
-    }
-
-    private void click(int id) {
-        if (minecraft != null && minecraft.gameMode != null) {
-            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id);
+            addRenderableWidget(new ExpandingTab(leftPos, ty, GuiPaint.AUX, "M",
+                    Component.translatable("screen.echoes.tab.function"), font,
+                    ExpandingTab.menuButton(menu.containerId, InfoScreenHandler.B_TAB_FUNCTION)));
         }
     }
 

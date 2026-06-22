@@ -20,8 +20,9 @@ public class HarmonicFilterScreen extends AbstractContainerScreen<HarmonicFilter
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(MachineTabs.tab(leftPos, topPos, 0, "i", "screen.echoes.tab.info",
-                menu.containerId, HarmonicFilterScreenHandler.B_INFO));
+        addRenderableWidget(new ExpandingTab(leftPos, topPos + 6, GuiPaint.IN, "i",
+                Component.translatable("screen.echoes.tab.info"), font,
+                ExpandingTab.menuButton(menu.containerId, HarmonicFilterScreenHandler.B_INFO)));
     }
 
     @Override

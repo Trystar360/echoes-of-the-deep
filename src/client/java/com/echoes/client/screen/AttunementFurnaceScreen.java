@@ -20,10 +20,12 @@ public class AttunementFurnaceScreen extends AbstractContainerScreen<AttunementF
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(MachineTabs.tab(leftPos, topPos, 0, "i", "screen.echoes.tab.info",
-                menu.containerId, AttunementFurnaceScreenHandler.B_INFO));
-        addRenderableWidget(MachineTabs.tab(leftPos, topPos, 1, "C", "screen.echoes.tab.config",
-                menu.containerId, AttunementFurnaceScreenHandler.B_CONFIG));
+        addRenderableWidget(new ExpandingTab(leftPos, topPos + 6, GuiPaint.IN, "i",
+                Component.translatable("screen.echoes.tab.info"), font,
+                ExpandingTab.menuButton(menu.containerId, AttunementFurnaceScreenHandler.B_INFO)));
+        addRenderableWidget(new ExpandingTab(leftPos, topPos + 28, GuiPaint.OUT, "C",
+                Component.translatable("screen.echoes.tab.config"), font,
+                ExpandingTab.menuButton(menu.containerId, AttunementFurnaceScreenHandler.B_CONFIG)));
     }
 
     @Override
