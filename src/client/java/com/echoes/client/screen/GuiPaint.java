@@ -18,8 +18,16 @@ import net.minecraft.resources.Identifier;
 final class GuiPaint {
     private GuiPaint() {}
 
-    static final Identifier SP_PANEL = Identifier.fromNamespaceAndPath("echoes", "widget/panel");
-    static final Identifier SP_SLOT  = Identifier.fromNamespaceAndPath("echoes", "widget/slot");
+    private static Identifier sp(String s) { return Identifier.fromNamespaceAndPath("echoes", "widget/" + s); }
+    static final Identifier SP_PANEL = sp("panel");
+    static final Identifier SP_SLOT  = sp("slot");
+    static final Identifier SP_BANNER = sp("banner");
+    // Tab glyphs.
+    static final Identifier ICON_INFO = sp("icon_info"), ICON_CONFIG = sp("icon_config"), ICON_FUNCTION = sp("icon_function");
+    // Per-block header emblems.
+    static final Identifier EMB_COMPRESSOR = sp("emblem_compressor"), EMB_TRANSMUTER = sp("emblem_transmuter"),
+            EMB_FILTER = sp("emblem_filter"), EMB_TRANSMUTE = sp("emblem_transmute"), EMB_INFO = sp("emblem_info"),
+            EMB_CONFIG = sp("emblem_config");
 
     // --- Parchment & Wood palette ---
     static final int TEXT        = 0xFF3A2A18;   // dark ink on parchment
@@ -73,6 +81,26 @@ final class GuiPaint {
     /** The standard parchment-in-a-wood-frame panel. */
     static void panel(GuiGraphicsExtractor g, int x, int y, int w, int h) {
         g.blitSprite(RenderPipelines.GUI_TEXTURED, SP_PANEL, x, y, w, h);
+    }
+
+    private static int bannerWidth(Font font, Component title) {
+        return 24 + font.width(f(title.copy())) + 8;
+    }
+
+    /** Title-plaque sprite + emblem, centred across the top. Call from the background pass (absolute). */
+    static void titleBanner(GuiGraphicsExtractor g, Font font, int left, int top, int width,
+                            Component title, Identifier emblem) {
+        int bw = bannerWidth(font, title);
+        int bx = left + (width - bw) / 2;
+        g.blitSprite(RenderPipelines.GUI_TEXTURED, SP_BANNER, bx, top + 1, bw, 14);
+        g.blitSprite(RenderPipelines.GUI_TEXTURED, emblem, bx + 4, top + 2, 12, 12);
+    }
+
+    /** Title text on the plaque. Call from the label pass (panel-relative). */
+    static void titleText(GuiGraphicsExtractor g, Font font, int width, Component title) {
+        Component t = f(title.copy());
+        int bx = (width - bannerWidth(font, title)) / 2;
+        g.text(font, t, bx + 22, 4, BUTTON_TEXT, false);
     }
 
     /** A framed value bar: leather well, coloured fill (0..1), thin bezel. */

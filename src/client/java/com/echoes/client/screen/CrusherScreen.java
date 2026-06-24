@@ -16,10 +16,11 @@ public class CrusherScreen extends AbstractContainerScreen<CrusherScreenHandler>
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(new ExpandingTab(leftPos, topPos + 6, GuiPaint.IN, "i",
+        this.titleLabelY = -1000;   // title drawn on the banner instead
+        addRenderableWidget(new ExpandingTab(leftPos, topPos + 6, GuiPaint.IN, GuiPaint.ICON_INFO,
                 Component.translatable("screen.echoes.tab.info"), font,
                 ExpandingTab.menuButton(menu.containerId, CrusherScreenHandler.B_INFO)));
-        addRenderableWidget(new ExpandingTab(leftPos, topPos + 28, GuiPaint.OUT, "C",
+        addRenderableWidget(new ExpandingTab(leftPos, topPos + 28, GuiPaint.OUT, GuiPaint.ICON_CONFIG,
                 Component.translatable("screen.echoes.tab.config"), font,
                 ExpandingTab.menuButton(menu.containerId, CrusherScreenHandler.B_CONFIG)));
     }
@@ -28,6 +29,7 @@ public class CrusherScreen extends AbstractContainerScreen<CrusherScreenHandler>
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         GuiPaint.panel(g, leftPos, topPos, imageWidth, imageHeight);
+        GuiPaint.titleBanner(g, font, leftPos, topPos, imageWidth, getTitle(), GuiPaint.EMB_COMPRESSOR);
 
         // Color-coded slots: input (ice-blue) -> output (gold) + byproduct (amethyst).
         GuiPaint.slot(g, leftPos + 56, topPos + 35, GuiPaint.IN);
@@ -45,8 +47,7 @@ public class CrusherScreen extends AbstractContainerScreen<CrusherScreenHandler>
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
-        Component ru = GuiPaint.f(Component.literal(menu.storedRu() + " Light"));
-        g.text(font, ru, imageWidth - font.width(ru) - 8, 6, GuiPaint.HEADER, false);
-        GuiPaint.ioKeyV(g, font, 8, 20);
+        GuiPaint.titleText(g, font, imageWidth, getTitle());
+        GuiPaint.ioKeyV(g, font, 8, 22);
     }
 }

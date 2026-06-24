@@ -23,6 +23,7 @@ public class TransmutationTableScreen extends AbstractContainerScreen<Transmutat
     public TransmutationTableScreen(TransmutationTableScreenHandler handler, Inventory inv, Component title) {
         super(handler, inv, GuiPaint.f(title), 176, 236);
         this.inventoryLabelY = 148;
+        this.titleLabelY = -1000;     // title drawn on the banner instead
     }
 
     @Override
@@ -60,6 +61,7 @@ public class TransmutationTableScreen extends AbstractContainerScreen<Transmutat
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         GuiPaint.panel(g, leftPos, topPos, imageWidth, imageHeight);
+        GuiPaint.titleBanner(g, font, leftPos, topPos, imageWidth, getTitle(), GuiPaint.EMB_TRANSMUTE);
 
         // Color-coded slots: input (dissolve, ice-blue) and output (created items, gold).
         GuiPaint.slot(g, leftPos + TransmutationTableScreenHandler.INPUT_X, topPos + TransmutationTableScreenHandler.SLOT_Y, GuiPaint.IN);
@@ -77,6 +79,7 @@ public class TransmutationTableScreen extends AbstractContainerScreen<Transmutat
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
+        GuiPaint.titleText(g, font, imageWidth, getTitle());
         // Banked Bound-Light readout (panel-relative coordinates).
         g.text(font, GuiPaint.f(Component.translatable("screen.echoes.bound_light", menu.boundLight())),
                 30, 22, GuiPaint.TEXT, false);

@@ -12,7 +12,7 @@ from PIL import Image, ImageFont, ImageDraw
 
 CELL = 8                # px per glyph cell (no scaling: height matches)
 COLS = 16
-TTF = "/usr/share/fonts/truetype/liberation/LiberationMono-Bold.ttf"
+TTF = "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
 ATLAS = "src/main/resources/assets/echoes/textures/font/gui_ascii.png"
 JSON = "src/main/resources/assets/echoes/font/gui.json"
 
@@ -22,7 +22,7 @@ ROWS = (len(BLOCKS) + COLS - 1) // COLS
 
 
 def render():
-    font = ImageFont.truetype(TTF, 9)
+    font = ImageFont.truetype(TTF, 8)
     img = Image.new("RGBA", (COLS * CELL, ROWS * CELL), (0, 0, 0, 0))
     for i, cp in enumerate(BLOCKS):
         ch = chr(cp)

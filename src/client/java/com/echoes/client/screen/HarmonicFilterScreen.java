@@ -16,7 +16,8 @@ public class HarmonicFilterScreen extends AbstractContainerScreen<HarmonicFilter
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(new ExpandingTab(leftPos, topPos + 6, GuiPaint.IN, "i",
+        this.titleLabelY = -1000;
+        addRenderableWidget(new ExpandingTab(leftPos, topPos + 6, GuiPaint.IN, GuiPaint.ICON_INFO,
                 Component.translatable("screen.echoes.tab.info"), font,
                 ExpandingTab.menuButton(menu.containerId, HarmonicFilterScreenHandler.B_INFO)));
     }
@@ -25,6 +26,7 @@ public class HarmonicFilterScreen extends AbstractContainerScreen<HarmonicFilter
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         GuiPaint.panel(g, leftPos, topPos, imageWidth, imageHeight);
+        GuiPaint.titleBanner(g, font, leftPos, topPos, imageWidth, getTitle(), GuiPaint.EMB_FILTER);
         // The 3×3 whitelist grid is a filter (input-side); ring it ice-blue.
         for (int r = 0; r < 3; r++)
             for (int c = 0; c < 3; c++)
@@ -35,6 +37,7 @@ public class HarmonicFilterScreen extends AbstractContainerScreen<HarmonicFilter
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
-        GuiPaint.ioKeyV(g, font, 8, 20);
+        GuiPaint.titleText(g, font, imageWidth, getTitle());
+        GuiPaint.ioKeyV(g, font, 8, 22);
     }
 }

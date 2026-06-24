@@ -30,7 +30,7 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
         super(handler, inv, GuiPaint.f(title), 214, 30 + rowCount(handler.spec()) * 24 + 8);
         this.spec = handler.spec();
         this.inventoryLabelY = -1000; // hide "Container" label (no slots)
-        this.titleLabelX = 8;
+        this.titleLabelY = -1000;     // title drawn on the banner instead
     }
 
     private static int rowCount(ConfigSpec spec) {
@@ -111,11 +111,13 @@ public class ConfigScreen extends AbstractContainerScreen<ConfigScreenHandler> {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         refreshLabels();
         GuiPaint.panel(g, x(), y(), imageWidth, imageHeight);
+        GuiPaint.titleBanner(g, font, x(), y(), imageWidth, getTitle(), GuiPaint.EMB_CONFIG);
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
+        GuiPaint.titleText(g, font, imageWidth, getTitle());
         // Row titles must be drawn in the label (foreground) pass — text drawn in
         // extractBackground renders beneath the opaque panel fill and is invisible.
         drawRowTitles(g);

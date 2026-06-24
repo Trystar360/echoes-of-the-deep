@@ -16,10 +16,11 @@ public class AttunementFurnaceScreen extends AbstractContainerScreen<AttunementF
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(new ExpandingTab(leftPos, topPos + 6, GuiPaint.IN, "i",
+        this.titleLabelY = -1000;
+        addRenderableWidget(new ExpandingTab(leftPos, topPos + 6, GuiPaint.IN, GuiPaint.ICON_INFO,
                 Component.translatable("screen.echoes.tab.info"), font,
                 ExpandingTab.menuButton(menu.containerId, AttunementFurnaceScreenHandler.B_INFO)));
-        addRenderableWidget(new ExpandingTab(leftPos, topPos + 28, GuiPaint.OUT, "C",
+        addRenderableWidget(new ExpandingTab(leftPos, topPos + 28, GuiPaint.OUT, GuiPaint.ICON_CONFIG,
                 Component.translatable("screen.echoes.tab.config"), font,
                 ExpandingTab.menuButton(menu.containerId, AttunementFurnaceScreenHandler.B_CONFIG)));
     }
@@ -28,6 +29,7 @@ public class AttunementFurnaceScreen extends AbstractContainerScreen<AttunementF
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         GuiPaint.panel(g, leftPos, topPos, imageWidth, imageHeight);
+        GuiPaint.titleBanner(g, font, leftPos, topPos, imageWidth, getTitle(), GuiPaint.EMB_TRANSMUTER);
         GuiPaint.slot(g, leftPos + 56, topPos + 35, GuiPaint.IN);
         GuiPaint.slot(g, leftPos + 116, topPos + 35, GuiPaint.OUT);
         GuiPaint.progressArrow(g, leftPos + 80, topPos + 32, menu.progress(), menu.maxProgress());
@@ -37,8 +39,7 @@ public class AttunementFurnaceScreen extends AbstractContainerScreen<AttunementF
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
-        Component ru = GuiPaint.f(Component.literal(menu.storedRu() + " Light"));
-        g.text(font, ru, imageWidth - font.width(ru) - 8, 6, GuiPaint.HEADER, false);
-        GuiPaint.ioKeyV(g, font, 8, 20);
+        GuiPaint.titleText(g, font, imageWidth, getTitle());
+        GuiPaint.ioKeyV(g, font, 8, 22);
     }
 }

@@ -23,7 +23,7 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
     public InfoScreen(InfoScreenHandler handler, Inventory inv, Component title) {
         super(handler, inv, GuiPaint.f(title), 176, 184);
         this.inventoryLabelY = -1000; // no slots
-        this.titleLabelX = 8;
+        this.titleLabelY = -1000;     // title drawn on the banner instead
     }
 
     @Override
@@ -32,19 +32,19 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
         // AE2/Thermal-style expanding tab strip on the left edge. Info is the current tab;
         // Config / Function appear when the block supports them.
         int ty = topPos + 6;
-        ExpandingTab info = new ExpandingTab(leftPos, ty, GuiPaint.IN, "i",
+        ExpandingTab info = new ExpandingTab(leftPos, ty, GuiPaint.IN, GuiPaint.ICON_INFO,
                 Component.translatable("screen.echoes.tab.info"), font, () -> {});
         info.active = false;
         addRenderableWidget(info);
         ty += 22;
         if (menu.configurable()) {
-            addRenderableWidget(new ExpandingTab(leftPos, ty, GuiPaint.OUT, "C",
+            addRenderableWidget(new ExpandingTab(leftPos, ty, GuiPaint.OUT, GuiPaint.ICON_CONFIG,
                     Component.translatable("screen.echoes.tab.config"), font,
                     ExpandingTab.menuButton(menu.containerId, InfoScreenHandler.B_TAB_CONFIG)));
             ty += 22;
         }
         if (menu.machine()) {
-            addRenderableWidget(new ExpandingTab(leftPos, ty, GuiPaint.AUX, "M",
+            addRenderableWidget(new ExpandingTab(leftPos, ty, GuiPaint.AUX, GuiPaint.ICON_FUNCTION,
                     Component.translatable("screen.echoes.tab.function"), font,
                     ExpandingTab.menuButton(menu.containerId, InfoScreenHandler.B_TAB_FUNCTION)));
         }
@@ -55,6 +55,7 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
         super.extractBackground(g, mouseX, mouseY, partialTick);
         int x = leftPos, y = topPos;
         GuiPaint.panel(g, x, y, imageWidth, imageHeight);
+        GuiPaint.titleBanner(g, font, x, y, imageWidth, getTitle(), GuiPaint.EMB_INFO);
 
         boolean inLit  = menu.has(NodeRole.CONSUMER) || menu.has(NodeRole.STORAGE) || menu.has(NodeRole.CONDUIT);
         boolean outLit = menu.has(NodeRole.PROVIDER) || menu.has(NodeRole.STORAGE) || menu.has(NodeRole.CONDUIT);
@@ -117,6 +118,7 @@ public class InfoScreen extends AbstractContainerScreen<InfoScreenHandler> {
     @Override
     protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         super.extractLabels(g, mouseX, mouseY);
+        GuiPaint.titleText(g, font, imageWidth, getTitle());
         g.text(font, GuiPaint.f(Component.translatable("screen.echoes.info.role", roleText())), 8, 26, ACCENT, false);
 
         // IN / OUT chip captions.
