@@ -33,13 +33,21 @@ public final class EnergyMath {
 
         // Ratio computed in double: pool and demand can each individually approach
         // Long.MAX_VALUE on huge capacitor banks, so a long*long product would overflow.
+        // Each share is also capped against what's left of the pool (not just its own
+        // demand): at extreme magnitudes double rounding can push several entries'
+        // shares up independently, and if only capped per-entry the naive sum can
+        // exceed usablePool, which would make "leftover" negative and skip the
+        // remainder pass below — silently over-allocating instead of under.
         long usablePool = Math.min(pool, totalDemand);
+        long remaining = usablePool;
         long distributed = 0;
         for (int i = 0; i < n; i++) {
             long d = Math.max(0, demands[i]);
-            long share = Math.min(d, (long) ((double) usablePool * d / totalDemand));
+            long computed = Math.max(0, (long) ((double) usablePool * d / totalDemand));
+            long share = Math.min(remaining, Math.min(d, computed));
             alloc[i] = share;
             distributed += share;
+            remaining -= share;
         }
 
         long leftover = usablePool - distributed;
