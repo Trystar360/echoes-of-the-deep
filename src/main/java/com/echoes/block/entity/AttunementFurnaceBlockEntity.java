@@ -138,12 +138,18 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
         setChanged();
     }
 
-    // --- sided access: top inserts input; other faces extract output ---
+    // --- sided access: top inserts input; other faces extract output. The per-face
+    // I/O modes from the config screen gate both directions on top of that (a null
+    // direction means internal/wireless access, which is never gated).
     @Override public int[] getSlotsForFace(Direction side) {
         return side == Direction.UP ? new int[]{INPUT} : new int[]{OUTPUT};
     }
-    @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == INPUT; }
-    @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == OUTPUT; }
+    @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) {
+        return slot == INPUT && (dir == null || config.side(dir).canInput());
+    }
+    @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) {
+        return slot == OUTPUT && (dir == null || config.side(dir).canOutput());
+    }
 
     // --- ResonanceNode (CONSUMER) ---
     @Override public int roleMask() { return NodeRole.of(NodeRole.CONSUMER); }
@@ -159,7 +165,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
     // --- screen ---
-    @Override public Component getDisplayName() { return Component.translatable("block.echoes.transmuter"); }
+    @Override public Component getDisplayName() { return getBlockState().getBlock().getName(); }
     @Override public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
         return new AttunementFurnaceScreenHandler(syncId, inv, this, props, getBlockPos());
     }

@@ -27,12 +27,14 @@ import java.util.function.Consumer;
  * it siphons RU out of that block.
  */
 public class ResonanceThrustersItem extends Item {
-    // Tuned strong on purpose — "rhythmic balanced interchange": the device gives
-    // back as freely as the grid pours in. Huge reserve, cheap to fly, very fast.
-    public static final int CAPACITY = 1_000_000;
-    private static final int DRAIN_PER_TICK = 8;
+    // Default tuning is strong on purpose — "rhythmic balanced interchange": the
+    // device gives back as freely as the grid pours in. Capacity, drain, and speeds
+    // are server-tunable via config/echoes.json.
     private static final int RECHARGE_PER_USE = 200_000;
-    private static final double FLY_SPEED = 0.85, SPRINT_SPEED = 1.45, LIFT = 0.06;
+    private static final double LIFT = 0.06;
+
+    /** RU reserve of one pair (config/echoes.json {@code thrusterCapacity}). */
+    public static int capacity() { return com.echoes.config.EchoesConfig.get().thrusterCapacity; }
 
     public ResonanceThrustersItem(Properties settings) {
         super(settings);
@@ -52,7 +54,7 @@ public class ResonanceThrustersItem extends Item {
         return active.getItem() instanceof ResonanceThrustersItem && ru(active) > 0;
     }
     private static void setRu(ItemStack stack, int value) {
-        stack.set(ModComponents.STORED_RU, Math.max(0, Math.min(CAPACITY, value)));
+        stack.set(ModComponents.STORED_RU, Math.max(0, Math.min(capacity(), value)));
     }
 
     /** Right-click a buffered Resonance block to siphon RU into the thrusters. */
@@ -64,7 +66,7 @@ public class ResonanceThrustersItem extends Item {
             return InteractionResult.PASS;
         }
         ItemStack stack = ctx.getItemInHand();
-        int space = CAPACITY - ru(stack);
+        int space = capacity() - ru(stack);
         if (space <= 0) return InteractionResult.SUCCESS;
         long pulled = node.extract(Math.min(space, RECHARGE_PER_USE), false);
         if (pulled > 0) {
@@ -72,7 +74,7 @@ public class ResonanceThrustersItem extends Item {
             if (node instanceof BlockEntity be) be.setChanged();
             Player p = ctx.getPlayer();
             if (p != null) p.sendOverlayMessage(Component.translatable("message.echoes.thrusters.charge",
-                    fmt(ru(stack)), fmt(CAPACITY)));
+                    fmt(ru(stack)), fmt(capacity())));
         }
         return InteractionResult.SUCCESS;
     }
@@ -97,7 +99,8 @@ public class ResonanceThrustersItem extends Item {
             return;
         }
         // Full directional flight: ride wherever you look. Sneak hovers in place.
-        double speed = user.isSprinting() ? SPRINT_SPEED : FLY_SPEED;
+        var cfg = com.echoes.config.EchoesConfig.get();
+        double speed = user.isSprinting() ? cfg.thrusterSprintSpeed : cfg.thrusterFlySpeed;
         if (user.isShiftKeyDown()) {
             user.setDeltaMovement(user.getDeltaMovement().multiply(0.6, 0.0, 0.6)); // hover/brake
         } else {
@@ -108,14 +111,14 @@ public class ResonanceThrustersItem extends Item {
         user.fallDistance = 0;
 
         if (!world.isClientSide() && !creative) {
-            setRu(stack, ru(stack) - DRAIN_PER_TICK);
+            setRu(stack, ru(stack) - cfg.thrusterDrainPerTick);
         }
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
                                 Consumer<Component> tooltip, TooltipFlag type) {
-        tooltip.accept(Component.translatable("tooltip.echoes.thrusters.charge", fmt(ru(stack)), fmt(CAPACITY))
+        tooltip.accept(Component.translatable("tooltip.echoes.thrusters.charge", fmt(ru(stack)), fmt(capacity()))
                 .withStyle(ChatFormatting.AQUA));
         tooltip.accept(Component.translatable("tooltip.echoes.thrusters.hint").withStyle(ChatFormatting.DARK_GRAY));
     }

@@ -56,10 +56,17 @@ public class AttunementFurnaceBlock extends Block implements EntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
         if (!world.isClientSide() && world.getBlockEntity(pos) instanceof MenuProvider factory) {
-            if (world.getBlockEntity(pos) instanceof com.echoes.config.Configurable cfg
-                    && !cfg.getConfig().canAccess(player.getUUID())) {
-                player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.echoes.locked"));
-                return InteractionResult.SUCCESS;
+            if (world.getBlockEntity(pos) instanceof com.echoes.config.Configurable cfg) {
+                // First opener owns an unclaimed machine (mirrors the config screen),
+                // so the builder claims theirs by using it before a stranger can.
+                if (cfg.getConfig().owner() == null) {
+                    cfg.getConfig().claim(player.getUUID());
+                    cfg.onConfigChanged(); // persist the claim
+                }
+                if (!cfg.getConfig().canAccess(player.getUUID())) {
+                    player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.echoes.locked"));
+                    return InteractionResult.SUCCESS;
+                }
             }
             player.openMenu(factory);
         }

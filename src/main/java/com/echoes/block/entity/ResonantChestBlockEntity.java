@@ -28,12 +28,19 @@ import org.jetbrains.annotations.Nullable;
 public class ResonantChestBlockEntity extends AbstractChannelDeviceBlockEntity
         implements ImplementedInventory, MenuProvider {
 
+    /** The chest keeps per-face I/O on top of the channel-family controls: it has a
+     * real inventory, so its side modes actually gate hopper/pipe access. */
+    public static final com.echoes.config.ConfigSpec SPEC = com.echoes.config.ConfigSpec.builder()
+            .channel().octave().redstone().sides().build();
+
     public static final int SIZE = 27;
     private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 
     public ResonantChestBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.RESONANT_CHEST, pos, state);
     }
+
+    @Override public com.echoes.config.ConfigSpec getConfigSpec() { return SPEC; }
 
     @Override public NonNullList<ItemStack> getItems() { return items; }
 
@@ -43,14 +50,19 @@ public class ResonantChestBlockEntity extends AbstractChannelDeviceBlockEntity
         return ContainerStorage.of(this, null);
     }
 
-    // Full, unsided access for hoppers/pipes and the wireless network.
+    // Every slot reachable from every face; the config screen's per-face I/O modes
+    // gate hoppers/pipes (a null direction is the wireless network, never gated).
     @Override public int[] getSlotsForFace(Direction side) {
         int[] slots = new int[SIZE];
         for (int i = 0; i < SIZE; i++) slots[i] = i;
         return slots;
     }
-    @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) { return true; }
-    @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) { return true; }
+    @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) {
+        return dir == null || getConfig().side(dir).canInput();
+    }
+    @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) {
+        return dir == null || getConfig().side(dir).canOutput();
+    }
 
     // --- screen ---
     @Override public Component getDisplayName() { return Component.translatable("block.echoes.wave_chest"); }

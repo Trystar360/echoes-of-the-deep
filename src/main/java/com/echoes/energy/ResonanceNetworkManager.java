@@ -99,6 +99,7 @@ public class ResonanceNetworkManager {
 
     /** Mirror the live topology into the SavedData. Called after every change. */
     private void syncState() {
+        infoCache.clear(); // topology changed; drop memoized aggregates
         if (state == null) return;
         state.networks.clear();
         for (ResonanceNetwork net : networks.values()) {
@@ -220,6 +221,12 @@ public class ResonanceNetworkManager {
     /** A snapshot of the network a position belongs to, for the Info screen. */
     public record NetInfo(int members, long stored, long capacity) {}
 
+    // The Info screen's ContainerData polls every tick while open; memoize the
+    // aggregate per network per game tick so a big network is walked once per tick
+    // at most, however many viewers (or data slots) are asking.
+    private record CachedInfo(long gameTime, NetInfo info) {}
+    private final Map<Integer, CachedInfo> infoCache = new HashMap<>();
+
     /** Totals for the network containing {@code pos} (members loaded right now). */
     public NetInfo infoFor(BlockPos pos) {
         Integer id = posToNetwork.get(pos);
@@ -228,12 +235,18 @@ public class ResonanceNetworkManager {
             ResonanceNode n = ResonanceNetwork.nodeAt(world, pos);
             return n == null ? new NetInfo(1, 0, 0) : new NetInfo(1, n.storedRu(), n.capacityRu());
         }
+        long now = world.getGameTime();
+        CachedInfo hit = infoCache.get(id);
+        if (hit != null && hit.gameTime == now) return hit.info;
+
         long stored = 0, cap = 0;
         for (BlockPos m : net.members) {
             ResonanceNode n = ResonanceNetwork.nodeAt(world, m);
             if (n != null) { stored += n.storedRu(); cap += n.capacityRu(); }
         }
-        return new NetInfo(net.members.size(), stored, cap);
+        NetInfo info = new NetInfo(net.members.size(), stored, cap);
+        infoCache.put(id, new CachedInfo(now, info));
+        return info;
     }
 
     /** Equalize storage on every network adjacent to {@code pos} (the Balancer). */

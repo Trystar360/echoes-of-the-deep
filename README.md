@@ -119,6 +119,12 @@ dropped Yarn — using Fabric Loom `1.17`, Fabric Loader `0.19.3`, Fabric API
 Java isn't 25. To install, drop the built jar into `.minecraft/mods/` alongside **Fabric
 Loader** and **Fabric API** for 26.1.
 
+## Configuration
+
+Server tunables live in **`config/echoes.json`** (written with defaults on first
+launch): the wireless **Hush Cost** toggle and rate, the **death-capture RU** amount,
+and the **Resonance Thrusters**' capacity, drain, and speeds.
+
 ## Art & generation
 
 Every texture is **procedurally generated** by [`gen_textures.py`](gen_textures.py) in one
@@ -143,7 +149,7 @@ src/main/java/com/echoes/
   config/    device configuration model
   compat/    Team Reborn Energy bridge
   registry/  ModBlocks, ModItems, ModBlockEntities, ModScreens, ModItemGroups, ModWorldGen
-  mixin/     LivingEntityMixin, ServerWorldMixin (ambient capture + fall immunity)
+  mixin/     LivingEntityMixin, LevelSoundMixin (ambient capture + fall immunity)
 src/client/java/com/echoes/client/  EchoesClient + screen/
 src/main/resources/  fabric.mod.json, echoes.mixins.json, assets/, data/
 ```

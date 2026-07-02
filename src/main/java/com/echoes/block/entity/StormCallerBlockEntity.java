@@ -32,9 +32,9 @@ public class StormCallerBlockEntity extends BlockEntity implements ResonanceNode
     /** Light banked per channelled strike (a single natural bolt is ~2,000 via ambient capture). */
     public static final int STRIKE_LIGHT = 40_000;
 
-    /** The spire exposes redstone behaviour, per-face I/O, and a tunable strike rate. */
+    /** The spire exposes redstone behaviour and a tunable strike rate. */
     public static final ConfigSpec SPEC = ConfigSpec.builder()
-            .redstone().sides()
+            .redstone()
             .tuning("config.echoes.tuning.rate", 1, 4, 1, 2)
             .build();
 

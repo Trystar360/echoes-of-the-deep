@@ -77,9 +77,15 @@ public class ResonanceNetwork {
     }
 
     /** Per-tick distribution. Call from the manager. */
-    public void tick(ServerLevel world) {        if ((id + world.getGameTime()) % tickInterval != 0) return;
+    public void tick(ServerLevel world) {
+        if ((id + world.getGameTime()) % tickInterval != 0) return;
         if (dirty) rescan(world);
         if (consumers.isEmpty() && storages.isEmpty()) return;
+
+        // Staggered networks move tickInterval ticks' worth of budget per activation,
+        // so the conduit cap stays a true per-tick average rather than quietly
+        // dividing large networks' throughput by the stagger factor.
+        long capBudget = conduitThroughputCap < 0 ? -1 : conduitThroughputCap * tickInterval;
 
         // 1. Simulate total available supply (providers first, then storage).
         long supply = 0;
@@ -99,8 +105,7 @@ public class ResonanceNetwork {
         if (totalDemand == 0) {
             // Surplus: top up storage by lowest fill-ratio first, within the same
             // conduit throughput cap as any other transfer.
-            long surplus = conduitThroughputCap >= 0
-                    ? Math.min(providerSupply, conduitThroughputCap) : providerSupply;
+            long surplus = capBudget >= 0 ? Math.min(providerSupply, capBudget) : providerSupply;
             topUpStorage(surplus);
             return;
         }
@@ -108,7 +113,7 @@ public class ResonanceNetwork {
         // 3. The only ceiling is what's available and — once the network has conduit
         // members — the aggregate throughput those conduits contribute.
         long pool = Math.min(supply, totalDemand);
-        if (conduitThroughputCap >= 0) pool = Math.min(pool, conduitThroughputCap);
+        if (capBudget >= 0) pool = Math.min(pool, capBudget);
 
         // 4. Largest-remainder proportional allocation. The ratio is computed in
         // double (pool and demand can each individually approach Long.MAX_VALUE on
@@ -123,7 +128,7 @@ public class ResonanceNetwork {
         }
         long leftover = pool - distributed;
         if (leftover > 0) {
-            // InteractionHand remainder to the most-starved (largest unmet) consumers first.
+            // Hand the remainder to the most-starved (largest unmet) consumers first.
             Integer[] order = new Integer[active.size()];
             for (int i = 0; i < order.length; i++) order[i] = i;
             final long[] a = alloc;

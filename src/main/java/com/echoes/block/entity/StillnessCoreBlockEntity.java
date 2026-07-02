@@ -28,8 +28,8 @@ public class StillnessCoreBlockEntity extends BlockEntity implements ResonanceNo
     public static final long CAPACITY = 50_000;
     private static final int GEN_PER_TICK = 4;
 
-    /** The Core exposes redstone behaviour and per-face I/O. */
-    public static final ConfigSpec SPEC = ConfigSpec.builder().redstone().sides().build();
+    /** The Core exposes redstone behaviour. */
+    public static final ConfigSpec SPEC = ConfigSpec.builder().redstone().build();
 
     private final ResonanceStorage storage = new ResonanceStorage(CAPACITY);
     private final BlockConfig config = new BlockConfig();

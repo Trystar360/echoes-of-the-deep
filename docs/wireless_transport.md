@@ -64,7 +64,7 @@ router treats them uniformly.
 ### Range & cost
 - **Echo Repeater** — pools its channel across *every dimension* it appears in;
   without one, a channel stays within a single dimension.
-- **Hush Cost** — opt-in (`WirelessNetworkManager.HUSH_COST`): when on, broadcasting
+- **Hush Cost** — opt-in (`hushCost` in `config/echoes.json`): when on, broadcasting
   cargo drains a little RU per sender from the channel's energy providers, tying
   logistics back into the energy economy. Off by default to keep the base relay
   cheap; free on channels with no energy provider.

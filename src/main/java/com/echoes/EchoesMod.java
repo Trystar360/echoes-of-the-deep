@@ -25,6 +25,9 @@ public class EchoesMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        // Before anything that reads a tunable (mixin constants, wireless budgets).
+        com.echoes.config.EchoesConfig.load();
+
         ModComponents.register();
         ModItems.register();
         ModBlocks.register();
