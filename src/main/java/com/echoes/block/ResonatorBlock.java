@@ -6,6 +6,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -39,7 +41,14 @@ public class ResonatorBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected void setPlacedBy(Level world, BlockPos pos, BlockState state,
+    @SuppressWarnings("unchecked")
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+        if (world.isClientSide() || type != com.echoes.registry.ModBlockEntities.RESONATOR) return null;
+        return (w, p, s, be) -> ResonatorBlockEntity.tick(w, p, s, (ResonatorBlockEntity) be);
+    }
+
+    @Override
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state,
             net.minecraft.world.entity.LivingEntity placer, net.minecraft.world.item.ItemStack stack) {
         super.setPlacedBy(world, pos, state, placer, stack);
         com.echoes.config.Configurable.claimOnPlace(world, pos, placer);

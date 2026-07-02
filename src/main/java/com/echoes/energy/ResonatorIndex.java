@@ -17,8 +17,8 @@ import java.util.Set;
  * capture ({@link ResonanceEvents}) fires often — it's the hottest path in the mod
  * — so it looks up candidates here instead of walking every block entity (chests,
  * furnaces, machines, …) of every chunk in range just to find the ones that happen
- * to be Resonators. Registered from {@link ResonatorBlockEntity#onLoad()},
- * unregistered from {@code setRemoved()}.
+ * to be Resonators. Registered lazily from {@code ResonatorBlockEntity}'s ticker
+ * (the first tick after it's actually loaded), unregistered from {@code setRemoved()}.
  *
  * <p>Chunk unload is deliberately <b>not</b> hooked here the way the energy/wireless
  * networks do: unlike those, a stale entry here is just a {@link BlockPos} (no live
