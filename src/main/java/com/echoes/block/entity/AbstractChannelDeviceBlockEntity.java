@@ -14,7 +14,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 
 /**
  * Common base for every wireless gadget: it carries a channel (now part of a full
@@ -39,11 +38,20 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
         super(type, pos, state);
     }
 
-    /** Lightweight ticker: guarantees the device is on the roster once loaded. */
-    public static void tick(Level level, BlockPos pos, BlockState state, AbstractChannelDeviceBlockEntity be) {
-        if (be.registered || !(level instanceof ServerLevel)) return;
-        WirelessNetworkManager.register(be);
-        be.registered = true;
+    /**
+     * Registers with the roster the moment this instance actually becomes part of a
+     * loaded level — both on placement and on chunk load — instead of a per-tick
+     * ticker whose entire job was polling one boolean until that same moment. No
+     * {@link net.minecraft.world.level.block.entity.BlockEntityTicker} is registered
+     * for this block family at all now (see {@code AbstractChannelDeviceBlock}).
+     */
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (!registered && level instanceof ServerLevel) {
+            WirelessNetworkManager.register(this);
+            registered = true;
+        }
     }
 
     public int channel() { return config.channel(); }

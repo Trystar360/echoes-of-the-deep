@@ -34,6 +34,22 @@ public class ResonatorBlockEntity extends BlockEntity implements ResonanceNode, 
         config.applyDefaults(SPEC);
     }
 
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level instanceof net.minecraft.server.level.ServerLevel sw) {
+            com.echoes.energy.ResonatorIndex.register(sw, getBlockPos());
+        }
+    }
+
+    @Override
+    public void setRemoved() {
+        if (level instanceof net.minecraft.server.level.ServerLevel sw) {
+            com.echoes.energy.ResonatorIndex.unregister(sw, getBlockPos());
+        }
+        super.setRemoved();
+    }
+
     /** Called by ResonanceEvents when a nearby event fires. */
     public void absorbAmbient(int ru) {
         storage.absorb(ru);

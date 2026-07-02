@@ -24,6 +24,13 @@ public class GreaterAccumulatorBlock extends Block implements EntityBlock {
     }
 
     @Override
+    protected void setPlacedBy(Level world, BlockPos pos, BlockState state,
+            net.minecraft.world.entity.LivingEntity placer, net.minecraft.world.item.ItemStack stack) {
+        super.setPlacedBy(world, pos, state, placer, stack);
+        com.echoes.config.Configurable.claimOnPlace(world, pos, placer);
+    }
+
+    @Override
     protected void onPlace(BlockState state, Level world, BlockPos pos, BlockState old, boolean notify) {
         if (world instanceof ServerLevel sw && !old.is(this)) {
             ResonanceNetworkManager.get(sw).onAttachedNodeChanged(pos.immutable());

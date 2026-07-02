@@ -4,9 +4,6 @@ import com.echoes.block.entity.AbstractChannelDeviceBlockEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
@@ -18,13 +15,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 /**
- * Shared behaviour for the wireless gadget family: a server ticker that keeps the
- * block on the channel roster, and a uniform tuning scheme —
+ * Shared behaviour for the wireless gadget family: a uniform tuning scheme —
  * <ul>
  *   <li>right-click with any <b>dye</b> → tune to that colour's channel</li>
  *   <li><b>sneak</b> + right-click (empty hand) → step the channel forward</li>
  *   <li>right-click otherwise → {@link #onConfigure device-specific action}</li>
  * </ul>
+ * No {@link net.minecraft.world.level.block.entity.BlockEntityTicker} is
+ * registered for this family — {@link AbstractChannelDeviceBlockEntity#onLoad()}
+ * joins the channel roster the moment the block entity becomes part of a loaded
+ * level, so there's nothing left for a ticker to poll for.
  */
 public abstract class AbstractChannelDeviceBlock extends Block implements EntityBlock {
 
@@ -33,12 +33,10 @@ public abstract class AbstractChannelDeviceBlock extends Block implements Entity
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        if (world.isClientSide()) return null;
-        return (w, p, s, be) -> {
-            if (be instanceof AbstractChannelDeviceBlockEntity d) AbstractChannelDeviceBlockEntity.tick(w, p, s, d);
-        };
+    protected void setPlacedBy(Level world, BlockPos pos, BlockState state,
+            net.minecraft.world.entity.LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(world, pos, state, placer, stack);
+        com.echoes.config.Configurable.claimOnPlace(world, pos, placer);
     }
 
     @Override

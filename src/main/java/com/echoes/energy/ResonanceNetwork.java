@@ -27,8 +27,25 @@ import java.util.Set;
  * proportional allocation, so under genuine scarcity every consumer gets a share
  * proportional to its demand and the remainder goes to the most-starved consumers
  * first — no starvation, no waste.
+ *
+ * <p><b>Staggered ticking</b> ({@link #tickInterval}) only skips how often the O(size)
+ * distribution pass itself runs on colossal networks — it does not reduce steady-state
+ * throughput the way a naive read of "runs 1-in-N ticks" might suggest, because a
+ * consumer's {@code demand()} and a provider's simulated supply are both "how much has
+ * accumulated since the last visit" quantities (each node keeps generating/draining
+ * its own buffer every real tick via its own {@link net.minecraft.world.level.block.entity.BlockEntityTicker},
+ * independent of this stagger), so a visit on tick N moves the full N-tick-accumulated
+ * amount in one pass. The one real residual risk is a consumer whose own buffer is too
+ * small to bank a full stagger window's worth of consumption without hitting empty —
+ * {@link #MAX_TICK_INTERVAL} and the {@link #STAGGER_THRESHOLD} are kept conservative
+ * enough that this shouldn't bite any realistically-sized base.
  */
 public class ResonanceNetwork {
+    /** Networks above this member count get staggered; below it, every tick runs. */
+    private static final int STAGGER_THRESHOLD = 2048;
+    /** Worst-case ticks between distribution passes on a staggered network. */
+    private static final int MAX_TICK_INTERVAL = 2;
+
     public final int id;
     /** Every energy block entity in this connected component (generators, machines, cells, conduits). */
     public final Set<BlockPos> members = new HashSet<>();
@@ -43,7 +60,7 @@ public class ResonanceNetwork {
     // (direct-touching blocks stay unlimited, matching the no-conduit-needed design).
     private long conduitThroughputCap = -1;
 
-    // Stagger large networks so they don't all compute on the same tick.
+    // Stagger huge networks so they don't all compute on the same tick.
     private int tickInterval = 1;
 
     public ResonanceNetwork(int id) {
@@ -72,7 +89,7 @@ public class ResonanceNetwork {
             if (tc > 0) { cap += tc; hasConduit = true; }
         }
         this.conduitThroughputCap = hasConduit ? cap : -1;
-        this.tickInterval = members.size() > 512 ? 4 : 1;
+        this.tickInterval = members.size() > STAGGER_THRESHOLD ? MAX_TICK_INTERVAL : 1;
         this.dirty = false;
     }
 
@@ -94,12 +111,14 @@ public class ResonanceNetwork {
         for (ResonanceNode s : storages) supply += s.extract(Long.MAX_VALUE, true);
         if (supply == 0) return;
 
-        // 2. Gather demand.
+        // 2. Gather demand (snapshot once — demand() is queried exactly this many
+        // times per tick now, not re-read throughout the allocation below).
         long totalDemand = 0;
         List<ResonanceNode> active = new ArrayList<>();
+        List<Long> demandList = new ArrayList<>();
         for (ResonanceNode c : consumers) {
             long d = c.demand();
-            if (d > 0) { active.add(c); totalDemand += d; }
+            if (d > 0) { active.add(c); demandList.add(d); totalDemand += d; }
         }
 
         if (totalDemand == 0) {
@@ -115,34 +134,11 @@ public class ResonanceNetwork {
         long pool = Math.min(supply, totalDemand);
         if (capBudget >= 0) pool = Math.min(pool, capBudget);
 
-        // 4. Largest-remainder proportional allocation. The ratio is computed in
-        // double (pool and demand can each individually approach Long.MAX_VALUE on
-        // huge capacitor banks, so a long*long product would overflow).
-        long[] alloc = new long[active.size()];
-        long distributed = 0;
-        for (int i = 0; i < active.size(); i++) {
-            long demand = active.get(i).demand();
-            long share = Math.min(demand, (long) ((double) pool * demand / totalDemand));
-            alloc[i] = share;
-            distributed += share;
-        }
-        long leftover = pool - distributed;
-        if (leftover > 0) {
-            // Hand the remainder to the most-starved (largest unmet) consumers first.
-            Integer[] order = new Integer[active.size()];
-            for (int i = 0; i < order.length; i++) order[i] = i;
-            final long[] a = alloc;
-            java.util.Arrays.sort(order, Comparator.comparingLong(
-                    i -> -(active.get(i).demand() - a[i])));
-            int idx = 0;
-            while (leftover > 0 && order.length > 0) {
-                int i = order[idx % order.length];
-                long room = active.get(i).demand() - alloc[i];
-                if (room > 0) { alloc[i]++; leftover--; }
-                idx++;
-                if (idx > order.length * 2L && allMaxed(active, alloc)) break;
-            }
-        }
+        // 4. Largest-remainder proportional allocation (see EnergyMath for the pure,
+        // unit-tested implementation — this is where the overflow bug lived).
+        long[] demandArr = new long[demandList.size()];
+        for (int i = 0; i < demandArr.length; i++) demandArr[i] = demandList.get(i);
+        long[] alloc = EnergyMath.allocate(pool, demandArr);
 
         // 5. Commit. Pull from providers first, storage to cover the shortfall.
         long needed = 0;
@@ -155,12 +151,6 @@ public class ResonanceNetwork {
             active.get(i).insert(g, false);
             give -= g;
         }
-    }
-
-    private boolean allMaxed(List<ResonanceNode> active, long[] alloc) {
-        for (int i = 0; i < active.size(); i++)
-            if (alloc[i] < active.get(i).demand()) return false;
-        return true;
     }
 
     private long drawFromSources(long needed) {
@@ -201,28 +191,31 @@ public class ResonanceNetwork {
     public void balanceStorages(ServerLevel world, long rate) {
         if (dirty) rescan(world);
         if (storages.size() < 2) return;
-        long totalStored = 0, totalCap = 0;
-        for (ResonanceNode s : storages) { totalStored += s.storedRu(); totalCap += s.capacityRu(); }
-        if (totalCap <= 0) return;
-        double ratio = (double) totalStored / totalCap;
+
+        long[] stored = new long[storages.size()];
+        long[] capacity = new long[storages.size()];
+        for (int i = 0; i < storages.size(); i++) {
+            stored[i] = storages.get(i).storedRu();
+            capacity[i] = storages.get(i).capacityRu();
+        }
+        // See EnergyMath for the pure, unit-tested implementation — this is where
+        // the conservation bug lived (independently rate-capping each side let
+        // total inserted diverge from total extracted).
+        long[] delta = EnergyMath.balanceDeltas(stored, capacity, rate);
 
         // Two-phase, like the main distribution: extract from over-full nodes first
         // (bounded by what each actually has), then insert only what was actually
-        // extracted. Independently rate-capping each side (the old approach) let
-        // total inserted diverge from total extracted — i.e. manufactured or
-        // destroyed RU — whenever fills weren't already close to the mean.
+        // extracted — never more, so the balancer moves Light, it never manufactures
+        // or destroys it.
         long available = 0;
-        for (ResonanceNode s : storages) {
-            long diff = Math.round(s.capacityRu() * ratio) - s.storedRu();
-            if (diff < 0) available += s.extract(Math.min(-diff, rate), false);
+        for (int i = 0; i < storages.size(); i++) {
+            if (delta[i] < 0) available += storages.get(i).extract(-delta[i], false);
         }
         if (available <= 0) return;
 
         long remaining = available;
-        for (ResonanceNode s : storages) {
-            if (remaining <= 0) break;
-            long diff = Math.round(s.capacityRu() * ratio) - s.storedRu();
-            if (diff > 0) remaining -= s.insert(Math.min(Math.min(diff, rate), remaining), false);
+        for (int i = 0; i < storages.size() && remaining > 0; i++) {
+            if (delta[i] > 0) remaining -= storages.get(i).insert(Math.min(delta[i], remaining), false);
         }
         // Rounding/room mismatches can leave a small remainder with nowhere the mean-fill
         // pass wanted it; rather than lose it, hand it to whichever storage still has room.
