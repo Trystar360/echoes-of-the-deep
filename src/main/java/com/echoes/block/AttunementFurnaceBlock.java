@@ -57,7 +57,8 @@ public class AttunementFurnaceBlock extends Block implements EntityBlock {
     @SuppressWarnings("unchecked")
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
         if (world.isClientSide() || type != ModBlockEntities.ATTUNEMENT_FURNACE) return null;
-        return (w, p, s, be) -> AttunementFurnaceBlockEntity.tick(w, p, s, (AttunementFurnaceBlockEntity) be);
+        return (w, p, s, be) -> com.echoes.block.entity.AbstractMachineBlockEntity.tick(
+                w, p, s, (com.echoes.block.entity.AbstractMachineBlockEntity) be);
     }
 
     @Override

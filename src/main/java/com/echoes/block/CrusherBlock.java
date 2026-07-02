@@ -58,7 +58,8 @@ public class CrusherBlock extends Block implements EntityBlock {
     @SuppressWarnings("unchecked")
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
         if (world.isClientSide() || type != ModBlockEntities.CRUSHER) return null;
-        return (w, p, s, be) -> CrusherBlockEntity.tick(w, p, s, (CrusherBlockEntity) be);
+        return (w, p, s, be) -> com.echoes.block.entity.AbstractMachineBlockEntity.tick(
+                w, p, s, (com.echoes.block.entity.AbstractMachineBlockEntity) be);
     }
 
     @Override
