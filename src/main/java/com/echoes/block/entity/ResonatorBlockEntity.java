@@ -23,8 +23,8 @@ import net.minecraft.core.BlockPos;
 public class ResonatorBlockEntity extends BlockEntity implements ResonanceNode, Configurable {
     public static final long DEFAULT_CAPACITY = 10_000;
 
-    /** The Coil exposes redstone behaviour and per-face I/O. */
-    public static final ConfigSpec SPEC = ConfigSpec.builder().redstone().sides().build();
+    /** The Coil exposes redstone behaviour. */
+    public static final ConfigSpec SPEC = ConfigSpec.builder().redstone().build();
 
     private final ResonanceStorage storage = new ResonanceStorage(DEFAULT_CAPACITY);
     private final BlockConfig config = new BlockConfig();

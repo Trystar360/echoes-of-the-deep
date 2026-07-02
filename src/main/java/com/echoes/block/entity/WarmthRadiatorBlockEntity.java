@@ -40,9 +40,9 @@ public class WarmthRadiatorBlockEntity extends BlockEntity implements ResonanceN
     private static final long COST = 60;        // Light per cooked stack
     private static final int INTERVAL = 10;
 
-    /** Warmth Radiators expose redstone behaviour, per-face I/O and an adjustable radius. */
+    /** Warmth Radiators expose redstone behaviour and an adjustable radius. */
     public static final ConfigSpec SPEC = ConfigSpec.builder()
-            .redstone().sides()
+            .redstone()
             .tuning("config.echoes.tuning.radius", 1, 8, 1, 4)
             .build();
 

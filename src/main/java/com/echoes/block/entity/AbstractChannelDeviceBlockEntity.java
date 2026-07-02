@@ -26,9 +26,11 @@ import net.minecraft.world.level.Level;
 public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
         implements WirelessDevice, Configurable {
 
-    /** Wireless devices expose channel, octave, redstone behaviour and per-face I/O. */
+    /** Wireless devices expose channel, octave, and redstone behaviour. Per-face
+     * I/O is only offered by subclasses with a real inventory to gate (the
+     * Resonant Chest) — on everything else it would be a decoy control. */
     public static final ConfigSpec SPEC = ConfigSpec.builder()
-            .channel().octave().redstone().sides().build();
+            .channel().octave().redstone().build();
 
     protected final BlockConfig config = new BlockConfig();
     private boolean registered = false;

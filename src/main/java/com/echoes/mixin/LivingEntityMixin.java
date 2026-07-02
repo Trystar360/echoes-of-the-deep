@@ -19,7 +19,7 @@ public abstract class LivingEntityMixin {
     private void echoes$onDeath(DamageSource source, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self.level() instanceof ServerLevel sw) {
-            ResonanceEvents.emit(sw, self.position(), 25);
+            ResonanceEvents.emit(sw, self.position(), com.echoes.config.EchoesConfig.get().deathRu);
         }
     }
 

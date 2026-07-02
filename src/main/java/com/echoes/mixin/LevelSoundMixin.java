@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * so we mix into {@code Level} and guard on the server side at runtime.
  */
 @Mixin(Level.class)
-public abstract class ServerWorldMixin {
+public abstract class LevelSoundMixin {
 
     @Inject(
             method = "playSound(Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/Holder;Lnet/minecraft/sounds/SoundSource;FF)V",

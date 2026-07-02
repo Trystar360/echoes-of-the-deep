@@ -47,13 +47,10 @@ public final class WirelessNetworkManager {
     /** 16 channels, one per dye colour. */
     public static final int CHANNELS = 16;
 
-    /**
-     * Opt-in "Hush Cost": when enabled, broadcasting items/fluids drains a little
-     * RU per active sender from the channel's energy providers, tying logistics
-     * back into the energy economy. Off by default to keep the base relay cheap.
-     */
-    public static boolean HUSH_COST = false;
-    private static final long HUSH_RU_PER_SENDER = 20;
+    // Opt-in "Hush Cost" (config/echoes.json): when enabled, broadcasting
+    // items/fluids drains a little RU per active sender from the channel's energy
+    // providers, tying logistics back into the energy economy. Off by default to
+    // keep the base relay cheap.
 
     // Per-tick throughput. "Powerful but cheap": one pair moves a healthy trickle;
     // more senders widen the pipe and Amplifiers multiply it, up to a hard ceiling.
@@ -72,6 +69,17 @@ public final class WirelessNetworkManager {
 
     public static void init() {
         ServerTickEvents.END_SERVER_TICK.register(server -> tick());
+        // A device whose chunk unloads must leave the roster: its block-entity
+        // instance is orphaned (writes to it no longer round-trip to disk), so
+        // transfers against it would silently lose or duplicate cargo. The
+        // device's ticker re-registers a fresh instance when the chunk reloads.
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> {
+            for (var entry : chunk.getBlockEntities().entrySet()) {
+                if (entry.getValue() instanceof WirelessDevice) {
+                    unregister(world, entry.getKey());
+                }
+            }
+        });
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             DEVICES.clear();
             for (Set<WirelessDevice> s : BY_CHANNEL) s.clear();
@@ -170,7 +178,8 @@ public final class WirelessNetworkManager {
         boolean canGive = !senders.isEmpty() || !passive.isEmpty();
         boolean canTake = !receivers.isEmpty() || !passive.isEmpty();
         if (canGive && canTake) {
-            if (!(HUSH_COST && !senders.isEmpty() && !payHush(group, senders.size()))) {
+            boolean hush = com.echoes.config.EchoesConfig.get().hushCost;
+            if (!(hush && !senders.isEmpty() && !payHush(group, senders.size()))) {
                 transferItems(senders, receivers, passive, mult, whitelist, roundRobin);
             }
         }
@@ -302,7 +311,7 @@ public final class WirelessNetworkManager {
 
     /** Opt-in energy tax for cargo broadcasts. Returns whether it was paid. */
     private static boolean payHush(List<WirelessDevice> group, int senderCount) {
-        long cost = (long) senderCount * HUSH_RU_PER_SENDER;
+        long cost = senderCount * com.echoes.config.EchoesConfig.get().hushRuPerSender;
         List<ResonanceNode> wells = new ArrayList<>();
         for (WirelessDevice d : group) {
             ResonanceNode n = d.wirelessEnergy();

@@ -16,11 +16,17 @@ import java.util.Set;
  * ordinary members that exist to span gaps. Persistent across ticks; mutated
  * incrementally by {@link ResonanceNetworkManager} on topology changes.
  *
- * <p>Internal transfer is <b>unlimited</b>: each tick the whole network's supply
- * is offered to its consumers with no throughput ceiling. When supply can't meet
- * demand it falls back to a largest-remainder proportional allocation, so under
- * genuine scarcity every consumer gets a share proportional to its demand and the
- * remainder goes to the most-starved consumers first — no starvation, no waste.
+ * <p>Internal transfer between directly-touching blocks is <b>unlimited</b>. Once a
+ * network contains at least one conduit, its per-tick pool is capped at the sum of
+ * every conduit member's {@link ResonanceNode#transferCap()} — a Wave Conduit run
+ * contributes 1,000 RU/t, Dense 16,000, Octave 64,000, so denser or higher-tier
+ * wiring genuinely raises what a network can move (this is an aggregate budget, not
+ * a routed flow simulation: it doesn't model a single skinny chokepoint segment
+ * starving a network that is otherwise thick with conduit elsewhere). When supply
+ * (after any such cap) can't meet demand, it falls back to a largest-remainder
+ * proportional allocation, so under genuine scarcity every consumer gets a share
+ * proportional to its demand and the remainder goes to the most-starved consumers
+ * first — no starvation, no waste.
  */
 public class ResonanceNetwork {
     public final int id;
@@ -32,6 +38,10 @@ public class ResonanceNetwork {
     private final List<ResonanceNode> consumers = new ArrayList<>();
     private final List<ResonanceNode> storages = new ArrayList<>();
     private boolean dirty = true;
+
+    // Sum of every conduit member's transferCap(); -1 while the network has none
+    // (direct-touching blocks stay unlimited, matching the no-conduit-needed design).
+    private long conduitThroughputCap = -1;
 
     // Stagger large networks so they don't all compute on the same tick.
     private int tickInterval = 1;
@@ -48,22 +58,34 @@ public class ResonanceNetwork {
         storages.clear();
 
         // Classify every loaded member by role (a node may hold several roles).
-        // Conduits carry no buffer and simply hold the component together.
+        // Conduits carry no buffer and simply hold the component together, but
+        // contribute their throughput cap to the network's aggregate pipe budget.
+        long cap = 0;
+        boolean hasConduit = false;
         for (BlockPos m : members) {
             ResonanceNode node = nodeAt(world, m);
             if (node == null) continue;               // unloaded chunk or already gone
             if (node.is(NodeRole.PROVIDER)) providers.add(node);
             if (node.is(NodeRole.CONSUMER)) consumers.add(node);
             if (node.is(NodeRole.STORAGE))  storages.add(node);
+            int tc = node.transferCap();
+            if (tc > 0) { cap += tc; hasConduit = true; }
         }
+        this.conduitThroughputCap = hasConduit ? cap : -1;
         this.tickInterval = members.size() > 512 ? 4 : 1;
         this.dirty = false;
     }
 
     /** Per-tick distribution. Call from the manager. */
-    public void tick(ServerLevel world) {        if ((id + world.getGameTime()) % tickInterval != 0) return;
+    public void tick(ServerLevel world) {
+        if ((id + world.getGameTime()) % tickInterval != 0) return;
         if (dirty) rescan(world);
         if (consumers.isEmpty() && storages.isEmpty()) return;
+
+        // Staggered networks move tickInterval ticks' worth of budget per activation,
+        // so the conduit cap stays a true per-tick average rather than quietly
+        // dividing large networks' throughput by the stagger factor.
+        long capBudget = conduitThroughputCap < 0 ? -1 : conduitThroughputCap * tickInterval;
 
         // 1. Simulate total available supply (providers first, then storage).
         long supply = 0;
@@ -81,25 +103,32 @@ public class ResonanceNetwork {
         }
 
         if (totalDemand == 0) {
-            // Surplus: top up storage by lowest fill-ratio first.
-            topUpStorage(providerSupply);
+            // Surplus: top up storage by lowest fill-ratio first, within the same
+            // conduit throughput cap as any other transfer.
+            long surplus = capBudget >= 0 ? Math.min(providerSupply, capBudget) : providerSupply;
+            topUpStorage(surplus);
             return;
         }
 
-        // 3. Unlimited internal throughput — the only ceiling is what's available.
+        // 3. The only ceiling is what's available and — once the network has conduit
+        // members — the aggregate throughput those conduits contribute.
         long pool = Math.min(supply, totalDemand);
+        if (capBudget >= 0) pool = Math.min(pool, capBudget);
 
-        // 4. Largest-remainder proportional allocation.
+        // 4. Largest-remainder proportional allocation. The ratio is computed in
+        // double (pool and demand can each individually approach Long.MAX_VALUE on
+        // huge capacitor banks, so a long*long product would overflow).
         long[] alloc = new long[active.size()];
         long distributed = 0;
         for (int i = 0; i < active.size(); i++) {
-            long share = Math.min(active.get(i).demand(), pool * active.get(i).demand() / totalDemand);
+            long demand = active.get(i).demand();
+            long share = Math.min(demand, (long) ((double) pool * demand / totalDemand));
             alloc[i] = share;
             distributed += share;
         }
         long leftover = pool - distributed;
         if (leftover > 0) {
-            // InteractionHand remainder to the most-starved (largest unmet) consumers first.
+            // Hand the remainder to the most-starved (largest unmet) consumers first.
             Integer[] order = new Integer[active.size()];
             for (int i = 0; i < order.length; i++) order[i] = i;
             final long[] a = alloc;
@@ -176,11 +205,32 @@ public class ResonanceNetwork {
         for (ResonanceNode s : storages) { totalStored += s.storedRu(); totalCap += s.capacityRu(); }
         if (totalCap <= 0) return;
         double ratio = (double) totalStored / totalCap;
+
+        // Two-phase, like the main distribution: extract from over-full nodes first
+        // (bounded by what each actually has), then insert only what was actually
+        // extracted. Independently rate-capping each side (the old approach) let
+        // total inserted diverge from total extracted — i.e. manufactured or
+        // destroyed RU — whenever fills weren't already close to the mean.
+        long available = 0;
         for (ResonanceNode s : storages) {
             long diff = Math.round(s.capacityRu() * ratio) - s.storedRu();
-            long step = Math.min(Math.abs(diff), rate);
-            if (diff > 0) s.insert(step, false);
-            else if (diff < 0) s.extract(step, false);
+            if (diff < 0) available += s.extract(Math.min(-diff, rate), false);
+        }
+        if (available <= 0) return;
+
+        long remaining = available;
+        for (ResonanceNode s : storages) {
+            if (remaining <= 0) break;
+            long diff = Math.round(s.capacityRu() * ratio) - s.storedRu();
+            if (diff > 0) remaining -= s.insert(Math.min(Math.min(diff, rate), remaining), false);
+        }
+        // Rounding/room mismatches can leave a small remainder with nowhere the mean-fill
+        // pass wanted it; rather than lose it, hand it to whichever storage still has room.
+        if (remaining > 0) {
+            for (ResonanceNode s : storages) {
+                if (remaining <= 0) break;
+                remaining -= s.insert(remaining, false);
+            }
         }
     }
 

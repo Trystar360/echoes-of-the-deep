@@ -25,8 +25,8 @@ import net.minecraft.core.BlockPos;
 public class ConduitBlockEntity extends BlockEntity implements ResonanceNode, Configurable {
     public static final int DEFAULT_TRANSFER = 1_000;
 
-    /** Conduits expose redstone behaviour and per-face I/O. */
-    public static final ConfigSpec SPEC = ConfigSpec.builder().redstone().sides().build();
+    /** Conduits expose redstone behaviour. */
+    public static final ConfigSpec SPEC = ConfigSpec.builder().redstone().build();
 
     protected final BlockConfig config = new BlockConfig();
 

@@ -40,9 +40,9 @@ public class PolarityFieldBlockEntity extends BlockEntity implements ResonanceNo
     private static final int INTERVAL = 5;
     private static final double PULL = 0.28, PUSH = 0.45;
 
-    /** Polarity Fields expose redstone behaviour, per-face I/O and an adjustable radius. */
+    /** Polarity Fields expose redstone behaviour and an adjustable radius. */
     public static final ConfigSpec SPEC = ConfigSpec.builder()
-            .redstone().sides()
+            .redstone()
             .tuning("config.echoes.tuning.radius", 2, 12, 1, 6)
             .build();
 

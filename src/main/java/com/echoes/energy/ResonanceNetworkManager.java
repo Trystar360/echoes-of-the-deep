@@ -1,7 +1,10 @@
 package com.echoes.energy;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.core.BlockPos;
 
 import java.util.ArrayDeque;
@@ -30,6 +33,10 @@ public class ResonanceNetworkManager {
     private final ServerLevel world;
     private final Map<Integer, ResonanceNetwork> networks = new HashMap<>();
     private final Map<BlockPos, Integer> posToNetwork = new HashMap<>();
+    // Mirrors posToNetwork's keys, grouped by chunk, so a chunk unload can find and
+    // invalidate the handful of affected networks without scanning every member of
+    // every network in the world.
+    private final Map<ChunkPos, Set<BlockPos>> byChunk = new HashMap<>();
     private int nextId = 1;
     private ResonanceNetworkState state;
 
@@ -47,13 +54,57 @@ public class ResonanceNetworkManager {
             net.members.addAll(e.getValue());
             net.markDirty(); // nodes re-scanned from the world on the next tick
             networks.put(net.id, net);
-            for (BlockPos p : e.getValue()) posToNetwork.put(p, net.id);
+            for (BlockPos p : e.getValue()) {
+                posToNetwork.put(p, net.id);
+                indexAdd(p);
+            }
             nextId = Math.max(nextId, net.id + 1);
+        }
+    }
+
+    // 26.1: ChunkPos is a plain (x, z) record — no ChunkPos(BlockPos) convenience ctor.
+    private static ChunkPos chunkOf(BlockPos pos) {
+        return new ChunkPos(pos.getX() >> 4, pos.getZ() >> 4);
+    }
+
+    private void indexAdd(BlockPos pos) {
+        byChunk.computeIfAbsent(chunkOf(pos), k -> new HashSet<>()).add(pos);
+    }
+
+    private void indexRemove(BlockPos pos) {
+        ChunkPos key = chunkOf(pos);
+        Set<BlockPos> set = byChunk.get(key);
+        if (set == null) return;
+        set.remove(pos);
+        if (set.isEmpty()) byChunk.remove(key);
+    }
+
+    /**
+     * A chunk unloaded: any network with a member there is holding at least one stale
+     * block-entity reference in its cached provider/consumer/storage lists (vanilla
+     * doesn't null those out — the in-memory instance is simply orphaned once its
+     * chunk is saved and discarded), so mark it dirty. The next tick's rescan drops
+     * unloaded members via {@link ResonanceNetwork#nodeAt}'s {@code hasChunk} check
+     * before touching them again, instead of silently reading/writing an object whose
+     * state no longer round-trips to disk.
+     */
+    private void onChunkUnload(ChunkPos pos) {
+        Set<BlockPos> members = byChunk.get(pos);
+        if (members == null) return;
+        Set<Integer> affected = new HashSet<>();
+        for (BlockPos p : members) {
+            Integer id = posToNetwork.get(p);
+            if (id != null) affected.add(id);
+        }
+        for (Integer id : affected) {
+            ResonanceNetwork net = networks.get(id);
+            if (net != null) net.markDirty();
         }
     }
 
     /** Mirror the live topology into the SavedData. Called after every change. */
     private void syncState() {
+        infoCache.clear(); // topology changed; drop memoized aggregates
         if (state == null) return;
         state.networks.clear();
         for (ResonanceNetwork net : networks.values()) {
@@ -69,6 +120,16 @@ public class ResonanceNetworkManager {
 
     public static void init() {
         ServerTickEvents.END_LEVEL_TICK.register(world -> get(world).tick());
+        ServerChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> {
+            // Look up the existing instance directly rather than get(world): a chunk
+            // unload during server shutdown shouldn't resurrect a manager for a world
+            // that's about to be discarded anyway.
+            ResonanceNetworkManager mgr = INSTANCES.get(world);
+            if (mgr != null) mgr.onChunkUnload(chunk.getPos());
+        });
+        // Each singleplayer world open/close cycle otherwise pins its ServerLevel (and
+        // full network topology) in INSTANCES for the rest of the JVM's life.
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> INSTANCES.clear());
     }
 
     private void tick() {
@@ -118,6 +179,7 @@ public class ResonanceNetworkManager {
         }
         net.members.add(pos);
         posToNetwork.put(pos, net.id);
+        indexAdd(pos);
         net.markDirty();
         syncState();
     }
@@ -126,6 +188,7 @@ public class ResonanceNetworkManager {
     private void onNodeBroken(BlockPos pos) {
         Integer id = posToNetwork.remove(pos);
         if (id == null) return;
+        indexRemove(pos);
         ResonanceNetwork net = networks.get(id);
         if (net == null) { syncState(); return; }
         net.members.remove(pos);
@@ -163,6 +226,12 @@ public class ResonanceNetworkManager {
     /** A snapshot of the network a position belongs to, for the Info screen. */
     public record NetInfo(int members, long stored, long capacity) {}
 
+    // The Info screen's ContainerData polls every tick while open; memoize the
+    // aggregate per network per game tick so a big network is walked once per tick
+    // at most, however many viewers (or data slots) are asking.
+    private record CachedInfo(long gameTime, NetInfo info) {}
+    private final Map<Integer, CachedInfo> infoCache = new HashMap<>();
+
     /** Totals for the network containing {@code pos} (members loaded right now). */
     public NetInfo infoFor(BlockPos pos) {
         Integer id = posToNetwork.get(pos);
@@ -171,12 +240,18 @@ public class ResonanceNetworkManager {
             ResonanceNode n = ResonanceNetwork.nodeAt(world, pos);
             return n == null ? new NetInfo(1, 0, 0) : new NetInfo(1, n.storedRu(), n.capacityRu());
         }
+        long now = world.getGameTime();
+        CachedInfo hit = infoCache.get(id);
+        if (hit != null && hit.gameTime == now) return hit.info;
+
         long stored = 0, cap = 0;
         for (BlockPos m : net.members) {
             ResonanceNode n = ResonanceNetwork.nodeAt(world, m);
             if (n != null) { stored += n.storedRu(); cap += n.capacityRu(); }
         }
-        return new NetInfo(net.members.size(), stored, cap);
+        NetInfo info = new NetInfo(net.members.size(), stored, cap);
+        infoCache.put(id, new CachedInfo(now, info));
+        return info;
     }
 
     /** Equalize storage on every network adjacent to {@code pos} (the Balancer). */

@@ -24,8 +24,8 @@ import net.minecraft.core.BlockPos;
 public class ResonanceCapacitorBlockEntity extends BlockEntity implements ResonanceNode, Configurable {
     public static final long CAPACITY = 250_000;
 
-    /** Accumulators expose redstone behaviour and per-face I/O. */
-    public static final ConfigSpec SPEC = ConfigSpec.builder().redstone().sides().build();
+    /** Accumulators expose redstone behaviour. */
+    public static final ConfigSpec SPEC = ConfigSpec.builder().redstone().build();
 
     private final ResonanceStorage storage = new ResonanceStorage(CAPACITY);
     private final BlockConfig config = new BlockConfig();

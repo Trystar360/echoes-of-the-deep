@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * The data-driven sound → RU table. Loads {@code data/echoes/resonance_sources.json}
  * (merging across every datapack, so modpacks can extend or override it) and is
- * queried by {@code ServerWorldMixin} when a sound plays. Reloads with {@code /reload}.
+ * queried by {@code LevelSoundMixin} when a sound plays. Reloads with {@code /reload}.
  */
 public final class ResonanceSources implements SimpleSynchronousResourceReloadListener {
     private ResonanceSources() {}

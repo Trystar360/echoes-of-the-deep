@@ -54,6 +54,12 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     private int progress;
     private int maxProgress = PROCESS_TICKS;
 
+    // currentRecipe() is queried several times per tick (this BE's own tick() plus
+    // ResonanceNetwork's demand-gathering passes), so cache the match and only re-query
+    // the recipe manager when the input stack actually changes.
+    private ItemStack cachedInput = ItemStack.EMPTY;
+    private Optional<RecipeHolder<SmeltingRecipe>> cachedRecipe = Optional.empty();
+
     private final ContainerData props = new ContainerData() {
         @Override public int get(int i) {
             return switch (i) {
@@ -77,6 +83,10 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
 
     public static void tick(Level level, BlockPos pos, BlockState state, AttunementFurnaceBlockEntity be) {
         if (level.isClientSide()) return;
+        if (level instanceof ServerLevel sw && !be.config.redstone().allows(sw.hasNeighborSignal(pos))) {
+            if (be.progress != 0) { be.progress = 0; be.setChanged(); }
+            return;
+        }
 
         Optional<RecipeHolder<SmeltingRecipe>> match = be.currentRecipe();
         ItemStack result = match.map(m -> be.resultOf(m)).orElse(ItemStack.EMPTY);
@@ -98,9 +108,15 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     }
 
     private Optional<RecipeHolder<SmeltingRecipe>> currentRecipe() {
-        if (getItem(INPUT).isEmpty() || !(level instanceof ServerLevel sw)) return Optional.empty();
-        return sw.recipeAccess().getRecipeFor(
-                RecipeType.SMELTING, new SingleRecipeInput(getItem(INPUT)), level);
+        ItemStack input = getItem(INPUT);
+        if (input.isEmpty()) { cachedInput = ItemStack.EMPTY; cachedRecipe = Optional.empty(); return cachedRecipe; }
+        if (!(level instanceof ServerLevel sw)) return Optional.empty();
+        if (!ItemStack.isSameItemSameComponents(input, cachedInput)) {
+            cachedInput = input.copy();
+            cachedRecipe = sw.recipeAccess().getRecipeFor(
+                    RecipeType.SMELTING, new SingleRecipeInput(input), level);
+        }
+        return cachedRecipe;
     }
 
     private ItemStack resultOf(RecipeHolder<SmeltingRecipe> entry) {
@@ -122,12 +138,18 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
         setChanged();
     }
 
-    // --- sided access: top inserts input; other faces extract output ---
+    // --- sided access: top inserts input; other faces extract output. The per-face
+    // I/O modes from the config screen gate both directions on top of that (a null
+    // direction means internal/wireless access, which is never gated).
     @Override public int[] getSlotsForFace(Direction side) {
         return side == Direction.UP ? new int[]{INPUT} : new int[]{OUTPUT};
     }
-    @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == INPUT; }
-    @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) { return slot == OUTPUT; }
+    @Override public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction dir) {
+        return slot == INPUT && (dir == null || config.side(dir).canInput());
+    }
+    @Override public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) {
+        return slot == OUTPUT && (dir == null || config.side(dir).canOutput());
+    }
 
     // --- ResonanceNode (CONSUMER) ---
     @Override public int roleMask() { return NodeRole.of(NodeRole.CONSUMER); }
@@ -143,7 +165,7 @@ public class AttunementFurnaceBlockEntity extends BlockEntity
     @Override public long capacityRu() { return buffer.getCapacity(); }
 
     // --- screen ---
-    @Override public Component getDisplayName() { return Component.translatable("block.echoes.transmuter"); }
+    @Override public Component getDisplayName() { return getBlockState().getBlock().getName(); }
     @Override public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
         return new AttunementFurnaceScreenHandler(syncId, inv, this, props, getBlockPos());
     }

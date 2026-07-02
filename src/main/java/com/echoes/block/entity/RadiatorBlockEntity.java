@@ -34,9 +34,9 @@ public class RadiatorBlockEntity extends BlockEntity implements ResonanceNode, C
     private static final int INTERVAL = 10;     // ticks between attempts
     private static final int V_RADIUS = 2, TRIES = 8;
 
-    /** Radiators expose redstone behaviour, per-face I/O and an adjustable radius. */
+    /** Radiators expose redstone behaviour and an adjustable radius. */
     public static final ConfigSpec SPEC = ConfigSpec.builder()
-            .redstone().sides()
+            .redstone()
             .tuning("config.echoes.tuning.radius", 1, 8, 1, 4)
             .build();
 

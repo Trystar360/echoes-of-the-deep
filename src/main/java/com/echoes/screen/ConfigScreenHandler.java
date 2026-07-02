@@ -58,7 +58,10 @@ public class ConfigScreenHandler extends AbstractContainerMenu {
 
         if (!inv.player.level().isClientSide() && cfg != null) {
             this.config = cfg.getConfig();
-            this.config.claim(inv.player.getUUID());   // first opener owns an unclaimed device
+            if (this.config.owner() == null) {          // first opener owns an unclaimed device
+                this.config.claim(inv.player.getUUID());
+                cfg.onConfigChanged();                  // persist the claim
+            }
             this.properties = backedBy(config, inv.player.getUUID());
         } else {
             this.config = null;

@@ -28,9 +28,9 @@ public class OctaveCoilBlockEntity extends BlockEntity implements ResonanceNode,
     public static final long CAPACITY = 300_000;
     private static final int BASE_GEN_PER_TICK = 24;
 
-    /** The Coil exposes redstone behaviour, per-face I/O, and a tunable generation rate. */
+    /** The Coil exposes redstone behaviour and a tunable generation rate. */
     public static final ConfigSpec SPEC = ConfigSpec.builder()
-            .redstone().sides()
+            .redstone()
             .tuning("config.echoes.tuning.rate", 1, 4, 1, 2)
             .build();
 

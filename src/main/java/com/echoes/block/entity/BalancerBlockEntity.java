@@ -24,9 +24,9 @@ import net.minecraft.world.level.Level;
 public class BalancerBlockEntity extends BlockEntity implements Configurable {
     private static final int INTERVAL = 10;
 
-    /** Balancers expose redstone behaviour, per-face I/O and an adjustable interchange rate. */
+    /** Balancers expose redstone behaviour and an adjustable interchange rate. */
     public static final ConfigSpec SPEC = ConfigSpec.builder()
-            .redstone().sides()
+            .redstone()
             .tuning("config.echoes.tuning.rate", 500, 8000, 500, 2000)
             .build();
 

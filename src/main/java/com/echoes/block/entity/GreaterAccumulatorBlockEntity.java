@@ -23,8 +23,8 @@ import net.minecraft.core.BlockPos;
 public class GreaterAccumulatorBlockEntity extends BlockEntity implements ResonanceNode, Configurable {
     public static final long CAPACITY = 2_000_000;
 
-    /** Greater Accumulators expose redstone behaviour and per-face I/O. */
-    public static final ConfigSpec SPEC = ConfigSpec.builder().redstone().sides().build();
+    /** Greater Accumulators expose redstone behaviour. */
+    public static final ConfigSpec SPEC = ConfigSpec.builder().redstone().build();
 
     private final ResonanceStorage storage = new ResonanceStorage(CAPACITY);
     private final BlockConfig config = new BlockConfig();
