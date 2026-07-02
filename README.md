@@ -164,6 +164,11 @@ src/client/java/com/echoes/client/  EchoesClient + screen/
 src/main/resources/  fabric.mod.json, echoes.mixins.json, assets/, data/
 ```
 
+## Contributing
+
+Bug reports and PRs welcome. Translating the mod into another language is a
+self-contained, no-build-step contribution — see [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 ## License
 
 [MIT](LICENSE).
