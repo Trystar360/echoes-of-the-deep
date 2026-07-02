@@ -40,14 +40,16 @@ public class ResonanceThrustersItem extends Item {
 
     public static int ru(ItemStack stack) { return stack.getOrDefault(ModComponents.STORED_RU, 0); }
 
-    /** True if this living entity is a player carrying charged thrusters — no fall damage. */
+    /**
+     * True only while a player is actively thrusting with charged thrusters — merely
+     * carrying a charged pair grants no immunity, since {@link #onUseTick} already zeroes
+     * fall distance every tick of active use; this only covers the instant of landing
+     * right as the player releases the trigger.
+     */
     public static boolean shieldsFall(net.minecraft.world.entity.LivingEntity entity) {
-        if (!(entity instanceof Player p)) return false;
-        for (ItemStack s : p.getInventory().getNonEquipmentItems()) {
-            if (s.getItem() instanceof ResonanceThrustersItem && ru(s) > 0) return true;
-        }
-        return p.getOffhandItem().getItem() instanceof ResonanceThrustersItem
-                && ru(p.getOffhandItem()) > 0;
+        if (!(entity instanceof Player p) || !p.isUsingItem()) return false;
+        ItemStack active = p.getUseItem();
+        return active.getItem() instanceof ResonanceThrustersItem && ru(active) > 0;
     }
     private static void setRu(ItemStack stack, int value) {
         stack.set(ModComponents.STORED_RU, Math.max(0, Math.min(CAPACITY, value)));
