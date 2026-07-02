@@ -62,12 +62,17 @@ public class ResonanceNetworkManager {
         }
     }
 
+    // 26.1: ChunkPos is a plain (x, z) record — no ChunkPos(BlockPos) convenience ctor.
+    private static ChunkPos chunkOf(BlockPos pos) {
+        return new ChunkPos(pos.getX() >> 4, pos.getZ() >> 4);
+    }
+
     private void indexAdd(BlockPos pos) {
-        byChunk.computeIfAbsent(new ChunkPos(pos), k -> new HashSet<>()).add(pos);
+        byChunk.computeIfAbsent(chunkOf(pos), k -> new HashSet<>()).add(pos);
     }
 
     private void indexRemove(BlockPos pos) {
-        ChunkPos key = new ChunkPos(pos);
+        ChunkPos key = chunkOf(pos);
         Set<BlockPos> set = byChunk.get(key);
         if (set == null) return;
         set.remove(pos);
