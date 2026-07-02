@@ -119,6 +119,16 @@ dropped Yarn — using Fabric Loom `1.17`, Fabric Loader `0.19.3`, Fabric API
 Java isn't 25. To install, drop the built jar into `.minecraft/mods/` alongside **Fabric
 Loader** and **Fabric API** for 26.1.
 
+Pushing a `v*` tag builds the mod and publishes a GitHub Release automatically
+([`release.yml`](.github/workflows/release.yml)). It also mirrors the jar to Modrinth
+and/or CurseForge, each gated independently so an unconfigured repo doesn't fail the
+release — set these per platform to enable it:
+
+| Platform | Repo variable | Repo secret |
+|---|---|---|
+| Modrinth | `MODRINTH_ID` (project ID) | `MODRINTH_TOKEN` ([modrinth.com](https://modrinth.com) → Settings → API Tokens) |
+| CurseForge | `CURSEFORGE_ID` (numeric project ID) | `CURSEFORGE_TOKEN` ([console.curseforge.com](https://console.curseforge.com/)) |
+
 ## Configuration
 
 Server tunables live in **`config/echoes.json`** (written with defaults on first
