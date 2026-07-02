@@ -8,21 +8,23 @@ open your advancements (`L`) and just follow the toasts.
 
 ## Install
 
-1. Install **Fabric Loader** (≥ 0.16.0) and **Fabric API** for Minecraft **1.21.4**.
-2. Drop `echoes-of-the-deep-0.1.0.jar` into `.minecraft/mods/`.
-3. Launch. Everything is in the **Octaves of the One** creative tab, but you never need
+1. Install **Fabric Loader** (≥ 0.19.0) and **Fabric API** for Minecraft **26.1** (Java 25).
+2. Drop the `echoes-of-the-deep-<version>.jar` from the
+   [latest release](https://github.com/Trystar360/echoes-of-the-deep/releases) into
+   `.minecraft/mods/`.
+3. Launch. Everything is in the **Echoes of the Deep** creative tab, but you never need
    creative — it's all survival-craftable.
 
 Building from source instead? See the
 [README](https://github.com/Trystar360/echoes-of-the-deep#build--run): `./gradlew build`
-(JDK 21).
+(JDK 25, auto-downloaded by the Gradle toolchain if you don't have it).
 
 ## Your first hour
 
 ### 1. Find Echocite
 **Echocite Ore** generates throughout the Overworld (deepslate variant lower down). Mine
 it with a stone pickaxe or better for **Raw Echocite** — the base of the entire mod.
-→ *advancement: "Octaves of the One"*
+→ *advancement: "Echoes of the Deep"*
 
 ### 2. Make Echo Ingots
 Smelt or blast **Raw Echocite** into an **Echo Ingot**, the core crafting material. *(Once
@@ -38,8 +40,9 @@ For a passive trickle that needs no sound, the **Stillness Core** makes 4 Light/
 (needs Silentite from the Deep Dark).
 
 ### 4. Carry and bank it
-- **Wave Conduit** carries Light on a wired network (1,000/t). Run a line from your Coil to
-  a machine. → *"Carried, Not Consumed"*
+- Energy blocks that **touch face-to-face** share one network automatically; a **Wave
+  Conduit** line spans the gaps (each conduit adds 1,000 Light/t to the network's
+  throughput budget). Run a line from your Coil to a machine. → *"Carried, Not Consumed"*
 - **Resonance Cell** banks up to 250,000 Light so surplus isn't wasted. → *"Banked Light"*
 
 A network shares Light **fairly** — under scarcity every machine gets a proportional share
@@ -52,15 +55,19 @@ Place a machine beside your conduit line:
 - **Growth Radiator** — pours Light back into the world as life, growing nearby crops. The
   **radiation** half of the cosmology. → *"Light as Life"*
 
-### 6. Read the grid
+### 6. Read and tune the grid
 Light is invisible. Craft the **Light Meter** and right-click any device to read its role,
-stored Light, demand, and throughput. The **Frequency Tuner** (sneak-right-click a device)
-opens its configuration GUI — channel, redstone behaviour, per-face I/O, and tuning.
+stored Light, demand, and throughput. The **Frequency Tuner** (right-click a device) opens
+its configuration GUI — wireless channel, redstone behaviour, block-specific tuning,
+per-face I/O on the inventory machines, and **security**: a device belongs to whoever
+places it, and its owner can flip it from *Public* to *Private* so nobody else can open
+or reconfigure it.
 
 ## Where to go next
 
-- **Fly:** the **Resonant Thrusters** — hold *use* to fly where you look, with fall
-  immunity. Recharge on a Coil or Cell. → *"Where You Look"*
+- **Fly:** the **Resonant Thrusters** — hold *use* to fly where you look (fall damage is
+  negated while you're thrusting, so land under power). Recharge on a Coil or Cell.
+  → *"Where You Look"*
 - **Go wireless:** the **Wave Relay** beams items, fluids, and Light over a channel with no
   conduit. See [Wireless Transport](Wireless-Transport.md). → *"Cut the Cord"*
 - **Climb the octaves:** the **Octave Seed → Radiant Ingot** chain unlocks the high-octave

@@ -69,7 +69,7 @@ done
 
 # Generate a sidebar for navigation (GitHub renders _Sidebar.md on every page).
 cat > "$WORK/wiki/_Sidebar.md" <<'SIDEBAR'
-### Octaves of the One
+### Echoes of the Deep
 
 - [Home](Home)
 - [Getting Started](Getting-Started)

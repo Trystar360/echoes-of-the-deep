@@ -1,5 +1,7 @@
 # Echoes of the Deep
 
+[![Build](https://github.com/Trystar360/echoes-of-the-deep/actions/workflows/build.yml/badge.svg)](https://github.com/Trystar360/echoes-of-the-deep/actions/workflows/build.yml)
+
 A Fabric tech mod for Minecraft **26.1.2**, themed on **Walter Russell's cosmology** —
 the *two-way universe* of **rhythmic balanced interchange**. Draw **Light** from the
 still centre of zero, wind it up through the octaves by **generation** (compression /
@@ -40,16 +42,16 @@ Dark) add the **Drum Core** and **Silentite Crystal** branches.
 **Stillness Core** trickles Light from rest (4/t); the **Octave Coil** is a strong late
 generator (24/t, tunable); the **Storm Caller** banks lightning (40,000 per strike).
 
-**3 · Carry & bank it.** **Wave Conduits** move Light on a wired network with a fair,
-no-starvation distribution (1,000/t → Dense 16,000/t → Octave 64,000/t). **Resonance
-Cells** bank it (250,000 → Greater 2,000,000). The **Balancer** keeps every cell evenly
-filled.
+**3 · Carry & bank it.** Energy blocks that touch **auto-join one network**; **Wave
+Conduits** span the gaps and set its throughput budget (1,000/t each → Dense 16,000/t →
+Octave 64,000/t), shared with a fair, no-starvation distribution. **Resonance Cells**
+bank it (250,000 → Greater 2,000,000). The **Balancer** keeps every cell evenly filled.
 
 **4 · Spend it.** The **Compressor** doubles ore, the **Transmuter** smelts any furnace
 recipe with no fuel, and the **radiation** family pours Light back into the world — the
 **Growth Radiator** (grows crops), **Warmth Radiator** (cooks drops, melts ice), and
 **Polarity Field** (attract items / repel mobs). The **Resonant Thrusters** give
-look-direction flight with fall immunity.
+look-direction flight, negating fall damage while you thrust.
 
 **5 · Go wireless.** Tune two or more devices to the same **channel** (an octave, one per
 dye colour) and they resonate — beaming **items, fluids, and Light** with no conduit. The
@@ -73,19 +75,24 @@ grow nearby plants) make a luminous building palette that's useful *and* pretty.
 ## Under the hood
 
 - **Wired energy** — a `ResonanceNode` capability with provider / consumer / storage
-  roles, bounded `ResonanceStorage` buffers, and a `ResonanceNetwork` that distributes
-  with a **largest-remainder proportional allocation** (fair under scarcity, no
-  starvation, surplus tops up the emptiest banks first). The `ResonanceNetworkManager`
-  merges and splits networks incrementally on conduit place/break — no per-tick flood
-  fill — and persists topology across restarts.
+  roles and bounded `ResonanceStorage` buffers. Any energy blocks that touch
+  face-to-face share one `ResonanceNetwork`; conduits span gaps and their summed caps
+  become the network's per-tick **throughput budget** (a network with no conduits
+  transfers freely). Distribution is a **largest-remainder proportional allocation**
+  (fair under scarcity, no starvation, surplus tops up the emptiest banks first) whose
+  numeric core lives in `EnergyMath` — pure `long[]` math with a JUnit regression suite,
+  because that exact logic has produced real bugs twice. The `ResonanceNetworkManager`
+  merges and splits networks incrementally on place/break — no per-tick flood fill —
+  invalidates cached nodes on chunk unload, and persists topology across restarts.
 - **Wireless transport** — a server-global roster keyed by `GlobalPos`, bounded by a
   per-channel tick budget (widened by Amplifiers, hard-capped) so big builds can't stall
   the tick. Items/fluids ride the Fabric Transfer API (vanilla chests & tanks work); RU
   bridges the node grid.
-- **Ambient capture** — a `LivingEntity#onDeath` mixin (25 RU) and a
-  `ServerWorld#playSound` mixin charge the nearest Resonant Coil from a **data-driven
+- **Ambient capture** — a `LivingEntity#die` mixin (default 25 RU, configurable) and a
+  `Level#playSound` mixin charge the nearest Resonant Coil from a **data-driven
   sound→RU table** ([`data/echoes/resonance_sources.json`](src/main/resources/data/echoes/resonance_sources.json),
   reloadable and modpack-extendable): note blocks, anvils, bells, explosions, thunder…
+  Coil lookup goes through a per-chunk `ResonatorIndex`, since sounds fire constantly.
 - **The Light-Value economy** — a small hand-authored **seed** set
   ([`light_values.json`](src/main/resources/data/echoes/light_values.json)) is
   authoritative; every other item's value (vanilla *or* modded) is **derived** by
@@ -93,23 +100,45 @@ grow nearby plants) make a luminous building palette that's useful *and* pretty.
   `sum(inputs)/output`). The min-and-floor rule means you can never craft *up* in value,
   so ore progression stays safe. Modpacks get sensible values for free and can override
   via datapack.
-- **Custom machine recipes** — a `crushing` recipe type with optional byproducts, plus
-  synced screens and a shared **device configuration GUI** (channel, redstone behaviour,
-  per-face I/O, block-specific tuning) opened with the Frequency Tuner.
+- **Machines & the device GUI** — a `crushing` recipe type with optional byproducts;
+  machines share an `AbstractMachineBlockEntity` base (buffer, config, redstone gating,
+  progress) so per-machine code is just recipes. The **Frequency Tuner** opens a shared
+  configuration GUI: wireless channel/octave, redstone behaviour, block-specific tuning,
+  per-face I/O on the inventory machines (Compressor, Transmuter, Wave Chest), and
+  **ownership** — a device belongs to whoever places it and can be flipped from
+  *Public* to *Private* so only its owner may open or configure it.
 - **Worldgen** — configured/placed features for Echocite & Drumstone (Overworld) and
   Silentite (Deep Dark), plus the Lumewood grove, attached via `BiomeModifications`.
 - **Compatibility** — an optional **Team Reborn Energy** bridge (1 RU = 1 E) and a
   **Trinkets** soft-dependency, both inert when the mod is absent.
 
+## Configuration
+
+Server tunables live in **`config/echoes.json`**, written with defaults on first launch:
+
+| Key | Default | What it does |
+|---|---|---|
+| `hushCost` / `hushRuPerSender` | `false` / `20` | Opt-in wireless tax: cargo broadcasts drain Light per active sender. |
+| `deathRu` | `25` | Light captured by the nearest Coil when something dies (0 disables). |
+| `thrusterCapacity` | `1,000,000` | Resonant Thrusters' Light reserve. |
+| `thrusterDrainPerTick` | `8` | Flight cost. |
+| `thrusterFlySpeed` / `thrusterSprintSpeed` | `0.85` / `1.45` | Flight speeds, blocks per tick. |
+
+Deeper systems are data-driven instead — Light Values, the sound→RU table, worldgen, and
+the advancement tree are all datapack-overridable JSON (see the wiki's
+[Compatibility](docs/wiki/Compatibility.md) page).
+
 ## Build & run
 
-Requires **JDK 25** (Minecraft 26.1 needs Java 25). Built against Minecraft **26.1.2**
-with **Mojang official mappings** — 26.1 is the first unobfuscated Minecraft and Fabric
-dropped Yarn — using Fabric Loom `1.17`, Fabric Loader `0.19.3`, Fabric API
-`0.152.1+26.1.2`, Gradle `9.5`.
+Requires **JDK 25** (Minecraft 26.1 needs Java 25) — or nothing at all: the Foojay
+toolchain resolver auto-downloads a matching JDK if none is installed. Built against
+Minecraft **26.1.2** with **Mojang official mappings** — 26.1 is the first unobfuscated
+Minecraft and Fabric dropped Yarn — using Fabric Loom `1.17`, Fabric Loader `0.19.3`,
+Fabric API `0.152.1+26.1.2`, Gradle `9.5`.
 
 ```bash
-./gradlew build              # → build/libs/echoes-of-the-deep-0.2.0.jar
+./gradlew build              # compile + unit tests → build/libs/echoes-of-the-deep-<version>.jar
+./gradlew test               # just the unit tests (EnergyMath regression suite)
 ./gradlew runClient          # playtest in single-player
 ./gradlew runServer          # headless smoke test (accept the EULA in run/eula.txt)
 ./gradlew runClientGametest  # dev-only: screenshot every screen for a layout check
@@ -117,7 +146,10 @@ dropped Yarn — using Fabric Loom `1.17`, Fabric Loader `0.19.3`, Fabric API
 
 `./run.sh <task>` is a thin wrapper that exports a `JAVA_HOME` for you if your system
 Java isn't 25. To install, drop the built jar into `.minecraft/mods/` alongside **Fabric
-Loader** and **Fabric API** for 26.1.
+Loader** (≥ 0.19.0) and **Fabric API** for 26.1. CI compiles and tests every push and PR
+([`build.yml`](.github/workflows/build.yml)).
+
+### Releasing
 
 Pushing a `v*` tag builds the mod and publishes a GitHub Release automatically
 ([`release.yml`](.github/workflows/release.yml)). It also mirrors the jar to Modrinth
@@ -128,12 +160,6 @@ release — set these per platform to enable it:
 |---|---|---|
 | Modrinth | `MODRINTH_ID` (project ID) | `MODRINTH_TOKEN` ([modrinth.com](https://modrinth.com) → Settings → API Tokens) |
 | CurseForge | `CURSEFORGE_ID` (numeric project ID) | `CURSEFORGE_TOKEN` ([console.curseforge.com](https://console.curseforge.com/)) |
-
-## Configuration
-
-Server tunables live in **`config/echoes.json`** (written with defaults on first
-launch): the wireless **Hush Cost** toggle and rate, the **death-capture RU** amount,
-and the **Resonance Thrusters**' capacity, drain, and speeds.
 
 ## Art & generation
 
@@ -149,18 +175,21 @@ and the wiki visuals by the scripts in [`scripts/`](scripts/).
 
 ```
 src/main/java/com/echoes/
-  energy/    ResonanceNode/Storage/Network/Manager, ResonanceEvents, ResonanceSources
+  energy/    ResonanceNode/Storage/Network/Manager, EnergyMath, ResonatorIndex,
+             ResonanceEvents, ResonanceSources
   wireless/  WirelessNetworkManager, WirelessDevice, RelayMode
   transmute/ LightValues (EMC derivation), TransmutationState (per-player account)
-  block/     blocks + block/entity/ (Coil, Cell, Conduit, machines, relays, garden)
+  block/     blocks + block/entity/ (AbstractMachineBlockEntity, Coil, Cell, Conduit,
+             machines, relays, garden)
   item/      tools, Thrusters, tuner/atlas/meter, Tablet, Octave Stars
   recipe/    CrushingRecipe, ModRecipes
   screen/    Crusher / Furnace / Filter / Transmutation / Config handlers
-  config/    device configuration model
+  config/    device configuration model + EchoesConfig (config/echoes.json)
   compat/    Team Reborn Energy bridge
   registry/  ModBlocks, ModItems, ModBlockEntities, ModScreens, ModItemGroups, ModWorldGen
   mixin/     LivingEntityMixin, LevelSoundMixin (ambient capture + fall immunity)
 src/client/java/com/echoes/client/  EchoesClient + screen/
+src/test/java/com/echoes/          unit tests (EnergyMath regression suite)
 src/main/resources/  fabric.mod.json, echoes.mixins.json, assets/, data/
 ```
 

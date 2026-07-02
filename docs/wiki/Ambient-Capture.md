@@ -9,7 +9,8 @@ something noisy happens near a Coil, the nearest one captures a little Light.
 
 Two hooks feed Light to the nearest **Resonant Coil** within **8 blocks**:
 
-1. **Mob deaths** — any living entity dying grants **25 RU** to the nearest Coil.
+1. **Mob deaths** — any living entity dying grants **25 RU** to the nearest Coil
+   (server-tunable: `deathRu` in `config/echoes.json`; set 0 to disable death capture).
 2. **World sounds** — when the server plays a sound listed in the **sound→RU table**, its
    value charges the nearest Coil.
 

@@ -46,13 +46,13 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.tag || github.ref_name }}
-          name: Octaves of the One ${{ inputs.tag || github.ref_name }}
+          name: Echoes of the Deep ${{ inputs.tag || github.ref_name }}
           generate_release_notes: true
           files: |
             build/libs/echoes-of-the-deep-*.jar
             !build/libs/*-sources.jar
           body: |
-            **Octaves of the One** — a Fabric tech mod for Minecraft **26.1.2**, themed on
+            **Echoes of the Deep** — a Fabric tech mod for Minecraft **26.1.2**, themed on
             Walter Russell's two-way universe of rhythmic balanced interchange.
 
             This release ports the whole mod to **Minecraft 26.1.2** — the first unobfuscated
