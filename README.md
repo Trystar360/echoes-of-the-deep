@@ -1,4 +1,4 @@
-# Octaves of the One
+# Echoes of the Deep
 
 A Fabric tech mod for Minecraft **26.1.2**, themed on **Walter Russell's cosmology** —
 the *two-way universe* of **rhythmic balanced interchange**. Draw **Light** from the
@@ -10,8 +10,8 @@ across a wired *and* wireless grid to run machines, fly, farm, and transmute mat
 > every block maps to one of Russell's ideas, so the tech tree reads as a working model
 > of his system. See [`docs/cosmology.md`](docs/cosmology.md).
 >
-> Internally the namespace stays `echoes` and energy is tracked as **RU** for
-> save-compatibility; everywhere a player looks, it's **Light**.
+> Energy is tracked internally as **RU** for save-compatibility; everywhere a player
+> looks, it's **Light**.
 
 ## 📖 Wiki
 
