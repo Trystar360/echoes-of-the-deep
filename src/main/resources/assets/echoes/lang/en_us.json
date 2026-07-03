@@ -1,5 +1,5 @@
 {
-  "itemGroup.echoes.main": "Octaves of the One",
+  "itemGroup.echoes.main": "Echoes of the Deep",
   "block.echoes.echocite_ore": "Echocite Ore",
   "block.echoes.deepslate_echocite_ore": "Deepslate Echocite Ore",
   "block.echoes.drumstone_ore": "Drumstone Ore",
@@ -234,7 +234,7 @@
   "tooltip.echoes.desc.octave_star_5": "Portable Bound-Light battery (25,600,000). Charge it from your account and carry it.",
   "tooltip.echoes.desc.octave_star_6": "Portable Bound-Light battery (102,400,000). Charge it from your account and carry it.",
 
-  "advancement.echoes.root.title": "Octaves of the One",
+  "advancement.echoes.root.title": "Echoes of the Deep",
   "advancement.echoes.root.description": "Mine Echocite and begin the Great Work.",
   "advancement.echoes.echo_ingot.title": "The First Tone",
   "advancement.echoes.echo_ingot.description": "Smelt Raw Echocite into an Echo Ingot — the core of every recipe.",

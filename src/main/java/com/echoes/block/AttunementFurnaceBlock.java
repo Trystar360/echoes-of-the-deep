@@ -47,10 +47,18 @@ public class AttunementFurnaceBlock extends Block implements EntityBlock {
     }
 
     @Override
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state,
+            net.minecraft.world.entity.LivingEntity placer, net.minecraft.world.item.ItemStack stack) {
+        super.setPlacedBy(world, pos, state, placer, stack);
+        com.echoes.config.Configurable.claimOnPlace(world, pos, placer);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
         if (world.isClientSide() || type != ModBlockEntities.ATTUNEMENT_FURNACE) return null;
-        return (w, p, s, be) -> AttunementFurnaceBlockEntity.tick(w, p, s, (AttunementFurnaceBlockEntity) be);
+        return (w, p, s, be) -> com.echoes.block.entity.AbstractMachineBlockEntity.tick(
+                w, p, s, (com.echoes.block.entity.AbstractMachineBlockEntity) be);
     }
 
     @Override

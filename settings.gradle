@@ -6,4 +6,11 @@ pluginManagement {
     }
 }
 
+// Lets Gradle auto-download a matching JDK when none is installed locally, instead
+// of requiring every contributor's machine (and gradle.properties) to hardcode a
+// path to a pre-installed JDK 25.
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
 rootProject.name = 'echoes-of-the-deep'

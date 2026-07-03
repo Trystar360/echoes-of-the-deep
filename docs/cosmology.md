@@ -1,4 +1,4 @@
-# Octaves of the One — the cosmology
+# Echoes of the Deep — the cosmology
 
 This mod is themed on **Walter Russell's cosmology**: the *two-way universe* of
 **rhythmic balanced interchange**. It's flavour, not physics — but every block and

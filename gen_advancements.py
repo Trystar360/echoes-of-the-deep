@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the "Great Work" advancement tree for Octaves of the One.
+"""Generate the "Great Work" advancement tree for Echoes of the Deep.
 
 The mod's progression spine — Echocite -> Echo Ingot -> Coil/Cell/Conduit ->
 Compressor/Transmuter -> radiation devices -> wireless -> the Octave climb
@@ -62,7 +62,7 @@ A = "advancement"
 
 NODES: list[dict] = [
     dict(key="root", parent=None, icon="echoes:raw_echocite", frame="task",
-         title="Octaves of the One",
+         title="Echoes of the Deep",
          desc="Mine Echocite and begin the Great Work.",
          xp=0, items=["echoes:raw_echocite"]),
 

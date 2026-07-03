@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Echoes of the Deep / Octaves of the One wiki as a static site.
+"""Build the Echoes of the Deep wiki as a static site.
 
 Reads the mod's own data — textures, recipe JSON, and the en_us lang file — and
 emits a themed, fully cross-linked HTML site into docs/site/:
@@ -507,14 +507,14 @@ def page(title, body, depth, active=""):
     return f"""<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{html.escape(title)} · Octaves of the One</title>
+<title>{html.escape(title)} · Echoes of the Deep</title>
 <link rel="stylesheet" href="{up}style.css">
 <link rel="icon" href="{up}assets/icons/resonant_coil.png">
 </head><body>
 <input type="checkbox" id="navtoggle" hidden>
 <header class="topbar">
   <label for="navtoggle" class="burger">☰</label>
-  <a class="brand" href="{up}index.html"><img src="{up}assets/icons/stillness_core.png" alt="">Octaves of the One</a>
+  <a class="brand" href="{up}index.html"><img src="{up}assets/icons/stillness_core.png" alt="">Echoes of the Deep</a>
   <input id="search" class="search" type="search" placeholder="Search blocks &amp; items…" autocomplete="off">
 </header>
 <div class="layout">
@@ -622,8 +622,8 @@ def index_page():
                     f'<div class="grid">{cards}</div></section>')
     hero = """
 <section class="hero">
-  <h1>Octaves of the One</h1>
-  <p>A Fabric tech mod for Minecraft 1.21.4 themed on Walter Russell's two-way universe of
+  <h1>Echoes of the Deep</h1>
+  <p>A Fabric tech mod for Minecraft 26.1 themed on Walter Russell's two-way universe of
      <em>rhythmic balanced interchange</em>. Draw <strong>Light</strong> from the still centre,
      wind it through the octaves, and spend it across a wired and wireless grid.</p>
   <div class="hero-links">
@@ -715,7 +715,7 @@ and returns to it, in equal giving and regiving.”</blockquote>
 substance; <b>generation</b> (compression/charging) and <b>radiation</b> (expansion/discharging) are the
 paired halves of <em>rhythmic balanced interchange</em>; and the 16 wireless channels are <b>octaves</b>.
 The framing is flavour, not physics — internally the namespace stays <code>echoes</code> for
-save-compatibility, and the display names are the “Octaves of the One” reskin.</p>"""),
+save-compatibility, and the display names are a reskin — ids never change, so saves stay compatible.</p>"""),
 
         "guide-reference": ("Reference", f"""
 <h1>Reference</h1>

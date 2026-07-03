@@ -1,8 +1,7 @@
-# Octaves of the One — Wiki
+# Echoes of the Deep — Wiki
 
-A Fabric tech mod for Minecraft **1.21.4** (mod id `echoes`, archive name
-`echoes-of-the-deep`), themed on **Walter Russell's cosmology**: the *two-way universe*
-of **rhythmic balanced interchange**.
+A Fabric tech mod for Minecraft **26.1.2** (mod id `echoes`), themed on **Walter
+Russell's cosmology**: the *two-way universe* of **rhythmic balanced interchange**.
 
 You draw **Light** — the mod's energy — from the still centre of zero, wind it up through
 the octaves by **generation** (compression / charging) and pour it back out by
@@ -10,9 +9,8 @@ the octaves by **generation** (compression / charging) and pour it back out by
 grid to power machines, flight, farms, and a personal matter-transmutation economy.
 
 > Light is **carried, not consumed**. The cosmology is **flavour, not physics** — but
-> every block maps to one of Russell's ideas. Internally the namespace stays `echoes` and
-> energy is tracked as **RU** for save-compatibility; everywhere a player looks, it's
-> **Light**.
+> every block maps to one of Russell's ideas. Energy is tracked internally as **RU** for
+> save-compatibility; everywhere a player looks, it's **Light**.
 
 ![Every block and item texture](images/textures.png)
 
@@ -44,21 +42,22 @@ from your first ore to the transmutation economy.
 | [Ores & Worldgen](Ores-and-Worldgen.md) | Echocite, Drumstone, Silentite — where they spawn and what they drop. |
 | [Ambient Capture](Ambient-Capture.md) | The sound → Light system: mob deaths and the data-driven sound table. |
 | [Crafting & Progression](Crafting-and-Progression.md) | The full recipe reference and tech-tree flow. |
-| [Compatibility](Compatibility.md) | Team Reborn Energy bridge and Trinkets. |
+| [Compatibility](Compatibility.md) | Team Reborn Energy bridge, Trinkets, and the server config file. |
 | [Reference & FAQ](Reference-and-FAQ.md) | Constants table, id list, troubleshooting. |
 
 ---
 
 ## At a glance
 
-- **Minecraft:** 1.21.4 (Fabric) · **Loader** ≥ 0.16.0 · **Fabric API** required · **Java** 21
+- **Minecraft:** 26.1.2 (Fabric) · **Loader** ≥ 0.19.0 · **Fabric API** required · **Java** 25
 - **Author:** Trystar360 · **License:** MIT
 - **Energy unit:** Light (RU internally) · **Wireless channels:** 16 (one per dye colour)
 - **Soft deps:** Team Reborn Energy, Trinkets (both optional)
+- **Server config:** `config/echoes.json` (Hush Cost, death capture, thruster tuning)
 
 The mod is a complete, end-to-end energy + logistics + transmutation loop, **craftable
 from scratch in survival** — every item is obtainable, with no creative-only stubs.
 
 > **Display vs. internal names.** This wiki leads with the **in-world display name** (e.g.
-> *Resonant Coil*) and notes the internal id (`echoes:resonant_coil`) where it helps. The
-> reskin is display-only; saves stay compatible.
+> *Resonant Coil*) and notes the internal id (`echoes:resonant_coil`) where it helps. Ids
+> never change, so saves stay compatible across display renames.

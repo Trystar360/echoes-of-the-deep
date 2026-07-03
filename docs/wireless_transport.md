@@ -70,8 +70,9 @@ router treats them uniformly.
   cheap; free on channels with no energy provider.
 
 ### Quality of life
-- **Frequency Tuner** (handheld) — sneak + right-click a device to copy its channel
-  into the tuner; right-click another to paste it. Batch-tune without dyes.
+- **Frequency Tuner** (handheld) — right-click a device to open its full configuration
+  GUI (channel, redstone, tuning, security); sneak + right-click a wireless device to
+  read off its channel. Set channels with dyes for quick batch-tuning.
 - **Channel Atlas** (handheld) — right-click a device to print its channel roster
   (device/sender/receiver/modifier counts); right-click the air for an overview of
   every active channel.

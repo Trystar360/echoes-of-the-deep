@@ -4,7 +4,7 @@
 
 **The Great Work** is the mod's in-game **advancement tree** — a guided path through the
 whole progression, themed in Walter Russell's voice. Open your advancements (`L`) and find
-the **Octaves of the One** tab; each step pops a toast and points at the next thing to
+the **Echoes of the Deep** tab; each step pops a toast and points at the next thing to
 build, so you never need to memorize recipes or leave the game to read this wiki.
 
 It mirrors the cosmology: matter is mined, wound up into Light, carried and banked, poured
@@ -17,7 +17,7 @@ mod's five strands. *Frames:* ◻️ task · ◆ goal · ★ challenge (challeng
 XP).
 
 ```
-Octaves of the One (mine Raw Echocite)
+Echoes of the Deep (mine Raw Echocite)
 ├─ The First Tone (smelt → Echo Ingot)
 │  ├─ A Winding Engine (Resonant Coil)
 │  │  ├─ Banked Light (Resonance Cell) ─── Catch the Sky ◆ (Storm Caller)

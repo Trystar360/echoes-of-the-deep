@@ -1,6 +1,6 @@
 # The Great Work — a map of projects
 
-A cohesive plan for growing **Octaves of the One**, organized by Walter Russell's
+A cohesive plan for growing **Echoes of the Deep**, organized by Walter Russell's
 cosmology so every addition reinforces the same idea: a *two-way universe* of
 **rhythmic balanced interchange** — Light wound up from stillness (generation,
 compression) and unwound back into it (radiation, expansion), through the octaves.
@@ -179,15 +179,14 @@ Russell's universe is Mind knowing itself; this is the control & information lay
 - ⬜ **True emissive textures** — optional Continuity/Indium glow for the cores.
 - ⬜ **Recipe-viewer compat** — JEI/EMI for the custom Compressor recipes.
 - ⬜ **Sound & particle pass** — a tonal hum on active machines; flight/charge FX.
-- ⬜ **Config** — tune generation/throughput/Hush-Cost without editing code.
+- ✅ **Config** — `config/echoes.json` (Hush Cost, death capture, thruster tuning); deeper
+  systems stay datapack-driven.
 
 ## Wiki & Identity (presentation)
-- ⬜ **Consolidate names & theme, internally and externally** — unify the dual naming
-  so internal ids and external display names line up (e.g. `echoes:resonant_coil` shows as
-  "Resonant Coil"). Today the namespace stays `echoes` and ids keep their original
-  names for save-compatibility while the display layer is the "Octaves of the One"
-  reskin. Decide one canonical identity and reconcile registry ids, lang, docs, and the
-  mod name — with a migration/remap plan so existing worlds still load.
+- ✅ **Consolidate names & theme, internally and externally** — resolved: the mod is
+  **Echoes of the Deep** everywhere a player or browser looks (mod name, creative tab,
+  advancement root, README, wiki), matching the repo/artifact/`echoes` namespace. Ids
+  never changed, so existing worlds load untouched.
 - ⬜ **In-game-style 3D renders on the wiki** — block/item icons that read like the real
   Minecraft inventory render (correct dimetric projection + face shading/AO), replacing
   flat icons. The earlier hand-rolled isometric looked off; needs a proper block-model

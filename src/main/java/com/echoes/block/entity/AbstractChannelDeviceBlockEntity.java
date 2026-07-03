@@ -39,7 +39,12 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
         super(type, pos, state);
     }
 
-    /** Lightweight ticker: guarantees the device is on the roster once loaded. */
+    /**
+     * Lightweight ticker: guarantees the device is on the roster once loaded.
+     * (Vanilla {@code BlockEntity} has no public "just became part of a loaded
+     * level" hook to use instead — that's a Forge-only convenience, not one this
+     * API exposes — so the lazy-registration ticker is the correct approach here.)
+     */
     public static void tick(Level level, BlockPos pos, BlockState state, AbstractChannelDeviceBlockEntity be) {
         if (be.registered || !(level instanceof ServerLevel)) return;
         WirelessNetworkManager.register(be);

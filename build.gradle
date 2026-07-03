@@ -13,6 +13,7 @@ base {
 repositories {
     maven { name = 'TerraformersMC'; url = 'https://maven.terraformersmc.com/releases' }
     maven { name = 'Nucleoid'; url = 'https://maven.nucleoid.xyz/' }
+    mavenCentral() // JUnit, for the plain (non-Minecraft) unit tests under src/test
 }
 
 loom {
@@ -51,6 +52,17 @@ dependencies {
     // with the real mod. The bridge is guarded by isModLoaded("team_reborn_energy") and binds
     // at runtime to whatever 26.1-compatible Team Reborn Energy the player installs. No
     // remapped TR Energy artifact exists for 26.1 yet, hence the compile-only stub.
+
+    // Plain JUnit for src/test — deliberately not Fabric Loader JUnit: the classes
+    // under test (EnergyMath) have zero Minecraft/Mixin dependencies by design, so
+    // they don't need the game's remapped classpath or a Fabric-aware test launcher.
+    testImplementation platform('org.junit:junit-bom:6.1.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 processResources {

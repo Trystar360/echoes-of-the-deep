@@ -33,11 +33,14 @@ in-world as gear "tuned to the octave — rhythmic balanced interchange."
 Look-direction flight, powered by Light:
 
 - **Hold *use*** to fly the way you look; **sprint** = faster, **sneak** = hover/brake.
-- **Fall-damage immunity** while you carry a charged set.
+- **Fall-damage immunity while thrusting** — power your landings. A charged pair sitting
+  idle in your inventory does *not* protect you; only active use does.
 - Cheap to fly off a big reserve. **Recharge** by right-clicking a **Resonant Coil**,
   **Resonance Cell**, or **Wave Coupler**.
 - Portable Light lives on the item itself (a `stored_ru` data component) — fully
   server-side, no client mod needed.
+- Capacity, drain, and speeds are server-tunable in `config/echoes.json`
+  (`thrusterCapacity`, `thrusterDrainPerTick`, `thrusterFlySpeed`, `thrusterSprintSpeed`).
 
 → advancement *"Where You Look."* See [Getting Started](Getting-Started.md).
 
@@ -56,10 +59,10 @@ Full details in [Transmutation & Light Values](Transmutation.md).
 | Item | What it does |
 | --- | --- |
 | **Light Meter** | Right-click a device to read its role, stored / capacity Light, demand, and throughput. |
-| **Frequency Tuner** | Copy/paste a wireless channel between devices; **sneak-use** opens the device configuration GUI. |
+| **Frequency Tuner** | Right-click a device to open its configuration GUI (channel, redstone, tuning, per-face I/O, security); sneak-use on a wireless device reads its channel. |
 | **Channel Atlas** | Lists the devices active on each channel (octave). |
 
 > **Design note.** The gear is intentionally strong. In-world that's justified by *Light is
 > carried, not consumed* — a device tuned to its octave gives back as freely as the grid
-> pours in. Tune the constants in `ResonanceThrustersItem` / `ModItems.ECHO_MATERIAL` to
-> taste.
+> pours in. The thruster numbers are all in `config/echoes.json`; tool constants live in
+> `ModItems.ECHO_MATERIAL`.

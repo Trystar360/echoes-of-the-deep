@@ -17,7 +17,10 @@
 
 ### Throughput
 
-| Conduit | Light/t |
+A network of directly-touching blocks transfers freely; once it contains conduits, its
+per-tick budget is the **sum** of every conduit's contribution:
+
+| Conduit | Light/t each |
 | --- | --- |
 | Wave Conduit | 1,000 |
 | Dense Wave Conduit | 16,000 |
@@ -37,7 +40,7 @@ Channels: **16** (one per dye colour).
 
 | Source | RU |
 | --- | --- |
-| Mob death | 25 |
+| Mob death | 25 (default — `deathRu` in `config/echoes.json`; 0 disables) |
 | Note block / bell / anvil / explosion / beacon / thunder | data-driven (8 / 12 / 40 / 40 / 100 / 2,000) |
 
 Capture radius: **8 blocks** to the nearest Resonant Coil.
@@ -53,16 +56,35 @@ Capture radius: **8 blocks** to the nearest Resonant Coil.
 | Harmonic | 16,384 | Star V | 25,600,000 |
 | | | Star VI | 102,400,000 |
 
+### Server config (`config/echoes.json`)
+
+Written with defaults on first launch; every key is optional (missing keys use defaults):
+
+| Key | Default | Effect |
+| --- | --- | --- |
+| `hushCost` | `false` | Wireless cargo broadcasts drain Light per sender. |
+| `hushRuPerSender` | `20` | The per-sender drain when `hushCost` is on. |
+| `deathRu` | `25` | Light captured per mob death (0 disables). |
+| `thrusterCapacity` | `1000000` | Thrusters' Light reserve. |
+| `thrusterDrainPerTick` | `8` | Flight cost per tick. |
+| `thrusterFlySpeed` | `0.85` | Flight speed, blocks/tick. |
+| `thrusterSprintSpeed` | `1.45` | Sprint flight speed, blocks/tick. |
+
 ## FAQ
 
 **My Resonant Coil isn't charging.** It needs **sound** within 8 blocks (note blocks, mob
 deaths, anvils…). For passive Light, use a **Stillness Core**. See
 [Ambient Capture](Ambient-Capture.md).
 
-**A machine isn't running even though I have power.** Check the conduit line actually
-connects, and read the machine with the **Light Meter** — it shows stored Light and demand.
-Under scarcity, Light is split fairly across all consumers. Also check the device's
-**redstone** mode in its Frequency Tuner config.
+**A machine isn't running even though I have power.** Check the line actually connects
+(touching blocks auto-join; conduits span gaps), and read the machine with the **Light
+Meter** — it shows stored Light and demand. Under scarcity, Light is split fairly across
+all consumers. Also check the machine's **redstone** mode in its Frequency Tuner config —
+*needs-signal* and *off-on-signal* modes really do stop it.
+
+**I can't open someone else's machine.** Devices belong to whoever **places** them, and an
+owner can set theirs to **Private** — only they can open or configure it. Ask the owner to
+flip it back to *Public* in the Frequency Tuner GUI.
 
 **How do I see how much Light something holds?** The **Light Meter** (right-click), or a
 **comparator** next to any storage/generator block.
@@ -75,8 +97,9 @@ other **Receive**. Check the **Channel Atlas**.
 item at its **base** Light Value — container contents and enchantments aren't counted. Don't
 dissolve full containers. See [Transmutation](Transmutation.md).
 
-**Are my saves safe across updates?** Yes — the namespace stays `echoes` and energy is
-tracked internally as RU; the "Octaves of the One" names are a display reskin.
+**Are my saves safe across updates?** Yes — the mod id stays `echoes` and energy is
+tracked internally as RU. Display names (including the mod's own title) are a reskin; ids
+never change.
 
 **Where are the recipes?** The [HTML wiki](https://trystar360.github.io/echoes-of-the-deep/)
 shows every recipe as a clickable grid; [Crafting & Progression](Crafting-and-Progression.md)
@@ -85,7 +108,7 @@ gives the flow; in-game, follow the [Great Work](The-Great-Work.md) advancements
 ## Identifiers
 
 Mod id: **`echoes`**. Block/item ids are `echoes:<snake_case>` of the display name (e.g.
-*Resonant Coil* → `echoes:resonant_coil`). The creative tab is **Octaves of the One**.
+*Resonant Coil* → `echoes:resonant_coil`). The creative tab is **Echoes of the Deep**.
 
 ## Links
 

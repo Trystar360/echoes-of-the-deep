@@ -40,6 +40,9 @@ public class EchoesMod implements ModInitializer {
         // Per-world Resonance network ticking.
         ResonanceNetworkManager.init();
 
+        // Per-world index of loaded Resonators, for fast ambient-capture lookup.
+        com.echoes.energy.ResonatorIndex.init();
+
         // Right-click any energy block with an empty hand to open its Info screen
         // (sneak-click for machines, which keep their function menu on a plain click).
         registerInfoOnRightClick();

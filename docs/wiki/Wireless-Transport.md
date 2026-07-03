@@ -7,10 +7,12 @@ fluids, and Light** with no conduit between them. A channel *is* an octave in th
 
 ## Channels (octaves)
 
-There are **16 channels**, one per **dye colour**. Set a device's channel by sneak-clicking
-it or using a **dye**, or copy one device's channel onto another with the **Frequency
-Tuner** (copy, then paste). The **Channel Atlas** lists how many devices — and how many
-givers / regivers / shapers — are active on each channel.
+There are **16 channels**, one per **dye colour**. Set a device's channel by right-clicking
+it with a **dye**, or step through channels with a **sneak + empty-hand** click. The
+**Frequency Tuner** opens the full configuration GUI (channel among everything else), and
+sneak-clicking a wireless device with the Tuner reads off its current channel. The
+**Channel Atlas** lists how many devices — and how many givers / regivers / shapers — are
+active on each channel.
 
 A channel only connects devices **within one dimension**, *unless* a **Wave Repeater** is on
 it (then it pools across dimensions).
@@ -47,18 +49,20 @@ Each **Wave Amplifier** on the channel doubles the budget, up to **×16**.
 | --- | --- |
 | **Wave Relay** | The core node — send/receive items, fluids, and Light. |
 | **Wave Amplifier** | Widens throughput (×2 each, ×16 cap). |
-| **Wave Filter** | Restricts items to a whitelist via a 3×3 **ghost-slot** GUI (samples aren't consumed). A water bucket in the grid whitelists water. |
+| **Wave Filter** | Restricts items to a whitelist via a 3×3 **ghost-slot** GUI (samples aren't consumed). A water bucket in the grid whitelists water. Multiple filters on one channel **union** their lists. |
 | **Wave Splitter** | Toggles **round-robin** (even split) vs. **fill-first** delivery. |
 | **Wave Repeater** | Extends the channel **across dimensions**. |
 | **Wave Coupler** | Bridges the **wired** RU grid onto a wireless channel (and to Team Reborn Energy). |
-| **Wave Chest** | 27-slot storage that lives **on** a channel — a buffer with no block to face. |
+| **Wave Chest** | 27-slot storage that lives **on** a channel — a buffer with no block to face. Its per-face I/O config gates hopper access. |
 | **Signal Relay** | A wireless **redstone** bus — the strongest broadcast reaches every device on the channel. |
 
 ## Hush Cost (optional)
 
-By default, broadcasting is free — the base relay is cheap and powerful. An opt-in **Hush
-Cost** can be enabled so cargo broadcasts drain a little Light per active sender from the
-channel's energy providers, tying logistics back into the energy economy.
+By default, broadcasting is free — the base relay is cheap and powerful. Set
+**`hushCost: true`** in [`config/echoes.json`](Compatibility.md#server-config) to make
+cargo broadcasts drain a little Light per active sender (default 20, tunable via
+`hushRuPerSender`) from the channel's energy providers, tying logistics back into the
+energy economy.
 
 ## Tips
 
@@ -66,3 +70,5 @@ channel's energy providers, tying logistics back into the energy economy.
 - Devices carry their channel/mode in NBT and **re-register on load**, so wireless networks
   survive restarts with no setup.
 - Use the **Wave Coupler** to feed a remote base's wired grid from a central generator bank.
+- Wireless devices belong to whoever **places** them; flip one to *Private* in the Tuner
+  GUI to stop anyone else reconfiguring your channels.

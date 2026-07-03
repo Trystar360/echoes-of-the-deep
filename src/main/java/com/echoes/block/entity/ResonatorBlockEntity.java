@@ -15,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Captures ambient RU emitted by Resonance events and offers it to the network.
@@ -28,10 +29,27 @@ public class ResonatorBlockEntity extends BlockEntity implements ResonanceNode, 
 
     private final ResonanceStorage storage = new ResonanceStorage(DEFAULT_CAPACITY);
     private final BlockConfig config = new BlockConfig();
+    private boolean indexed = false;
 
     public ResonatorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.RESONATOR, pos, state);
         config.applyDefaults(SPEC);
+    }
+
+    /** Lightweight ticker: guarantees this Resonator is on {@link com.echoes.energy.ResonatorIndex} once loaded. */
+    public static void tick(Level level, BlockPos pos, BlockState state, ResonatorBlockEntity be) {
+        if (be.indexed || !(level instanceof net.minecraft.server.level.ServerLevel sw)) return;
+        com.echoes.energy.ResonatorIndex.register(sw, pos);
+        be.indexed = true;
+    }
+
+    @Override
+    public void setRemoved() {
+        if (level instanceof net.minecraft.server.level.ServerLevel sw) {
+            com.echoes.energy.ResonatorIndex.unregister(sw, getBlockPos());
+        }
+        indexed = false;
+        super.setRemoved();
     }
 
     /** Called by ResonanceEvents when a nearby event fires. */
