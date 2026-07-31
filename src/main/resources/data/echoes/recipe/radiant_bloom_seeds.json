@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "R R",
+    " S ",
+    "R R"
+  ],
+  "key": {
+    "R": "echoes:radiant_dust",
+    "S": "echoes:echo_bloom_seeds"
+  },
+  "result": { "id": "echoes:radiant_bloom_seeds", "count": 1 }
+}
