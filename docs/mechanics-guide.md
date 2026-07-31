@@ -53,6 +53,12 @@ Echo Essence condenses into resources:
 
 So a lit, watered bloom farm is a slow but infinite source of every ore tier.
 
+- **Radiant Bloom (tier 2)**: breed seeds from Echo Bloom Seeds charged with
+  four Radiant Dust. It takes root **only in living Verdant Loam** and yields
+  **Radiant Essence** — a ring of eight condenses straight into a Radiant
+  Ingot (8,192 Bound Light apiece if dissolved instead). A radiant farm is the
+  botanical route into the high-octave tier.
+
 ## Transmutation (ProjectE-style)
 
 The Transmutation Table dissolves items into **Bound Light** (the EMC figure,

@@ -13,6 +13,7 @@
     "echoes:silentite_crystal": 4096,
     "echoes:radiant_dust": 16384,
     "echoes:echo_essence": 4096,
+    "echoes:radiant_essence": 8192,
     "echoes:octave_seed": 8192,
 
     "minecraft:dirt": 1,
