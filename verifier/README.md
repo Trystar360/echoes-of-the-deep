@@ -50,3 +50,8 @@ end-to-end (source → jar).
 - Measures: everything in v7, PLUS AE2-style pattern acceptance — EncodedPatternItem present in src and shipped jar, blank/encoded pattern cards registered, Fabricator template-restock + loadPattern/savePattern in code, pattern card interaction (useItemOn) on the Fabricator block, blank-pattern recipe + lang keys, and a 9th data-integrity test (patternContentIsFullyWired) green.
 - Diff vs v7: +6 checks (pattern item in code, cards registered, template restock, block interaction, recipe+lang, pattern class in jar). 20 total JUnit tests now guard the build.
 - Latest runs: PASS, 38/38 (see runs/*-v8-patterns.log and runs/*-v8-patterns-rerun.log, both exit 0).
+
+## v9 — created 2026-07-31 (feature/abyssal-bloom)
+- Measures: everything in v8, PLUS MA-style tier-3 crop acceptance — AbyssalBloomBlock present in src and shipped jar, abyssal_bloom_seeds/abyssal_essence registered, loot table (age-7 gated) + breed/condense recipes (harmonic-mote breed, netherite-scrap ring, silentite square) present, abyssal_essence seeded at 16384 in light_values.json, darkness-gated growth (getRawBrightness check) in code, challenge advancement with lang keys, and the 10th/11th data-integrity tests (abyssal octave + wiring, harmonic ring break-even) green.
+- Diff vs v8: +7 checks (tier-3 crop in code, seeds registered, loot+recipes, abyssal light value, darkness gating, advancement+lang, crop class in jar). 22 total JUnit tests now guard the build.
+- Latest run: PASS, 45/45 (see runs/*-v9-abyssal-bloom.log, exit 0).
