@@ -87,6 +87,15 @@ Echo Essence carries a seed value of 4,096 Bound Light, so the bloom farm and
 the table feed each other: farm essence → condense resources → dissolve the
 surplus → withdraw whatever you actually need.
 
+The **Resonant Condenser** automates the whole loop (ProjectE's Energy
+Condenser): bound to your account, it dissolves anything hoppered into its
+top/sides into Bound Light — learning each tone as it goes — and automatically
+re-creates one target item into its bottom slot, paying the value from your
+pool. Click it with an item to set the target (the item isn't consumed),
+sneak-click to clear, empty-hand click for a balance readout. A bloom farm on
+a hopper chain becomes a fully automatic ore factory; honors redstone control
+like every machine.
+
 ## The loop
 
 Mine Echocite → double it in the Compressor → build conduits, cells and
