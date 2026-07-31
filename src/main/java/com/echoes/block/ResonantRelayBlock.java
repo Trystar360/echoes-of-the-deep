@@ -48,6 +48,19 @@ public class ResonantRelayBlock extends AbstractChannelDeviceBlock {
     protected InteractionResult onConfigure(Level world, BlockPos pos, Player player,
                                        AbstractChannelDeviceBlockEntity device, ItemStack held) {
         if (device instanceof ResonantRelayBlockEntity relay) {
+            // TD servo parity: right-click with an item toggles it in this relay's
+            // extraction filter (empty hand still cycles the transport mode).
+            if (!held.isEmpty()) {
+                com.echoes.wireless.ServoFilter.Toggle r = relay.toggleFilter(held.getItem());
+                net.minecraft.network.chat.Component name = held.getHoverName();
+                int size = relay.filterList().size();
+                switch (r) {
+                    case ADDED -> sendStatus(player, "message.echoes.servo.added", name, size);
+                    case REMOVED -> sendStatus(player, "message.echoes.servo.removed", name, size);
+                    case FULL -> sendStatus(player, "message.echoes.servo.full", com.echoes.wireless.ServoFilter.CAP);
+                }
+                return InteractionResult.SUCCESS;
+            }
             relay.cycleMode();
             sendStatus(player, "message.echoes.relay.mode",
                     net.minecraft.network.chat.Component.translatable(
