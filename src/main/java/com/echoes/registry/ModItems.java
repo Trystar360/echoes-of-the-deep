@@ -108,6 +108,12 @@ public final class ModItems {
             s -> new net.minecraft.world.item.BlockItem(ModBlocks.ECHO_BLOOM, s), new Item.Properties());
     public static final Item ECHO_ESSENCE = register("echo_essence", Item::new, new Item.Properties());
 
+    // Tier-2 crop: Radiant Bloom — bred from echo seeds + radiant dust; harvest
+    // condenses straight into Radiant Ingots.
+    public static final Item RADIANT_BLOOM_SEEDS = register("radiant_bloom_seeds",
+            s -> new net.minecraft.world.item.BlockItem(ModBlocks.RADIANT_BLOOM, s), new Item.Properties());
+    public static final Item RADIANT_ESSENCE = register("radiant_essence", Item::new, new Item.Properties());
+
     // Machine augments — slotted into the Compressor to tune speed / Light cost / yield.
     public static final Item ACCELERATION_COIL = register("acceleration_coil", Item::new, new Item.Properties());
     public static final Item EFFICIENCY_DAMPER = register("efficiency_damper", Item::new, new Item.Properties());
