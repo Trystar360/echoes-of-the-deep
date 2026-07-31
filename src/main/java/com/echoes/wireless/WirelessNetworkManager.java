@@ -205,20 +205,30 @@ public final class WirelessNetworkManager {
                                       List<WirelessDevice> passive, long mult, Set<Item> whitelist, boolean roundRobin) {
         int givers = Math.max(senders.size(), 1);
         long budget = Math.min(MAX_ITEMS * mult, givers * ITEMS_PER_SENDER * mult);
-        List<Storage<ItemVariant>> sendSources = collectItems(senders, true);
         List<Storage<ItemVariant>> recvTargets = collectItems(receivers, false);
         List<Storage<ItemVariant>> stores = collectItems(passive, false); // ContainerStorage does both
 
         final Set<Item> wl = whitelist;
-        Predicate<ItemVariant> filter = wl == null ? v -> true : v -> wl.contains(v.getItem());
+        Predicate<ItemVariant> channelFilter = wl == null ? v -> true : v -> wl.contains(v.getItem());
 
         // Pass 1: active senders feed receivers and buffer into passive stores.
+        // Each sender's servo filter composes with the channel whitelist by
+        // intersection: an item must pass both to leave its inventory.
         List<Storage<ItemVariant>> pass1Targets = new ArrayList<>(recvTargets);
         pass1Targets.addAll(stores);
-        moveAll(sendSources, pass1Targets, budget, filter, roundRobin);
+        long remaining = budget;
+        for (WirelessDevice d : senders) {
+            if (remaining <= 0) break;
+            Storage<ItemVariant> s = d.wirelessItems();
+            if (s == null || !s.supportsExtraction()) continue;
+            final Set<Item> servo = d.extractionFilter();
+            Predicate<ItemVariant> filter = servo == null ? channelFilter
+                    : v -> channelFilter.test(v) && servo.contains(v.getItem());
+            remaining -= moveAll(List.of(s), pass1Targets, remaining, filter, roundRobin);
+        }
 
         // Pass 2: passive stores drain into receivers (never store->store, no shuffle).
-        moveAll(stores, recvTargets, budget, filter, roundRobin);
+        moveAll(stores, recvTargets, budget, channelFilter, roundRobin);
     }
 
     private static List<Storage<ItemVariant>> collectItems(List<WirelessDevice> devices, boolean extract) {
@@ -258,13 +268,15 @@ public final class WirelessNetworkManager {
         moveAll(sources, targets, budget, filter, roundRobin);
     }
 
-    /** Generic Transfer-API distribution: drain sources into targets up to budget. */
-    private static <T> void moveAll(List<Storage<T>> sources, List<Storage<T>> targets,
+    /** Generic Transfer-API distribution: drain sources into targets up to budget.
+     *  Returns the amount actually moved (so callers can share one budget across
+     *  sequential per-sender calls). */
+    private static <T> long moveAll(List<Storage<T>> sources, List<Storage<T>> targets,
                                     long budget, Predicate<T> filter, boolean roundRobin) {
-        if (sources.isEmpty() || targets.isEmpty() || budget <= 0) return;
+        if (sources.isEmpty() || targets.isEmpty() || budget <= 0) return 0;
         long perTarget = roundRobin ? Math.max(1, budget / targets.size()) : budget;
+        long moved = 0;
         try (Transaction tx = Transaction.openOuter()) {
-            long moved = 0;
             outer:
             for (Storage<T> target : targets) {
                 long local = 0;
@@ -279,6 +291,7 @@ public final class WirelessNetworkManager {
             }
             tx.commit();
         }
+        return moved;
     }
 
     /** RU is not a Transfer-API resource, so bridge the devices' custom energy nodes. */
