@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "EE",
+    "EE"
+  ],
+  "key": { "E": "echoes:abyssal_essence" },
+  "result": { "id": "echoes:silentite_crystal", "count": 4 }
+}
