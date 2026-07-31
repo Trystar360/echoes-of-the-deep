@@ -162,7 +162,7 @@
   "tooltip.echoes.desc.lumewood_sapling": "Plant on grass or Verdant Loam to grow a Lumewood tree.",
   "tooltip.echoes.desc.lumebloom": "A glowing flower — grants Glowing when stood in.",
   "tooltip.echoes.desc.echo_bloom_seeds": "Plant on farmland or Verdant Loam. Mature blooms yield Echo Essence; both growth auras accelerate it.",
-  "tooltip.echoes.desc.echo_essence": "Crystallised growth. Ring eight to condense into Radiant Dust.",
+  "tooltip.echoes.desc.echo_essence": "Crystallised growth. Condenses into any ore tier — or 2 Radiant Dust in a ring.",
   "tooltip.echoes.desc.lume_lantern": "A full-bright decorative block of woven Light.",
   "tooltip.echoes.desc.echocite_bricks": "Luminous masonry crafted from Echocite Dust.",
   "tooltip.echoes.desc.echocite_brick_stairs": "Echocite brick stairs.",
@@ -282,6 +282,12 @@
   "advancement.echoes.octave_star.description": "Charge an Octave Star and carry your Bound Light in your pocket.",
   "advancement.echoes.harmonic_mote.title": "The Resolved Crest",
   "advancement.echoes.harmonic_mote.description": "Wind a Mote all the way to the Harmonic tone — the chord resolved to balance.",
+  "advancement.echoes.fabricator.title": "The Loom of Form",
+  "advancement.echoes.fabricator.description": "Craft a Resonant Fabricator — lay out any recipe in its grid and it autocrafts it for Light. Feed it over a channel and it never stops.",
+  "advancement.echoes.echo_bloom.title": "Sow the Echo",
+  "advancement.echoes.echo_bloom.description": "Craft Echo Bloom Seeds and plant them on farmland or Verdant Loam — both growth auras hasten the bloom.",
+  "advancement.echoes.echo_essence.title": "Crystallised Growth",
+  "advancement.echoes.echo_essence.description": "Harvest Echo Essence from a mature Echo Bloom — condense it into any ore tier, or dissolve it for 4,096 Bound Light.",
   "block.echoes.fabricator": "Resonant Fabricator",
   "tooltip.echoes.desc.fabricator": "Resonant Fabricator — autocrafts the shaped recipe laid out in its grid, spending Light per craft."
 }

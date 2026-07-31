@@ -1,0 +1,29 @@
+command: verifier/v5/verify.sh (post-tooltip-sync re-run)
+timestamp: 2026-07-31T09:26:31+00:00
+PASS: mod jar exists (build/libs)
+PASS: unit tests green
+asset integrity OK (92 textures, 291 lang keys)
+PASS: asset integrity (models->textures, lang keys)
+all 83 block/item textures are 32x (or 32x animated strips)
+PASS: textures are 32x
+PASS: ProjectE-style transmutation
+PASS: TD-style conduits
+PASS: MA-style botanicals
+PASS: AE2-style wireless channels
+PASS: AE2-style autocrafting (Fabricator)
+PASS: item transport over network
+PASS: MA-style growth acceleration
+PASS: fabricator in shipped jar
+PASS: MA-style resource crop (Echo Bloom)
+PASS: echo bloom seeds registered
+PASS: echo bloom loot+recipes
+PASS: echo bloom in shipped jar
+PASS: essence in Bound-Light value table (4096)
+PASS: essence resource recipes
+PASS: mechanics guide covers all four systems
+PASS: mod version bumped (0.3.0)
+PASS: new advancements present
+PASS: advancement lang keys
+PASS: all advancement JSON valid
+PASS: 0.3.0 jar built
+exit=0
