@@ -3,6 +3,7 @@ package com.echoes.client;
 import com.echoes.client.screen.AttunementFurnaceScreen;
 import com.echoes.client.screen.ConfigScreen;
 import com.echoes.client.screen.CrusherScreen;
+import com.echoes.client.screen.FabricatorScreen;
 import com.echoes.client.screen.HarmonicFilterScreen;
 import com.echoes.client.screen.InfoScreen;
 import com.echoes.client.screen.TransmutationTableScreen;
@@ -21,6 +22,7 @@ public class EchoesClient implements ClientModInitializer {
     public void onInitializeClient() {
         MenuScreens.register(ModScreens.CRUSHER, CrusherScreen::new);
         MenuScreens.register(ModScreens.ATTUNEMENT_FURNACE, AttunementFurnaceScreen::new);
+        MenuScreens.register(ModScreens.FABRICATOR, FabricatorScreen::new);
         MenuScreens.register(ModScreens.HARMONIC_FILTER, HarmonicFilterScreen::new);
         MenuScreens.register(ModScreens.CONFIG, ConfigScreen::new);
         MenuScreens.register(ModScreens.INFO, InfoScreen::new);

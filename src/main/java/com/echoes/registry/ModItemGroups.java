@@ -32,6 +32,7 @@ public final class ModItemGroups {
                     output.accept(ModBlocks.RESONANCE_CAPACITOR);
                     output.accept(ModBlocks.CRUSHER);
                     output.accept(ModBlocks.ATTUNEMENT_FURNACE);
+                    output.accept(ModBlocks.FABRICATOR);
                     output.accept(ModBlocks.RADIATOR);
                     output.accept(ModBlocks.WARMTH_RADIATOR);
                     output.accept(ModBlocks.POLARITY_FIELD);

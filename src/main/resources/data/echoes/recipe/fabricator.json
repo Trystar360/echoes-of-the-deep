@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "IeI",
+    "ACA",
+    "IeI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "e": "echoes:echo_ingot",
+    "A": "echoes:acceleration_coil",
+    "C": "minecraft:crafting_table"
+  },
+  "result": {
+    "id": "echoes:fabricator",
+    "count": 1
+  }
+}

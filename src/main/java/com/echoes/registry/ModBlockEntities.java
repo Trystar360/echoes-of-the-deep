@@ -6,6 +6,7 @@ import com.echoes.block.entity.ConduitBlockEntity;
 import com.echoes.block.entity.ConduitCouplerBlockEntity;
 import com.echoes.block.entity.CrusherBlockEntity;
 import com.echoes.block.entity.DenseConduitBlockEntity;
+import com.echoes.block.entity.FabricatorBlockEntity;
 import com.echoes.block.entity.OctaveCoilBlockEntity;
 import com.echoes.block.entity.OctaveConduitBlockEntity;
 import com.echoes.block.entity.StormCallerBlockEntity;
@@ -59,6 +60,8 @@ public final class ModBlockEntities {
             register("compressor", CrusherBlockEntity::new, ModBlocks.CRUSHER);
     public static final BlockEntityType<AttunementFurnaceBlockEntity> ATTUNEMENT_FURNACE =
             register("transmuter", AttunementFurnaceBlockEntity::new, ModBlocks.ATTUNEMENT_FURNACE);
+    public static final BlockEntityType<FabricatorBlockEntity> FABRICATOR =
+            register("fabricator", FabricatorBlockEntity::new, ModBlocks.FABRICATOR);
     public static final BlockEntityType<ResonantRelayBlockEntity> RESONANT_RELAY =
             register("wave_relay", ResonantRelayBlockEntity::new, ModBlocks.RESONANT_RELAY);
     public static final BlockEntityType<ResonantAmplifierBlockEntity> RESONANT_AMPLIFIER =

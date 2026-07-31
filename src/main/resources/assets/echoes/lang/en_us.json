@@ -119,7 +119,6 @@
   "tooltip.echoes.stillness.lore": "The still magnetic centre of zero — all motion springs from rest.",
   "message.echoes.polarity.attract": "Polarity: Attract (draw in)",
   "message.echoes.polarity.repel": "Polarity: Repel (cast out)",
-
   "tooltip.echoes.desc.echocite_ore": "Overworld ore — drops Raw Echocite, the base of every recipe.",
   "tooltip.echoes.desc.deepslate_echocite_ore": "The deepslate form of Echocite Ore.",
   "tooltip.echoes.desc.drumstone_ore": "A percussive ore — drops Drumstone Shards for Drum Cores.",
@@ -166,7 +165,6 @@
   "tooltip.echoes.desc.octave_seed": "The octave's rest point — catalyst that opens the transmutation chain.",
   "tooltip.echoes.desc.radiant_dust": "Charged dust — smelt or blast into a Radiant Ingot.",
   "tooltip.echoes.desc.radiant_ingot": "Block-of-light tier material; builds the Greater Resonance Cell.",
-
   "tooltip.echoes.desc.raw_echocite": "Smelt into an Echo Ingot, or crush for doubled dust.",
   "tooltip.echoes.desc.echocite_dust": "Smelt into an Echo Ingot. Crushed from raw echocite.",
   "tooltip.echoes.desc.echo_ingot": "The core crafting material of the mod.",
@@ -185,7 +183,6 @@
   "tooltip.echoes.desc.resonant_shovel": "Resonant tool — tuned to the octave; deliberately over-tuned.",
   "tooltip.echoes.desc.resonant_sword": "Resonant blade — tuned to the octave; a hefty attack bonus.",
   "tooltip.echoes.desc.resonant_hoe": "Resonant tool — tuned to the octave; deliberately over-tuned.",
-
   "block.echoes.transmutation_table": "Transmutation Table",
   "item.echoes.transmutation_tablet": "Transmutation Tablet",
   "screen.echoes.dissolve": "Dissolve / Learn",
@@ -216,7 +213,6 @@
   "tooltip.echoes.desc.mediant_mote": "The chord's middle tone (1,024 Light Value).",
   "tooltip.echoes.desc.dominant_mote": "The strong tone, nearing the crest (4,096 Light Value).",
   "tooltip.echoes.desc.harmonic_mote": "The resolved crest — balance (16,384 Light Value).",
-
   "item.echoes.octave_star_1": "Octave Star I",
   "item.echoes.octave_star_2": "Octave Star II",
   "item.echoes.octave_star_3": "Octave Star III",
@@ -233,7 +229,6 @@
   "tooltip.echoes.desc.octave_star_4": "Portable Bound-Light battery (6,400,000). Charge it from your account and carry it.",
   "tooltip.echoes.desc.octave_star_5": "Portable Bound-Light battery (25,600,000). Charge it from your account and carry it.",
   "tooltip.echoes.desc.octave_star_6": "Portable Bound-Light battery (102,400,000). Charge it from your account and carry it.",
-
   "advancement.echoes.root.title": "Echoes of the Deep",
   "advancement.echoes.root.description": "Mine Echocite and begin the Great Work.",
   "advancement.echoes.echo_ingot.title": "The First Tone",
@@ -281,5 +276,7 @@
   "advancement.echoes.octave_star.title": "Carry the Light",
   "advancement.echoes.octave_star.description": "Charge an Octave Star and carry your Bound Light in your pocket.",
   "advancement.echoes.harmonic_mote.title": "The Resolved Crest",
-  "advancement.echoes.harmonic_mote.description": "Wind a Mote all the way to the Harmonic tone — the chord resolved to balance."
+  "advancement.echoes.harmonic_mote.description": "Wind a Mote all the way to the Harmonic tone — the chord resolved to balance.",
+  "block.echoes.fabricator": "Resonant Fabricator",
+  "tooltip.echoes.desc.fabricator": "Resonant Fabricator — autocrafts the shaped recipe laid out in its grid, spending Light per craft."
 }
