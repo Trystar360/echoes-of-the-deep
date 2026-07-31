@@ -29,6 +29,13 @@ Amplifiers double throughput, Wave Repeaters cross dimensions, and the Signal
 Relay broadcasts redstone. The Wave Atlas lists every device per channel; the
 Wave Tuner copy/pastes channel assignments; the Light Meter reads any device.
 
+Every wireless device honors the same TD-style redstone control as wired
+machines (always on / needs signal / off on signal, set in its config screen)
+— and "powered" means a live local signal **or** a live Signal Relay bus on
+its channel, so one Signal Relay can switch an entire channel's relays on or
+off from anywhere. A gated-off device stops sending, receiving, and lending
+its chest storage until power returns.
+
 Because the Fabricator's crafting grid is a real inventory, a Wave Chest (or
 hopper) can restock its ingredients and pull its products — the channel
 network doubles as your AE2-style autocrafting supply chain.
@@ -58,6 +65,15 @@ So a lit, watered bloom farm is a slow but infinite source of every ore tier.
   **Radiant Essence** — a ring of eight condenses straight into a Radiant
   Ingot (8,192 Bound Light apiece if dissolved instead). A radiant farm is the
   botanical route into the high-octave tier.
+
+- **Abyssal Bloom (tier 3)**: breed seeds from Radiant Bloom Seeds charged
+  with four Harmonic Motes. It also demands Verdant Loam — and **darkness**:
+  any light level above 4 stalls it, so farm it in caves, roofed rooms, or
+  the deep dark. Mature blooms drop **Abyssal Essence** (16,384 Bound Light
+  apiece — one full octave above radiant). A ring of eight Radiant Essence
+  condenses into four Harmonic Motes (exactly break-even), a ring of eight
+  Abyssal Essence yields **Netherite Scrap**, and a 2x2 square yields four
+  Silentite Crystals — the endgame sink for a maxed-out farm.
 
 ## Transmutation (ProjectE-style)
 
