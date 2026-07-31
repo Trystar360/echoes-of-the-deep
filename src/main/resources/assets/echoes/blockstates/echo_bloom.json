@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "age=0": { "model": "echoes:block/echo_bloom_stage0" },
+    "age=1": { "model": "echoes:block/echo_bloom_stage0" },
+    "age=2": { "model": "echoes:block/echo_bloom_stage1" },
+    "age=3": { "model": "echoes:block/echo_bloom_stage1" },
+    "age=4": { "model": "echoes:block/echo_bloom_stage2" },
+    "age=5": { "model": "echoes:block/echo_bloom_stage2" },
+    "age=6": { "model": "echoes:block/echo_bloom_stage3" },
+    "age=7": { "model": "echoes:block/echo_bloom_stage3" }
+  }
+}

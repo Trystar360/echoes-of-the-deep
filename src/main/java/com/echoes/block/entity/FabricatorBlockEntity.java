@@ -141,7 +141,22 @@ public class FabricatorBlockEntity extends AbstractMachineBlockEntity {
         ItemStack result = recipe.assemble(input);
         if (result.isEmpty()) return;
         for (int s = GRID_FIRST; s <= GRID_LAST; s++) {
-            if (!getItem(s).isEmpty()) getItem(s).shrink(1);
+            ItemStack stack = getItem(s);
+            if (stack.isEmpty()) continue;
+            ItemStack remainder = stack.getCraftingRemainder().create();
+            stack.shrink(1);
+            // Return container items (empty buckets etc.) to their grid slot, or to
+            // the output if the slot kept its stack — never silently void them.
+            if (!remainder.isEmpty()) {
+                if (getItem(s).isEmpty()) {
+                    setItem(s, remainder.copy());
+                } else if (getItem(OUTPUT).isEmpty()) {
+                    setItem(OUTPUT, remainder.copy());
+                } else {
+                    net.minecraft.world.Containers.dropItemStack(sw, getBlockPos().getX() + 0.5,
+                            getBlockPos().getY() + 1.0, getBlockPos().getZ() + 0.5, remainder.copy());
+                }
+            }
         }
         if (getItem(OUTPUT).isEmpty()) setItem(OUTPUT, result.copy());
         else getItem(OUTPUT).grow(result.getCount());

@@ -88,6 +88,8 @@ public final class ModItemGroups {
                     output.accept(ModItems.DRUM_CORE);
                     output.accept(ModItems.ECHO_DUST);
                     output.accept(ModItems.OCTAVE_SEED);
+                    output.accept(ModItems.ECHO_BLOOM_SEEDS);
+                    output.accept(ModItems.ECHO_ESSENCE);
                     output.accept(ModItems.RADIANT_DUST);
                     output.accept(ModItems.RADIANT_INGOT);
                     // The Verdant Octave — transmutation economy

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "echoes:lumebloom",
+    "echoes:echo_dust",
+    "echoes:echo_dust",
+    "minecraft:wheat_seeds"
+  ],
+  "result": { "id": "echoes:echo_bloom_seeds", "count": 1 }
+}

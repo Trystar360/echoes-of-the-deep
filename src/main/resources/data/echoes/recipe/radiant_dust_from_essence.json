@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "EEE",
+    "E E",
+    "EEE"
+  ],
+  "key": { "E": "echoes:echo_essence" },
+  "result": { "id": "echoes:radiant_dust", "count": 2 }
+}
