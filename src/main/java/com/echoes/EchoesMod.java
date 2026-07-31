@@ -76,6 +76,11 @@ public class EchoesMod implements ModInitializer {
         ItemStorage.SIDED.registerForBlockEntity(
                 (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.ATTUNEMENT_FURNACE);
 
+        // Fabricator exposes its crafting grid (insert) and output (extract) to
+        // hoppers/pipes — this is how the network restocks an autocrafter.
+        ItemStorage.SIDED.registerForBlockEntity(
+                (be, side) -> ContainerStorage.of(be, side), ModBlockEntities.FABRICATOR);
+
         // Optional cross-mod energy bridge — only when Team Reborn Energy is present.
         // Isolated in a separate class so its TR Energy references aren't loaded otherwise.
         if (FabricLoader.getInstance().isModLoaded("team_reborn_energy")) {
