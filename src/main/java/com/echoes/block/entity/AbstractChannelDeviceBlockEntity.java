@@ -3,6 +3,7 @@ package com.echoes.block.entity;
 import com.echoes.config.BlockConfig;
 import com.echoes.config.Configurable;
 import com.echoes.config.ConfigSpec;
+import com.echoes.config.RedstoneMode;
 import com.echoes.wireless.WirelessDevice;
 import com.echoes.wireless.WirelessNetworkManager;
 import net.minecraft.world.level.block.state.BlockState;
@@ -79,6 +80,7 @@ public abstract class AbstractChannelDeviceBlockEntity extends BlockEntity
     @Override public BlockPos wirelessPos() { return getBlockPos(); }
     @Override public ServerLevel wirelessWorld() { return (ServerLevel) level; }
     @Override public int wirelessChannel() { return config.channel(); }
+    @Override public RedstoneMode redstoneMode() { return config.redstone(); }
 
     @Override
     public void setRemoved() {

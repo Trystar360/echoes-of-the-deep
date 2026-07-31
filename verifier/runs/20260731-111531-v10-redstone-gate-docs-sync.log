@@ -1,0 +1,57 @@
+command: verifier/v10/verify.sh
+timestamp: 2026-07-31T11:15:31+00:00
+note: re-run after docs/mechanics-guide.md gained the Abyssal Bloom tier-3 paragraph (docs-only change)
+PASS: mod jar exists (build/libs)
+PASS: unit tests green
+asset integrity OK (106 textures, 316 lang keys)
+PASS: asset integrity (models->textures, lang keys)
+all 97 block/item textures are 32x (or 32x animated strips)
+PASS: textures are 32x
+PASS: ProjectE-style transmutation
+PASS: TD-style conduits
+PASS: MA-style botanicals
+PASS: AE2-style wireless channels
+PASS: AE2-style autocrafting (Fabricator)
+PASS: item transport over network
+PASS: MA-style growth acceleration
+PASS: fabricator in shipped jar
+PASS: MA-style resource crop (Echo Bloom)
+PASS: echo bloom seeds registered
+PASS: echo bloom loot+recipes
+PASS: echo bloom in shipped jar
+PASS: essence in Bound-Light value table (4096)
+PASS: essence resource recipes
+PASS: mechanics guide covers all four systems
+PASS: mod version bumped (0.3.0)
+PASS: new advancements present
+PASS: advancement lang keys
+PASS: all advancement JSON valid
+PASS: 0.3.0 jar built
+PASS: tier-2 resource crop (Radiant Bloom)
+PASS: radiant bloom seeds registered
+PASS: radiant bloom loot+recipes
+PASS: radiant essence in Bound-Light table (8192)
+PASS: radiant essence advancement+lang
+PASS: radiant bloom in shipped jar
+PASS: data-integrity test suite present
+PASS: data-integrity tests green
+PASS: AE2-style encoded pattern item
+PASS: pattern cards registered
+PASS: fabricator template restock
+PASS: pattern card interaction
+PASS: pattern recipe+lang
+PASS: encoded pattern in shipped jar
+PASS: tier-3 resource crop (Abyssal Bloom)
+PASS: abyssal bloom seeds registered
+PASS: abyssal bloom loot+recipes
+PASS: abyssal essence in Bound-Light table (16384)
+PASS: darkness-gated growth
+PASS: abyssal essence advancement+lang
+PASS: abyssal bloom in shipped jar
+PASS: TD-style redstone gate logic (RedstoneGate)
+PASS: wireless devices expose redstone mode
+PASS: network manager enforces redstone gating
+PASS: redstone gate tests green
+PASS: docs cover wireless redstone gating
+PASS: redstone gate in shipped jar
+exit=0
