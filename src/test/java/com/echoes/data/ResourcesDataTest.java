@@ -207,4 +207,37 @@ class ResourcesDataTest {
         JsonObject adv = readJson(DATA.resolve("advancement/great_work/abyssal_essence.json"));
         assertEquals("echoes:great_work/radiant_essence", adv.get("parent").getAsString());
     }
+
+    @Test
+    void condenserContentIsFullyWired() {
+        // Crafting recipe exists and yields the registered block.
+        Path recipe = DATA.resolve("recipe/resonant_condenser.json");
+        assertTrue(Files.exists(recipe), "missing recipe resonant_condenser");
+        JsonObject r = readJson(recipe);
+        assertEquals("echoes:resonant_condenser", r.getAsJsonObject("result").get("id").getAsString());
+        // Loot table drops itself.
+        String loot;
+        try {
+            loot = Files.readString(DATA.resolve("loot_table/blocks/resonant_condenser.json"));
+        } catch (IOException e) {
+            loot = null;
+            fail("missing loot table resonant_condenser");
+        }
+        assertTrue(loot.contains("echoes:resonant_condenser"), "condenser loot table must drop the block");
+        // Blockstate + models + item def + textures.
+        assertTrue(Files.exists(ASSETS.resolve("blockstates/resonant_condenser.json")), "missing blockstate");
+        assertTrue(Files.exists(ASSETS.resolve("models/block/resonant_condenser.json")), "missing block model");
+        assertTrue(Files.exists(ASSETS.resolve("models/item/resonant_condenser.json")), "missing item model");
+        assertTrue(Files.exists(ASSETS.resolve("items/resonant_condenser.json")), "missing item def");
+        assertTrue(Files.exists(ASSETS.resolve("textures/block/resonant_condenser.png")), "missing side texture");
+        assertTrue(Files.exists(ASSETS.resolve("textures/block/resonant_condenser_top.png")), "missing top texture");
+        // Lang keys: block name, tooltip, and the four interaction messages.
+        JsonObject lang = readJson(ASSETS.resolve("lang/en_us.json"));
+        for (String k : new String[]{"block.echoes.resonant_condenser",
+                "tooltip.echoes.desc.resonant_condenser", "message.echoes.condenser.target",
+                "message.echoes.condenser.cleared", "message.echoes.condenser.status.empty",
+                "message.echoes.condenser.status.target"}) {
+            assertTrue(lang.has(k), "missing lang key " + k);
+        }
+    }
 }
