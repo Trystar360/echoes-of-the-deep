@@ -69,7 +69,7 @@ public final class ModItems {
     public static final Item OCTAVE_STAR_5 = register("octave_star_5",
             s -> new com.echoes.item.OctaveStarItem(5, 25_600_000L, s), new Item.Properties().stacksTo(1));
     public static final Item OCTAVE_STAR_6 = register("octave_star_6",
-            s -> new com.echoes.item.OctaveStarItem(6, 102_400_000L, s), new Item.Properties().stacksTo(1));
+            s -> new com.echoes.item.OctaveStarItem(6, 102_400L, s), new Item.Properties().stacksTo(1));
     public static final Item[] OCTAVE_STARS = {
             OCTAVE_STAR_1, OCTAVE_STAR_2, OCTAVE_STAR_3, OCTAVE_STAR_4, OCTAVE_STAR_5, OCTAVE_STAR_6 };
 
@@ -80,6 +80,9 @@ public final class ModItems {
             ChannelAtlasItem::new, new Item.Properties().stacksTo(1));
     public static final Item RESONANCE_METER = register("light_meter",
             ResonanceMeterItem::new, new Item.Properties().stacksTo(1));
+    // AE2-style wireless terminal: remote access to a channel's Resonant Chests.
+    public static final Item WAVE_TERMINAL = register("wave_terminal",
+            com.echoes.item.WaveTerminalItem::new, new Item.Properties().stacksTo(1));
     public static final Item RESONANCE_THRUSTERS = register("resonant_thrusters",
             ResonanceThrustersItem::new, new Item.Properties().stacksTo(1));
 
