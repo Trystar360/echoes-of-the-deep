@@ -101,6 +101,13 @@ public final class ModItems {
     public static final Item RESONANT_HOE = register("resonant_hoe",
             ResonantToolItem::new, new Item.Properties().hoe(ECHO_MATERIAL, -2.0f, 0.0f));
 
+    // The Verdant Octave — Echo Bloom crop (Mystical-Agriculture-style resource crop).
+    // Seeds plant the bloom; a mature bloom drops Echo Essence, which condenses
+    // (ring recipe) into Radiant Dust — feeding the existing transmutation economy.
+    public static final Item ECHO_BLOOM_SEEDS = register("echo_bloom_seeds",
+            s -> new net.minecraft.world.item.BlockItem(ModBlocks.ECHO_BLOOM, s), new Item.Properties());
+    public static final Item ECHO_ESSENCE = register("echo_essence", Item::new, new Item.Properties());
+
     // Machine augments — slotted into the Compressor to tune speed / Light cost / yield.
     public static final Item ACCELERATION_COIL = register("acceleration_coil", Item::new, new Item.Properties());
     public static final Item EFFICIENCY_DAMPER = register("efficiency_damper", Item::new, new Item.Properties());
