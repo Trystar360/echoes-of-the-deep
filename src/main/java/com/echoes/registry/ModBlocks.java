@@ -2,6 +2,7 @@ package com.echoes.registry;
 
 import com.echoes.EchoesMod;
 import com.echoes.block.AttunementFurnaceBlock;
+import com.echoes.block.FabricatorBlock;
 import com.echoes.block.BalancerBlock;
 import com.echoes.block.ConduitBlock;
 import com.echoes.block.ConduitCouplerBlock;
@@ -94,6 +95,8 @@ public final class ModBlocks {
             CrusherBlock::new, BlockBehaviour.Properties.of().strength(3.5f).requiresCorrectToolForDrops());
     public static final Block ATTUNEMENT_FURNACE = register("transmuter",
             AttunementFurnaceBlock::new, BlockBehaviour.Properties.of().strength(3.5f).requiresCorrectToolForDrops());
+    public static final Block FABRICATOR = register("fabricator",
+            FabricatorBlock::new, BlockBehaviour.Properties.of().strength(3.5f).requiresCorrectToolForDrops());
     public static final Block RESONANT_RELAY = register("wave_relay",
             ResonantRelayBlock::new, BlockBehaviour.Properties.of().strength(2.0f).noOcclusion());
 
