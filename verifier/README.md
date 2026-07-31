@@ -25,3 +25,8 @@ end-to-end (source → jar).
 - Measures: everything in v2, PLUS MA-style resource crop acceptance — EchoBloomBlock present in src and shipped jar, echo_bloom_seeds/echo_essence registered, loot table (age-7 essence drop) and essence→radiant-dust condense recipe present.
 - Diff vs v2: +4 checks (resource crop in code, seeds registered, loot+recipes, crop class in jar). Also runs v2's asset/lang checks against the 6 new echo-bloom textures (32x after pipeline upgrade).
 - Latest run: PASS (see runs/*-v3-echo-bloom.log, exit 0).
+
+## v4 — created 2026-07-31 (feature/essence-economy)
+- Measures: everything in v3, PLUS ProjectE-economy integration of the crop line — echo_essence seeded at 4096 in light_values.json (consistent with the 8→2 radiant-dust ring), three essence→resource recipes (raw echocite, drumstone shard, silentite crystal), and docs/mechanics-guide.md covering all four system families.
+- Diff vs v3: +3 checks (essence light value, essence resource recipes, mechanics guide coverage).
+- Latest run: PASS, 19/19 (see runs/*-v4-essence-economy.log, exit 0).

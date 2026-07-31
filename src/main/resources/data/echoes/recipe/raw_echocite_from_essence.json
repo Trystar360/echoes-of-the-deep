@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [ "EEE" ],
+  "key": { "E": "echoes:echo_essence" },
+  "result": { "id": "echoes:raw_echocite", "count": 2 }
+}
