@@ -1,5 +1,6 @@
 package com.echoes.data;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -239,5 +241,45 @@ class ResourcesDataTest {
                 "message.echoes.condenser.status.target"}) {
             assertTrue(lang.has(k), "missing lang key " + k);
         }
+    }
+
+    @Test
+    void waveTerminalContentIsFullyWired() {
+        // Crafting recipe exists and yields the terminal, keyed to real items/blocks.
+        Path recipe = DATA.resolve("recipe/wave_terminal.json");
+        assertTrue(Files.exists(recipe), "missing recipe wave_terminal");
+        JsonObject r = readJson(recipe);
+        assertEquals("echoes:wave_terminal", r.getAsJsonObject("result").get("id").getAsString());
+        JsonObject key = r.getAsJsonObject("key");
+        for (String ing : new String[]{"echoes:wave_tuner", "echoes:wave_chest", "echoes:echo_ingot"}) {
+            boolean found = false;
+            for (Map.Entry<String, JsonElement> e : key.entrySet()) {
+                String v = e.getValue().isJsonPrimitive()
+                        ? e.getValue().getAsString()
+                        : e.getValue().getAsJsonObject().get("item").getAsString();
+                if (ing.equals(v)) found = true;
+            }
+            assertTrue(found, "recipe must use " + ing);
+        }
+        // Item def + model + texture (32x).
+        assertTrue(Files.exists(ASSETS.resolve("items/wave_terminal.json")), "missing item def");
+        assertTrue(Files.exists(ASSETS.resolve("models/item/wave_terminal.json")), "missing item model");
+        assertTrue(Files.exists(ASSETS.resolve("textures/item/wave_terminal.png")), "missing texture");
+        // Lang keys: item name, tooltip, and the three interaction messages.
+        JsonObject lang = readJson(ASSETS.resolve("lang/en_us.json"));
+        for (String k : new String[]{"item.echoes.wave_terminal",
+                "tooltip.echoes.desc.wave_terminal", "message.echoes.terminal.bound",
+                "message.echoes.terminal.unbound", "message.echoes.terminal.empty"}) {
+            assertTrue(lang.has(k), "missing lang key " + k);
+        }
+        // Registration in the item registry.
+        String modItems;
+        try {
+            modItems = Files.readString(Path.of("src/main/java/com/echoes/registry/ModItems.java"));
+        } catch (IOException e) {
+            modItems = null;
+            fail("cannot read ModItems.java");
+        }
+        assertTrue(modItems.contains("\"wave_terminal\""), "ModItems must register wave_terminal");
     }
 }
