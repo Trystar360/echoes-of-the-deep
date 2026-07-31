@@ -115,6 +115,10 @@
   "config.echoes.security.public": "Public",
   "config.echoes.security.private": "Private (you)",
   "message.echoes.locked": "This device is locked by its owner.",
+  "message.echoes.condenser.target": "Condenser target set: %s",
+  "message.echoes.condenser.cleared": "Condenser target cleared.",
+  "message.echoes.condenser.status.empty": "No target set — %s Bound Light banked.",
+  "message.echoes.condenser.status.target": "Target: %s — %s Bound Light banked.",
   "config.echoes.redstone.always": "Always on",
   "config.echoes.redstone.needs_redstone": "Needs signal",
   "config.echoes.redstone.disabled_by_redstone": "Off on signal",
@@ -314,5 +318,7 @@
   "advancement.echoes.echo_essence.title": "Crystallised Growth",
   "advancement.echoes.echo_essence.description": "Harvest Echo Essence from a mature Echo Bloom — condense it into any ore tier, or dissolve it for 4,096 Bound Light.",
   "block.echoes.fabricator": "Resonant Fabricator",
-  "tooltip.echoes.desc.fabricator": "Resonant Fabricator — autocrafts the shaped recipe laid out in its grid, spending Light per craft."
+  "tooltip.echoes.desc.fabricator": "Resonant Fabricator — autocrafts the shaped recipe laid out in its grid, spending Light per craft.",
+  "block.echoes.resonant_condenser": "Resonant Condenser",
+  "tooltip.echoes.desc.resonant_condenser": "Resonant Condenser — dissolves fed items into your Bound Light account and automatically re-creates a chosen target tone. Click with an item to set the target; sneak-click to clear."
 }

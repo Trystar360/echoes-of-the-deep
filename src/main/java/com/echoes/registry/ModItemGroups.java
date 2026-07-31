@@ -99,6 +99,7 @@ public final class ModItemGroups {
                     output.accept(ModItems.RADIANT_INGOT);
                     // The Verdant Octave — transmutation economy
                     output.accept(ModBlocks.TRANSMUTATION_TABLE);
+                    output.accept(ModBlocks.RESONANT_CONDENSER);
                     output.accept(ModItems.TRANSMUTATION_TABLET);
                     output.accept(ModItems.LIGHT_MOTE);
                     output.accept(ModItems.TONIC_MOTE);

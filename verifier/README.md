@@ -60,3 +60,8 @@ end-to-end (source → jar).
 - Measures: everything in v9, PLUS TD-style redstone control on the wireless network — RedstoneGate decision class present in src and shipped jar, redstoneMode() exposed on WirelessDevice and overridden by channel devices, WirelessNetworkManager enforcing gating for senders/receivers/passive storage (local signal OR wireless bus), RedstoneGateTest (6 JUnit tests) green, and docs/mechanics-guide.md covering Signal-Relay-bus gating.
 - Diff vs v9: +6 checks (gate class in code, mode exposure, manager enforcement, gate tests green, docs coverage, gate class in jar). 28 total JUnit tests now guard the build.
 - Latest runs: PASS, 51/51 (see runs/*-v10-wireless-redstone-gate.log and runs/*-v10-redstone-gate-docs-sync.log, both exit 0; the second run followed a docs-only addition of the Abyssal Bloom tier-3 paragraph to the mechanics guide).
+
+## v11 — created 2026-07-31 (feature/resonant-condenser)
+- Measures: everything in v10, PLUS ProjectE Energy-Condenser acceptance — ResonantCondenserBlock/BlockEntity present in src and shipped jar, block+entity registered, recipe (silentite/radiant/table) + self-drop loot + blockstate present, block entity bound to the per-player TransmutationState account and LightValues economy, lang keys (block/tooltip/4 messages), docs coverage, and the 12th data-integrity test (condenserContentIsFullyWired) green.
+- Diff vs v10: +7 checks (condenser in code, registration, recipe+loot+blockstate, account binding, lang, docs, condenser class in jar). 29 total JUnit tests now guard the build.
+- Latest run: PASS, 58/58 (see runs/*-v11-resonant-condenser.log, exit 0).

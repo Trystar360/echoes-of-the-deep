@@ -23,6 +23,7 @@ import com.echoes.block.EchoBloomBlock;
 import com.echoes.block.RadiantBloomBlock;
 import com.echoes.block.AbyssalBloomBlock;
 import com.echoes.block.TransmutationTableBlock;
+import com.echoes.block.ResonantCondenserBlock;
 import com.echoes.block.ResonantAmplifierBlock;
 import com.echoes.block.ResonantChestBlock;
 import com.echoes.block.ResonantRelayBlock;
@@ -100,6 +101,8 @@ public final class ModBlocks {
             AttunementFurnaceBlock::new, BlockBehaviour.Properties.of().strength(3.5f).requiresCorrectToolForDrops());
     public static final Block FABRICATOR = register("fabricator",
             FabricatorBlock::new, BlockBehaviour.Properties.of().strength(3.5f).requiresCorrectToolForDrops());
+    public static final Block RESONANT_CONDENSER = register("resonant_condenser",
+            ResonantCondenserBlock::new, BlockBehaviour.Properties.of().strength(3.5f).requiresCorrectToolForDrops());
     public static final Block RESONANT_RELAY = register("wave_relay",
             ResonantRelayBlock::new, BlockBehaviour.Properties.of().strength(2.0f).noOcclusion());
 
