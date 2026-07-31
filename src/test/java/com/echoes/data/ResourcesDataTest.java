@@ -135,4 +135,28 @@ class ResourcesDataTest {
         JsonObject radiant = readJson(DATA.resolve("advancement/great_work/radiant_essence.json"));
         assertEquals("echoes:great_work/echo_essence", radiant.get("parent").getAsString());
     }
+
+    @Test
+    void patternContentIsFullyWired() {
+        // Blank pattern recipe exists and yields the registered card.
+        Path recipe = DATA.resolve("recipe/blank_pattern.json");
+        assertTrue(Files.exists(recipe), "missing recipe blank_pattern");
+        JsonObject r = readJson(recipe);
+        assertEquals("echoes:blank_pattern", r.getAsJsonObject("result").get("id").getAsString());
+        // Item definitions + models for both cards.
+        for (String item : new String[]{"blank_pattern", "encoded_pattern"}) {
+            assertTrue(Files.exists(ASSETS.resolve("items/" + item + ".json")), "missing item def " + item);
+            assertTrue(Files.exists(ASSETS.resolve("models/item/" + item + ".json")), "missing item model " + item);
+            assertTrue(Files.exists(ASSETS.resolve("textures/item/" + item + ".png")), "missing texture " + item);
+        }
+        // Lang: item names, tooltips, and the four fabricator messages.
+        JsonObject lang = readJson(ASSETS.resolve("lang/en_us.json"));
+        for (String k : new String[]{"item.echoes.blank_pattern", "item.echoes.encoded_pattern",
+                "tooltip.echoes.pattern.empty", "tooltip.echoes.pattern.slots",
+                "tooltip.echoes.pattern.hint", "message.echoes.pattern.saved",
+                "message.echoes.pattern.loaded", "message.echoes.pattern.nothing",
+                "message.echoes.pattern.invalid"}) {
+            assertTrue(lang.has(k), "missing lang key " + k);
+        }
+    }
 }
