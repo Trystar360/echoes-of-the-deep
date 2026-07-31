@@ -2,7 +2,7 @@ command: verifier/v8/verify.sh
 timestamp: 2026-07-31T10:20:05+00:00
 PASS: mod jar exists (build/libs)
 PASS: unit tests green
-asset integrity OK (100 textures, 310 lang keys)
+asset integrity OK (100 textures, 309 lang keys)
 PASS: asset integrity (models->textures, lang keys)
 all 91 block/item textures are 32x (or 32x animated strips)
 PASS: textures are 32x
