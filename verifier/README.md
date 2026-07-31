@@ -40,3 +40,8 @@ end-to-end (source → jar).
 - Measures: everything in v5, PLUS MA-style crop-tier acceptance — RadiantBloomBlock (tier-2, Verdant-Loam-gated) present in src and shipped jar, radiant_bloom_seeds/radiant_essence registered, loot table + breed/condense recipes present, radiant_essence seeded at 8192 in light_values.json, challenge advancement with lang keys.
 - Diff vs v5: +6 checks (tier-2 crop in code, seeds registered, loot+recipes, radiant essence light value, advancement+lang, crop class in jar).
 - Latest run: PASS, 30/30 (see runs/*-v6-radiant-bloom.log, exit 0).
+
+## v7 — created 2026-07-31 (feature/data-tests)
+- Measures: everything in v6, PLUS automated regression coverage — ResourcesDataTest (8 JUnit tests: all data/asset JSON parses, every block loot table has a blockstate, essence rings break-even vs Bound-Light values, tier-2 exactly one octave above tier-1, crop content wiring, age-7 loot gating, progression chain) exists and is green.
+- Diff vs v6: +2 checks (data-test suite present, data-test suite green). 19 total JUnit tests now guard the build.
+- Latest runs: PASS, 32/32 (see runs/*-v7-data-tests.log and runs/*-v7-data-tests-rerun.log, both exit 0; the first run followed a transient gradle -q hiccup, re-run with build confirmed green).
