@@ -5,6 +5,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import com.echoes.energy.ResonanceNode;
 import com.echoes.registry.ModBlockEntities;
 import com.echoes.wireless.RelayMode;
+import com.echoes.wireless.ServoFilter;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
@@ -32,6 +33,20 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
     }
 
     public RelayMode mode() { return mode; }
+
+    /** Servo filter (item ids) — a SEND relay with entries only extracts those items. */
+    private final java.util.LinkedHashSet<String> filterIds = new java.util.LinkedHashSet<>();
+
+    /** Current servo filter as item ids (may be empty = unfiltered). */
+    public java.util.List<String> filterList() { return ServoFilter.list(filterIds); }
+
+    /** Toggle one item in the servo filter; returns what happened for the chat message. */
+    public ServoFilter.Toggle toggleFilter(net.minecraft.world.item.Item item) {
+        String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).toString();
+        ServoFilter.Toggle r = ServoFilter.toggle(filterIds, id);
+        if (r != ServoFilter.Toggle.FULL) sync();
+        return r;
+    }
 
     public void cycleMode() {
         mode = mode.next();
@@ -65,13 +80,28 @@ public class ResonantRelayBlockEntity extends AbstractChannelDeviceBlockEntity {
         return level.getBlockEntity(attachedPos()) instanceof ResonanceNode n ? n : null;
     }
 
+    /** Servo filter as resolved items (null when unfiltered); SEND relays only. */
+    @Override public @Nullable java.util.Set<net.minecraft.world.item.Item> extractionFilter() {
+        if (filterIds.isEmpty()) return null;
+        java.util.Set<net.minecraft.world.item.Item> out = new java.util.HashSet<>();
+        for (String id : filterIds) {
+            net.minecraft.core.registries.BuiltInRegistries.ITEM
+                    .getOptional(net.minecraft.resources.Identifier.parse(id))
+                    .ifPresent(out::add);
+        }
+        return out.isEmpty() ? null : out;
+    }
+
     @Override
     protected void writeExtra(ValueOutput nbt) {
         nbt.putInt("mode", mode.ordinal());
+        nbt.putString("filter", ServoFilter.join(filterIds));
     }
 
     @Override
     protected void readExtra(ValueInput nbt) {
         mode = RelayMode.byId(nbt.getIntOr("mode", 0));
+        filterIds.clear();
+        filterIds.addAll(ServoFilter.parse(nbt.getStringOr("filter", "")));
     }
 }

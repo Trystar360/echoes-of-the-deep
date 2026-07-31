@@ -78,3 +78,13 @@ First run: PASS, 67/67 (verifier/runs — see wave-terminal log), 109 textures,
 Second run: PASS, 67/67 (runs/*-v12-wave-terminal-scriptpath-fix.log, exit 0)
 — re-run after fixing verify.sh's copied python-checker paths to point at
 verifier/v12/*.py; results identical.
+
+## v13 — 2026-07-31 (servo filter slice)
+Adds 8 checks (t47–t53 block) on top of v12 (67 → 75 total): ServoFilter pure
+core present; extractionFilter hook on WirelessDevice overridden by the relay
+BE; WirelessNetworkManager applies per-sender servo filters (intersection with
+the channel whitelist); item-click toggle interaction on the relay block; servo
+lang keys; docs coverage; ServoFilterTest (6 JUnit tests) green; ServoFilter
+class inside the shipped jar. Same asset-integrity and 32x-texture gates as v12.
+First run: PASS, 75/75 (verifier/runs — see servo-filter log), 109 textures,
+330 lang keys, 100 textures at 32x.

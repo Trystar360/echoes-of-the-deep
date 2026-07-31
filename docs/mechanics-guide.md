@@ -42,6 +42,13 @@ its channel, so one Signal Relay can switch an entire channel's relays on or
 off from anywhere. A gated-off device stops sending, receiving, and lending
 its chest storage until power returns.
 
+Every SEND Wave Relay also carries a **servo filter** (TD-style, per-endpoint):
+right-click the relay with an item to tune it in (click again to untune; up to
+nine tones). A filtered sender only extracts the listed items from its attached
+inventory, and it composes with the channel-wide Wave Filter by intersection —
+an item must pass both. Empty-hand click still cycles Give/Regive/Stilled, so
+one ore bay can feed several channels with different cargo each.
+
 Because the Fabricator's crafting grid is a real inventory, a Wave Chest (or
 hopper) can restock its ingredients and pull its products — the channel
 network doubles as your AE2-style autocrafting supply chain.

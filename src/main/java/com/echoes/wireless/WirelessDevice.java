@@ -63,6 +63,14 @@ public interface WirelessDevice {
     /** Wave Filter: item types this device whitelists (empty/null = no constraint). */
     @Nullable default Set<Item> itemWhitelist() { return null; }
 
+    /**
+     * Servo-style per-device extraction filter (TD parity): a SEND endpoint with
+     * a non-empty filter only extracts the listed items from its attached
+     * inventory. Composes with the channel-wide {@link #itemWhitelist()} by
+     * intersection — an item must pass both. Null/empty = no constraint.
+     */
+    @Nullable default Set<Item> extractionFilter() { return null; }
+
     // --- redstone control (TD-style) ---
 
     /**
