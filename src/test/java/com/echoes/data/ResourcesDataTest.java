@@ -159,4 +159,52 @@ class ResourcesDataTest {
             assertTrue(lang.has(k), "missing lang key " + k);
         }
     }
+
+    @Test
+    void abyssalTierIsWoundAboveTheRadiantTier() {
+        JsonObject lv = readJson(DATA.resolve("light_values.json")).getAsJsonObject("values");
+        long radiant = lv.get("echoes:radiant_essence").getAsLong();
+        long abyssal = lv.get("echoes:abyssal_essence").getAsLong();
+        long harmonic = lv.get("echoes:harmonic_mote").getAsLong();
+        assertEquals(2 * radiant, abyssal, "tier-3 is exactly one octave above tier-2");
+        assertEquals(8 * radiant, 4 * harmonic, "radiant ring to 4 harmonic motes must be exactly break-even");
+    }
+
+    @Test
+    void abyssalContentIsFullyWired() {
+        // Breeding + condense recipes for tier 3.
+        for (String r : new String[]{"abyssal_bloom_seeds", "harmonic_motes_from_essence",
+                "netherite_scrap_from_essence", "silentite_crystal_from_abyssal"}) {
+            assertTrue(Files.exists(DATA.resolve("recipe/" + r + ".json")), "missing recipe " + r);
+        }
+        // Loot table gated on age 7, dropping abyssal essence.
+        String loot;
+        try {
+            loot = Files.readString(DATA.resolve("loot_table/blocks/abyssal_bloom.json"));
+        } catch (IOException e) {
+            loot = null;
+            fail("missing loot table abyssal_bloom");
+        }
+        assertTrue(loot.contains("\"age\": \"7\""), "abyssal essence drop must be gated on age 7");
+        assertTrue(loot.contains("echoes:abyssal_essence"), "abyssal loot table must drop abyssal essence");
+        // Blockstate + stage models + item defs.
+        assertTrue(Files.exists(ASSETS.resolve("blockstates/abyssal_bloom.json")), "missing blockstate");
+        for (int i = 0; i < 4; i++) {
+            assertTrue(Files.exists(ASSETS.resolve("models/block/abyssal_bloom_stage" + i + ".json")),
+                    "missing stage model " + i);
+        }
+        for (String item : new String[]{"abyssal_bloom_seeds", "abyssal_essence"}) {
+            assertTrue(Files.exists(ASSETS.resolve("items/" + item + ".json")), "missing item def " + item);
+        }
+        // Lang keys.
+        JsonObject lang = readJson(ASSETS.resolve("lang/en_us.json"));
+        for (String k : new String[]{"block.echoes.abyssal_bloom", "item.echoes.abyssal_bloom_seeds",
+                "item.echoes.abyssal_essence", "tooltip.echoes.desc.abyssal_bloom_seeds",
+                "tooltip.echoes.desc.abyssal_essence", "advancement.echoes.abyssal_essence.title"}) {
+            assertTrue(lang.has(k), "missing lang key " + k);
+        }
+        // Advancement chains off the radiant tier.
+        JsonObject adv = readJson(DATA.resolve("advancement/great_work/abyssal_essence.json"));
+        assertEquals("echoes:great_work/radiant_essence", adv.get("parent").getAsString());
+    }
 }

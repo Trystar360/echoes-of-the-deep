@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "H H",
+    " S ",
+    "H H"
+  ],
+  "key": {
+    "H": "echoes:harmonic_mote",
+    "S": "echoes:radiant_bloom_seeds"
+  },
+  "result": { "id": "echoes:abyssal_bloom_seeds", "count": 1 }
+}

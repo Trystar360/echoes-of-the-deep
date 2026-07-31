@@ -1,0 +1,20 @@
+{
+  "display": {
+    "icon": { "id": "echoes:abyssal_essence" },
+    "title": { "translate": "advancement.echoes.abyssal_essence.title" },
+    "description": { "translate": "advancement.echoes.abyssal_essence.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [ { "items": "echoes:abyssal_essence" } ] }
+    }
+  },
+  "requirements": [ [ "unlock" ] ],
+  "parent": "echoes:great_work/radiant_essence",
+  "rewards": { "experience": 150 }
+}

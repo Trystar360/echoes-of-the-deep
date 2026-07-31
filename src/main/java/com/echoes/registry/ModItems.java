@@ -114,6 +114,12 @@ public final class ModItems {
             s -> new net.minecraft.world.item.BlockItem(ModBlocks.RADIANT_BLOOM, s), new Item.Properties());
     public static final Item RADIANT_ESSENCE = register("radiant_essence", Item::new, new Item.Properties());
 
+    // Tier-3 crop: Abyssal Bloom — bred from radiant seeds + a Harmonic Mote;
+    // grows only in darkness on Verdant Loam; harvest condenses into endgame matter.
+    public static final Item ABYSSAL_BLOOM_SEEDS = register("abyssal_bloom_seeds",
+            s -> new net.minecraft.world.item.BlockItem(ModBlocks.ABYSSAL_BLOOM, s), new Item.Properties());
+    public static final Item ABYSSAL_ESSENCE = register("abyssal_essence", Item::new, new Item.Properties());
+
     // Machine augments — slotted into the Compressor to tune speed / Light cost / yield.
     public static final Item ACCELERATION_COIL = register("acceleration_coil", Item::new, new Item.Properties());
     public static final Item EFFICIENCY_DAMPER = register("efficiency_damper", Item::new, new Item.Properties());

@@ -21,6 +21,7 @@ import com.echoes.block.OctaveConduitBlock;
 import com.echoes.block.StormCallerBlock;
 import com.echoes.block.EchoBloomBlock;
 import com.echoes.block.RadiantBloomBlock;
+import com.echoes.block.AbyssalBloomBlock;
 import com.echoes.block.TransmutationTableBlock;
 import com.echoes.block.ResonantAmplifierBlock;
 import com.echoes.block.ResonantChestBlock;
@@ -216,6 +217,11 @@ public final class ModBlocks {
     public static final Block RADIANT_BLOOM = registerBlockOnly("radiant_bloom",
             RadiantBloomBlock::new, BlockBehaviour.Properties.of().noCollision().randomTicks().instabreak()
                     .sound(SoundType.CROP).lightLevel(s -> 7));
+
+    // Tier-3: Abyssal Bloom — darkness-gated Deep-Dark crop; no light of its own.
+    public static final Block ABYSSAL_BLOOM = registerBlockOnly("abyssal_bloom",
+            AbyssalBloomBlock::new, BlockBehaviour.Properties.of().noCollision().randomTicks().instabreak()
+                    .sound(SoundType.CROP));
 
     public static Block registerBlockOnly(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings) {
         Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);
