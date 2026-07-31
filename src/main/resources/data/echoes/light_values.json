@@ -12,6 +12,7 @@
     "echoes:drumstone_shard": 512,
     "echoes:silentite_crystal": 4096,
     "echoes:radiant_dust": 16384,
+    "echoes:echo_essence": 4096,
     "echoes:octave_seed": 8192,
 
     "minecraft:dirt": 1,
