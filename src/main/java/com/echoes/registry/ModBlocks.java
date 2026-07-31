@@ -19,6 +19,7 @@ import com.echoes.block.NoteRelayBlock;
 import com.echoes.block.OctaveCoilBlock;
 import com.echoes.block.OctaveConduitBlock;
 import com.echoes.block.StormCallerBlock;
+import com.echoes.block.EchoBloomBlock;
 import com.echoes.block.TransmutationTableBlock;
 import com.echoes.block.ResonantAmplifierBlock;
 import com.echoes.block.ResonantChestBlock;
@@ -203,6 +204,20 @@ public final class ModBlocks {
     public static final Block STORM_CALLER = register("storm_caller",
             StormCallerBlock::new, BlockBehaviour.Properties.of().strength(4.5f).requiresCorrectToolForDrops()
                     .noOcclusion().lightLevel(s -> 6));
+
+    // The Verdant Octave — Echo Bloom resource crop (Mystical-Agriculture-style).
+    // No BlockItem: the plant is obtained through Echo Bloom Seeds only.
+    public static final Block ECHO_BLOOM = registerBlockOnly("echo_bloom",
+            EchoBloomBlock::new, BlockBehaviour.Properties.of().noCollision().randomTicks().instabreak()
+                    .sound(SoundType.CROP).lightLevel(s -> 3));
+
+    public static Block registerBlockOnly(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings) {
+        Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);
+        ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, id);
+        Block block = factory.apply(settings.setId(blockKey));
+        Registry.register(BuiltInRegistries.BLOCK, blockKey, block);
+        return block;
+    }
 
     public static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings) {
         Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);
