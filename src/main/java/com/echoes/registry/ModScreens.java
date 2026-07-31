@@ -5,6 +5,7 @@ import com.echoes.screen.AttunementFurnaceScreenHandler;
 import com.echoes.screen.ConfigScreenHandler;
 import com.echoes.screen.InfoScreenHandler;
 import com.echoes.screen.CrusherScreenHandler;
+import com.echoes.screen.FabricatorScreenHandler;
 import com.echoes.screen.HarmonicFilterScreenHandler;
 import com.echoes.screen.TransmutationTableScreenHandler;
 import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
@@ -27,6 +28,11 @@ public final class ModScreens {
             Registry.register(BuiltInRegistries.MENU,
                     Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "transmuter"),
                     new MenuType<>(AttunementFurnaceScreenHandler::new, FeatureFlags.VANILLA_SET));
+
+    public static final MenuType<FabricatorScreenHandler> FABRICATOR =
+            Registry.register(BuiltInRegistries.MENU,
+                    Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, "fabricator"),
+                    new MenuType<>(FabricatorScreenHandler::new, FeatureFlags.VANILLA_SET));
 
     public static final MenuType<HarmonicFilterScreenHandler> HARMONIC_FILTER =
             Registry.register(BuiltInRegistries.MENU,
