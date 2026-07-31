@@ -29,6 +29,12 @@ Amplifiers double throughput, Wave Repeaters cross dimensions, and the Signal
 Relay broadcasts redstone. The Wave Atlas lists every device per channel; the
 Wave Tuner copy/pastes channel assignments; the Light Meter reads any device.
 
+The **Wave Terminal** is the AE2-style wireless terminal: sneak-right-click any
+channel device to bind the terminal to that channel, then right-click anywhere
+to open the channel's Resonant Chest storage remotely (up to two chests merged
+into one live view). The terminal honors locks and redstone gating — it only
+reaches chests you may access whose redstone mode currently allows operation.
+
 Every wireless device honors the same TD-style redstone control as wired
 machines (always on / needs signal / off on signal, set in its config screen)
 — and "powered" means a live local signal **or** a live Signal Relay bus on
