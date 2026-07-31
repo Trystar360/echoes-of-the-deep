@@ -152,26 +152,38 @@ public final class WirelessNetworkManager {
         List<WirelessDevice> passive = new ArrayList<>();
         int redstone = -1;
 
+        // Pass 1 — modifiers, whitelists, and the redstone bus. A Note Relay's
+        // own redstone mode gates its broadcast using its LOCAL signal only
+        // (gating on the bus it feeds would be circular).
         for (WirelessDevice d : group) {
             if (d.roundRobin()) roundRobin = true;
             if (d.isAmplifier()) amplifiers++;
-            if (d.isPassiveStorage()) passive.add(d);
             Set<Item> w = d.itemWhitelist();
             if (w != null && !w.isEmpty()) {
                 if (whitelist == null) whitelist = new HashSet<>();
                 whitelist.addAll(w);
             }
-            redstone = Math.max(redstone, d.redstoneOut());
+            boolean local = d.wirelessWorld().hasNeighborSignal(d.wirelessPos());
+            if (d.redstoneMode().allows(local)) redstone = Math.max(redstone, d.redstoneOut());
+        }
+
+        // Wireless redstone bus: deliver the strongest broadcast to every device.
+        int level = Math.max(0, redstone);
+        for (WirelessDevice d : group) d.acceptRedstone(level);
+
+        // Pass 2 — transport roles, honoring each device's TD-style redstone
+        // control: powered means a live local signal OR a live wireless bus.
+        final int bus = level;
+        for (WirelessDevice d : group) {
+            boolean local = d.wirelessWorld().hasNeighborSignal(d.wirelessPos());
+            if (!RedstoneGate.allowed(d.redstoneMode(), local, bus)) continue;
+            if (d.isPassiveStorage()) passive.add(d);
             switch (d.transportMode()) {
                 case SEND -> senders.add(d);
                 case RECEIVE -> receivers.add(d);
                 default -> {}
             }
         }
-
-        // Wireless redstone bus: deliver the strongest broadcast to every device.
-        int level = Math.max(0, redstone);
-        for (WirelessDevice d : group) d.acceptRedstone(level);
 
         long mult = Math.min(MAX_AMPLIFY, 1L << Math.min(amplifiers, 4)); // 2^amplifiers, capped
 
