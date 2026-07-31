@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "tools",
+  "pattern": [
+    " T ",
+    "ECE",
+    " E "
+  ],
+  "key": {
+    "T": "echoes:wave_tuner",
+    "C": "echoes:wave_chest",
+    "E": "echoes:echo_ingot"
+  },
+  "result": {
+    "id": "echoes:wave_terminal",
+    "count": 1
+  }
+}

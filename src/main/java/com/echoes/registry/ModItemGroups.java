@@ -68,6 +68,7 @@ public final class ModItemGroups {
                     output.accept(ModBlocks.ECHOCITE_BRICK_SLAB);
                     output.accept(ModItems.FREQUENCY_TUNER);
                     output.accept(ModItems.CHANNEL_ATLAS);
+                    output.accept(ModItems.WAVE_TERMINAL);
                     output.accept(ModItems.RESONANCE_METER);
                     output.accept(ModItems.ACCELERATION_COIL);
                     output.accept(ModItems.EFFICIENCY_DAMPER);

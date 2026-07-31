@@ -65,3 +65,16 @@ end-to-end (source → jar).
 - Measures: everything in v10, PLUS ProjectE Energy-Condenser acceptance — ResonantCondenserBlock/BlockEntity present in src and shipped jar, block+entity registered, recipe (silentite/radiant/table) + self-drop loot + blockstate present, block entity bound to the per-player TransmutationState account and LightValues economy, lang keys (block/tooltip/4 messages), docs coverage, and the 12th data-integrity test (condenserContentIsFullyWired) green.
 - Diff vs v10: +7 checks (condenser in code, registration, recipe+loot+blockstate, account binding, lang, docs, condenser class in jar). 29 total JUnit tests now guard the build.
 - Latest run: PASS, 58/58 (see runs/*-v11-resonant-condenser.log, exit 0).
+
+## v12 — 2026-07-31 (Wave Terminal slice)
+Adds 9 checks (t40–t46 block) on top of v11 (58 → 67 total): Wave Terminal item
+source present; registered in ModItems + creative tab; reads the live channel
+roster via WirelessNetworkManager.devicesOnChannel; honors claim locks and
+redstone gating; recipe + item def + model + texture exist; terminal lang keys;
+docs coverage; ResourcesDataTest (now 13 tests) green; terminal class inside the
+shipped jar. Same asset-integrity and 32x-texture gates as v11.
+First run: PASS, 67/67 (verifier/runs — see wave-terminal log), 109 textures,
+327 lang keys, 100 textures at 32x.
+Second run: PASS, 67/67 (runs/*-v12-wave-terminal-scriptpath-fix.log, exit 0)
+— re-run after fixing verify.sh's copied python-checker paths to point at
+verifier/v12/*.py; results identical.

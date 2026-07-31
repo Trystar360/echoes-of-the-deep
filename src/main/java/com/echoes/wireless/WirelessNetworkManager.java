@@ -363,6 +363,11 @@ public final class WirelessNetworkManager {
         return new int[]{total, send, recv, mod};
     }
 
+    /** Read-only snapshot of the devices on one channel (all dimensions). */
+    public static List<WirelessDevice> devicesOnChannel(int channel) {
+        return List.copyOf(BY_CHANNEL.get(clampChannel(channel)));
+    }
+
     private static int clampChannel(int channel) {
         return ((channel % CHANNELS) + CHANNELS) % CHANNELS;
     }
