@@ -20,6 +20,7 @@ import com.echoes.block.OctaveCoilBlock;
 import com.echoes.block.OctaveConduitBlock;
 import com.echoes.block.StormCallerBlock;
 import com.echoes.block.EchoBloomBlock;
+import com.echoes.block.RadiantBloomBlock;
 import com.echoes.block.TransmutationTableBlock;
 import com.echoes.block.ResonantAmplifierBlock;
 import com.echoes.block.ResonantChestBlock;
@@ -210,6 +211,11 @@ public final class ModBlocks {
     public static final Block ECHO_BLOOM = registerBlockOnly("echo_bloom",
             EchoBloomBlock::new, BlockBehaviour.Properties.of().noCollision().randomTicks().instabreak()
                     .sound(SoundType.CROP).lightLevel(s -> 3));
+
+    // Tier-2: Radiant Bloom — upgraded seeds, Verdant-Loam-only, radiant harvest.
+    public static final Block RADIANT_BLOOM = registerBlockOnly("radiant_bloom",
+            RadiantBloomBlock::new, BlockBehaviour.Properties.of().noCollision().randomTicks().instabreak()
+                    .sound(SoundType.CROP).lightLevel(s -> 7));
 
     public static Block registerBlockOnly(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties settings) {
         Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);
