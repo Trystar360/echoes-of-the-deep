@@ -17,6 +17,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainer;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,15 +51,96 @@ public class FabricatorBlockEntity extends AbstractMachineBlockEntity {
     private final NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private long energyPerTick; // cached
 
+    /** Pattern template: the item id each grid slot should hold ("" = free slot).
+     *  Loaded from an Encoded Pattern; drives automatic restocking from adjacent
+     *  inventories, so the grid declares the recipe instead of storing it. */
+    private final String[] template = new String[GRID_LAST + 1];
+
     // Cache the recipe match; only re-query when the grid actually changes.
     private List<ItemStack> cachedGrid = List.of();
     private Optional<RecipeHolder<CraftingRecipe>> cachedRecipe = Optional.empty();
 
     public FabricatorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FABRICATOR, pos, state, INTERNAL_BUFFER);
+        java.util.Arrays.fill(template, "");
     }
 
     @Override public NonNullList<ItemStack> getItems() { return items; }
+
+    // --- patterns (AE2-style): save the grid to a card, load a card to the
+    // template; the template restocks emptied slots from adjacent inventories. ---
+
+    /** Encode the current 3x3 grid onto a new Encoded Pattern (empty if the grid is empty). */
+    public ItemStack savePattern() {
+        return com.echoes.item.EncodedPatternItem.encode(items.subList(GRID_FIRST, GRID_LAST + 1));
+    }
+
+    /** Load an Encoded Pattern's layout into the template memory. False if the card is blank. */
+    public boolean loadPattern(ItemStack pattern) {
+        java.util.List<String> layout = com.echoes.item.EncodedPatternItem.layout(pattern);
+        if (layout == null) return false;
+        for (int i = 0; i <= GRID_LAST; i++) template[i] = layout.get(i);
+        setChanged();
+        return true;
+    }
+
+    /** True if any grid slot has a template entry (drives restocking + tooltip state). */
+    public boolean hasTemplate() {
+        for (String t : template) if (!t.isEmpty()) return true;
+        return false;
+    }
+
+    /**
+     * Refill emptied grid slots from adjacent inventories according to the
+     * template. Per-face input modes gate the pull, exactly as they gate
+     * hopper insertion; a Resonant Chest beside the machine extends the pull
+     * to the whole wireless network through the network's own transfers.
+     */
+    private void restock(ServerLevel sw) {
+        for (int s = GRID_FIRST; s <= GRID_LAST; s++) {
+            if (!getItem(s).isEmpty() || template[s].isEmpty()) continue;
+            var want = BuiltInRegistries.ITEM.getOptional(Identifier.parse(template[s]));
+            if (want.isEmpty()) { template[s] = ""; continue; } // item vanished from the registry
+            for (Direction dir : Direction.values()) {
+                if (!config.side(dir).canInput()) continue;
+                if (!(sw.getBlockEntity(getBlockPos().relative(dir)) instanceof Container c)) continue;
+                ItemStack pulled = pullOne(c, want.get(), dir.getOpposite());
+                if (!pulled.isEmpty()) {
+                    setItem(s, pulled);
+                    setChanged();
+                    break;
+                }
+            }
+        }
+    }
+
+    /** Extract a single {@code want} from a container, honouring sided access. */
+    private static ItemStack pullOne(Container c, net.minecraft.world.item.Item want, Direction face) {
+        if (c instanceof WorldlyContainer w) {
+            for (int slot : w.getSlotsForFace(face)) {
+                ItemStack st = w.getItem(slot);
+                if (!st.isEmpty() && st.is(want) && w.canTakeItemThroughFace(slot, st, face)) {
+                    ItemStack out = st.split(1);
+                    if (!st.isEmpty()) w.setItem(slot, st);
+                    else w.setItem(slot, ItemStack.EMPTY);
+                    w.setChanged();
+                    return out;
+                }
+            }
+            return ItemStack.EMPTY;
+        }
+        for (int slot = 0; slot < c.getContainerSize(); slot++) {
+            ItemStack st = c.getItem(slot);
+            if (!st.isEmpty() && st.is(want)) {
+                ItemStack out = st.split(1);
+                if (!st.isEmpty()) c.setItem(slot, st);
+                else c.setItem(slot, ItemStack.EMPTY);
+                c.setChanged();
+                return out;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
 
     /** True for the two items that tune this machine (Acceleration Coil, Efficiency Damper). */
     public static boolean isAugment(ItemStack s) {
@@ -74,6 +159,7 @@ public class FabricatorBlockEntity extends AbstractMachineBlockEntity {
 
     @Override
     protected void doWork(ServerLevel sw) {
+        restock(sw); // pattern template: keep the grid fed before matching
         Optional<RecipeHolder<CraftingRecipe>> match = currentRecipe(sw);
         if (match.isEmpty() || !hasOutputRoom(match.get().value())) {
             resetProgress();
@@ -188,11 +274,15 @@ public class FabricatorBlockEntity extends AbstractMachineBlockEntity {
     @Override
     protected void writeExtra(ValueOutput nbt) {
         net.minecraft.world.ContainerHelper.saveAllItems(nbt, items);
+        for (int i = 0; i <= GRID_LAST; i++) {
+            if (!template[i].isEmpty()) nbt.putString("pattern" + i, template[i]);
+        }
     }
 
     @Override
     protected void readExtra(ValueInput nbt) {
         net.minecraft.world.ContainerHelper.loadAllItems(nbt, items);
+        for (int i = 0; i <= GRID_LAST; i++) template[i] = nbt.getStringOr("pattern" + i, "");
         cachedGrid = List.of();
         cachedRecipe = Optional.empty();
     }
