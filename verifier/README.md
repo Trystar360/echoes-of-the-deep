@@ -35,3 +35,8 @@ end-to-end (source → jar).
 - Measures: everything in v4, PLUS in-game progression completeness — Great Work advancements for fabricator/echo_bloom/echo_essence present with lang keys, all advancement JSON valid, mod version bumped to 0.3.0 and the 0.3.0 jar builds.
 - Diff vs v4: +5 checks (version bump, advancements present, advancement lang, advancement JSON validity, 0.3.0 jar).
 - Latest runs: PASS, 24/24 (see runs/*-v5-progression.log and runs/*-v5-tooltip-sync.log, both exit 0).
+
+## v6 — created 2026-07-31 (feature/radiant-bloom)
+- Measures: everything in v5, PLUS MA-style crop-tier acceptance — RadiantBloomBlock (tier-2, Verdant-Loam-gated) present in src and shipped jar, radiant_bloom_seeds/radiant_essence registered, loot table + breed/condense recipes present, radiant_essence seeded at 8192 in light_values.json, challenge advancement with lang keys.
+- Diff vs v5: +6 checks (tier-2 crop in code, seeds registered, loot+recipes, radiant essence light value, advancement+lang, crop class in jar).
+- Latest run: PASS, 30/30 (see runs/*-v6-radiant-bloom.log, exit 0).
