@@ -55,3 +55,8 @@ end-to-end (source → jar).
 - Measures: everything in v8, PLUS MA-style tier-3 crop acceptance — AbyssalBloomBlock present in src and shipped jar, abyssal_bloom_seeds/abyssal_essence registered, loot table (age-7 gated) + breed/condense recipes (harmonic-mote breed, netherite-scrap ring, silentite square) present, abyssal_essence seeded at 16384 in light_values.json, darkness-gated growth (getRawBrightness check) in code, challenge advancement with lang keys, and the 10th/11th data-integrity tests (abyssal octave + wiring, harmonic ring break-even) green.
 - Diff vs v8: +7 checks (tier-3 crop in code, seeds registered, loot+recipes, abyssal light value, darkness gating, advancement+lang, crop class in jar). 22 total JUnit tests now guard the build.
 - Latest run: PASS, 45/45 (see runs/*-v9-abyssal-bloom.log, exit 0).
+
+## v10 — created 2026-07-31 (feature/wireless-redstone-gate)
+- Measures: everything in v9, PLUS TD-style redstone control on the wireless network — RedstoneGate decision class present in src and shipped jar, redstoneMode() exposed on WirelessDevice and overridden by channel devices, WirelessNetworkManager enforcing gating for senders/receivers/passive storage (local signal OR wireless bus), RedstoneGateTest (6 JUnit tests) green, and docs/mechanics-guide.md covering Signal-Relay-bus gating.
+- Diff vs v9: +6 checks (gate class in code, mode exposure, manager enforcement, gate tests green, docs coverage, gate class in jar). 28 total JUnit tests now guard the build.
+- Latest runs: PASS, 51/51 (see runs/*-v10-wireless-redstone-gate.log and runs/*-v10-redstone-gate-docs-sync.log, both exit 0; the second run followed a docs-only addition of the Abyssal Bloom tier-3 paragraph to the mechanics guide).
