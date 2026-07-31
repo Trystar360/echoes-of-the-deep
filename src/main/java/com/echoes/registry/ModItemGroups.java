@@ -72,6 +72,7 @@ public final class ModItemGroups {
                     output.accept(ModItems.ACCELERATION_COIL);
                     output.accept(ModItems.EFFICIENCY_DAMPER);
                     output.accept(ModItems.YIELD_RESONATOR);
+                    output.accept(ModItems.BLANK_PATTERN);
                     output.accept(ModItems.RESONANCE_THRUSTERS);
                     output.accept(ModItems.RESONANT_PICKAXE);
                     output.accept(ModItems.RESONANT_AXE);

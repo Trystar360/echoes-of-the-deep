@@ -45,3 +45,8 @@ end-to-end (source → jar).
 - Measures: everything in v6, PLUS automated regression coverage — ResourcesDataTest (8 JUnit tests: all data/asset JSON parses, every block loot table has a blockstate, essence rings break-even vs Bound-Light values, tier-2 exactly one octave above tier-1, crop content wiring, age-7 loot gating, progression chain) exists and is green.
 - Diff vs v6: +2 checks (data-test suite present, data-test suite green). 19 total JUnit tests now guard the build.
 - Latest runs: PASS, 32/32 (see runs/*-v7-data-tests.log and runs/*-v7-data-tests-rerun.log, both exit 0; the first run followed a transient gradle -q hiccup, re-run with build confirmed green).
+
+## v8 — created 2026-07-31 (feature/patterns)
+- Measures: everything in v7, PLUS AE2-style pattern acceptance — EncodedPatternItem present in src and shipped jar, blank/encoded pattern cards registered, Fabricator template-restock + loadPattern/savePattern in code, pattern card interaction (useItemOn) on the Fabricator block, blank-pattern recipe + lang keys, and a 9th data-integrity test (patternContentIsFullyWired) green.
+- Diff vs v7: +6 checks (pattern item in code, cards registered, template restock, block interaction, recipe+lang, pattern class in jar). 20 total JUnit tests now guard the build.
+- Latest runs: PASS, 38/38 (see runs/*-v8-patterns.log and runs/*-v8-patterns-rerun.log, both exit 0).

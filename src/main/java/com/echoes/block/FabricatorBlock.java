@@ -86,6 +86,52 @@ public class FabricatorBlock extends Block implements EntityBlock {
         return InteractionResult.SUCCESS;
     }
 
+    /**
+     * Pattern cards: Blank Pattern saves the fabricator's current 3x3 grid onto
+     * a card (AE2's "encode pattern"); an Encoded Pattern loads its layout into
+     * the machine's template memory, which then keeps the grid restocked from
+     * adjacent inventories / the wireless network. Everything else falls
+     * through to the normal GUI open.
+     */
+    @Override
+    protected InteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state,
+            Level world, BlockPos pos, Player player, net.minecraft.world.InteractionHand hand, BlockHitResult hit) {
+        boolean isBlank = stack.is(com.echoes.registry.ModItems.BLANK_PATTERN);
+        boolean isEncoded = stack.is(com.echoes.registry.ModItems.ENCODED_PATTERN);
+        if (!isBlank && !isEncoded) {
+            return useWithoutItem(state, world, pos, player, hit);
+        }
+        if (world.isClientSide()) return InteractionResult.SUCCESS;
+        if (!(world.getBlockEntity(pos) instanceof FabricatorBlockEntity be)) return InteractionResult.PASS;
+        if (be instanceof com.echoes.config.Configurable cfg) {
+            if (cfg.getConfig().owner() == null) {
+                cfg.getConfig().claim(player.getUUID());
+                cfg.onConfigChanged();
+            }
+            if (!cfg.getConfig().canAccess(player.getUUID())) {
+                player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.echoes.locked"));
+                return InteractionResult.SUCCESS;
+            }
+        }
+        if (isBlank) {
+            net.minecraft.world.item.ItemStack encoded = be.savePattern();
+            if (encoded.isEmpty()) {
+                player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.echoes.pattern.nothing"));
+                return InteractionResult.SUCCESS;
+            }
+            stack.shrink(1);
+            player.getInventory().placeItemBackInInventory(encoded);
+            player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.echoes.pattern.saved"));
+        } else {
+            if (be.loadPattern(stack)) {
+                player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.echoes.pattern.loaded"));
+            } else {
+                player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.echoes.pattern.invalid"));
+            }
+        }
+        return InteractionResult.SUCCESS;
+    }
+
     @Override
     protected void onPlace(BlockState state, Level world, BlockPos pos, BlockState old, boolean notify) {
         if (world instanceof ServerLevel sw && !old.is(this)) {

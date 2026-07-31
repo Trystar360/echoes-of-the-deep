@@ -119,6 +119,12 @@ public final class ModItems {
     public static final Item EFFICIENCY_DAMPER = register("efficiency_damper", Item::new, new Item.Properties());
     public static final Item YIELD_RESONATOR   = register("yield_resonator",   Item::new, new Item.Properties());
 
+    // AE2-style patterns: blank cards, and encoded cards that load a saved 3x3
+    // layout into a Fabricator's template memory (see EncodedPatternItem).
+    public static final Item BLANK_PATTERN   = register("blank_pattern", Item::new, new Item.Properties());
+    public static final Item ENCODED_PATTERN = register("encoded_pattern",
+            com.echoes.item.EncodedPatternItem::new, new Item.Properties().stacksTo(1));
+
     public static Item register(String name, Function<Item.Properties, Item> factory, Item.Properties settings) {
         Identifier id = Identifier.fromNamespaceAndPath(EchoesMod.MOD_ID, name);
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, id);
