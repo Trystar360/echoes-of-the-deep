@@ -1,5 +1,6 @@
 package com.echoes.wireless;
 
+import com.echoes.config.RedstoneMode;
 import com.echoes.energy.ResonanceNode;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
@@ -61,6 +62,16 @@ public interface WirelessDevice {
 
     /** Wave Filter: item types this device whitelists (empty/null = no constraint). */
     @Nullable default Set<Item> itemWhitelist() { return null; }
+
+    // --- redstone control (TD-style) ---
+
+    /**
+     * How this device reacts to redstone (local signal or the channel's
+     * wireless bus). Devices without config UI keep the ALWAYS default; the
+     * manager skips any transport role whose mode disallows the current
+     * powered state (see {@link RedstoneGate}).
+     */
+    default RedstoneMode redstoneMode() { return RedstoneMode.ALWAYS; }
 
     // --- wireless redstone (Note Relay) ---
 
