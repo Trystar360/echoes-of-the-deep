@@ -30,3 +30,8 @@ end-to-end (source → jar).
 - Measures: everything in v3, PLUS ProjectE-economy integration of the crop line — echo_essence seeded at 4096 in light_values.json (consistent with the 8→2 radiant-dust ring), three essence→resource recipes (raw echocite, drumstone shard, silentite crystal), and docs/mechanics-guide.md covering all four system families.
 - Diff vs v3: +3 checks (essence light value, essence resource recipes, mechanics guide coverage).
 - Latest run: PASS, 19/19 (see runs/*-v4-essence-economy.log, exit 0).
+
+## v5 — created 2026-07-31 (feature/progression)
+- Measures: everything in v4, PLUS in-game progression completeness — Great Work advancements for fabricator/echo_bloom/echo_essence present with lang keys, all advancement JSON valid, mod version bumped to 0.3.0 and the 0.3.0 jar builds.
+- Diff vs v4: +5 checks (version bump, advancements present, advancement lang, advancement JSON validity, 0.3.0 jar).
+- Latest runs: PASS, 24/24 (see runs/*-v5-progression.log and runs/*-v5-tooltip-sync.log, both exit 0).
